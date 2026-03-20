@@ -39,5 +39,8 @@ repositories:
   - name: "merge-processor"
     org: allianz
 
-
-
+  - name: "geofeed"
+    org: allianz
+    teams:
+    - name: "AGN-IPSERVICES-GEOFEED-MGMT"
+    
