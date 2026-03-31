@@ -2,36 +2,45 @@
 name: Run create repos
 on:
   workflow_dispatch: null
+  pull_request:
+    paths: ['config/create_repos.yaml']
+  push:
+    branches: [main]
+    paths: ['config/create_repos.yaml']
 
 jobs:
   dry-run:
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - uses: actions/create-github-app-token@v1
-        id: app-token
+      - name: Checkout scripts from main
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          app-id: ${{ secrets.ALLIANZ_APP_ID }}
-          private-key: ${{ secrets.ALLIANZ_PRIVATE_KEY }}
-          owner: allianz
+          ref: main
+
+      - name: Checkout config from PR
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          sparse-checkout: config/create_repos.yaml
+          path: tmp
+
+      - name: Apply config from PR
+        run: cp tmp/config/create_repos.yaml config/create_repos.yaml
 
       - name: Plan github organization changes in allianz
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: scripts/create_repos.sh --org allianz --dry-run
 
 
   apply:
-    needs: dry-run
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     environment: github.com
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-    - uses: actions/create-github-app-token@v1
+    - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3
       id: app-token-all
       with:
           app-id: ${{ secrets.ALLIANZ_APP_ID }}
@@ -41,4 +50,4 @@ jobs:
     - name: Create repositories and teams in allianz
       env:
           GH_TOKEN: ${{ steps.app-token-all.outputs.token }}
-      run: scripts/create_repos.sh --org allianz 
+      run: scripts/create_repos.sh --org allianz

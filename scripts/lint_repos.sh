@@ -42,7 +42,7 @@ ISSUE_TITLE="Standards Compliance Notice"
 
 # Parse command line parameters
 ORG_NAME=""
-CONFIG_FILE_PATH="../config/policies.yaml"
+CONFIG_FILE_PATH="../config/lint_repos.yaml"
 DRY_RUN=false
 DEBUG=false
 while [ $# -gt 0 ]; do
@@ -153,7 +153,7 @@ download_repo() {
 #   checks if the repository provides a local configuration file at
 #   "https://raw.githubusercontent.com/<repository>/main/.github/repolinter.yaml." If found,
 #   this local configuration is retrieved. If no local configuration exists, the function falls
-#   back to the global configuration in this repository at ../config/policies.yaml
+#   back to the global configuration in this repository at ../config/lint_repos.yaml
 #
 #   The purpose of this function is to allow repositories to have custom linting configurations,
 #   providing flexibility for different projects while ensuring a consistent global standard for linting.

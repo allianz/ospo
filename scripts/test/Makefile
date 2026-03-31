@@ -1,8 +1,8 @@
-test-archival:
-	../archive_repos.sh --org ospo-sandbox --config ./test/archival.yaml 
+test_archive_repos:
+	../archive_repos.sh --org ospo-sandbox --config ./test/archive_repos.yaml --debug
 
-test-policies:
-	../lint_repos.sh --org ospo-sandbox --config ./test/policies.yaml 
+test_lint_repos:
+	../lint_repos.sh --org ospo-sandbox --config ./test/lint_repos.yaml --debug
 
-test-repos:
-	../create_repos.sh --org ospo-sandbox --config ./test/repos.yaml 
+test_create_repos:
+	../create_repos.sh --org ospo-sandbox --config ./test/create_repos.yaml --debug

@@ -37,11 +37,11 @@ print_debug() {
 
 # Parse command line parameters
 ORG_NAME=""
-CONFIG_FILE_PATH="../config/repos.yaml"
+CONFIG_FILE_PATH="../config/create_repos.yaml"
 DRY_RUN=false
 DEBUG=false
 SKIP_TEAM_SYNC=false
-PERMISSION="own"
+PERMISSION="Own"
 while [ $# -gt 0 ]; do
     case "$1" in
         --org)
@@ -76,10 +76,15 @@ done
 # Function to validate the structure of the YAML configuration
 validate_yaml() {
     for repo_name in $(yq eval '.repositories[].name' "$CONFIG_FILE_PATH"); do
-        if [[ ! "$repo_name" =~ ^[a-z0-9.-]+$ ]]; then
-            echo "Invalid repository name: '$repo_name'. The name must match the pattern ^[a-z0-9.-]+$.">&2; exit 1
+        if [[ ! "$repo_name" =~ ^[a-z0-9.-]+$ ]] || [[ ${#repo_name} -gt 64 ]]; then
+            echo "Invalid repository name: '$repo_name'. The name must match the pattern ^[a-z0-9.-]+$ (max 64 chars).">&2; exit 1
         fi
     done
+    while IFS= read -r team_name; do
+        if [[ ! "$team_name" =~ ^[a-zA-Z0-9[:blank:]._-]+$ ]] || [[ ${#team_name} -gt 64 ]]; then
+            echo "Invalid team name: '$team_name'. The name must only contain alphanumeric characters, spaces, dots, underscores, and hyphens (max 64 chars).">&2; exit 1
+        fi
+    done < <(yq eval '.repositories[].teams[].name' "$CONFIG_FILE_PATH")
 }
 
 
@@ -94,7 +99,7 @@ create_repo() {
         gh repo create $org/$name --public
 
         if [ $? -eq 0 ] && [ "$(echo $response | jq -r '.id')" != "null" ]; then
-            echo -e "\e[32m✓\e[0m Repository '$name' successfully created in organization $org."
+            echo "✓ Repository '$name' successfully created in organization $org."
         else
             echo "Error creating repo '$name' at line $LINENO. $response.">&2; exit 1;
         fi
@@ -105,6 +110,10 @@ create_repo() {
 create_team() {
     local name=$1
     local org=$2
+
+    if [ "$DRY_RUN" = false ]; then
+        load_ad_group "$name" "$org" > /dev/null || exit 1
+    fi
 
     # Create the team
     if [ "$DRY_RUN" = true ]; then
@@ -119,7 +128,7 @@ create_team() {
            -f privacy='closed' ) 
         
         if [ $? -eq 0 ] && [ "$(echo $response | jq -r '.id')" != "null" ]; then
-            echo -e "\e[32m✓\e[0m Team '$name' created successfully in organization '$org'."
+            echo "✓ Team '$name' created successfully in organization '$org'."
         else
             echo "Error creating team '$name' at line $LINENO. $response." >&2; exit 1;
         fi
@@ -132,30 +141,16 @@ create_team() {
 set_team_sync() {
     local name=$1
     local org=$2
-    local giam_name=$name
 
-    # Get Azure AD group required for team sync
-    local ad_groups=$(gh api -XGET \
-        -H "Accept: application/vnd.github+json" \
-        -H "X-GitHub-Api-Version: 2022-11-28" \
-        -F q="$giam_name" /orgs/$org/team-sync/groups)
- 
-    if [ $? -eq 0 ] && [ "$(echo "$ad_groups" | jq -e '.groups')" == "null" ]; then
-        echo "Error reading AD groups for name '$giam_name' in org $org at line $LINENO. $ad_groups." >&2; exit 1;
-    fi
-
-    # Remove all prefix name matches and keep only exact matches
-    local ad_group=$(echo "$ad_groups" | jq --arg exact_match "$giam_name" '.groups |= map(select(.group_name == $exact_match))')
-    if [ "$(echo "$ad_group" | jq -r '.groups | length')" -eq 0 ]; then
-        echo "Error: No AD group with name '$giam_name' found." >&2; exit 1;
-    fi
-    if [ "$(echo "$ad_group" | jq -r '.groups | length')" -ne 1 ]; then
-        echo "Error: More than one AD group with name '$giam_name' found." >&2; exit 1;
+    if [ "$DRY_RUN" = true ]; then
+        local ad_group="$name"
+    else
+        local ad_group=$(load_ad_group "$name" "$org") || exit 1
     fi
 
     # Activate Azure AD team sync by assigning the AD group to the team
     if [ "$DRY_RUN" = true ]; then
-        DRY_RUN_MESSAGES+="+ Would setup team sync: team '$name' with AD Group '$giam_name'.\n"
+        DRY_RUN_MESSAGES+="+ Would setup team sync: team '$name' with AD Group '$ad_group'.\n"
     else
         local slug_name=$(get_team_slug $name) || exit 1
         local response=$(echo $ad_group | gh api \
@@ -164,11 +159,11 @@ set_team_sync() {
             -H "X-GitHub-Api-Version: 2022-11-28" \
             /orgs/$org/teams/$slug_name/team-sync/group-mappings \
             --input -)
-        
+
         if [ $? -eq 0 ] && [ $(echo "$response" | jq '.groups | length') -ge 1 ]; then
-            echo -e "\e[32m✓\e[0m Team '$name' successfully syncing with AD Group '$giam_name'."
+            echo "✓ Team '$name' successfully syncing with AD Group '$name'."
         else
-            echo "Error when enabling team sync of '$slug_name' with AD '$giam_name' at line $LINENO. $response." >&2; exit 1;
+            echo "Error when enabling team sync of '$slug_name' with AD '$name' at line $LINENO. $response." >&2; exit 1;
         fi
     fi
 }
@@ -190,7 +185,7 @@ delete_team() {
             /orgs/$org/teams/$slug_name) 
         
         if [ $? -eq 0 ] && [ -z "$response" ]; then
-            echo -e "\e[32m✓\e[0m Team '$name' deleted successfully in organization '$org'."
+            echo "✓ Team '$name' deleted successfully in organization '$org'."
         else
             echo "Error deleting team '$slug_name' at line $LINENO. $response.">&2; exit 1;
         fi
@@ -217,7 +212,7 @@ grant_permissions() {
                 -f permission="$PERMISSION")
 
             if [ $? -eq 0 ] && [ -z "$response" ]; then
-                echo -e "\e[32m✓\e[0m Team '$name' granted $PERMISSION permission to repository '$repo'."
+                echo "✓ Team '$name' granted $PERMISSION permission to repository '$repo'."
             else
                 echo "Error granting $PERMISSION permission to team '$name' for repo '$repo' at line $LINENO. $response." >&2; exit 1;
             fi
@@ -246,7 +241,7 @@ revoke_permissions() {
                 /orgs/$org/teams/$slug_name/repos/$org/$repo)
 
             if [ $? -eq 0 ] && [ -z "$response" ]; then
-                echo -e "\e[32m✓\e[0m Team '$name' removed $PERMISSION prermissions in repository '$repo'."
+                echo "✓ Team '$name' removed $PERMISSION permissions in repository '$repo'."
             else
                 echo "Error removing permissions of team '$slug_name' from repo '$repo' at line $LINENO. $repsonse">&2; exit 1;
             fi
@@ -291,6 +286,32 @@ load_team_permissions(){
 }
 
 
+# Function to load and validate an Azure AD group by name (exact match)
+load_ad_group() {
+    local name="$1"
+    local org="$2"
+
+    local ad_groups=$(gh api -XGET \
+        -H "Accept: application/vnd.github+json" \
+        -H "X-GitHub-Api-Version: 2022-11-28" \
+        -F q="$name" /orgs/$org/team-sync/groups)
+
+    if [ $? -ne 0 ] || [ "$(echo "$ad_groups" | jq -e '.groups')" == "null" ]; then
+        echo "Error reading AD groups for name '$name' in org $org at line $LINENO. $ad_groups." >&2; exit 1
+    fi
+
+    local ad_group=$(echo "$ad_groups" | jq --arg exact_match "$name" '.groups |= map(select(.group_name == $exact_match))')
+    if [ "$(echo "$ad_group" | jq -r '.groups | length')" -eq 0 ]; then
+        echo "Error: No AD group with name '$name' found." >&2; exit 1
+    fi
+    if [ "$(echo "$ad_group" | jq -r '.groups | length')" -ne 1 ]; then
+        echo "Error: More than one AD group with name '$name' found." >&2; exit 1
+    fi
+
+    echo "$ad_group"
+}
+
+
 # Function to get the list of teams for a given organization
 get_teams(){
     local org="$1"
@@ -303,7 +324,7 @@ get_team_slug(){
     local name="$1"
 
     # Search for the team in both organizations
-    local slug=$(jq -r '.[] | select(.name == "'"$name"'") | .slug' <<< "$CACHED_TEAMS") || exit 1
+    local slug=$(jq -r --arg name "$name" '.[] | select(.name == $name) | .slug' <<< "$CACHED_TEAMS") || exit 1
  
     # Return the first non-empty slug found
     if [ -n "$slug" ]; then
@@ -328,7 +349,7 @@ process_repos() {
 
     # Status
     local existing_repos=$(load_repositories $org) || exit 1
-    local desired_repos=$(yq eval '.repositories[] | select(.org == "'"$org"'") | .name' "$CONFIG_FILE_PATH" | sort -u) || exit 1
+    local desired_repos=$(yq eval '.repositories[].name' "$CONFIG_FILE_PATH" | sort -u) || exit 1
     
     ## calculate changes
     local repos_to_add=$(comm -23 <(echo "$desired_repos") <(echo "$existing_repos")) || exit 1
@@ -369,7 +390,7 @@ process_teams() {
     
     # Status
     local existing_teams=$(get_teams $org_name | jq -r '.[].name' | sort) || exit 1
-    local desired_teams=$(yq eval '.repositories[] | select(.org == "'"$org_name"'") | .teams[].name' "$CONFIG_FILE_PATH" | sort -u) || exit 1
+    local desired_teams=$(yq eval '.repositories[].teams[].name' "$CONFIG_FILE_PATH" | sort -u) || exit 1
 
     # Calculate changes
     local teams_to_add=$(comm -23 <(echo "$desired_teams") <(echo "$existing_teams")) || exit 1
@@ -390,7 +411,7 @@ process_teams() {
     for team in $teams_to_add; do
     
         # Status
-        local desired_repos_for_team=$(yq eval '.repositories[] | select(.teams[].name == "'"$team"'" and .org == "'"$org_name"'") | .name' "$CONFIG_FILE_PATH" | sort -u) || exit 1
+        local desired_repos_for_team=$(yq eval '.repositories[] | select(.teams[].name == "'"$team"'") | .name' "$CONFIG_FILE_PATH" | sort -u) || exit 1
 
         # Debug
         print_debug "  $team"
@@ -400,7 +421,7 @@ process_teams() {
         # Apply
         create_team "$team" $org_name
         if [ "$SKIP_TEAM_SYNC" = false ]; then
-            set_team_sync $team_name $org
+            set_team_sync "$team" "$org_name"
         fi
         grant_permissions "$team" $org_name $desired_repos_for_team
     done
@@ -410,9 +431,9 @@ process_teams() {
     print_debug "Teams to Update for $org_name:"
     for team in $teams_to_update; do
 
-        # Status
-        local existing_repos_for_team=$(load_team_permissions $org_name $team | sort) || exit 1
-        local desired_repos_for_team=$(yq eval '.repositories[] | select(.teams[].name == "'"$team"'" and .org == "'"$org_name"'") | .name' "$CONFIG_FILE_PATH" | sort -u) || exit 1
+        # Status repo assignments
+        local existing_repos_for_team=$(load_team_permissions "$org_name" "$team" | sort) || exit 1
+        local desired_repos_for_team=$(yq eval '.repositories[] | select(.teams[].name == "'"$team"'") | .name' "$CONFIG_FILE_PATH" | sort -u) || exit 1
         
         # Debug
         print_debug "  $team"
@@ -422,7 +443,7 @@ process_teams() {
         print_debug "      desired repo assignments:"
         print_debug "$desired_repos_for_team" | sed 's/^/        /'
 
-        # Calculate changes
+        # Calculate changes in repo assignments
         local repos_to_add=$(comm -23 <(echo "$desired_repos_for_team") <(echo "$existing_repos_for_team")) || exit 1
         local repos_to_remove=$(comm -13 <(echo "$desired_repos_for_team") <(echo "$existing_repos_for_team")) || exit 1
         
@@ -433,16 +454,15 @@ process_teams() {
         print_debug "      assignments to remove:"
         print_debug "$repos_to_remove" | sed 's/^/        /'
 
-        # Apply
-        grant_permissions $team $org_name $repos_to_add
-        revoke_permissions $team $org_name $repos_to_remove
+        grant_permissions "$team" "$org_name" $repos_to_add
+        revoke_permissions "$team" "$org_name" $repos_to_remove
     done
 
     # Iterate over teams to delete
     print_debug "Teams to Delete for $org_name:"
     for team in $teams_to_remove; do
         print_debug "  $team"
-        delete_team $team $org_name
+        delete_team "$team" "$org_name"
     done
 }
 
