@@ -2,61 +2,60 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Overview
+## Project Overview
 
-This is the Allianz Open Source Program Office (OSPO) automation repository. It manages the Allianz GitHub organization through three bash scripts driven by YAML configuration files.
+Allianz OSPO (Open Source Program Office) automation suite for managing GitHub organizations at enterprise scale. Provides tools to create, lint, and archive GitHub repositories while enforcing organizational standards and compliance.
 
-## Development Setup
+## Commands
 
-Required tools: `gh` (GitHub CLI), `yq`, `jq`, `repolinter`, `licensee` (Ruby gem)
+### Running Tests (via Makefile in scripts/test/)
 
-```sh
-# Install repolinter
-npm install -g repolinter
-
-# Install licensee
-gem install licensee
+```bash
+cd scripts/test
+make test_create_repos    # Test repo creation against ospo-sandbox org
+make test_lint_repos      # Test repo linting against ospo-sandbox org
+make test_archive_repos   # Test repo archival against ospo-sandbox org
 ```
 
-## Running Scripts
+### Running Scripts Directly
 
-Each script follows the same pattern: `--org`, `--config`, `--dry-run`, `--debug` flags.
-
-```sh
-# Always test with dry-run first
-scripts/create_repos.sh --org ospo-sandbox --config config/create_repos.yaml --dry-run --debug
-scripts/lint_repos.sh --org ospo-sandbox --config config/lint_create_repos.yaml
-scripts/archive_repos.sh --org ospo-sandbox --config config/archive_create_repos.yaml
+```bash
+./scripts/create_repos.sh --org <org> [--dry-run] [--debug] [--skip-team-sync] [--skip-custom-role]
+./scripts/lint_repos.sh --org <org> [--dry-run] [--debug] [--config <file>]
+./scripts/archive_repos.sh --org <org> [--dry-run] [--debug] [--config <file>]
 ```
 
-### Running Tests (sandbox org)
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output.
 
-```sh
-cd scripts
-make test_create_repos   # Tests create_repos.sh against ospo-sandbox
-make test_lint_repos     # Tests lint_repos.sh against ospo-sandbox
-make test_archive_repos  # Tests archive_repos.sh against ospo-sandbox
-```
+### Required Tools
+
+- `yq` (YAML parsing), `jq` (JSON manipulation), `gh` (GitHub CLI), `repolinter` (npm package for linting)
 
 ## Architecture
 
-Three scripts, each paired with a config file and a GitHub Actions workflow:
+Three independent bash scripts, each driven by a YAML config file:
 
-| Script | Config | Workflow |
-|--------|--------|----------|
-| `scripts/create_repos.sh` | `config/create_repos.yaml` | `.github/workflows/create_create_repos.yaml` |
-| `scripts/lint_repos.sh` | `config/lint_create_repos.yaml` | `.github/workflows/lint_repos.yml` |
-| `scripts/archive_repos.sh` | `config/archive_create_repos.yaml` | `.github/workflows/archive_repos.yml` |
+1. **`scripts/create_repos.sh`** (~485 lines) — Creates/manages repos and teams, assigns permissions, syncs with Azure AD. Reads `config/create_repos.yaml`.
+2. **`scripts/lint_repos.sh`** (~231 lines) — Enforces repo compliance (description, topics, license, README, CONTRIBUTING) using `repolinter`. Reads `config/lint_repos.yaml`. Outputs markdown reports to `results/`.
+3. **`scripts/archive_repos.sh`** (~192 lines) — Archives stale repos after a grace period with warning issues. Reads `config/archive_repos.yaml`.
 
-### `create_repos.sh`
-Desired-state management: reads `create_repos.yaml`, compares to actual GitHub org state via `gh` CLI, applies changes. Manages repository creation and team permissions. Supports Azure AD team sync (GitHub Enterprise only — use `--skip-team-sync` and `--skip-custom-role` for non-Enterprise).
+### Configuration
 
-### `lint_repos.sh`
-Clones each repo, runs `repolinter` with `lint_create_repos.yaml` (or per-repo `.github/repolinter.yaml` override), then creates/closes "Standards Compliance Notice" GitHub issues based on results. Outputs markdown reports to `results/`.
+- **Production configs**: `config/` directory
+- **Test configs**: `scripts/test/` directory (targets `ospo-sandbox` org)
 
-### `archive_repos.sh`
-Checks last commit date against `stale_period` in `archive_create_repos.yaml`. Creates "Inactive Repository Reminder" issues, then archives after `grace_period`. Repos listed under `exclude` (e.g., `ospo`, `.github`) are never archived.
+### CI/CD (GitHub Actions)
 
-## CI/CD
+- `create_repos.yaml` — Dry-run on PR config changes, apply on push to main
+- `lint_repos.yml` — Scheduled bi-weekly (Tue/Thu)
+- `archive_repos.yml` — Scheduled weekly (Sun midnight)
+- All workflows support manual dispatch
+- Authentication via GitHub App tokens (`ALLIANZ_APP_ID`, `ALLIANZ_PRIVATE_KEY`)
 
-Workflows are manually triggered (`workflow_dispatch`). Scheduled runs are commented out. The `create_repos` and `archive_repos` workflows use GitHub App tokens (App IDs stored as secrets: `ALLIANZ_APP_ID`, `SANDBOX_APP_ID`). The `create_repos` apply step requires manual approval via the `github.com` environment.
+### Key Patterns
+
+- Scripts use GitHub REST API v2022-11-28 via `gh api`
+- Team permission model: custom "Own" role (Enterprise) with "maintain" fallback
+- Archive script excludes `.github` and `ospo` repositories
+- Linting clones repos to `lint_cache/` for local analysis
+- Non-compliant repos get GitHub issues created automatically
