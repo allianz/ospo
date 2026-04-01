@@ -15,13 +15,6 @@ repositories:
     teams:
     - name: "Allianz OSPO"
 
-  - name: "aaa"
-    teams:
-    - name: "test asdf"
 
-  - name: "bbb"
-    teams:
-    - name: "non existing team"
-    - name: "also not existing team"
 
     
