@@ -1,5 +1,5 @@
 ---
-name: Run create repos
+name: Create repos
 on:
   workflow_dispatch: null
   pull_request:
@@ -29,6 +29,8 @@ jobs:
         run: cp tmp/config/create_repos.yaml config/create_repos.yaml
 
       - name: Plan github organization changes in allianz
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: scripts/create_repos.sh --org allianz --dry-run
 
 
