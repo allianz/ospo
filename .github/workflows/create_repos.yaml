@@ -2,40 +2,31 @@
 name: Create repos
 on:
   workflow_dispatch: null
-  pull_request:
-    paths: ['config/create_repos.yaml']
   push:
     branches: [main]
     paths: ['config/create_repos.yaml']
 
 jobs:
   dry-run:
-    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout scripts from main
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          ref: main
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - name: Checkout config from PR
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          sparse-checkout: config/create_repos.yaml
-          path: tmp
+    - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3
+      id: app-token
+      with:
+        app-id: ${{ secrets.ALLIANZ_APP_ID }}
+        private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
+        owner: allianz
 
-      - name: Apply config from PR
-        run: cp tmp/config/create_repos.yaml config/create_repos.yaml
-
-      - name: Plan github organization changes in allianz
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: scripts/create_repos.sh --org allianz --dry-run
-
+    - name: Dry-run create repositories and teams in allianz
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: scripts/create_repos.sh --org allianz --dry-run
 
   apply:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: dry-run
     environment: github.com
     runs-on: ubuntu-latest
     steps:
@@ -43,13 +34,13 @@ jobs:
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
     - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3
-      id: app-token-all
+      id: app-token
       with:
-          app-id: ${{ secrets.ALLIANZ_APP_ID }}
-          private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
-          owner: allianz
+        app-id: ${{ secrets.ALLIANZ_APP_ID }}
+        private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
+        owner: allianz
 
     - name: Create repositories and teams in allianz
       env:
-          GH_TOKEN: ${{ steps.app-token-all.outputs.token }}
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
       run: scripts/create_repos.sh --org allianz
