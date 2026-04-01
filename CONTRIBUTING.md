@@ -25,9 +25,9 @@ The main scripts and associated files are:
 
 | Script           | Config        | Workflow          | Description                          |
 |------------------|---------------|-------------------|--------------------------------------|
-| create_repos.sh  | repos.yaml    | create_repos.yml  | Create repositories and assign teams |
-| lint_repos.sh    | policies.yaml | repo_lint.yml     | Enforce minimum standards            |
-| archive_repos.sh | archival.yaml | archive_repos.yml | Archive stale projects               |
+| create_repos.sh  | create_repos.yaml    | create_repos.yml  | Create repositories and assign teams |
+| lint_repos.sh    | lint_create_repos.yaml    | repo_lint.yml     | Enforce minimum standards            |
+| archive_repos.sh | archive_create_repos.yaml | archive_repos.yml | Archive stale projects               |
 
 
 Example:
@@ -42,12 +42,12 @@ Use sandbox environment to test the scripts
 
 Example:
 ```bash
- ./create_repos.sh --org ospo-sandbox --config ./test/repos.yaml --debug --dry-run
+ ./create_repos.sh --org ospo-sandbox --config ./test/create_repos.yaml --debug --dry-run
 ```
 
 If you want to run the script in your own test organization, you might need to deactivate some features only available in GitHub Enterprise.
 
 Example:
 ```bash
- ./create_repos.sh --org my-test-org --config ./test/repos.yaml --skip-team-sync --skip-custom-role --debug --dry-run
+ ./create_repos.sh --org my-test-org --config ./test/create_repos.yaml --skip-team-sync --skip-custom-role --debug --dry-run
 ```

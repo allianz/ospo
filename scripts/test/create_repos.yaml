@@ -1,21 +1,20 @@
 # Configuration File for GitHub Repositories
-# 
+#
 # This file manages settings for GitHub repositories within the Allianz organization.
 
 # Parameters:
 #   - name: Repository name. Use only lowercase letters and dashes.
-#   - org: Choose "allianz".
 #   - team name: Must be identical to the corresponding GIAM group.
 repositories:
 
   - name: "new-project"
-    org:  ospo-sandbox
 
   - name: "opso-test"
-    org: ospo-sandbox
 
   - name: "test-permissions"
-    org:  "ospo-sandbox"
     teams:
     - name: "Allianz OSPO"
 
+
+
+    

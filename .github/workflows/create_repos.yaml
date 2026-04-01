@@ -1,27 +1,29 @@
 ---
-name: Run create repos
+name: Create repos
 on:
   workflow_dispatch: null
+  push:
+    branches: [main]
+    paths: ['config/create_repos.yaml']
 
 jobs:
   dry-run:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-          app-id: ${{ secrets.ALLIANZ_APP_ID }}
-          private-key: ${{ secrets.ALLIANZ_PRIVATE_KEY }}
-          owner: allianz
+    - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3
+      id: app-token
+      with:
+        app-id: ${{ secrets.ALLIANZ_APP_ID }}
+        private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
+        owner: allianz
 
-      - name: Plan github organization changes in allianz
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: scripts/create_repos.sh --org allianz --dry-run
-
+    - name: Dry-run create repositories and teams in allianz
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: scripts/create_repos.sh --org allianz --dry-run
 
   apply:
     needs: dry-run
@@ -29,16 +31,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-    - uses: actions/create-github-app-token@v1
-      id: app-token-all
+    - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3
+      id: app-token
       with:
-          app-id: ${{ secrets.ALLIANZ_APP_ID }}
-          private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
-          owner: allianz
+        app-id: ${{ secrets.ALLIANZ_APP_ID }}
+        private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
+        owner: allianz
 
     - name: Create repositories and teams in allianz
       env:
-          GH_TOKEN: ${{ steps.app-token-all.outputs.token }}
-      run: scripts/create_repos.sh --org allianz 
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: scripts/create_repos.sh --org allianz

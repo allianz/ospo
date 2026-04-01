@@ -2,17 +2,17 @@
 name: Run repolint
 on:
   workflow_dispatch: null
-  # schedule:
-  #  - cron: '0 0 * * 2,4'
+  schedule:
+   - cron: '0 0 * * 2,4'
 jobs:
   run-script:
     runs-on: ubuntu-latest
     steps:
       - name: Setup node for repolinter
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
 
       - name: Setup ruby for license checker
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@3ff19f5e2baf30647122352b96108b1fbe250c64 # v1
         with:
           ruby-version: '3.0'
 
@@ -22,9 +22,9 @@ jobs:
           gem install licensee
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/create-github-app-token@v1
+      - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3
         id: app-token
         with:
           app-id: ${{ secrets.ALLIANZ_APP_ID }}
@@ -35,7 +35,7 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: scripts/lint_repos.sh --org allianz 
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: reports
           path: results

@@ -36,7 +36,7 @@ print_debug() {
 
 # Parse command line parameters
 ORG_NAME=""
-CONFIG_FILE_PATH="../config/archival.yaml"
+CONFIG_FILE_PATH="../config/archive_repos.yaml"
 DRY_RUN=false
 DEBUG=false
 while [ $# -gt 0 ]; do

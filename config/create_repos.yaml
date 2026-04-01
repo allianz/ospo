@@ -1,43 +1,30 @@
 # Configuration File for GitHub Repositories
-# 
+#
 # This file manages settings for GitHub repositories within the Allianz organization.
 
 # Parameters:
 #   - name: Repository name. Use only lowercase letters and dashes.
-#   - org: Choose "allianz".
 #   - team name: Must be identical to the corresponding GIAM group.
 repositories:
 
   - name: ".github"
-    org: allianz
 
   - name: "ospo"
-    org: allianz
     teams:
     - name: "Allianz OSPO"
 
   - name: "ng-aquila"
-    org: allianz
     teams:
     - name: "ng-aquila"
 
   - name: "calculus-prime-pnc"
-    org: allianz
 
   - name: "gem-config"
-    org: allianz
 
   - name: "license-scout"
-    org: allianz
 
   - name: "merge-bot"
-    org: allianz
 
   - name: "merge-bot-config"
-    org: allianz
 
   - name: "merge-processor"
-    org: allianz
-
-
-
