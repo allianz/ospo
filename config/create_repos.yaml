@@ -28,3 +28,5 @@ repositories:
   - name: "merge-bot-config"
 
   - name: "merge-processor"
+
+  - name: "test"
