@@ -16,7 +16,10 @@ issue_title: "Mandatory Repository Configuration"
 docs_link: "https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repository+Configuration"
 
 # Repositories to exclude from linting entirely.
-excluded_repos: [".github", "ng-aquila"]
+excluded_repos: [
+  ".github", # Special repository for GitHub configuration.
+  "ng-aquila" # Custom MIT license. Needs review from legal.
+]
 
 # Files that every repository must contain.
 # - pattern: case-insensitive glob matched against filenames (e.g. README* matches README.md)

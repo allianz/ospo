@@ -1,58 +1,52 @@
-version: 2
-axioms:
-  licensee: license
-rules:
+issue_title: "Mandatory Repository Configuration"
+docs_link: "https://github.com/allianz/ospo/blob/main/guides/standards_and_compliance.md"
 
-  gh-description-set:
-    level: error
-    rule:
-      type: file-contents
-      options:
-        globsAll:
-          - "github.com"
-        content: "description=\"(.+)\""
-        human-readable-content: "a repository description in Github settings"
+excluded_repos: []
 
-  gh-topics-set:
-    level: error
-    rule:
-      type: file-contents
-      options:
-        globsAll:
-          - "github.com"
-        content: topics="\s*\[[^\]]*\S[^\]]*\]\s*"
-        human-readable-content: "repository topics in Github settings"    
-  
-  license-file-exists:
-    level: error
-    rule:
-      type: file-existence
-      options:
-        globsAny:
-          - "LICENSE*"
-        nocase: true
+required_files:
+  - pattern: "README*"
+    description: "Readme File"
+  - pattern: "CONTRIBUTING*"
+    search_paths: [".", ".github", "docs"]
+    description: "Contributing File"
+  - pattern: "LICENSE*"
+    description: "License File"
 
-  readme-file-exists:
-    level: error
-    rule:
-      type: file-existence
-      options:
-        globsAny:
-          - "README*"
-        nocase: true
+allowed_licenses:
+  - Apache-2.0
+  - MIT
+  - CC-BY-4.0
+  - CC0-1.0
 
-  contributing-file-exists:
-    level: error
-    rule:
-      type: file-existence
-      options:
-        globsAny:
-          - "docs/"
-          - ".github/"
-          - "CONTRIB*"
-        nocase: true
-
-
-
-   
-
+allowed_topics:
+  # Project type
+  - api
+  - cli
+  - docs
+  - iac
+  - library
+  - mobile
+  - sdk
+  - service
+  - template
+  - web
+  # Domain
+  - ai
+  - analytics
+  - automation
+  - batch
+  - data
+  - devops
+  - network
+  - security
+  - streaming
+  # Ecosystem
+  - angular
+  - aws
+  - azure
+  - docker
+  - github-actions
+  - helm
+  - kafka
+  - kubernetes
+  - terraform
