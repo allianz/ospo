@@ -275,7 +275,7 @@ When `--dry-run` is active and there are pending actions, a summary block is app
 
 ## Unit Tests
 
-Unit tests live in `scripts/test/lint_repos.test.js` and run with Node's built-in test runner (`node --test`). No additional test framework required.
+Unit tests live in `scripts/lint_repos.test.js` (next to the source file) and run with Node's built-in test runner (`node --test`). No additional test framework required.
 
 Each check function is tested in isolation with fake API responses and a temporary directory for file-system checks. Key scenarios per check:
 
@@ -291,7 +291,7 @@ Requires `GITHUB_TOKEN`. Run via Makefile, not part of the unit test suite.
 
 ```makefile
 test_lint_repos:
-    cd .. && node scripts/lint_repos.js --org ospo-sandbox --config scripts/test/lint_repos.yaml --debug
+    cd .. && node scripts/lint_repos.js --org ospo-sandbox --config scripts/test-config/lint_repos.yaml --debug
 ```
 
 ---

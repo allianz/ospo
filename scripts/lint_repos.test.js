@@ -11,7 +11,7 @@ import {
   checkLicense,
   checkRequiredFile,
   buildIssueBody,
-} from '../lint_repos.js';
+} from './lint_repos.js';
 
 // ── loadConfig ────────────────────────────────────────────────────────────────
 
