@@ -8,10 +8,12 @@ This spec defines a JavaScript tool to lint GitHub repositories for mandatory co
 
 Many repository settings (branch protections, merge strategies, visibility, etc.) are enforced at the organization level and cannot be changed by repository owners. This linter checks **only the settings that repository owners can modify themselves**:
 
-- Repository description
-- Repository topics
-- Required files (README, CONTRIBUTING, LICENSE)
-- License type (must be from an approved list)
+- **Repository description** — must be set to a non-empty string
+- **Repository topics** — between 1 and 5 topics, all chosen from an approved taxonomy. The taxonomy exists to prevent synonym drift (e.g. `ai` vs `ml`, `k8s` vs `kubernetes`) so topics can be used reliably for repository filtering and organisation-wide statistics.
+- **Required files** — README, CONTRIBUTING, and LICENSE must be present in the repository
+- **License type** — must be from an approved list of SPDX identifiers
+
+All rules are configurable via a YAML configuration file — see [Configuration File](#configuration-file).
 
 ---
 
@@ -19,20 +21,12 @@ Many repository settings (branch protections, merge strategies, visibility, etc.
 
 A single JavaScript file `scripts/lint_repos.js`, run with `node`. Dependencies managed via `scripts/package.json` (shared across all JS scripts added to this repo in the future).
 
-**GitHub API:** `@octokit/rest` — proper async/await, real error handling, no subprocess overhead. Auth via `GITHUB_TOKEN` environment variable.
-
-**Cloning:** `simple-git` — async wrapper around the `git` CLI. Repos are cloned in parallel batches of 5, then file checks run on the completed clones.
-
-**License detection:** `licenseInfo.spdxId` from the GitHub REST API — eliminates the `licensee` Ruby gem dependency.
-
-**YAML config parsing:** `js-yaml`.
-
 ### npm packages
 
 | Package | Purpose |
 |---|---|
-| `@octokit/rest` | GitHub REST API (repos, issues) |
-| `simple-git` | Async git clone/fetch |
+| `@octokit/rest` | GitHub REST API (repos, issues, license detection via `spdx_id`). Auth via `GITHUB_TOKEN` environment variable. Eliminates the `licensee` Ruby gem dependency. |
+| `simple-git` | Async wrapper around the `git` CLI. Repos are cloned in parallel batches of 5, then file checks run on the completed clones. |
 | `js-yaml` | Parse YAML config files |
 
 ### Project structure
@@ -77,12 +71,34 @@ node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 
 ## Configuration File
 
-New format at `config/lint_repos.yaml`. The existing repolinter v2 config is replaced entirely.
+Configuration lives at `config/lint_repos.yaml`.
 
 ```yaml
+# Title of the GitHub issue created in non-compliant repos.
+# Also used as the lookup key when searching for an existing open issue —
+# changing this will cause the script to stop recognising previously opened issues.
 issue_title: "Mandatory Repository Configuration"
+
+# URL inserted into the issue body as the "standards guide" link.
 docs_link: "https://..."
 
+# Repos to skip entirely — no checks run, no issues created or closed.
+# They appear in output under "Skipped (configuration)".
+excluded_repos: []
+
+# SPDX identifiers accepted by the license check. Compared against
+# repo.license.spdx_id from the GitHub API. null and NOASSERTION are
+# always rejected regardless of this list.
+allowed_licenses:
+  - Apache-2.0
+  - MIT
+  - CC-BY-4.0
+  - CC0-1.0
+
+# File checks run against the local clone. Each entry must match at least one
+# file in the specified search_paths. pattern is a case-insensitive prefix glob
+# (e.g. README* matches README.md). description is used as the check name in
+# issue body and output. search_paths defaults to ["."] if omitted.
 required_files:
   - pattern: "README*"
     description: "Readme File"
@@ -92,49 +108,12 @@ required_files:
   - pattern: "LICENSE*"
     description: "License File"
 
-allowed_licenses:
-  - Apache-2.0
-  - MIT
-  - CC-BY-4.0
-  - CC0-1.0
-
-# Repositories to exclude from linting entirely. They appear in results under
-# "Skipped (configuration)" but are not checked and never have issues acted on.
-excluded_repos: []
-
-# Every repository must have between 1 and 5 topics, all from this list.
+# Controlled topic vocabulary. Every active repo must have 1–5 topics,
+# all from this list. An empty list disables the allowlist check (any topic accepted).
 allowed_topics:
-  # Project type
-  - api
   - cli
   - docs
-  - iac
-  - library
-  - mobile
-  - sdk
-  - service
-  - template
-  - web
-  # Domain
-  - ai
-  - analytics
-  - automation
-  - batch
-  - data
-  - devops
-  - network
-  - security
-  - streaming
-  # Ecosystem
-  - angular
-  - aws
-  - azure
-  - docker
-  - github-actions
-  - helm
-  - kafka
-  - kubernetes
-  - terraform
+  - ...
 ```
 
 ---

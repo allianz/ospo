@@ -17,9 +17,18 @@ docs_link: "https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repos
 
 # Repositories to exclude from linting entirely.
 excluded_repos: [
-  ".github", # Special repository for GitHub configuration.
-  "ng-aquila" # Custom MIT license. Needs review from legal.
+  ".github",  # Special repository for GitHub configuration.
+  "ng-aquila" # Custom MIT license. Needs clarification from legal.
 ]
+
+# Licenses repositories are allowed to use.
+# The value must match the SPDX identifier shown on https://spdx.org/licenses/
+# To permit an additional license, add its SPDX ID here and open a pull request.
+allowed_licenses:
+  - Apache-2.0
+  - MIT
+  - CC-BY-4.0
+  - CC0-1.0
 
 # Files that every repository must contain.
 # - pattern: case-insensitive glob matched against filenames (e.g. README* matches README.md)
@@ -33,15 +42,6 @@ required_files:
     description: "Contributing File"
   - pattern: "LICENSE*"
     description: "License File"
-
-# Licenses repositories are allowed to use.
-# The value must match the SPDX identifier shown on https://spdx.org/licenses/
-# To permit an additional license, add its SPDX ID here and open a pull request.
-allowed_licenses:
-  - Apache-2.0
-  - MIT
-  - CC-BY-4.0
-  - CC0-1.0
 
 # Approved topics for repositories.
 # Every repository must have between 1 and 5 topics set in its GitHub settings,
