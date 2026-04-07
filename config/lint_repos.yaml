@@ -1,58 +1,81 @@
-version: 2
-axioms:
-  licensee: license
-rules:
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Repository Compliance Configuration
+#
+# This file defines the standards every public repository in the Allianz GitHub
+# organization must meet. The linter checks these rules automatically and opens
+# a GitHub issue in any repository that does not comply.
+#
+# Want to propose a change? Open a pull request and describe your reasoning.
+# See the standards guide for background:
+# https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repository+Configuration
+# ──────────────────────────────────────────────────────────────────────────────
 
-  gh-description-set:
-    level: error
-    rule:
-      type: file-contents
-      options:
-        globsAll:
-          - "github.com"
-        content: "description=\"(.+)\""
-        human-readable-content: "a repository description in Github settings"
+# Title of the GitHub issue opened in non-compliant repositories.
+# Change this only if you want to rename the issue across all future runs.
+issue_title: "Mandatory Repository Configuration"
+docs_link: "https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repository+Configuration"
 
-  gh-topics-set:
-    level: error
-    rule:
-      type: file-contents
-      options:
-        globsAll:
-          - "github.com"
-        content: topics="\s*\[[^\]]*\S[^\]]*\]\s*"
-        human-readable-content: "repository topics in Github settings"    
-  
-  license-file-exists:
-    level: error
-    rule:
-      type: file-existence
-      options:
-        globsAny:
-          - "LICENSE*"
-        nocase: true
+# Repositories to exclude from linting entirely.
+excluded_repos: [
+  ".github",  # Special repository for GitHub configuration.
+  "ng-aquila" # Custom MIT license. Needs clarification from legal.
+]
 
-  readme-file-exists:
-    level: error
-    rule:
-      type: file-existence
-      options:
-        globsAny:
-          - "README*"
-        nocase: true
+# Licenses repositories are allowed to use.
+# The value must match the SPDX identifier shown on https://spdx.org/licenses/
+# To permit an additional license, add its SPDX ID here and open a pull request.
+allowed_licenses:
+  - Apache-2.0
+  - MIT
+  - CC-BY-4.0
+  - CC0-1.0
 
-  contributing-file-exists:
-    level: error
-    rule:
-      type: file-existence
-      options:
-        globsAny:
-          - "docs/"
-          - ".github/"
-          - "CONTRIB*"
-        nocase: true
+# Files that every repository must contain.
+# - pattern: case-insensitive glob matched against filenames (e.g. README* matches README.md)
+# - search_paths: directories to search (default: repo root only)
+# Adding a new entry here makes that file mandatory for all repositories.
+required_files:
+  - pattern: "README*"
+    description: "Readme File"
+  - pattern: "CONTRIBUTING*"
+    search_paths: [".", ".github", "docs"]
+    description: "Contributing File"
+  - pattern: "LICENSE*"
+    description: "License File"
 
-
-
-   
-
+# Approved topics for repositories.
+# Every repository must have between 1 and 5 topics set in its GitHub settings,
+# and all topics used must appear in this list.
+# To propose a new topic, add it below and open a pull request.
+allowed_topics:
+  # Project type                                                                                                                   
+  - api                                                                                                                            
+  - cli                                                                                                                            
+  - docs                                                                                                                           
+  - iac                                                                       
+  - library                                                                                                                        
+  - mobile                                                                                                                         
+  - sdk                                                                                                                            
+  - service                                                                                                                        
+  - template                                                                                                                       
+  - web                                                                                                                            
+  # Domain                                                                                                                         
+  - ai                                                                                                                             
+  - analytics                                                                                                                      
+  - automation                                                                                                                     
+  - batch                                                                                                                          
+  - data                                                                                                                           
+  - devops
+  - network
+  - security
+  - streaming
+  # Ecosystem — platform or framework the repository is built for or extends
+  - angular
+  - aws
+  - azure
+  - docker
+  - github-actions
+  - helm
+  - kafka
+  - kubernetes
+  - terraform

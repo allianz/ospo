@@ -1,0 +1,14 @@
+{
+  "name": "ospo-scripts",
+  "version": "1.0.0",
+  "description": "OSPO automation scripts for GitHub organization management",
+  "type": "module",
+  "scripts": {
+    "test": "node --test lint_repos.test.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.1.1",
+    "js-yaml": "^4.1.1",
+    "simple-git": "^3.33.0"
+  }
+}

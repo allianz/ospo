@@ -1,0 +1,52 @@
+issue_title: "Mandatory Repository Configuration"
+docs_link: "https://github.com/allianz/ospo/blob/main/guides/standards_and_compliance.md"
+
+excluded_repos: []
+
+required_files:
+  - pattern: "README*"
+    description: "Readme File"
+  - pattern: "CONTRIBUTING*"
+    search_paths: [".", ".github", "docs"]
+    description: "Contributing File"
+  - pattern: "LICENSE*"
+    description: "License File"
+
+allowed_licenses:
+  - Apache-2.0
+  - MIT
+  - CC-BY-4.0
+  - CC0-1.0
+
+allowed_topics:
+  # Project type
+  - api
+  - cli
+  - docs
+  - iac
+  - library
+  - mobile
+  - sdk
+  - service
+  - template
+  - web
+  # Domain
+  - ai
+  - analytics
+  - automation
+  - batch
+  - data
+  - devops
+  - network
+  - security
+  - streaming
+  # Ecosystem
+  - angular
+  - aws
+  - azure
+  - docker
+  - github-actions
+  - helm
+  - kafka
+  - kubernetes
+  - terraform
