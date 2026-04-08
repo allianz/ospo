@@ -70,7 +70,6 @@ export async function createRepositories(octokit, org, config, opts = {}) {
   const { dryRun = false, debug = false } = opts;
   const actions = [];
   const planned = [];
-  const skipped = [];
 
   const existingRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
     org,
@@ -80,38 +79,33 @@ export async function createRepositories(octokit, org, config, opts = {}) {
 
   const existingNames = new Set(existingRepos.map(r => r.name));
   const desiredNames = config.repositories.map(r => r.name);
+  const toCreate = desiredNames.filter(name => !existingNames.has(name));
 
   if (debug) {
     console.log('  Existing repos:', [...existingNames].sort().join(', ') || '(none)');
     console.log('  Desired repos:', desiredNames.join(', ') || '(none)');
-  }
-
-  const toCreate = desiredNames.filter(name => !existingNames.has(name));
-
-  if (debug) {
     console.log('  To create:', toCreate.join(', ') || '(none)');
     console.log('');
   }
 
   for (const name of toCreate) {
     if (dryRun) {
+      console.log(`  + Create '${name}'`);
       planned.push(`+ Create repository '${name}'`);
     } else {
+      process.stdout.write(`  + Create '${name}'... `);
       await octokit.rest.repos.createInOrg({
         org,
         name,
         visibility: 'public',
         auto_init: true,
       });
+      process.stdout.write('✓\n');
       actions.push(`Created repository '${name}' in ${org}`);
     }
   }
 
-  for (const name of desiredNames.filter(name => existingNames.has(name))) {
-    skipped.push(`Repository '${name}' already exists — skipped`);
-  }
-
-  return { actions, planned, skipped };
+  return { actions, planned };
 }
 
 // ── Team management ───────────────────────────────────────────────────────────
@@ -190,11 +184,14 @@ export async function processTeams(octokit, org, config, opts = {}) {
     const reposForTeam = desiredTeamRepos.get(teamName) ?? new Set();
 
     if (dryRun) {
+      console.log(`  + Create team '${teamName}'`);
       planned.push(`+ Create team '${teamName}'`);
       if (!skipTeamSync) {
+        console.log(`  + Sync '${teamName}' with Entra ID group '${teamName}'`);
         planned.push(`+ Sync team '${teamName}' with Entra ID group '${teamName}'`);
       }
       for (const repo of reposForTeam) {
+        console.log(`  + Grant ${permission}: '${teamName}' → '${repo}'`);
         planned.push(`+ Grant ${permission}: '${teamName}' → '${repo}'`);
       }
     } else {
@@ -205,23 +202,28 @@ export async function processTeams(octokit, org, config, opts = {}) {
       }
 
       // Create team
+      process.stdout.write(`  + Create team '${teamName}'... `);
       const createResult = await octokit.rest.teams.create({
         org,
         name: teamName,
         privacy: 'closed',
       });
+      process.stdout.write('✓\n');
       const newTeam = createResult.data;
       actions.push(`Created team '${teamName}' in ${org}`);
       existingTeamMap.set(teamName, newTeam);
 
       // Sync with Entra ID
       if (!skipTeamSync && entraGroup) {
+        process.stdout.write(`  + Sync '${teamName}' with Entra ID group '${teamName}'... `);
         await syncTeamWithEntra(octokit, org, newTeam.slug, entraGroup);
+        process.stdout.write('✓\n');
         actions.push(`Team '${teamName}' synced with Entra ID group '${teamName}'`);
       }
 
       // Grant permissions on assigned repos
       for (const repo of reposForTeam) {
+        process.stdout.write(`  + Grant ${permission}: '${teamName}' → '${repo}'... `);
         await octokit.rest.teams.addOrUpdateRepoPermissionsInOrg({
           org,
           team_slug: newTeam.slug,
@@ -229,6 +231,7 @@ export async function processTeams(octokit, org, config, opts = {}) {
           repo,
           permission,
         });
+        process.stdout.write('✓\n');
         actions.push(`Team '${teamName}' granted ${permission} permission to '${repo}'`);
       }
     }
@@ -255,8 +258,10 @@ export async function processTeams(octokit, org, config, opts = {}) {
 
     for (const repo of toGrant) {
       if (dryRun) {
+        console.log(`  + Grant ${permission}: '${teamName}' → '${repo}'`);
         planned.push(`+ Grant ${permission}: '${teamName}' → '${repo}'`);
       } else {
+        process.stdout.write(`  + Grant ${permission}: '${teamName}' → '${repo}'... `);
         await octokit.rest.teams.addOrUpdateRepoPermissionsInOrg({
           org,
           team_slug: team.slug,
@@ -264,20 +269,24 @@ export async function processTeams(octokit, org, config, opts = {}) {
           repo,
           permission,
         });
+        process.stdout.write('✓\n');
         actions.push(`Team '${teamName}' granted ${permission} permission to '${repo}'`);
       }
     }
 
     for (const repo of toRevoke) {
       if (dryRun) {
+        console.log(`  - Revoke ${permission}: '${teamName}' → '${repo}'`);
         planned.push(`- Revoke ${permission}: '${teamName}' → '${repo}'`);
       } else {
+        process.stdout.write(`  - Revoke ${permission}: '${teamName}' → '${repo}'... `);
         await octokit.rest.teams.removeRepoInOrg({
           org,
           team_slug: team.slug,
           owner: org,
           repo,
         });
+        process.stdout.write('✓\n');
         actions.push(`Team '${teamName}' removed ${permission} permission from '${repo}'`);
       }
     }
@@ -287,12 +296,15 @@ export async function processTeams(octokit, org, config, opts = {}) {
   for (const teamName of teamsToDelete) {
     const team = existingTeamMap.get(teamName);
     if (dryRun) {
+      console.log(`  - Delete team '${teamName}'`);
       planned.push(`- Delete team '${teamName}'`);
     } else {
+      process.stdout.write(`  - Delete team '${teamName}'... `);
       await octokit.rest.teams.deleteInOrg({
         org,
         team_slug: team.slug,
       });
+      process.stdout.write('✓\n');
       actions.push(`Deleted team '${teamName}' from ${org}`);
     }
   }
@@ -375,15 +387,25 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
     }
   }
 
-  for (const { name } of toAssignOspo) {
-    planned.push(`+ Assign '${name}' to 'ospo-managed' security configuration`);
-  }
-  for (const { name } of toAssignCustom) {
-    planned.push(`+ Assign '${name}' to 'custom' security configuration`);
-  }
-
-  if (!dryRun) {
+  if (dryRun) {
     if (toAssignOspo.length > 0) {
+      const names = toAssignOspo.map(r => `'${r.name}'`).join(', ');
+      console.log(`  + Assign to 'ospo-managed': ${names}`);
+      for (const { name } of toAssignOspo) {
+        planned.push(`+ Assign '${name}' to 'ospo-managed' security configuration`);
+      }
+    }
+    if (toAssignCustom.length > 0) {
+      const names = toAssignCustom.map(r => `'${r.name}'`).join(', ');
+      console.log(`  + Assign to 'custom': ${names}`);
+      for (const { name } of toAssignCustom) {
+        planned.push(`+ Assign '${name}' to 'custom' security configuration`);
+      }
+    }
+  } else {
+    if (toAssignOspo.length > 0) {
+      const names = toAssignOspo.map(r => `'${r.name}'`).join(', ');
+      process.stdout.write(`  + Assign to 'ospo-managed': ${names}... `);
       await octokit.request(
         'POST /orgs/{org}/code-security/configurations/{configuration_id}/attach',
         {
@@ -394,12 +416,15 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
           headers: { 'X-GitHub-Api-Version': '2022-11-28' },
         }
       );
+      process.stdout.write('✓\n');
       for (const { name } of toAssignOspo) {
         actions.push(`Assigned '${name}' to 'ospo-managed' security configuration`);
       }
     }
 
     if (toAssignCustom.length > 0) {
+      const names = toAssignCustom.map(r => `'${r.name}'`).join(', ');
+      process.stdout.write(`  + Assign to 'custom': ${names}... `);
       await octokit.request(
         'POST /orgs/{org}/code-security/configurations/{configuration_id}/attach',
         {
@@ -410,6 +435,7 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
           headers: { 'X-GitHub-Api-Version': '2022-11-28' },
         }
       );
+      process.stdout.write('✓\n');
       for (const { name } of toAssignCustom) {
         actions.push(`Assigned '${name}' to 'custom' security configuration`);
       }
@@ -486,14 +512,32 @@ export async function enforceBranchProtection(octokit, org, config, opts = {}) {
   const added = desiredIds.filter(id => !currentIdSet.has(id));
   const removed = currentIds.filter(id => !desiredIdSet.has(id));
 
+  // Build one compact line per direction of change
+  const intentLines = [];
+  if (added.length > 0) {
+    const names = added.map(id => `'${idToName.get(id) ?? id}'`).join(', ');
+    intentLines.push(`  + Assign to 'ospo-managed': ${names}`);
+  }
+  if (removed.length > 0) {
+    const names = removed.map(id => `'${idToName.get(id) ?? id}'`).join(', ');
+    intentLines.push(`  + Assign to 'custom': ${names}`);
+  }
+
   if (dryRun) {
+    for (const line of intentLines) console.log(line);
     for (const id of added) {
-      planned.push(`+ Assign '${idToName.get(id) ?? id}' to org ruleset 'ospo-managed'`);
+      planned.push(`+ Assign '${idToName.get(id) ?? id}' to 'ospo-managed' ruleset`);
     }
     for (const id of removed) {
-      planned.push(`- Remove '${idToName.get(id) ?? id}' from org ruleset 'ospo-managed'`);
+      planned.push(`+ Assign '${idToName.get(id) ?? id}' to 'custom'`);
     }
   } else {
+    // Print all intent lines; last one stays open for inline ✓
+    for (let i = 0; i < intentLines.length - 1; i++) {
+      console.log(intentLines[i]);
+    }
+    process.stdout.write(intentLines[intentLines.length - 1] + '... ');
+
     // Update only the target list — send only writable fields to avoid schema conflicts
     await octokit.request('PUT /orgs/{org}/rulesets/{ruleset_id}', {
       org,
@@ -511,12 +555,13 @@ export async function enforceBranchProtection(octokit, org, config, opts = {}) {
       rules: fullRuleset.rules,
       headers: { 'X-GitHub-Api-Version': '2022-11-28' },
     });
+    process.stdout.write('✓\n');
 
     for (const id of added) {
-      actions.push(`Assigned '${idToName.get(id) ?? id}' to org ruleset 'ospo-managed'`);
+      actions.push(`Assigned '${idToName.get(id) ?? id}' to 'ospo-managed' ruleset`);
     }
     for (const id of removed) {
-      actions.push(`Removed '${idToName.get(id) ?? id}' from org ruleset 'ospo-managed'`);
+      actions.push(`Assigned '${idToName.get(id) ?? id}' to 'custom'`);
     }
   }
 
@@ -575,47 +620,34 @@ async function main() {
   const noop = () => {};
   const octokit = new Octokit({ auth: token, log: { debug: noop, info: noop, warn: noop, error: noop } });
   const opts = { dryRun, debug, skipTeamSync, skipCustomRole };
-  const allPlanned = [];
 
   // REPOSITORIES
   console.log('REPOSITORIES');
   const repoResult = await createRepositories(octokit, org, config, opts);
-  for (const action of repoResult.actions) console.log(`  ✓ ${action}`);
-  for (const skip of repoResult.skipped) console.log(`  · ${skip}`);
-  allPlanned.push(...repoResult.planned);
+  if (repoResult.actions.length === 0 && repoResult.planned.length === 0) console.log('  · No changes');
 
   // TEAMS
   console.log('');
   console.log('TEAMS');
   const teamResult = await processTeams(octokit, org, config, opts);
-  for (const action of teamResult.actions) console.log(`  ✓ ${action}`);
-  if (teamResult.actions.length === 0 && !dryRun) console.log('  · No team changes');
-  allPlanned.push(...teamResult.planned);
+  if (teamResult.actions.length === 0 && teamResult.planned.length === 0) console.log('  · No changes');
 
   // SECURITY
   console.log('');
   console.log('SECURITY');
   const securityResult = await enforceSecurityConfig(octokit, org, config, opts);
-  for (const action of securityResult.actions) console.log(`  ✓ ${action}`);
-  if (securityResult.actions.length === 0 && !dryRun) console.log('  · No security configuration changes');
-  allPlanned.push(...securityResult.planned);
+  if (securityResult.actions.length === 0 && securityResult.planned.length === 0) console.log('  · No changes');
 
   // BRANCH PROTECTION
   console.log('');
   console.log('BRANCH PROTECTION');
   const branchResult = await enforceBranchProtection(octokit, org, config, opts);
-  for (const action of branchResult.actions) console.log(`  ✓ ${action}`);
-  if (branchResult.actions.length === 0 && !dryRun) console.log('  · No branch protection changes');
-  allPlanned.push(...branchResult.planned);
+  if (branchResult.actions.length === 0 && branchResult.planned.length === 0) console.log('  · No changes');
 
-  // Dry-run summary
-  if (dryRun && allPlanned.length > 0) {
+  // Dry-run footer
+  if (dryRun) {
     console.log('');
-    console.log('──── Dry-run: planned changes ────');
-    for (const line of allPlanned) console.log(`  ${line}`);
-  } else if (dryRun) {
-    console.log('');
-    console.log('──── Dry-run: no changes planned ────');
+    console.log('──── Dry-run: no changes were made ────');
   }
 }
 

@@ -273,42 +273,85 @@ If the target list already matches, no API call is made. Only changes to the rep
 
 ## Output / Reporting
 
-With `--debug`, detailed state is printed (existing vs. desired repos/teams, calculated deltas). Without `--debug`, only action results are printed.
+Three output levels:
 
-### Action output
+- **Normal** (no flags): shows only the changes being made — intent before each API call, `✓` after success. Sections with nothing to do print `· No changes`.
+- **`--debug`**: additionally prints full existing/desired state and calculated deltas before each section's changes.
+- **`--dry-run`**: shows the same `+/-` change lines per section but makes no API calls. A footer confirms nothing was executed.
+
+### Normal mode — with changes
+
+Each change is printed as `  + intent... ✓` (or `  - intent... ✓` for removals) using `process.stdout.write` so the intent line is visible if an error occurs mid-operation.
+
+For teams, each operation is on its own line. For security and branch protection, all repos in the same assignment bucket are condensed onto one line (only repos that actually change are shown — not all repos):
 
 ```
 REPOSITORIES
-  ✓ Created repository 'my-new-repo' in allianz
-  · Repository 'existing-repo' already exists — skipped
+  + Create 'my-new-repo'... ✓
 
 TEAMS
-  ✓ Created team 'My Team' in allianz
-  ✓ Team 'My Team' synced with Entra ID group 'My Team'
-  ✓ Team 'My Team' granted Own permission to 'my-new-repo'
-  ✓ Team 'Old Team' removed Own permission from 'removed-repo'
-  ✓ Deleted team 'Defunct Team' from allianz
+  + Create team 'My Team'... ✓
+  + Sync 'My Team' with Entra ID group 'My Team'... ✓
+  + Grant Own: 'My Team' → 'my-new-repo'... ✓
+  - Revoke Own: 'My Team' → 'removed-repo'... ✓
+  - Delete team 'Defunct Team'... ✓
 
 SECURITY
-  ✓ Assigned 'my-new-repo' to 'ospo-managed' security configuration
-  ✓ Assigned 'special-repo' to 'custom' security configuration
+  + Assign to 'ospo-managed': 'my-new-repo'... ✓
+  + Assign to 'custom': 'special-repo'... ✓
 
 BRANCH PROTECTION
-  ✓ Assigned 'my-new-repo' to org ruleset 'ospo-managed'
+  + Assign to 'ospo-managed': 'my-new-repo'... ✓
+  + Assign to 'custom': 'old-repo'... ✓
 ```
 
-### Dry-run summary
-
-When `--dry-run` is active, no changes are made. A summary block is appended:
+### Normal mode — no changes
 
 ```
-──── Dry-run: planned changes ────
-  + Create repository 'my-new-repo'
+REPOSITORIES
+  · No changes
+
+TEAMS
+  · No changes
+
+SECURITY
+  · No changes
+
+BRANCH PROTECTION
+  · No changes
+```
+
+### Error mid-run
+
+The intent line (without `✓`) identifies what was being attempted when the error occurred:
+
+```
+TEAMS
+  + Create team 'My Team'... ✓
+  + Sync 'My Team' with Entra ID group 'My Team'...
+Fatal error: Not Found
+```
+
+### Dry-run
+
+Changes are shown inline per section (same `+/-` prefix, no `... ✓`). Sections with nothing planned show `· No changes`. A one-line footer confirms no API calls were made:
+
+```
+REPOSITORIES
+  + Create 'my-new-repo'
+
+TEAMS
   + Create team 'My Team'
+  + Sync 'My Team' with Entra ID group 'My Team'
   + Grant Own: 'My Team' → 'my-new-repo'
-  + Assign 'my-new-repo' to 'ospo-managed' security configuration
-  + Assign 'my-new-repo' to org ruleset 'ospo-managed'
-  - Delete team 'Defunct Team'
+
+SECURITY
+  · No changes
+
+BRANCH PROTECTION
+  + Assign to 'ospo-managed': 'my-new-repo'
+
+──── Dry-run: no changes were made ────
 ```
 
 ---

@@ -167,7 +167,7 @@ describe('createRepositories', () => {
     assert.match(result.actions[0], /new-repo/);
   });
 
-  it('skips repos that already exist', async () => {
+  it('does nothing when all repos already exist', async () => {
     const octokit = makeOctokit({
       paginate: async (fn) => {
         if (fn === octokit.rest.repos.listForOrg) {
@@ -179,7 +179,7 @@ describe('createRepositories', () => {
 
     const result = await createRepositories(octokit, 'my-org', config, {});
     assert.equal(result.actions.length, 0);
-    assert.equal(result.skipped.length, 2);
+    assert.equal(result.planned.length, 0);
   });
 
   it('does not call createInOrg in dry-run mode', async () => {
@@ -572,7 +572,7 @@ describe('enforceBranchProtection', () => {
     assert.equal(putCalls.length, 1);
     const ids = putCalls[0].conditions.repository_id.repository_ids;
     assert.ok(!ids.includes(102)); // custom-repo removed
-    assert.ok(result.actions.some(a => a.includes('Removed') && a.includes('custom-repo')));
+    assert.ok(result.actions.some(a => a.includes('custom-repo')));
   });
 
   it('is a no-op when target list already correct', async () => {
