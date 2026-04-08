@@ -514,11 +514,16 @@ describe('enforceBranchProtection', () => {
   function makeRulesetOctokit(overrides = {}) {
     const {
       rulesets = [{ id: 42, name: 'ospo-managed' }],
-      currentTargets = [],
+      currentIds = [],
+      orgRepos = [{ name: 'managed-repo', id: 101 }, { name: 'custom-repo', id: 102 }],
       putCalls = [],
     } = overrides;
 
     return makeOctokit({
+      paginate: async (_fn, params) => {
+        if (params && params.type === 'public') return orgRepos;
+        return [];
+      },
       request: async (endpoint, params) => {
         if (endpoint === 'GET /orgs/{org}/rulesets') {
           return { data: rulesets };
@@ -530,7 +535,7 @@ describe('enforceBranchProtection', () => {
               name: 'ospo-managed',
               enforcement: 'active',
               conditions: {
-                repository_name: { include: currentTargets, exclude: [] },
+                repository_id: { repository_ids: currentIds },
               },
               rules: [],
             },
@@ -551,29 +556,29 @@ describe('enforceBranchProtection', () => {
 
     await enforceBranchProtection(octokit, 'my-org', config, {});
     assert.equal(putCalls.length, 1);
-    const include = putCalls[0].conditions.repository_name.include;
-    assert.ok(include.includes('managed-repo'));
-    assert.ok(!include.includes('custom-repo'));
+    const ids = putCalls[0].conditions.repository_id.repository_ids;
+    assert.ok(ids.includes(101)); // managed-repo
+    assert.ok(!ids.includes(102)); // custom-repo excluded
   });
 
   it('removes custom repos from target list when switching', async () => {
     const putCalls = [];
     const octokit = makeRulesetOctokit({
-      currentTargets: ['managed-repo', 'custom-repo'],
+      currentIds: [101, 102],
       putCalls,
     });
 
     const result = await enforceBranchProtection(octokit, 'my-org', config, {});
     assert.equal(putCalls.length, 1);
-    const include = putCalls[0].conditions.repository_name.include;
-    assert.ok(!include.includes('custom-repo'));
+    const ids = putCalls[0].conditions.repository_id.repository_ids;
+    assert.ok(!ids.includes(102)); // custom-repo removed
     assert.ok(result.actions.some(a => a.includes('Removed') && a.includes('custom-repo')));
   });
 
   it('is a no-op when target list already correct', async () => {
     const putCalls = [];
     const octokit = makeRulesetOctokit({
-      currentTargets: ['managed-repo'],
+      currentIds: [101],
       putCalls,
     });
 
@@ -601,7 +606,7 @@ describe('enforceBranchProtection', () => {
   });
 
   it('includes repos added to config in dry-run planned list', async () => {
-    const octokit = makeRulesetOctokit({ currentTargets: [] });
+    const octokit = makeRulesetOctokit({ currentIds: [] });
 
     const result = await enforceBranchProtection(octokit, 'my-org', config, { dryRun: true });
     assert.ok(result.planned.some(p => p.includes('managed-repo') && p.startsWith('+')));

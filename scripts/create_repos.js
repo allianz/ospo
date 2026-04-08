@@ -336,8 +336,8 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
     ),
   ]);
 
-  const ospoAssigned = new Set(ospoRepos.map(r => r.name));
-  const customAssigned = new Set(customRepos.map(r => r.name));
+  const ospoAssigned = new Set(ospoRepos.map(r => r.repository?.name ?? r.name));
+  const customAssigned = new Set(customRepos.map(r => r.repository?.name ?? r.name));
 
   if (debug) {
     console.log('  ospo-managed:', [...ospoAssigned].sort().join(', ') || '(none)');
@@ -389,6 +389,7 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
         {
           org,
           configuration_id: ospoManaged.id,
+          scope: 'selected',
           selected_repository_ids: toAssignOspo.map(r => r.id),
           headers: { 'X-GitHub-Api-Version': '2022-11-28' },
         }
@@ -404,6 +405,7 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
         {
           org,
           configuration_id: customCfg.id,
+          scope: 'selected',
           selected_repository_ids: toAssignCustom.map(r => r.id),
           headers: { 'X-GitHub-Api-Version': '2022-11-28' },
         }
@@ -424,10 +426,24 @@ export async function enforceBranchProtection(octokit, org, config, opts = {}) {
   const actions = [];
   const planned = [];
 
-  // Build desired target list (repos where branch-protection is 'managed')
-  const desiredTargets = config.repositories
+  // Build desired target names (repos where branch-protection is 'managed')
+  const desiredTargetNames = config.repositories
     .filter(r => r['branch-protection'] === 'managed')
     .map(r => r.name);
+
+  // Resolve repo names to IDs (skip repos not yet created)
+  const orgRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
+    org,
+    type: 'public',
+    per_page: 100,
+  });
+  const repoIdMap = new Map(orgRepos.map(r => [r.name, r.id]));
+  const idToName = new Map(orgRepos.map(r => [r.id, r.name]));
+
+  const desiredIds = desiredTargetNames
+    .filter(name => repoIdMap.has(name))
+    .map(name => repoIdMap.get(name))
+    .sort((a, b) => a - b);
 
   // Look up the 'ospo-managed' org ruleset
   const rulesetsResponse = await octokit.request('GET /orgs/{org}/rulesets', {
@@ -449,59 +465,58 @@ export async function enforceBranchProtection(octokit, org, config, opts = {}) {
   });
   const fullRuleset = fullRulesetResponse.data;
 
-  const currentTargets = fullRuleset.conditions?.repository_name?.include ?? [];
+  const currentIds = (fullRuleset.conditions?.repository_id?.repository_ids ?? [])
+    .slice()
+    .sort((a, b) => a - b);
 
   if (debug) {
-    console.log('  Current targets:', currentTargets.join(', ') || '(none)');
-    console.log('  Desired targets:', desiredTargets.join(', ') || '(none)');
+    console.log('  Current targets:', currentIds.map(id => idToName.get(id) ?? id).join(', ') || '(none)');
+    console.log('  Desired targets:', desiredTargetNames.join(', ') || '(none)');
     console.log('');
   }
 
-  // Compare sorted lists to detect changes
-  const currentSorted = [...currentTargets].sort().join(',');
-  const desiredSorted = [...desiredTargets].sort().join(',');
-
-  if (currentSorted === desiredSorted) {
+  // Compare sorted ID lists to detect changes
+  if (currentIds.join(',') === desiredIds.join(',')) {
     if (debug) console.log('  · Branch protection target list already up to date — skipped');
     return { actions, planned };
   }
 
+  const currentIdSet = new Set(currentIds);
+  const desiredIdSet = new Set(desiredIds);
+  const added = desiredIds.filter(id => !currentIdSet.has(id));
+  const removed = currentIds.filter(id => !desiredIdSet.has(id));
+
   if (dryRun) {
-    const added = desiredTargets.filter(r => !currentTargets.includes(r));
-    const removed = currentTargets.filter(r => !desiredTargets.includes(r));
-    for (const name of added) {
-      planned.push(`+ Assign '${name}' to org ruleset 'ospo-managed'`);
+    for (const id of added) {
+      planned.push(`+ Assign '${idToName.get(id) ?? id}' to org ruleset 'ospo-managed'`);
     }
-    for (const name of removed) {
-      planned.push(`- Remove '${name}' from org ruleset 'ospo-managed'`);
+    for (const id of removed) {
+      planned.push(`- Remove '${idToName.get(id) ?? id}' from org ruleset 'ospo-managed'`);
     }
   } else {
-    // Update ruleset with new target list (preserve all other ruleset settings)
-    const updatedRuleset = {
-      ...fullRuleset,
-      conditions: {
-        ...fullRuleset.conditions,
-        repository_name: {
-          ...fullRuleset.conditions?.repository_name,
-          include: desiredTargets,
-        },
-      },
-    };
-
+    // Update only the target list — send only writable fields to avoid schema conflicts
     await octokit.request('PUT /orgs/{org}/rulesets/{ruleset_id}', {
       org,
       ruleset_id: ruleset.id,
-      ...updatedRuleset,
+      name: fullRuleset.name,
+      target: fullRuleset.target,
+      enforcement: fullRuleset.enforcement,
+      bypass_actors: fullRuleset.bypass_actors,
+      conditions: {
+        ref_name: fullRuleset.conditions?.ref_name,
+        repository_id: {
+          repository_ids: desiredIds,
+        },
+      },
+      rules: fullRuleset.rules,
       headers: { 'X-GitHub-Api-Version': '2022-11-28' },
     });
 
-    const added = desiredTargets.filter(r => !currentTargets.includes(r));
-    const removed = currentTargets.filter(r => !desiredTargets.includes(r));
-    for (const name of added) {
-      actions.push(`Assigned '${name}' to org ruleset 'ospo-managed'`);
+    for (const id of added) {
+      actions.push(`Assigned '${idToName.get(id) ?? id}' to org ruleset 'ospo-managed'`);
     }
-    for (const name of removed) {
-      actions.push(`Removed '${name}' from org ruleset 'ospo-managed'`);
+    for (const id of removed) {
+      actions.push(`Removed '${idToName.get(id) ?? id}' from org ruleset 'ospo-managed'`);
     }
   }
 
@@ -557,7 +572,8 @@ async function main() {
   }
 
   const config = await loadConfig(configPath);
-  const octokit = new Octokit({ auth: token });
+  const noop = () => {};
+  const octokit = new Octokit({ auth: token, log: { debug: noop, info: noop, warn: noop, error: noop } });
   const opts = { dryRun, debug, skipTeamSync, skipCustomRole };
   const allPlanned = [];
 

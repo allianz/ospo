@@ -250,11 +250,14 @@ Repos that set `branch-protection: custom` are excluded from the target list so 
 
 ### What the script controls
 
-The script updates the `repository_name.include` list on the existing `ospo-managed` ruleset via the [Organization Rulesets API](https://docs.github.com/en/rest/orgs/rules) (`PUT /orgs/{org}/rulesets/{id}`). On each run:
+The script updates the `repository_id.repository_ids` list on the existing `ospo-managed` ruleset via the [Organization Rulesets API](https://docs.github.com/en/rest/orgs/rules) (`PUT /orgs/{org}/rulesets/{id}`). On each run:
 
 1. Collect all repo names from config where `branch-protection` is `managed` (or omitted).
-2. Look up the existing `ospo-managed` ruleset by name.
-3. Compare the current target list with the desired list. Update if anything changed.
+2. Resolve those names to numeric repository IDs by fetching the org's repo list.
+3. Look up the existing `ospo-managed` ruleset by name.
+4. Compare the current `repository_id.repository_ids` list with the desired list. Update if anything changed.
+
+The script targets repositories by ID (not by name pattern) to match the GitHub UI's "select repositories" behaviour and avoid accidental wildcard matches.
 
 The script **never** creates, deletes, or modifies the ruleset's rules — only the target list.
 
@@ -415,6 +418,80 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
       run: node scripts/create_repos.js --org allianz
+```
+
+---
+
+## Implementation Details
+
+This section documents API behaviour that is not obvious from the GitHub documentation and must be implemented correctly to avoid runtime errors.
+
+### Octokit instantiation
+
+Instantiate Octokit with a silent logger to suppress the library's default `console.warn` / `console.info` output, which would pollute the script's structured output:
+
+```js
+const noop = () => {};
+const octokit = new Octokit({ auth: token, log: { debug: noop, info: noop, warn: noop, error: noop } });
+```
+
+### Security configuration API
+
+**Attaching repositories** (`POST /orgs/{org}/code-security/configurations/{configuration_id}/attach`):
+
+- The `scope` field is **required**. Always pass `scope: 'selected'` alongside `selected_repository_ids`. Omitting it causes a `422 Invalid input: object is missing required key: scope` error.
+
+```js
+await octokit.request('POST /orgs/{org}/code-security/configurations/{configuration_id}/attach', {
+  org,
+  configuration_id: cfg.id,
+  scope: 'selected',
+  selected_repository_ids: repoIds,
+  headers: { 'X-GitHub-Api-Version': '2022-11-28' },
+});
+```
+
+**Reading current assignments** (`GET /orgs/{org}/code-security/configurations/{configuration_id}/repositories`):
+
+- Each item in the response array has the repo object nested under a `.repository` key, not directly as a flat repo object. Extract the name with `r.repository?.name ?? r.name` to handle both shapes defensively.
+
+```js
+const assigned = new Set(repos.map(r => r.repository?.name ?? r.name));
+```
+
+### Branch protection ruleset API
+
+**Targeting repositories by ID** (`PUT /orgs/{org}/rulesets/{ruleset_id}`):
+
+- Use the `repository_id` condition (not `repository_name`) to match what the GitHub UI does when repositories are selected directly. Name-pattern conditions use glob matching and are a different mechanism.
+
+```js
+conditions: {
+  ref_name: fullRuleset.conditions?.ref_name,
+  repository_id: {
+    repository_ids: desiredIds,   // numeric IDs, sorted
+  },
+},
+```
+
+- Resolve repo names to numeric IDs by paginating `GET /orgs/{org}/repos` before building the target list. Repos not yet created (not present in the org) are silently skipped.
+
+**Sending only writable fields on PUT**:
+
+- The `GET /orgs/{org}/rulesets/{id}` response includes read-only fields (`id`, `node_id`, `created_at`, `updated_at`, `_links`, etc.) that the PUT endpoint rejects with a schema error if echoed back. Do **not** spread the full ruleset object. Send only the fields the API accepts:
+
+```js
+await octokit.request('PUT /orgs/{org}/rulesets/{ruleset_id}', {
+  org,
+  ruleset_id: fullRuleset.id,
+  name: fullRuleset.name,
+  target: fullRuleset.target,
+  enforcement: fullRuleset.enforcement,
+  bypass_actors: fullRuleset.bypass_actors,
+  conditions: { /* ... */ },
+  rules: fullRuleset.rules,
+  headers: { 'X-GitHub-Api-Version': '2022-11-28' },
+});
 ```
 
 ---
