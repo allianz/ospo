@@ -276,7 +276,7 @@ If the target list already matches, no API call is made. Only changes to the rep
 Three output levels:
 
 - **Normal** (no flags): shows only the changes being made — intent before each API call, `✓` after success. Sections with nothing to do print `· No changes`.
-- **`--debug`**: additionally prints full existing/desired state and calculated deltas before each section's changes.
+- **`--debug`**: before each section's changes, prints a block showing full existing state, desired state, and a blank line. The change lines then follow in normal format. This lets you trace exactly how each planned action was derived.
 - **`--dry-run`**: shows the same `+/-` change lines per section but makes no API calls. A footer confirms nothing was executed.
 
 ### Normal mode — with changes
@@ -352,6 +352,57 @@ BRANCH PROTECTION
   + Assign to 'ospo-managed': 'my-new-repo'
 
 ──── Dry-run: no changes were made ────
+```
+
+### Debug mode
+
+Each section emits a debug block before its change lines. The block always shows `Existing <noun>:` and `Desired <noun>:` so the reader can verify how the delta was calculated. No delta lines are printed in the debug block — the intent lines that follow already communicate the delta.
+
+**REPOSITORIES:**
+```
+REPOSITORIES
+  Existing repos: repo1, repo2
+  Desired repos:  my-new-repo, repo1, repo2
+
+  + Create 'my-new-repo'... ✓
+```
+
+**TEAMS** — shows existing/desired team lists; for teams being created, lists the repos they will be granted; for existing teams with changes, shows `current repos | desired | + grant | - revoke`:
+```
+TEAMS
+  Existing teams: Defunct Team
+  Desired teams:  My Team
+  Team 'My Team' — desired repos: my-new-repo
+
+  + Create team 'My Team'... ✓
+  + Grant Own: 'My Team' → 'my-new-repo'... ✓
+  - Delete team 'Defunct Team'... ✓
+```
+
+For an existing team whose repo assignments changed:
+```
+  Team 'My Team' — current repos: old-repo | desired: new-repo | + grant: new-repo | - revoke: old-repo
+```
+
+**SECURITY** — shows all four assignment lists (existing and desired for both configs):
+```
+SECURITY
+  Existing ospo-managed: repo1, repo2
+  Existing custom:       special-repo
+  Desired ospo-managed:  my-new-repo, repo1, repo2
+  Desired custom:        special-repo
+
+  + Assign to 'ospo-managed': 'my-new-repo'... ✓
+```
+
+**BRANCH PROTECTION** — shows existing and desired target lists by repo name:
+```
+BRANCH PROTECTION
+  Existing targets: repo1, repo2
+  Desired targets:  my-new-repo, repo1
+
+  + Assign to 'ospo-managed': 'my-new-repo'... ✓
+  + Assign to 'custom': 'repo2'... ✓
 ```
 
 ---

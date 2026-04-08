@@ -83,8 +83,7 @@ export async function createRepositories(octokit, org, config, opts = {}) {
 
   if (debug) {
     console.log('  Existing repos:', [...existingNames].sort().join(', ') || '(none)');
-    console.log('  Desired repos:', desiredNames.join(', ') || '(none)');
-    console.log('  To create:', toCreate.join(', ') || '(none)');
+    console.log('  Desired repos: ', desiredNames.join(', ') || '(none)');
     console.log('');
   }
 
@@ -169,15 +168,19 @@ export async function processTeams(octokit, org, config, opts = {}) {
   const existingTeamMap = new Map(existingTeams.map(t => [t.name, t]));
   const existingTeamNames = new Set(existingTeams.map(t => t.name));
 
-  if (debug) {
-    console.log('  Existing teams:', [...existingTeamNames].sort().join(', ') || '(none)');
-    console.log('  Desired teams:', [...desiredTeamNames].join(', ') || '(none)');
-    console.log('');
-  }
-
   const teamsToAdd = [...desiredTeamNames].filter(n => !existingTeamNames.has(n));
   const teamsToUpdate = [...desiredTeamNames].filter(n => existingTeamNames.has(n));
   const teamsToDelete = [...existingTeamNames].filter(n => !desiredTeamNames.has(n));
+
+  if (debug) {
+    console.log('  Existing teams:', [...existingTeamNames].sort().join(', ') || '(none)');
+    console.log('  Desired teams: ', [...desiredTeamNames].join(', ') || '(none)');
+    for (const teamName of teamsToAdd) {
+      const repos = [...(desiredTeamRepos.get(teamName) ?? new Set())];
+      console.log(`  Team '${teamName}' — desired repos: ${repos.join(', ') || '(none)'}`);
+    }
+    console.log('');
+  }
 
   // Teams to add
   for (const teamName of teamsToAdd) {
@@ -253,7 +256,13 @@ export async function processTeams(octokit, org, config, opts = {}) {
     const toRevoke = [...currentRepos].filter(r => !desiredRepos.has(r));
 
     if (debug) {
-      console.log(`  Team '${teamName}': grant [${toGrant.join(', ')}], revoke [${toRevoke.join(', ')}]`);
+      const parts = [
+        `current repos: ${[...currentRepos].sort().join(', ') || '(none)'}`,
+        `desired: ${[...desiredRepos].sort().join(', ') || '(none)'}`,
+      ];
+      if (toGrant.length > 0) parts.push(`+ grant: ${toGrant.join(', ')}`);
+      if (toRevoke.length > 0) parts.push(`- revoke: ${toRevoke.join(', ')}`);
+      console.log(`  Team '${teamName}' — ${parts.join(' | ')}`);
     }
 
     for (const repo of toGrant) {
@@ -351,12 +360,6 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
   const ospoAssigned = new Set(ospoRepos.map(r => r.repository?.name ?? r.name));
   const customAssigned = new Set(customRepos.map(r => r.repository?.name ?? r.name));
 
-  if (debug) {
-    console.log('  ospo-managed:', [...ospoAssigned].sort().join(', ') || '(none)');
-    console.log('  custom:', [...customAssigned].sort().join(', ') || '(none)');
-    console.log('');
-  }
-
   // Fetch org repos to get IDs
   const orgRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
     org,
@@ -375,16 +378,22 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
     if (repo.security === 'managed') {
       if (!ospoAssigned.has(repo.name)) {
         toAssignOspo.push({ name: repo.name, id: repoId });
-      } else if (debug) {
-        console.log(`  · '${repo.name}' already assigned to 'ospo-managed' — skipped`);
       }
     } else {
       if (!customAssigned.has(repo.name)) {
         toAssignCustom.push({ name: repo.name, id: repoId });
-      } else if (debug) {
-        console.log(`  · '${repo.name}' already assigned to 'custom' — skipped`);
       }
     }
+  }
+
+  if (debug) {
+    const desiredOspo = config.repositories.filter(r => r.security === 'managed').map(r => r.name);
+    const desiredCustom = config.repositories.filter(r => r.security !== 'managed').map(r => r.name);
+    console.log('  Existing ospo-managed:', [...ospoAssigned].sort().join(', ') || '(none)');
+    console.log('  Existing custom:      ', [...customAssigned].sort().join(', ') || '(none)');
+    console.log('  Desired ospo-managed: ', desiredOspo.join(', ') || '(none)');
+    console.log('  Desired custom:       ', desiredCustom.join(', ') || '(none)');
+    console.log('');
   }
 
   if (dryRun) {
@@ -495,22 +504,21 @@ export async function enforceBranchProtection(octokit, org, config, opts = {}) {
     .slice()
     .sort((a, b) => a - b);
 
-  if (debug) {
-    console.log('  Current targets:', currentIds.map(id => idToName.get(id) ?? id).join(', ') || '(none)');
-    console.log('  Desired targets:', desiredTargetNames.join(', ') || '(none)');
-    console.log('');
-  }
-
   // Compare sorted ID lists to detect changes
-  if (currentIds.join(',') === desiredIds.join(',')) {
-    if (debug) console.log('  · Branch protection target list already up to date — skipped');
-    return { actions, planned };
-  }
-
   const currentIdSet = new Set(currentIds);
   const desiredIdSet = new Set(desiredIds);
   const added = desiredIds.filter(id => !currentIdSet.has(id));
   const removed = currentIds.filter(id => !desiredIdSet.has(id));
+
+  if (debug) {
+    console.log('  Existing targets:', currentIds.map(id => idToName.get(id) ?? id).join(', ') || '(none)');
+    console.log('  Desired targets: ', desiredTargetNames.join(', ') || '(none)');
+    console.log('');
+  }
+
+  if (currentIds.join(',') === desiredIds.join(',')) {
+    return { actions, planned };
+  }
 
   // Build one compact line per direction of change
   const intentLines = [];

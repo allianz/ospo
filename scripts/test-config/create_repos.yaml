@@ -10,12 +10,12 @@ repositories:
   - name: "new-project"
 
   - name: "opso-test"
+    security: custom
+
 
   - name: "test-permissions"
-    branch-protection: custom
-    teams:
-    - name: "Allianz OSPO"
+
 
   - name: "zzz-test-repo"
 
-    
+  - name: "yyy-test-repo"
