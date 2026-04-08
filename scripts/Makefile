@@ -20,7 +20,7 @@ test_archive_repos: check-token
 	./archive_repos.sh --org ospo-sandbox --config test-config/archive_repos.yaml --debug
 
 test_create_repos: check-token
-	./create_repos.sh --org ospo-sandbox --config test-config/create_repos.yaml --debug
+	node create_repos.js --org ospo-sandbox --config test-config/create_repos.yaml --skip-team-sync --skip-custom-role --debug
 
 # ── Dry runs (allianz) ────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ dry_run_archive_repos: check-token
 	./archive_repos.sh --org allianz --dry-run
 
 dry_run_create_repos: check-token
-	./create_repos.sh --org allianz --dry-run
+	node create_repos.js --org allianz --dry-run
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 
