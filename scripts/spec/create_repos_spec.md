@@ -1,4 +1,4 @@
-# Spec: create_repos Reimplementation
+# Spec: create_repos implementation
 
 ## Motivation
 
@@ -11,7 +11,6 @@ The goals of this automation are:
 3. **Auditable change history** — all configuration changes go through pull requests, giving a clear audit trail of who requested what and when.
 4. **Secure defaults** — repositories are created with GitHub Advanced Security enabled and branch protection enforced. Projects can opt out if they need custom settings.
 
-This spec defines a JavaScript reimplementation that replaces the existing Bash script while adding security enforcement and branch protection management.
 
 ## Scope
 
@@ -415,10 +414,6 @@ BRANCH PROTECTION
 | `@octokit/rest` | GitHub API | Replaces `gh api` calls |
 | `js-yaml` | Parse YAML config | Replaces `yq` |
 
-**Removed dependencies:**
-- `gh` CLI (no longer required by this script at runtime — only needed to obtain `GITHUB_TOKEN` locally)
-- `yq` (replaced by `js-yaml`)
-- `jq` (replaced by native JavaScript object handling)
 
 ---
 
@@ -588,48 +583,3 @@ await octokit.request('PUT /orgs/{org}/rulesets/{ruleset_id}', {
 });
 ```
 
----
-
-## Migration Analysis
-
-> **Note:** This section is temporary and will be removed after migration is complete.
-
-### What changes
-
-| Aspect | Bash (current) | JavaScript (new) |
-|---|---|---|
-| Runtime | `bash` + `gh` + `yq` + `jq` | `node` + npm packages |
-| GitHub API access | `gh api` shell commands | `@octokit/rest` library |
-| Config parsing | `yq eval` | `js-yaml` |
-| JSON handling | `jq` pipes | Native JS objects |
-| Error handling | `exit 1` with `$LINENO` | `throw` / `try-catch` with stack traces |
-| Test framework | Manual Makefile integration test only | `node --test` unit tests + integration test |
-| Auth mechanism | `GH_TOKEN` env var (used by `gh`) | `GITHUB_TOKEN` env var (used by Octokit) |
-
-### What stays the same
-
-- Configuration file format (`config/create_repos.yaml`) — fully backward-compatible. Existing configs work unchanged; new fields (`security`, `branch-protection`) default to `managed` when omitted.
-- CLI flags — identical interface, same flag names and behavior.
-- Workflow trigger logic — same `on.push.paths` and `workflow_dispatch` triggers.
-- Two-phase pipeline — dry-run job followed by apply job with environment approval gate.
-- Permission model — `Own` (Enterprise) / `maintain` (fallback) unchanged.
-- Team-to-Entra-ID mapping — same exact-name-match requirement.
-
-### New capabilities (not in Bash version)
-
-| Feature | Description |
-|---|---|
-| `security: managed \| custom` | Assign repos to enforced or non-enforced GHAS org configuration |
-| `branch-protection: managed \| custom` | Control org ruleset target list for branch protection |
-| Unit tests | Isolated tests for each function with mocked API responses |
-| Structured output | Grouped by section (Repositories, Teams, Security, Branch Protection) |
-
-### Migration steps
-
-1. Implement `scripts/create_repos.js` per this spec
-2. Add unit tests in `scripts/create_repos.test.js`
-3. Update `scripts/package.json` test script to include both test files
-4. Run integration test against `ospo-sandbox` with `--skip-team-sync --skip-custom-role`
-5. Update `.github/workflows/create_repos.yaml` to use Node.js
-6. Update `scripts/test/Makefile` target
-7. Delete `scripts/create_repos.sh`

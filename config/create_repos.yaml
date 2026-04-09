@@ -1,19 +1,43 @@
 # Configuration File for GitHub Repositories
 #
 # This file manages settings for GitHub repositories within the Allianz organization.
-
+# Each entry represents a repository that should exist in the org with the
+# specified team assignments and policy settings.
+#
+# Adding a new repository:
+#   1. Add an entry under `repositories` with the repo name
+#   2. Optionally assign teams (team name must match the Entra ID group name)
+#   3. Optionally configure security and branch-protection policies
+#   4. Open a pull request — the pipeline creates the repo on merge
+#
 # Parameters:
-#   - name: Repository name. Use only lowercase letters and dashes.
-#   - team name: Must be identical to the corresponding GIAM group.
+#   name:               Repository name (lowercase, alphanumeric, dots, hyphens)
+#   security:           'managed' (default) — OSPO enforces GHAS settings via org config
+#                       'custom' — repo team controls GHAS settings
+#   branch-protection:  'managed' (default) — OSPO enforces branch protection via org ruleset
+#                       'custom' — repo team defines its own branch protection rules
+#   teams[].name:       Team display name; must match the corresponding Entra ID group name exactly
+#
+# Example:
+#   - name: "my-project"
+#     security: managed
+#     branch-protection: managed
+#     teams:
+#     - name: "My Project Team"
+#
 repositories:
 
   - name: ".github"
+    teams:
+    - name: "Allianz OSPO"
 
   - name: "ospo"
     teams:
     - name: "Allianz OSPO"
 
   - name: "ng-aquila"
+    security: custom
+    branch-protection: custom
     teams:
     - name: "ng-aquila"
 
@@ -28,4 +52,3 @@ repositories:
   - name: "merge-bot-config"
 
   - name: "merge-processor"
-
