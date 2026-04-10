@@ -19,7 +19,6 @@ There is an ongoing effort to consolidate all open source work under the central
 | [azukds](https://github.com/azukds) | 8 | 8 | 0 | 119 | 30 |
 | [KaiserXLabs](https://github.com/KaiserXLabs) | 12 | 11 | 1 | 8 | 0 |
 | [simplesurance](https://github.com/simplesurance) | 24 | 20 | 4 | 467 | 65 |
-| [eulerhermesda](https://github.com/eulerhermesda) | 0 | 0 | 0 | 0 | 0 |
 | **Total** | **70** | **59** | **11** | **863** | **150** |
 
 ---
@@ -170,18 +169,3 @@ simplesurance is a Berlin-based insurtech company acquired by Allianz. The organ
 | [bunny-cli](https://github.com/simplesurance/bunny-cli) | Go | bunny.net API command-line client | 0 | 2 | Archived |
 | [migrate](https://github.com/simplesurance/migrate) | Go | Database migration handling | 0 | 0 | Archived |
 
----
-
-### [eulerhermesda](https://github.com/eulerhermesda) — Euler Hermes (acquired)
-
-Euler Hermes is a credit insurance subsidiary of Allianz. The organization currently has no public repositories.
-
----
-
-## Consolidation
-
-Allianz is working to consolidate open source activities under the [github.com/allianz](https://github.com/allianz) organization.
-If your team maintains a project in one of the other organizations, please reach out to the OSPO to discuss migration:
-
-- Email: [ospo@allianz.com](mailto:ospo@allianz.com)
-- Teams: [OSPO Channel](https://teams.microsoft.com/l/channel/19%3A4c5d8ef68e484a82bf3a80b73ed8c5ae%40thread.tacv2/OSPO?groupId=03328808-70b1-499c-8f61-29447febed23&tenantId=6e06e42d-6925-47c6-b9e7-9581c7ca302a)
