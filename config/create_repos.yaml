@@ -16,30 +16,36 @@
 #                       'custom' — repo team controls GHAS settings
 #   branch-protection:  'managed' (default) — OSPO enforces branch protection via org ruleset
 #                       'custom' — repo team defines its own branch protection rules
-#   teams[].name:       Team display name; must match the corresponding Entra ID group name exactly
+#   access[].team:      Team display name; must match the corresponding Entra ID group name exactly
+#   access[].role:      'own' (default) — full repo ownership via custom org role
+#                       'write' — push access
+#                       'triage' — read + triage issues and PRs, no push access
 #
 # Example:
 #   - name: "my-project"
 #     security: managed
 #     branch-protection: managed
-#     teams:
-#     - name: "My Project Team"
+#     access:
+#     - team: "My Project Team"
+#       role: own
+#     - team: "Ops Team"
+#       role: triage
 #
 repositories:
 
   - name: ".github"
-    teams:
-    - name: "Allianz OSPO"
+    access:
+    - team: "Allianz OSPO"
 
   - name: "ospo"
-    teams:
-    - name: "Allianz OSPO"
+    access:
+    - team: "Allianz OSPO"
 
   - name: "ng-aquila"
     security: custom
     branch-protection: custom
-    teams:
-    - name: "ng-aquila"
+    access:
+    - team: "ng-aquila"
 
   - name: "calculus-prime-pnc"
 

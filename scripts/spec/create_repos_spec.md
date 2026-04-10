@@ -109,17 +109,21 @@ repositories:
   # Minimal: repo with organization defaults (managed security + branch protection)
   - name: "my-repo"
 
-  # Repo with team assignments
+  # Repo with a single owner team (default role)
   - name: "my-other-repo"
-    teams:
-      - name: "My Team"
+    access:
+      - team: "My Team"
+        role: own
 
-  # Repo that manages its own security and branch protection settings
+  # Repo with mixed roles and custom settings
   - name: "special-repo"
     security: custom
     branch-protection: custom
-    teams:
-      - name: "Special Team"
+    access:
+      - team: "Special Team"
+        role: own
+      - team: "External Contributors"
+        role: triage
 ```
 
 ### Field reference
@@ -130,8 +134,9 @@ repositories:
 | `name` | Repository | String | required | Repository name. Must match `^[a-z0-9.-]+$`, max 64 characters. |
 | `security` | Repository | String | `managed` | `managed`: OSPO enforces GHAS defaults. `custom`: repo team controls GHAS settings. |
 | `branch-protection` | Repository | String | `managed` | `managed`: OSPO enforces branch protection rules. `custom`: repo team defines its own rules. |
-| `teams` | Repository | Array | `[]` | Teams with access to this repository |
-| `name` | Team | String | required | Team display name. Must match the corresponding Entra ID group name exactly. Alphanumeric, spaces, dots, underscores, hyphens; max 64 characters. |
+| `access` | Repository | Array | `[]` | Access entries for this repository. Unknown fields are rejected. |
+| `team` | Access entry | String | required | Team display name. Must match the corresponding Entra ID group name exactly. Alphanumeric, spaces, dots, underscores, hyphens; max 64 characters. |
+| `role` | Access entry | String | `own` | Permission level: `own`, `write`, or `triage`. Unknown values are rejected. |
 
 ---
 
@@ -158,11 +163,11 @@ repositories:
           - Validate Entra ID group exists (exact name match)
           - Create team with closed privacy
           - Set up Entra ID sync (unless --skip-team-sync)
-          - Grant permissions on all assigned repos
+          - Grant each assigned repo with the configured role
      d. For each team to update:
-          - Load current repo assignments
-          - Compare with desired assignments
-          - Grant new, revoke removed
+          - Load current repo assignments and their role_name
+          - Calculate: repos_to_grant (new), repos_to_revoke (removed), repos_to_update (role changed)
+          - Grant new, revoke removed, update changed roles
      e. For each team to delete:
           - Delete team
 7. Enforce security configuration assignments:
@@ -186,10 +191,11 @@ repositories:
 
 ### Permission levels
 
-| Config value | GitHub role | When used |
-|---|---|---|
-| `Own` | Custom organization role (Enterprise) | Default. Full repo ownership + team management. |
-| `maintain` | Built-in GitHub role | Fallback when `--skip-custom-role` is set (non-Enterprise orgs). |
+| Config value | GitHub API value | GitHub role | Notes |
+|---|---|---|---|
+| `own` | `Own` | Custom organization role (Enterprise) | Default. Falls back to `maintain` when `--skip-custom-role` is set. |
+| `write` | `push` | Built-in write role | Push access. |
+| `triage` | `triage` | Built-in triage role | Read + triage issues and PRs, no push access. |
 
 ### Team lifecycle
 
@@ -291,8 +297,9 @@ REPOSITORIES
 TEAMS
   + Create team 'My Team'... ✓
   + Sync 'My Team' with Entra ID group 'My Team'... ✓
-  + Grant Own: 'My Team' → 'my-new-repo'... ✓
-  - Revoke Own: 'My Team' → 'removed-repo'... ✓
+  + Grant own: 'My Team' on 'my-new-repo'... ✓
+  ~ Update own→triage: 'My Team' on 'existing-repo'... ✓
+  - Revoke: 'My Team' on 'removed-repo'... ✓
   - Delete team 'Defunct Team'... ✓
 
 SECURITY
@@ -342,7 +349,7 @@ REPOSITORIES
 TEAMS
   + Create team 'My Team'
   + Sync 'My Team' with Entra ID group 'My Team'
-  + Grant Own: 'My Team' → 'my-new-repo'
+  + Grant own: 'My Team' on 'my-new-repo'
 
 SECURITY
   · No changes
@@ -366,7 +373,7 @@ REPOSITORIES
   + Create 'my-new-repo'... ✓
 ```
 
-**TEAMS** — shows existing/desired team lists; for teams being created, lists the repos they will be granted; for existing teams with changes, shows `current repos | desired | + grant | - revoke`:
+**TEAMS** — shows existing/desired team lists; for teams being created, lists the repos they will be granted; for existing teams with changes, shows `current repos | desired | + grant | - revoke | ~ update`:
 ```
 TEAMS
   Existing teams: Defunct Team
@@ -374,13 +381,14 @@ TEAMS
   Team 'My Team' — desired repos: my-new-repo
 
   + Create team 'My Team'... ✓
-  + Grant Own: 'My Team' → 'my-new-repo'... ✓
+  + Grant own: 'My Team' on 'my-new-repo'... ✓
   - Delete team 'Defunct Team'... ✓
 ```
 
-For an existing team whose repo assignments changed:
+For an existing team whose repo assignments or roles changed:
 ```
   Team 'My Team' — current repos: old-repo | desired: new-repo | + grant: new-repo | - revoke: old-repo
+  Team 'My Team' — current repos: my-repo | desired: my-repo | ~ update: my-repo
 ```
 
 **SECURITY** — shows all four assignment lists (existing and desired for both configs):
@@ -423,9 +431,9 @@ Unit tests live in `scripts/create_repos.test.js` and run with Node's built-in t
 
 Each function is tested in isolation with mocked Octokit responses. Key scenarios:
 
-- **Config loading:** valid config; missing repository name; invalid repo name pattern; invalid team name; unknown `security` value; unknown `branch-protection` value; fields default when omitted
+- **Config loading:** valid config; missing repository name; invalid repo name pattern; unknown repo-level field; invalid team name; unknown access entry field; invalid role value; unknown `security` value; unknown `branch-protection` value; fields default when omitted (`role` defaults to `own`, `access` defaults to `[]`)
 - **Repository processing:** repos to create (desired − existing); no new repos needed; duplicate detection
-- **Team processing:** teams to add / update / delete; permission grant and revoke; Entra ID group validation failure
+- **Team processing:** teams to add / update / delete; per-entry role used in grant; role change detected and updated; no API call when role unchanged; `--skip-custom-role` substitutes `own→maintain` only (not `write` or `triage`); `write` config role sends `push` to API; `push` API value normalised back to `write` for comparison; Entra ID group validation failure
 - **Security assignments:** repo assigned to ospo-managed config; repo assigned to custom config; assignment already correct (no-op); configuration not found (error)
 - **Branch protection:** target list updated when repo added; target list updated when repo switches to custom; target list already correct (no-op); ruleset not found (error)
 - **Dry-run:** no API mutations are called; planned changes are collected and returned
@@ -514,6 +522,30 @@ jobs:
 ## Implementation Details
 
 This section documents API behaviour that is not obvious from the GitHub documentation and must be implemented correctly to avoid runtime errors.
+
+### Permission name mapping
+
+The GitHub REST API uses different permission names than the config's user-facing role names. Two helper functions handle the translation:
+
+- **`toApiRole(role)`** — used before every `addOrUpdateRepoPermissionsInOrg` call:
+
+| Config value | API value | Reason |
+|---|---|---|
+| `own` | `Own` | Custom org role; API name is case-sensitive |
+| `write` | `push` | GitHub's legacy API name for write access |
+| `triage` | `triage` | Same in both |
+
+- **`fromApiRole(roleName)`** — used when reading `role_name` from `listReposInOrg`, to normalize API values back to config names before comparison:
+
+| API `role_name` | Config value |
+|---|---|
+| `Own` | `own` |
+| `push` | `write` |
+| `triage` | `triage` |
+
+Without this roundtrip mapping, every repo with `write` access would appear as changed on every run (`'push' !== 'write'`), and API calls for `write` would fail with `422 Validation Failed`.
+
+---
 
 ### Octokit instantiation
 

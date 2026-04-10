@@ -51,20 +51,52 @@ describe('loadConfig', () => {
     assert.equal(cfg.repositories[0].name, 'my-repo');
     assert.equal(cfg.repositories[0].security, 'managed');
     assert.equal(cfg.repositories[0]['branch-protection'], 'managed');
-    assert.deepEqual(cfg.repositories[0].teams, []);
+    assert.deepEqual(cfg.repositories[0].access, []);
   });
 
-  it('parses a config with teams', async () => {
-    const file = path.join(tmpDir, 'with-teams.yaml');
+  it('parses a config with access entries', async () => {
+    const file = path.join(tmpDir, 'with-access.yaml');
     await writeFile(file, [
       'repositories:',
       '  - name: "my-repo"',
-      '    teams:',
-      '      - name: "My Team"',
+      '    access:',
+      '      - team: "My Team"',
+      '        role: triage',
     ].join('\n'));
     const cfg = await loadConfig(file);
-    assert.equal(cfg.repositories[0].teams.length, 1);
-    assert.equal(cfg.repositories[0].teams[0].name, 'My Team');
+    assert.equal(cfg.repositories[0].access.length, 1);
+    assert.equal(cfg.repositories[0].access[0].team, 'My Team');
+    assert.equal(cfg.repositories[0].access[0].role, 'triage');
+  });
+
+  it('defaults role to own when omitted', async () => {
+    const file = path.join(tmpDir, 'default-role.yaml');
+    await writeFile(file, [
+      'repositories:',
+      '  - name: "my-repo"',
+      '    access:',
+      '      - team: "My Team"',
+    ].join('\n'));
+    const cfg = await loadConfig(file);
+    assert.equal(cfg.repositories[0].access[0].role, 'own');
+  });
+
+  it('accepts all valid roles', async () => {
+    const file = path.join(tmpDir, 'all-roles.yaml');
+    await writeFile(file, [
+      'repositories:',
+      '  - name: "repo-a"',
+      '    access:',
+      '      - team: "Team A"',
+      '        role: own',
+      '      - team: "Team B"',
+      '        role: write',
+      '      - team: "Team C"',
+      '        role: triage',
+    ].join('\n'));
+    const cfg = await loadConfig(file);
+    const roles = cfg.repositories[0].access.map(e => e.role);
+    assert.deepEqual(roles, ['own', 'write', 'triage']);
   });
 
   it('preserves explicit security and branch-protection values', async () => {
@@ -105,15 +137,45 @@ describe('loadConfig', () => {
     await assert.rejects(() => loadConfig(file), /Invalid repository name/);
   });
 
+  it('throws on unknown repo-level field', async () => {
+    const file = path.join(tmpDir, 'unknown-repo-key.yaml');
+    await writeFile(file, 'repositories:\n  - name: "my-repo"\n    teams:\n      - team: "X"\n');
+    await assert.rejects(() => loadConfig(file), /Unknown field 'teams'/);
+  });
+
+  it('throws on unknown access entry field', async () => {
+    const file = path.join(tmpDir, 'unknown-access-key.yaml');
+    await writeFile(file, [
+      'repositories:',
+      '  - name: "my-repo"',
+      '    access:',
+      '      - team: "My Team"',
+      '        level: admin',
+    ].join('\n'));
+    await assert.rejects(() => loadConfig(file), /Unknown field 'level'/);
+  });
+
   it('throws on invalid team name', async () => {
     const file = path.join(tmpDir, 'bad-team-name.yaml');
     await writeFile(file, [
       'repositories:',
       '  - name: "my-repo"',
-      '    teams:',
-      '      - name: "Invalid@Name!"',
+      '    access:',
+      '      - team: "Invalid@Name!"',
     ].join('\n'));
     await assert.rejects(() => loadConfig(file), /Invalid team name/);
+  });
+
+  it('throws on invalid role value', async () => {
+    const file = path.join(tmpDir, 'bad-role.yaml');
+    await writeFile(file, [
+      'repositories:',
+      '  - name: "my-repo"',
+      '    access:',
+      '      - team: "My Team"',
+      '        role: admin',
+    ].join('\n'));
+    await assert.rejects(() => loadConfig(file), /Invalid role/);
   });
 
   it('throws on unknown security value', async () => {
@@ -128,11 +190,11 @@ describe('loadConfig', () => {
     await assert.rejects(() => loadConfig(file), /Invalid branch-protection value/);
   });
 
-  it('defaults teams to [] when absent', async () => {
-    const file = path.join(tmpDir, 'no-teams.yaml');
+  it('defaults access to [] when absent', async () => {
+    const file = path.join(tmpDir, 'no-access.yaml');
     await writeFile(file, 'repositories:\n  - name: "my-repo"\n');
     const cfg = await loadConfig(file);
-    assert.deepEqual(cfg.repositories[0].teams, []);
+    assert.deepEqual(cfg.repositories[0].access, []);
   });
 });
 
@@ -141,8 +203,8 @@ describe('loadConfig', () => {
 describe('createRepositories', () => {
   const config = {
     repositories: [
-      { name: 'new-repo', security: 'managed', 'branch-protection': 'managed', teams: [] },
-      { name: 'existing-repo', security: 'managed', 'branch-protection': 'managed', teams: [] },
+      { name: 'new-repo', security: 'managed', 'branch-protection': 'managed', access: [] },
+      { name: 'existing-repo', security: 'managed', 'branch-protection': 'managed', access: [] },
     ],
   };
 
@@ -216,7 +278,7 @@ describe('processTeams', () => {
         name: 'my-repo',
         security: 'managed',
         'branch-protection': 'managed',
-        teams: [{ name: 'My Team' }],
+        access: [{ team: 'My Team', role: 'own' }],
       },
     ],
   };
@@ -236,18 +298,18 @@ describe('processTeams', () => {
         return { data: { slug: 'my-team', name: 'My Team' } };
       },
       addOrUpdateRepo: async (params) => {
-        permsGranted.push(params.repo);
+        permsGranted.push({ repo: params.repo, permission: params.permission });
       },
     });
 
     const result = await processTeams(octokit, 'my-org', config, { skipTeamSync: true });
     assert.deepEqual(teamCreated, ['My Team']);
-    assert.deepEqual(permsGranted, ['my-repo']);
+    assert.deepEqual(permsGranted, [{ repo: 'my-repo', permission: 'Own' }]); // 'own' maps to API value 'Own'
     assert.ok(result.actions.some(a => a.includes('Created team')));
     assert.ok(result.actions.some(a => a.includes('granted')));
   });
 
-  it('uses maintain permission with --skip-custom-role', async () => {
+  it('uses maintain for own role with --skip-custom-role', async () => {
     const permsGranted = [];
     const octokit = makeOctokit({
       paginate: async (fn) => {
@@ -259,10 +321,43 @@ describe('processTeams', () => {
     });
 
     await processTeams(octokit, 'my-org', config, { skipTeamSync: true, skipCustomRole: true });
-    assert.ok(permsGranted.every(p => p === 'maintain'));
+    assert.deepEqual(permsGranted, ['maintain']);
   });
 
-  it('uses Own permission by default', async () => {
+  it('does not substitute write or triage with --skip-custom-role', async () => {
+    const permsGranted = [];
+    const mixedConfig = {
+      repositories: [
+        {
+          name: 'repo-a',
+          security: 'managed',
+          'branch-protection': 'managed',
+          access: [{ team: 'Write Team', role: 'write' }],
+        },
+        {
+          name: 'repo-b',
+          security: 'managed',
+          'branch-protection': 'managed',
+          access: [{ team: 'Triage Team', role: 'triage' }],
+        },
+      ],
+    };
+    const octokit = makeOctokit({
+      paginate: async (fn) => {
+        if (fn === octokit.rest.teams.list) return [];
+        return [];
+      },
+      teamsCreate: async (params) => ({ data: { slug: params.name.toLowerCase(), name: params.name } }),
+      addOrUpdateRepo: async (params) => { permsGranted.push(params.permission); },
+    });
+
+    await processTeams(octokit, 'my-org', mixedConfig, { skipTeamSync: true, skipCustomRole: true });
+    assert.ok(permsGranted.includes('push'));   // 'write' maps to API value 'push'
+    assert.ok(permsGranted.includes('triage'));
+    assert.ok(!permsGranted.includes('maintain'));
+  });
+
+  it('uses own permission by default', async () => {
     const permsGranted = [];
     const octokit = makeOctokit({
       paginate: async (fn) => {
@@ -274,7 +369,7 @@ describe('processTeams', () => {
     });
 
     await processTeams(octokit, 'my-org', config, { skipTeamSync: true });
-    assert.ok(permsGranted.every(p => p === 'Own'));
+    assert.deepEqual(permsGranted, ['Own']); // 'own' maps to API value 'Own'
   });
 
   it('grants new repo permission on team update', async () => {
@@ -297,6 +392,99 @@ describe('processTeams', () => {
     assert.ok(result.actions.some(a => a.includes('granted')));
   });
 
+  it('updates role when it changed for an existing repo', async () => {
+    const permsGranted = [];
+    const triageConfig = {
+      repositories: [{
+        name: 'my-repo',
+        security: 'managed',
+        'branch-protection': 'managed',
+        access: [{ team: 'My Team', role: 'triage' }],
+      }],
+    };
+    const octokit = makeOctokit({
+      paginate: async (fn) => {
+        if (fn === octokit.rest.teams.list) return [{ name: 'My Team', slug: 'my-team' }];
+        if (fn === octokit.rest.teams.listReposInOrg) {
+          return [{ name: 'my-repo', role_name: 'Own' }]; // GitHub returns 'Own' for custom role
+        }
+        return [];
+      },
+      addOrUpdateRepo: async (params) => {
+        permsGranted.push({ repo: params.repo, permission: params.permission });
+      },
+    });
+
+    const result = await processTeams(octokit, 'my-org', triageConfig, { skipTeamSync: true });
+    assert.deepEqual(permsGranted, [{ repo: 'my-repo', permission: 'triage' }]);
+    assert.ok(result.actions.some(a => a.includes('updated') && a.includes('triage')));
+  });
+
+  it('sends push to API when config role is write', async () => {
+    const permsGranted = [];
+    const writeConfig = {
+      repositories: [{
+        name: 'my-repo',
+        security: 'managed',
+        'branch-protection': 'managed',
+        access: [{ team: 'My Team', role: 'write' }],
+      }],
+    };
+    const octokit = makeOctokit({
+      paginate: async (fn) => {
+        if (fn === octokit.rest.teams.list) return [];
+        return [];
+      },
+      teamsCreate: async () => ({ data: { slug: 'my-team', name: 'My Team' } }),
+      addOrUpdateRepo: async (params) => { permsGranted.push(params.permission); },
+    });
+
+    await processTeams(octokit, 'my-org', writeConfig, { skipTeamSync: true });
+    assert.deepEqual(permsGranted, ['push']); // 'write' maps to API value 'push'
+  });
+
+  it('does not update when write role is already correct (API returns push)', async () => {
+    let called = false;
+    const writeConfig = {
+      repositories: [{
+        name: 'my-repo',
+        security: 'managed',
+        'branch-protection': 'managed',
+        access: [{ team: 'My Team', role: 'write' }],
+      }],
+    };
+    const octokit = makeOctokit({
+      paginate: async (fn) => {
+        if (fn === octokit.rest.teams.list) return [{ name: 'My Team', slug: 'my-team' }];
+        if (fn === octokit.rest.teams.listReposInOrg) {
+          return [{ name: 'my-repo', role_name: 'push' }]; // GitHub returns 'push' for write
+        }
+        return [];
+      },
+      addOrUpdateRepo: async () => { called = true; },
+    });
+
+    await processTeams(octokit, 'my-org', writeConfig, { skipTeamSync: true });
+    assert.equal(called, false);
+  });
+
+  it('does not call addOrUpdateRepo when role is unchanged', async () => {
+    let called = false;
+    const octokit = makeOctokit({
+      paginate: async (fn) => {
+        if (fn === octokit.rest.teams.list) return [{ name: 'My Team', slug: 'my-team' }];
+        if (fn === octokit.rest.teams.listReposInOrg) {
+          return [{ name: 'my-repo', role_name: 'Own' }]; // GitHub returns 'Own' (capital O), config is 'own'
+        }
+        return [];
+      },
+      addOrUpdateRepo: async () => { called = true; },
+    });
+
+    await processTeams(octokit, 'my-org', config, { skipTeamSync: true });
+    assert.equal(called, false);
+  });
+
   it('revokes removed repo permission on team update', async () => {
     const permsRevoked = [];
     const octokit = makeOctokit({
@@ -305,7 +493,7 @@ describe('processTeams', () => {
           return [{ name: 'My Team', slug: 'my-team' }];
         }
         if (fn === octokit.rest.teams.listReposInOrg) {
-          return [{ name: 'my-repo' }, { name: 'old-repo' }];
+          return [{ name: 'my-repo', role_name: 'Own' }, { name: 'old-repo', role_name: 'Own' }];
         }
         return [];
       },
@@ -319,7 +507,7 @@ describe('processTeams', () => {
   it('deletes teams not in config', async () => {
     const deleted = [];
     const configNoTeams = {
-      repositories: [{ name: 'my-repo', security: 'managed', 'branch-protection': 'managed', teams: [] }],
+      repositories: [{ name: 'my-repo', security: 'managed', 'branch-protection': 'managed', access: [] }],
     };
     const octokit = makeOctokit({
       paginate: async (fn) => {
@@ -384,8 +572,8 @@ describe('processTeams', () => {
 describe('enforceSecurityConfig', () => {
   const config = {
     repositories: [
-      { name: 'managed-repo', security: 'managed', 'branch-protection': 'managed', teams: [] },
-      { name: 'custom-repo', security: 'custom', 'branch-protection': 'managed', teams: [] },
+      { name: 'managed-repo', security: 'managed', 'branch-protection': 'managed', access: [] },
+      { name: 'custom-repo', security: 'custom', 'branch-protection': 'managed', access: [] },
     ],
   };
 
@@ -506,8 +694,8 @@ describe('enforceSecurityConfig', () => {
 describe('enforceBranchProtection', () => {
   const config = {
     repositories: [
-      { name: 'managed-repo', security: 'managed', 'branch-protection': 'managed', teams: [] },
-      { name: 'custom-repo', security: 'managed', 'branch-protection': 'custom', teams: [] },
+      { name: 'managed-repo', security: 'managed', 'branch-protection': 'managed', access: [] },
+      { name: 'custom-repo', security: 'managed', 'branch-protection': 'custom', access: [] },
     ],
   };
 

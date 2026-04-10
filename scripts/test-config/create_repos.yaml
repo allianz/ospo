@@ -11,6 +11,8 @@ repositories:
 
   - name: "opso-test"
     security: custom
+    access:
+    - team: "Allianz OSPO"
 
 
   - name: "test-permissions"
