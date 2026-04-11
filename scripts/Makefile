@@ -17,7 +17,7 @@ test_lint_repos: check-token
 	node lint_repos.js --org ospo-sandbox --config test-config/lint_repos.yaml --debug
 
 test_archive_repos: check-token
-	./archive_repos.sh --org ospo-sandbox --config test-config/archive_repos.yaml --debug
+	node archive_repos.js --org ospo-sandbox --config test-config/archive_repos.yaml --debug
 
 test_create_repos: check-token
 	node create_repos.js --org ospo-sandbox --config test-config/create_repos.yaml --debug
@@ -28,7 +28,7 @@ dry_run_lint_repos: check-token
 	node lint_repos.js --org allianz --dry-run
 
 dry_run_archive_repos: check-token
-	./archive_repos.sh --org allianz --dry-run
+	node archive_repos.js --org allianz --dry-run
 
 dry_run_create_repos: check-token
 	node create_repos.js --org allianz --dry-run
