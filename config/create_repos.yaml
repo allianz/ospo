@@ -1,21 +1,51 @@
 # Configuration File for GitHub Repositories
 #
 # This file manages settings for GitHub repositories within the Allianz organization.
-
+# Each entry represents a repository that should exist in the org with the
+# specified team assignments and policy settings.
+#
+# Adding a new repository:
+#   1. Add an entry under `repositories` with the repo name
+#   2. Optionally assign teams (team name must match the Entra ID group name)
+#   3. Optionally configure security and branch-protection policies
+#   4. Open a pull request — the pipeline creates the repo on merge
+#
 # Parameters:
-#   - name: Repository name. Use only lowercase letters and dashes.
-#   - team name: Must be identical to the corresponding GIAM group.
+#   name:               Repository name (lowercase, alphanumeric, dots, hyphens)
+#   security:           'managed' (default) — OSPO enforces GHAS settings via org config
+#                       'custom' — repo team controls GHAS settings
+#   branch-protection:  'managed' (default) — OSPO enforces branch protection via org ruleset
+#                       'custom' — repo team defines its own branch protection rules
+#   access[].team:      Team display name; must match the corresponding Entra ID group name exactly
+#   access[].role:      'own' (default) — full repo ownership via custom org role
+#                       'write' — push access
+#                       'triage' — read + triage issues and PRs, no push access
+#
+# Example:
+#   - name: "my-project"
+#     security: managed
+#     branch-protection: managed
+#     access:
+#     - team: "My Project Team"
+#       role: own
+#     - team: "Ops Team"
+#       role: triage
+#
 repositories:
 
   - name: ".github"
+    access:
+    - team: "Allianz OSPO"
 
   - name: "ospo"
-    teams:
-    - name: "Allianz OSPO"
+    access:
+    - team: "Allianz OSPO"
 
   - name: "ng-aquila"
-    teams:
-    - name: "ng-aquila"
+    security: custom
+    branch-protection: custom
+    access:
+    - team: "ng-aquila"
 
   - name: "calculus-prime-pnc"
 
@@ -28,4 +58,3 @@ repositories:
   - name: "merge-bot-config"
 
   - name: "merge-processor"
-

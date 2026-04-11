@@ -13,6 +13,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v6
 
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install dependencies
+      run: npm ci
+      working-directory: scripts
+
     - uses: actions/create-github-app-token@v3
       id: app-token
       with:
@@ -22,8 +30,8 @@ jobs:
 
     - name: Dry-run create repositories and teams in allianz
       env:
-        GH_TOKEN: ${{ steps.app-token.outputs.token }}
-      run: scripts/create_repos.sh --org allianz --dry-run
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: node scripts/create_repos.js --org allianz --dry-run
 
   apply:
     needs: dry-run
@@ -32,6 +40,14 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v6
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+
+    - name: Install dependencies
+      run: npm ci
+      working-directory: scripts
 
     - uses: actions/create-github-app-token@v3
       id: app-token
@@ -42,5 +58,5 @@ jobs:
 
     - name: Create repositories and teams in allianz
       env:
-        GH_TOKEN: ${{ steps.app-token.outputs.token }}
-      run: scripts/create_repos.sh --org allianz
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+      run: node scripts/create_repos.js --org allianz

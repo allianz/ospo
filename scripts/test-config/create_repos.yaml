@@ -10,11 +10,14 @@ repositories:
   - name: "new-project"
 
   - name: "opso-test"
+    security: custom
+    access:
+    - team: "Allianz OSPO"
+
 
   - name: "test-permissions"
-    teams:
-    - name: "Allianz OSPO"
 
 
+  - name: "zzz-test-repo"
 
-    
+  - name: "yyy-test-repo"
