@@ -69,6 +69,20 @@ describe('parseRelativeDate', () => {
     assert.ok(Math.abs(result.getTime() - expected.getTime()) < 1000);
   });
 
+  it('parses "2 minutes ago"', () => {
+    const result = parseRelativeDate('2 minutes ago');
+    const expected = new Date();
+    expected.setUTCMinutes(expected.getUTCMinutes() - 2);
+    assert.ok(Math.abs(result.getTime() - expected.getTime()) < 1000);
+  });
+
+  it('parses singular "1 minute ago"', () => {
+    const result = parseRelativeDate('1 minute ago');
+    const expected = new Date();
+    expected.setUTCMinutes(expected.getUTCMinutes() - 1);
+    assert.ok(Math.abs(result.getTime() - expected.getTime()) < 1000);
+  });
+
   it('parses singular "1 month ago"', () => {
     const result = parseRelativeDate('1 month ago');
     const expected = new Date();

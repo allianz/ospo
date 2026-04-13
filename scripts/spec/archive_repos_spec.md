@@ -118,10 +118,11 @@ grace_period: "40 days ago"
 
 Relative date strings like `"2 years ago"` or `"40 days ago"` are parsed by `parseRelativeDate(str)`:
 
-1. Validate against regex: `/^(\d+)\s+(days?|months?|years?)\s+ago$/`
+1. Validate against regex: `/^(\d+)\s+(minutes?|days?|months?|years?)\s+ago$/`
 2. Throw descriptive error if the string does not match.
 3. Start from `new Date()` (current time).
 4. Subtract using UTC methods:
+   - `minute`/`minutes` → `date.setUTCMinutes(date.getUTCMinutes() - n)`
    - `day`/`days` → `date.setUTCDate(date.getUTCDate() - n)`
    - `month`/`months` → `date.setUTCMonth(date.getUTCMonth() - n)`
    - `year`/`years` → `date.setUTCFullYear(date.getUTCFullYear() - n)`

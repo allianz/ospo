@@ -3,7 +3,7 @@ excluded_repos:
   - new-project
  
 # Time period to consider a repository as stale (e.g., "2 years ago")
-stale_period: "1 day ago"
+stale_period: "2 minutes ago"
 
 # Grace period after issuing a stale warning (e.g., "40 days ago")
-grace_period: "1 day ago"
+grace_period: "10 minutes ago"

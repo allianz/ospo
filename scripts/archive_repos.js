@@ -37,14 +37,16 @@ OSPO Team`;
 // ── Date parsing ─────────────────────────────────────────────────────────────
 
 export function parseRelativeDate(str) {
-  const match = str.match(/^(\d+)\s+(days?|months?|years?)\s+ago$/);
+  const match = str.match(/^(\d+)\s+(minutes?|days?|months?|years?)\s+ago$/);
   if (!match) {
     throw new Error(`Invalid relative date: "${str}". Expected format: "<N> <unit> ago" (e.g. "2 years ago")`);
   }
   const n = parseInt(match[1], 10);
   const unit = match[2];
   const date = new Date();
-  if (unit.startsWith('day')) {
+  if (unit.startsWith('minute')) {
+    date.setUTCMinutes(date.getUTCMinutes() - n);
+  } else if (unit.startsWith('day')) {
     date.setUTCDate(date.getUTCDate() - n);
   } else if (unit.startsWith('month')) {
     date.setUTCMonth(date.getUTCMonth() - n);
