@@ -94,8 +94,11 @@ describe('parseRelativeDate', () => {
     assert.throws(() => parseRelativeDate('last tuesday'), /Invalid relative date/);
   });
 
-  it('throws on missing "ago"', () => {
-    assert.throws(() => parseRelativeDate('2 years'), /Invalid relative date/);
+  it('parses without "ago" suffix', () => {
+    const result = parseRelativeDate('2 years');
+    const expected = new Date();
+    expected.setUTCFullYear(expected.getUTCFullYear() - 2);
+    assert.equal(result.getUTCFullYear(), expected.getUTCFullYear());
   });
 
   it('throws on non-numeric count', () => {
@@ -116,43 +119,43 @@ describe('loadConfig', () => {
       'excluded_repos:',
       '  - .github',
       '  - ospo',
-      'stale_period: "2 years ago"',
-      'grace_period: "40 days ago"',
+      'warn_after: "2 years"',
+      'grace_period: "40 days"',
     ].join('\n'));
     const cfg = await loadConfig(file);
-    assert.equal(cfg.stale_period, '2 years ago');
-    assert.equal(cfg.grace_period, '40 days ago');
+    assert.equal(cfg.warn_after, '2 years');
+    assert.equal(cfg.grace_period, '40 days');
     assert.deepEqual(cfg.excluded_repos, ['.github', 'ospo']);
   });
 
   it('defaults excluded_repos to empty array', async () => {
     const file = path.join(tmpDir, 'no-excluded.yaml');
-    await writeFile(file, 'stale_period: "1 year ago"\ngrace_period: "30 days ago"\n');
+    await writeFile(file, 'warn_after: "1 year"\ngrace_period: "30 days"\n');
     const cfg = await loadConfig(file);
     assert.deepEqual(cfg.excluded_repos, []);
   });
 
-  it('throws when stale_period is missing', async () => {
-    const file = path.join(tmpDir, 'no-stale.yaml');
-    await writeFile(file, 'grace_period: "40 days ago"\n');
-    await assert.rejects(() => loadConfig(file), /stale_period/);
+  it('throws when warn_after is missing', async () => {
+    const file = path.join(tmpDir, 'no-warn.yaml');
+    await writeFile(file, 'grace_period: "40 days"\n');
+    await assert.rejects(() => loadConfig(file), /warn_after/);
   });
 
   it('throws when grace_period is missing', async () => {
     const file = path.join(tmpDir, 'no-grace.yaml');
-    await writeFile(file, 'stale_period: "2 years ago"\n');
+    await writeFile(file, 'warn_after: "2 years"\n');
     await assert.rejects(() => loadConfig(file), /grace_period/);
   });
 
-  it('throws when stale_period has invalid format', async () => {
-    const file = path.join(tmpDir, 'bad-stale.yaml');
-    await writeFile(file, 'stale_period: "last week"\ngrace_period: "40 days ago"\n');
+  it('throws when warn_after has invalid format', async () => {
+    const file = path.join(tmpDir, 'bad-warn.yaml');
+    await writeFile(file, 'warn_after: "last week"\ngrace_period: "40 days"\n');
     await assert.rejects(() => loadConfig(file), /Invalid relative date/);
   });
 
   it('throws when grace_period has invalid format', async () => {
     const file = path.join(tmpDir, 'bad-grace.yaml');
-    await writeFile(file, 'stale_period: "2 years ago"\ngrace_period: "soon"\n');
+    await writeFile(file, 'warn_after: "2 years"\ngrace_period: "soon"\n');
     await assert.rejects(() => loadConfig(file), /Invalid relative date/);
   });
 });

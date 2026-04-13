@@ -1,9 +1,9 @@
-# List of repositories to exclude from automatic archiving after stale period
+# List of repositories to exclude from automatic archiving
 excluded_repos:
   - new-project
- 
-# Time period to consider a repository as stale (e.g., "2 years ago")
-stale_period: "2 minutes ago"
 
-# Grace period after issuing a stale warning (e.g., "40 days ago")
-grace_period: "10 minutes ago"
+# How long without a push before a warning issue is created (e.g., "2 years")
+warn_after: "2 minutes"
+
+# How long the warning stays open before the repo is archived (e.g., "40 days")
+grace_period: "10 minutes"

@@ -37,9 +37,9 @@ OSPO Team`;
 // ── Date parsing ─────────────────────────────────────────────────────────────
 
 export function parseRelativeDate(str) {
-  const match = str.match(/^(\d+)\s+(minutes?|days?|months?|years?)\s+ago$/);
+  const match = str.match(/^(\d+)\s+(minutes?|days?|months?|years?)(\s+ago)?$/);
   if (!match) {
-    throw new Error(`Invalid relative date: "${str}". Expected format: "<N> <unit> ago" (e.g. "2 years ago")`);
+    throw new Error(`Invalid relative date: "${str}". Expected format: "<N> <unit>" (e.g. "2 years")`);
   }
   const n = parseInt(match[1], 10);
   const unit = match[2];
@@ -61,14 +61,14 @@ export function parseRelativeDate(str) {
 export async function loadConfig(configPath) {
   const raw = await readFile(configPath, 'utf8');
   const config = yaml.load(raw);
-  if (!config.stale_period) {
-    throw new Error(`Config missing required field: stale_period (in ${configPath})`);
+  if (!config.warn_after) {
+    throw new Error(`Config missing required field: warn_after (in ${configPath})`);
   }
   if (!config.grace_period) {
     throw new Error(`Config missing required field: grace_period (in ${configPath})`);
   }
   // Validate date formats by parsing them
-  parseRelativeDate(config.stale_period);
+  parseRelativeDate(config.warn_after);
   parseRelativeDate(config.grace_period);
   config.excluded_repos = config.excluded_repos ?? [];
   return config;
@@ -206,7 +206,7 @@ async function main() {
   const config = await loadConfig(configPath);
   const octokit = new Octokit({ auth: token });
 
-  const staleCutoff = parseRelativeDate(config.stale_period);
+  const staleCutoff = parseRelativeDate(config.warn_after);
   const graceCutoff = parseRelativeDate(config.grace_period);
 
   if (debug) {

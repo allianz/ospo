@@ -87,14 +87,13 @@ excluded_repos:
   - .github
   - ospo
 
-# Repos with no push activity older than this threshold are considered stale.
-# Format: "<N> <unit> ago" where unit is day(s), month(s), or year(s).
-stale_period: "2 years ago"
+# How long without a push before a warning issue is created.
+# Format: "<N> <unit>" where unit is day(s), month(s), or year(s).
+warn_after: "2 years"
 
-# After a warning issue is created, the repo is archived only once
-# the issue has been open longer than this threshold.
-# Format: "<N> <unit> ago" where unit is day(s), month(s), or year(s).
-grace_period: "40 days ago"
+# How long the warning stays open before the repo is archived.
+# Format: "<N> <unit>" where unit is day(s), month(s), or year(s).
+grace_period: "40 days"
 ```
 
 ### Field reference
@@ -102,13 +101,13 @@ grace_period: "40 days ago"
 | Field | Type | Default | Description |
 |---|---|---|---|
 | `excluded_repos` | Array of strings | `[]` | Repository names to skip. These repos are never checked and never appear in output. |
-| `stale_period` | String | required | Relative date string. Repos whose `pushedAt` is before this date are stale. |
-| `grace_period` | String | required | Relative date string. Warning issues created before this date have an expired grace period. |
+| `warn_after` | String | required | Duration string. Repos with no push activity for this long get a warning issue. |
+| `grace_period` | String | required | Duration string. Warning issues open for this long trigger archival. |
 
 ### Validation
 
-- `stale_period` must be present and must match the pattern `"<N> <unit> ago"`.
-- `grace_period` must be present and must match the pattern `"<N> <unit> ago"`.
+- `warn_after` must be present and must match the pattern `"<N> <unit>"`.
+- `grace_period` must be present and must match the pattern `"<N> <unit>"`.
 - `excluded_repos` defaults to `[]` if absent.
 - Unknown fields are ignored (forward-compatible).
 
@@ -116,13 +115,12 @@ grace_period: "40 days ago"
 
 ## Date Parsing
 
-Relative date strings like `"2 years ago"` or `"40 days ago"` are parsed by `parseRelativeDate(str)`:
+Duration strings like `"2 years"` or `"40 days"` are parsed by `parseRelativeDate(str)`:
 
-1. Validate against regex: `/^(\d+)\s+(minutes?|days?|months?|years?)\s+ago$/`
+1. Validate against regex: `/^(\d+)\s+(days?|months?|years?)(\s+ago)?$/`
 2. Throw descriptive error if the string does not match.
 3. Start from `new Date()` (current time).
 4. Subtract using UTC methods:
-   - `minute`/`minutes` → `date.setUTCMinutes(date.getUTCMinutes() - n)`
    - `day`/`days` → `date.setUTCDate(date.getUTCDate() - n)`
    - `month`/`months` → `date.setUTCMonth(date.getUTCMonth() - n)`
    - `year`/`years` → `date.setUTCFullYear(date.getUTCFullYear() - n)`
@@ -138,7 +136,7 @@ This function is exported for unit testing.
 1. Read GITHUB_TOKEN (or GH_TOKEN) from environment — exit with clear error if missing
 2. Parse CLI arguments (--org, --config, --dry-run, --debug)
 3. Load and validate YAML config with js-yaml
-4. Convert stale_period and grace_period to Date objects via parseRelativeDate()
+4. Convert warn_after and grace_period to Date objects via parseRelativeDate()
 5. Instantiate Octokit with the token
 6. Fetch all public repos in org (paginated):
      octokit.paginate(octokit.rest.repos.listForOrg, { org, type: 'public', per_page: 100 })
@@ -366,15 +364,15 @@ Tests use a `makeOctokit(overrides)` helper to provide mock API methods, and `ma
 
 | Test | Input | Assertion |
 |---|---|---|
-| Parses years | `"2 years ago"` | Year is `currentYear - 2` |
-| Parses days | `"40 days ago"` | Date ~40 days before now (1s tolerance) |
-| Parses months | `"6 months ago"` | Month ~6 months before now |
-| Singular year | `"1 year ago"` | Year is `currentYear - 1` |
-| Singular day | `"1 day ago"` | Date 1 day before now |
-| Singular month | `"1 month ago"` | Month 1 month before now |
+| Parses years | `"2 years"` | Year is `currentYear - 2` |
+| Parses days | `"40 days"` | Date ~40 days before now (1s tolerance) |
+| Parses months | `"6 months"` | Month ~6 months before now |
+| Singular year | `"1 year"` | Year is `currentYear - 1` |
+| Singular day | `"1 day"` | Date 1 day before now |
+| Singular month | `"1 month"` | Month 1 month before now |
+| With "ago" suffix | `"2 years ago"` | Also accepted (backwards-compatible) |
 | Invalid format | `"last tuesday"` | Throws `/Invalid relative date/` |
-| Missing "ago" | `"2 years"` | Throws `/Invalid relative date/` |
-| Non-numeric count | `"many days ago"` | Throws `/Invalid relative date/` |
+| Non-numeric count | `"many days"` | Throws `/Invalid relative date/` |
 
 ### loadConfig
 
@@ -382,9 +380,9 @@ Tests use a `makeOctokit(overrides)` helper to provide mock API methods, and `ma
 |---|---|
 | Parses valid config | Returns object with all fields |
 | Defaults excluded_repos to `[]` | When field absent |
-| Throws on missing stale_period | Error matches `/stale_period/` |
+| Throws on missing warn_after | Error matches `/warn_after/` |
 | Throws on missing grace_period | Error matches `/grace_period/` |
-| Throws on invalid stale_period format | Error matches `/Invalid relative date/` |
+| Throws on invalid warn_after format | Error matches `/Invalid relative date/` |
 | Throws on invalid grace_period format | Error matches `/Invalid relative date/` |
 
 ### processRepos
