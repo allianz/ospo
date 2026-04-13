@@ -14,25 +14,26 @@ const defaultConfigPath = path.join(repoRoot, 'config', 'archive_repos.yaml');
 
 const ISSUE_TITLE = 'Inactive Repository Reminder';
 
-const ISSUE_BODY = `Dear Maintainers,
+function buildIssueBody(gracePeriod) {
+  return `Dear Maintainers,
 
-This repository has been identified as stale due to inactivity for a long time. If no action is taken within the next 30 days, this repository will be archived.
+This repository has had no activity for an extended period. Inactive repositories tend to accumulate outdated dependencies and security vulnerabilities over time. To prevent this, this repository will be archived if no action is taken within the next ${gracePeriod}.
 
-**Action Required:**
-We recommend creating an empty commit to demonstrate ongoing activity. This can be achieved by running the following command:
-
-\`\`\`bash
-git commit --allow-empty -m "Keep repository active"
-\`\`\`
+**What you can do:**
+- Review and update dependencies
+- Address any open Dependabot or security alerts
+- If the project is stable and needs no changes, push an empty commit to confirm continued ownership:
+  \`\`\`bash
+  git commit --allow-empty -m "Keep repository active"
+  \`\`\`
 
 **Request for Unarchival:**
 In case the repository is archived and there's a legitimate reason to revive it, please contact ospo@allianz.com with your request for unarchiving.
 
-Thank you for your attention and cooperation.
-
 Best regards,
 
 OSPO Team`;
+}
 
 // ── Date parsing ─────────────────────────────────────────────────────────────
 
@@ -102,7 +103,7 @@ async function closeIssue(octokit, org, repo, issueNumber) {
 
 export async function processRepos(octokit, org, repos, config, opts = {}) {
   const { dryRun = false, debug = false } = opts;
-  const { staleCutoff, graceCutoff } = config;
+  const { staleCutoff, graceCutoff, gracePeriod } = config;
   const planned = [];
 
   console.log('READING REPOSITORIES...');
@@ -124,7 +125,7 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
         if (dryRun) {
           planned.push(`Would create an issue for '${org}/${repo.name}'.`);
         } else {
-          await createIssue(octokit, org, repo.name, ISSUE_TITLE, ISSUE_BODY);
+          await createIssue(octokit, org, repo.name, ISSUE_TITLE, buildIssueBody(gracePeriod));
           console.log('  Created warning issue.');
         }
         effectiveIssueDate = new Date();
@@ -216,7 +217,6 @@ async function main() {
 
   const allRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
     org,
-    type: 'public',
     per_page: 100,
   });
 
@@ -234,12 +234,16 @@ async function main() {
     console.log('');
   }
 
-  const { planned } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff }, { dryRun, debug });
+  const { planned } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff, gracePeriod: config.grace_period }, { dryRun, debug });
 
-  if (dryRun && planned.length > 0) {
-    console.log('\nPlanned changes:');
-    for (const msg of planned) {
-      console.log(`  ${msg}`);
+  if (dryRun) {
+    if (planned.length > 0) {
+      console.log('\nPlanned changes:');
+      for (const msg of planned) {
+        console.log(`  ${msg}`);
+      }
+    } else {
+      console.log('\nNo changes needed.');
     }
   }
 }

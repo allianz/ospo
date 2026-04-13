@@ -168,14 +168,15 @@ describe('processRepos', () => {
   const staleCutoff = new Date('2024-01-01T00:00:00Z');
   // graceCutoff: issues created before 2026-03-01 have expired grace period
   const graceCutoff = new Date('2026-03-01T00:00:00Z');
-  const config = { staleCutoff, graceCutoff };
+  const config = { staleCutoff, graceCutoff, gracePeriod: '40 days' };
 
   it('creates a warning issue for stale repo with no existing issue', async () => {
     let createCalled = false;
     let archiveCalled = false;
+    let issueBody = null;
     const octokit = makeOctokit({
       paginate: async () => [],  // no open issues
-      issuesCreate: async () => { createCalled = true; return { data: {} }; },
+      issuesCreate: async (params) => { createCalled = true; issueBody = params.body; return { data: {} }; },
       reposUpdate: async () => { archiveCalled = true; return { data: {} }; },
     });
     const repos = [makeRepo('old-repo', '2023-06-01T00:00:00Z')];
@@ -184,6 +185,7 @@ describe('processRepos', () => {
 
     assert.ok(createCalled, 'should have created warning issue');
     assert.ok(!archiveCalled, 'should NOT archive (grace period just started)');
+    assert.ok(issueBody.includes('40 days'), 'issue body should contain the grace period');
   });
 
   it('does not create or archive when stale repo has issue with unexpired grace period', async () => {

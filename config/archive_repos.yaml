@@ -7,4 +7,4 @@ excluded_repos:
 warn_after: "2 years"
 
 # How long the warning stays open before the repo is archived (e.g., "40 days")
-grace_period: "40 days"
+grace_period: "30 days"
