@@ -11,6 +11,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+      - name: Setup Node.js
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: scripts
+
       - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3
         id: app-token
         with:
@@ -20,5 +29,5 @@ jobs:
 
       - name: Archive Allianz Repos
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: scripts/archive_repos.sh --org allianz
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: node scripts/archive_repos.js --org allianz
