@@ -105,6 +105,7 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
   const { dryRun = false, debug = false } = opts;
   const { staleCutoff, graceCutoff, gracePeriod } = config;
   const planned = [];
+  const upcoming = [];
 
   console.log('READING REPOSITORIES...');
 
@@ -144,6 +145,9 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
           console.log(`  Archived the repository '${org}/${repo.name}'.`);
         }
       } else {
+        const msLeft = effectiveIssueDate.getTime() - graceCutoff.getTime();
+        const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+        upcoming.push({ repo: repo.name, daysLeft });
         if (!dryRun) console.log(`  ${org}/${repo.name} has remaining grace period.`);
       }
     } else {
@@ -164,7 +168,9 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
     if (!dryRun) console.log('');
   }
 
-  return { planned };
+  upcoming.sort((a, b) => a.daysLeft - b.daysLeft);
+
+  return { planned, upcoming };
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -234,17 +240,26 @@ async function main() {
     console.log('');
   }
 
-  const { planned } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff, gracePeriod: config.grace_period }, { dryRun, debug });
+  const { planned, upcoming } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff, gracePeriod: config.grace_period }, { dryRun, debug });
 
-  if (dryRun) {
-    if (planned.length > 0) {
-      console.log('\nPlanned changes:');
-      for (const msg of planned) {
-        console.log(`  ${msg}`);
-      }
-    } else {
-      console.log('\nNo changes needed.');
+  if (dryRun && planned.length > 0) {
+    console.log('\nPlanned changes:');
+    for (const msg of planned) {
+      console.log(`  ${msg}`);
     }
+  }
+
+  if (upcoming.length > 0) {
+    const maxName = Math.max(...upcoming.map(u => u.repo.length));
+    console.log('\nUpcoming archival:');
+    for (const { repo, daysLeft } of upcoming) {
+      const label = daysLeft <= 1 ? `${daysLeft} day left` : `${daysLeft} days left`;
+      console.log(`  ${repo.padEnd(maxName)}  ${label}`);
+    }
+  }
+
+  if (planned.length === 0 && upcoming.length === 0) {
+    console.log('\nNo changes needed.');
   }
 }
 

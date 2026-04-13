@@ -200,10 +200,13 @@ describe('processRepos', () => {
     });
     const repos = [makeRepo('stale-repo', '2023-06-01T00:00:00Z')];
 
-    await processRepos(octokit, org, repos, config);
+    const { upcoming } = await processRepos(octokit, org, repos, config);
 
     assert.ok(!createCalled, 'should NOT create issue (already exists)');
     assert.ok(!archiveCalled, 'should NOT archive (grace period not expired)');
+    assert.equal(upcoming.length, 1, 'should have one upcoming entry');
+    assert.equal(upcoming[0].repo, 'stale-repo');
+    assert.equal(upcoming[0].daysLeft, 14, 'should be 14 days left (Mar 15 - Mar 1)');
   });
 
   it('archives stale repo when grace period has expired', async () => {
@@ -280,7 +283,7 @@ describe('processRepos', () => {
       makeRepo('active-repo', '2026-03-01T00:00:00Z'),
     ];
 
-    const { planned } = await processRepos(octokit, org, repos, config, { dryRun: true });
+    const { planned, upcoming } = await processRepos(octokit, org, repos, config, { dryRun: true });
 
     assert.ok(!createCalled, 'should NOT call issues.create in dry-run');
     assert.ok(!updateCalled, 'should NOT call issues.update in dry-run');
@@ -294,11 +297,44 @@ describe('processRepos', () => {
     });
     const repos = [makeRepo('stale-repo', '2023-06-01T00:00:00Z')];
 
-    const { planned } = await processRepos(octokit, org, repos, config, { dryRun: true });
+    const { planned, upcoming } = await processRepos(octokit, org, repos, config, { dryRun: true });
 
     const hasCreate = planned.some(m => m.includes('create an issue'));
     const hasArchive = planned.some(m => m.includes('archive'));
     assert.ok(hasCreate, 'should plan issue creation');
     assert.ok(!hasArchive, 'should NOT plan archive (grace period just started)');
+    assert.ok(upcoming.length > 0, 'should have upcoming entry for newly warned repo');
+  });
+
+  it('returns upcoming sorted by days left', async () => {
+    const octokit = makeOctokit({
+      paginate: async (fn, params) => {
+        if (params.repo === 'soon-repo') {
+          return [{ title: 'Inactive Repository Reminder', number: 1, created_at: '2026-03-05T00:00:00Z' }];
+        }
+        return [{ title: 'Inactive Repository Reminder', number: 2, created_at: '2026-03-20T00:00:00Z' }];
+      },
+    });
+    const repos = [
+      makeRepo('later-repo', '2023-01-01T00:00:00Z'),
+      makeRepo('soon-repo', '2023-01-01T00:00:00Z'),
+    ];
+
+    const { upcoming } = await processRepos(octokit, org, repos, config);
+
+    assert.equal(upcoming.length, 2);
+    assert.equal(upcoming[0].repo, 'soon-repo', 'soonest should be first');
+    assert.ok(upcoming[0].daysLeft < upcoming[1].daysLeft, 'should be sorted by days left');
+  });
+
+  it('active repos do not appear in upcoming', async () => {
+    const octokit = makeOctokit({
+      paginate: async () => [],
+    });
+    const repos = [makeRepo('healthy-repo', '2026-04-01T00:00:00Z')];
+
+    const { upcoming } = await processRepos(octokit, org, repos, config);
+
+    assert.equal(upcoming.length, 0);
   });
 });
