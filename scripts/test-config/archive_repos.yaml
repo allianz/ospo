@@ -3,7 +3,7 @@ excluded_repos:
   - new-project
 
 # How long without a push before a warning issue is created (e.g., "2 years")
-warn_after: "2 minutes"
+warn_after: "10 minutes"
 
 # How long the warning stays open before the repo is archived (e.g., "40 days")
-grace_period: "10 minutes"
+grace_period: "2 minutes"
