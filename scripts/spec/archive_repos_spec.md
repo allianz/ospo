@@ -319,6 +319,17 @@ my-stale-repo is stale.
   ...
 ```
 
+### Next warning issues
+
+After the main output, the script prints the top 3 repos (sorted by fewest days remaining) that will be the next to receive a warning issue. Only repos without an existing open warning issue are included.
+
+```
+Next warning issues (top 3):
+  repo-a    in 12 days
+  repo-b    in 45 days
+  repo-c    in 67 days
+```
+
 ### Dry-run mode
 
 Changes are collected but not executed. A summary block is appended at the end:
