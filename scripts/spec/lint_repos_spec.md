@@ -108,6 +108,12 @@ required_files:
   - pattern: "LICENSE*"
     description: "License File"
 
+# Minimum and maximum character length for repository descriptions (inclusive).
+# Descriptions outside this range fail the check. Defaults: min: 30, max: 150.
+description_length:
+  min: 30
+  max: 150
+
 # Controlled topic vocabulary. Every active repo must have 1–5 topics,
 # all from this list. An empty list disables the allowlist check (any topic accepted).
 allowed_topics:
@@ -122,7 +128,7 @@ allowed_topics:
 
 | # | Check | Data source | Pass condition |
 |---|---|---|---|
-| 1 | **Description** | GitHub API | `description` is non-null and non-empty |
+| 1 | **Description** | GitHub API | `description` is non-null, non-empty, and between `description_length.min` and `description_length.max` chars (inclusive) |
 | 2 | **Topics** | GitHub API | Between 1 and 5 topics assigned; all topics must be in `allowed_topics` |
 | 3 | **License type** | GitHub API | `license.spdx_id` is in `allowed_licenses`; fails with a clear message if API returns null (no license detected) or `NOASSERTION` (custom license text GitHub could not identify) |
 | 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths` (includes LICENSE*) |
@@ -138,8 +144,8 @@ Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the loc
 2. Parse CLI arguments
 3. Load config with js-yaml
 4. Instantiate Octokit with the token
-5. Fetch all public repos in org (paginated):
-     octokit.paginate(octokit.rest.repos.listForOrg, { org, type: "public" })
+5. Fetch all repos in org (paginated):
+     octokit.paginate(octokit.rest.repos.listForOrg, { org, type: "all" })
    Each repo object includes: name, description, license, topics, archived
    Split into active (archived: false, not excluded), archived (archived: true, not excluded), and excluded (name in `excluded_repos`) lists
 6. Run metadata checks (description, topics, license type) for all repos from API data
@@ -158,7 +164,7 @@ Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the loc
    e. Print summary line to stdout
 9. For each archived repo: run all checks (metadata only, no clone) and print summary line — no issue action taken
 10. For each excluded repo: print name only under "Skipped (configuration)" — no checks, no issue action
-11. Exit 0 if all active repos pass, exit 1 if any active repo failed (archived/excluded do not affect exit code)
+11. Always exit 0 — lint failures are expected, not errors. Only fatal errors (missing token, unreadable config, API failure) exit non-zero.
 ```
 
 ---

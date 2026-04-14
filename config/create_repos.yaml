@@ -4,11 +4,8 @@
 # Each entry represents a repository that should exist in the org with the
 # specified team assignments and policy settings.
 #
-# Adding a new repository:
-#   1. Add an entry under `repositories` with the repo name
-#   2. Optionally assign teams (team name must match the Entra ID group name)
-#   3. Optionally configure security and branch-protection policies
-#   4. Open a pull request — the pipeline creates the repo on merge
+# For more details, see the project launch guide:
+# https://cmp.allianz.net/spaces/ARGO/pages/2748785094/Launching+an+Open+Source+Project
 #
 # Parameters:
 #   name:               Repository name (lowercase, alphanumeric, dots, hyphens)
@@ -21,6 +18,12 @@
 #                       'write' — push access
 #                       'triage' — read + triage issues and PRs, no push access
 #
+# To add a repository, complete the project launch process first, then open a pull request.
+
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+# Repositories managed in the Allianz GitHub organization.
 # Example:
 #   - name: "my-project"
 #     security: managed
@@ -29,8 +32,7 @@
 #     - team: "My Project Team"
 #       role: own
 #     - team: "Ops Team"
-#       role: triage
-#
+#       role: triage 
 repositories:
 
   - name: ".github"

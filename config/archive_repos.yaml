@@ -1,3 +1,24 @@
+# Configuration File for Automatic Repository Archival
+#
+# This file controls how the archive script identifies and archives stale
+# repositories in the Allianz GitHub organization. Repositories with no push
+# activity for `warn_after` receive a warning issue; if still inactive after
+# `grace_period`, they are archived automatically.
+#
+# For more details, see the archiving guide:
+# https://cmp.allianz.net/spaces/ARGO/pages/2748799160/Archiving+a+Repository
+#
+# Parameters:
+#   excluded_repos:  Repository names to skip entirely — never checked, never archived.
+#   warn_after:      Duration string. Repos with no push activity for this long get a
+#                    warning issue. Format: "<N> day(s)|month(s)|year(s)"
+#   grace_period:    Duration string. Warning issues open for this long trigger archival.
+#                    Format: "<N> day(s)|month(s)|year(s)"
+#
+# Want to propose a change? Open a pull request and describe your reasoning.
+
+# ──────────────────────────────────────────────────────────────────────────────
+
 # List of repositories to exclude from automatic archiving after stale period
 excluded_repos:
   - .github
