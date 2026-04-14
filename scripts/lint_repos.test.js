@@ -294,7 +294,7 @@ describe('buildIssueBody', () => {
 
   it('includes the docs link', () => {
     const body = buildIssueBody([], docsLink);
-    assert.ok(body.includes(docsLink));
+    assert.match(body, /https:\/\/example\.com\/standards/);
   });
 
   it('marks failed checks with ❌', () => {
