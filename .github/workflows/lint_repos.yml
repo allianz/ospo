@@ -30,7 +30,7 @@ jobs:
         id: app-token
         with:
           app-id: ${{ secrets.ALLIANZ_APP_ID }}
-          private-key: ${{ secrets.ALLIANZ_PRIVATE_KEY }}
+          private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
 
       - name: Lint Allianz Repos
         env:
