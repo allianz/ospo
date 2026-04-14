@@ -22,16 +22,27 @@ export async function loadConfig(configPath) {
   }
   config.allowed_topics = config.allowed_topics ?? [];
   config.excluded_repos = config.excluded_repos ?? [];
+  config.description_length = {
+    min: config.description_length?.min ?? 30,
+    max: config.description_length?.max ?? 150,
+  };
   return config;
 }
 
 // ── Check functions ───────────────────────────────────────────────────────────
 
-export function checkDescription(repo) {
-  if (repo.description && repo.description.trim().length > 0) {
-    return { passed: true };
+export function checkDescription(repo, descriptionLength) {
+  const desc = repo.description?.trim() ?? '';
+  if (desc.length === 0) {
+    return { passed: false, detail: 'No description set' };
   }
-  return { passed: false, detail: 'No description set' };
+  if (desc.length < descriptionLength.min) {
+    return { passed: false, detail: `Description too short (${desc.length} chars); minimum is ${descriptionLength.min}` };
+  }
+  if (desc.length > descriptionLength.max) {
+    return { passed: false, detail: `Description too long (${desc.length} chars); maximum is ${descriptionLength.max}` };
+  }
+  return { passed: true };
 }
 
 export function checkTopics(repo, allowedTopics) {
@@ -273,7 +284,7 @@ async function main() {
     const cloneDir = path.join(lintCacheDir, repo.name);
     const allChecks = [];
 
-    allChecks.push({ checkName: 'Repository Description', ...checkDescription(repo) });
+    allChecks.push({ checkName: 'Repository Description', ...checkDescription(repo, config.description_length) });
     allChecks.push({ checkName: 'Repository Topics', ...checkTopics(repo, config.allowed_topics) });
     allChecks.push({ checkName: 'License Type', ...checkLicense(repo, config.allowed_licenses ?? []) });
 
@@ -320,7 +331,7 @@ async function main() {
     console.log('──────────────────');
     for (const repo of archived) {
       const allChecks = [];
-      allChecks.push({ checkName: 'Repository Description', ...checkDescription(repo) });
+      allChecks.push({ checkName: 'Repository Description', ...checkDescription(repo, config.description_length) });
       allChecks.push({ checkName: 'Repository Topics', ...checkTopics(repo, config.allowed_topics) });
       allChecks.push({ checkName: 'License Type', ...checkLicense(repo, config.allowed_licenses ?? []) });
       const failures = allChecks.filter(c => !c.passed);

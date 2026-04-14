@@ -108,6 +108,12 @@ required_files:
   - pattern: "LICENSE*"
     description: "License File"
 
+# Minimum and maximum character length for repository descriptions (inclusive).
+# Descriptions outside this range fail the check. Defaults: min: 30, max: 150.
+description_length:
+  min: 30
+  max: 150
+
 # Controlled topic vocabulary. Every active repo must have 1–5 topics,
 # all from this list. An empty list disables the allowlist check (any topic accepted).
 allowed_topics:
@@ -122,7 +128,7 @@ allowed_topics:
 
 | # | Check | Data source | Pass condition |
 |---|---|---|---|
-| 1 | **Description** | GitHub API | `description` is non-null and non-empty |
+| 1 | **Description** | GitHub API | `description` is non-null, non-empty, and between `description_length.min` and `description_length.max` chars (inclusive) |
 | 2 | **Topics** | GitHub API | Between 1 and 5 topics assigned; all topics must be in `allowed_topics` |
 | 3 | **License type** | GitHub API | `license.spdx_id` is in `allowed_licenses`; fails with a clear message if API returns null (no license detected) or `NOASSERTION` (custom license text GitHub could not identify) |
 | 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths` (includes LICENSE*) |

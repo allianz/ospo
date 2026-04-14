@@ -19,6 +19,8 @@
 #                     - pattern:      Case-insensitive prefix glob (e.g. README* matches README.md)
 #                     - description:  Check name shown in issue body and output
 #                     - search_paths: Directories to search (default: repo root only)
+#   description_length: Minimum and maximum character length for repository descriptions.
+#                     Descriptions outside this range fail the check.
 #   allowed_topics:   Approved topic vocabulary. Every repository must have 1–5 topics,
 #                     all from this list. An empty list disables the allowlist check.
 #
@@ -37,6 +39,12 @@ excluded_repos: [
   ".github",  # Special repository for GitHub configuration.
   "ng-aquila" # Custom MIT license. Needs clarification from legal.
 ]
+
+# Minimum and maximum character length for repository descriptions.
+# The description appears in the organisation repository list and in `gh repo view`.
+description_length:
+  min: 30
+  max: 150
 
 # Licenses repositories are allowed to use.
 # The value must match the SPDX identifier shown on https://spdx.org/licenses/
@@ -60,10 +68,10 @@ required_files:
   - pattern: "LICENSE*"
     description: "License File"
 
-# Approved topics for repositories.
-# Every repository must have between 1 and 5 topics set in its GitHub settings,
-# and all topics used must appear in this list.
-# To propose a new topic, add it below and open a pull request.
+# Allowed topics for repositories. New topics can be suggested.
+# Topics are used for filtering and organisation-wide statistics, so a controlled
+# vocabulary prevents synonym drift (e.g. "k8s" vs "kubernetes").
+# Every repository must have between 1 and 5 topics, all from this list.
 allowed_topics:
   # Project type                                                                                                                   
   - api                                                                                                                            
