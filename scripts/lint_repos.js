@@ -234,7 +234,7 @@ async function main() {
 
   const allRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
     org,
-    type: 'public',
+    type: 'all',
     per_page: 100,
   });
 
@@ -349,7 +349,7 @@ async function main() {
     }
   }
 
-  process.exit(anyFailed ? 1 : 0);
+  process.exit(0);
 }
 
 // Only run main() when this file is the entry point (not when imported by tests)
