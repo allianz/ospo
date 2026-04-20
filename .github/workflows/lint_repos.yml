@@ -34,6 +34,7 @@ jobs:
         with:
           app-id: ${{ secrets.ALLIANZ_APP_ID }}
           private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
+          owner: allianz
 
       - name: Lint Allianz Repos
         env:
