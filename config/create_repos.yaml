@@ -60,3 +60,8 @@ repositories:
   - name: "merge-bot-config"
 
   - name: "merge-processor"
+
+  - name: "yukimi"
+    access:
+    - team: "Yukimi"
+  
