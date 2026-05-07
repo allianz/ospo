@@ -1,3 +1,12 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Repository Archival Configuration
+#
+# This file controls how stale repositories are detected and archived in the
+# Allianz GitHub organization. Repos with no push activity for warn_after are
+# warned via a GitHub issue, then archived after the grace_period has elapsed.
+#
+# ──────────────────────────────────────────────────────────────────────────────
+
 # List of repositories to exclude from automatic archiving after stale period
 excluded_repos:
   - .github
