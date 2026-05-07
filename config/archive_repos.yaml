@@ -1,4 +1,5 @@
-# Configuration File for Automatic Repository Archival
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Repository Archival Configuration
 #
 # This file controls how the archive script identifies and archives stale
 # repositories in the Allianz GitHub organization. Repositories with no push

@@ -1,8 +1,11 @@
-# Configuration File for GitHub Repositories
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Repository Creation Configuration
 #
-# This file manages settings for GitHub repositories within the Allianz organization.
-# Each entry represents a repository that should exist in the org with the
-# specified team assignments and policy settings.
+# This file defines which repositories should exist in the Allianz GitHub
+# organization, along with their team assignments and policy settings.
+# The creation pipeline applies this configuration automatically on merge.
+#
+# ──────────────────────────────────────────────────────────────────────────────
 #
 # For more details, see the project launch guide:
 # https://cmp.allianz.net/spaces/ARGO/pages/2748785094/Launching+an+Open+Source+Project
