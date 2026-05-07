@@ -60,31 +60,64 @@ describe('loadConfig', () => {
     const cfg = await loadConfig(file);
     assert.deepEqual(cfg.excluded_repos, ['.github', 'ng-aquila']);
   });
+
+  it('defaults description_length to { min: 30, max: 150 } when absent', async () => {
+    const file = path.join(tmpDir, 'no-desc-length.yaml');
+    await writeFile(file, 'issue_title: "T"\n');
+    const cfg = await loadConfig(file);
+    assert.deepEqual(cfg.description_length, { min: 30, max: 150 });
+  });
 });
 
 // ── checkDescription ──────────────────────────────────────────────────────────
 
 describe('checkDescription', () => {
-  it('passes when description is set', () => {
-    assert.equal(checkDescription({ description: 'My repo' }).passed, true);
+  const len = { min: 30, max: 150 };
+  const exactly30 = 'A'.repeat(30);
+  const exactly150 = 'A'.repeat(150);
+
+  it('passes when description is within bounds', () => {
+    assert.equal(checkDescription({ description: 'Sample repo for testing compliance lint checks ok.' }, len).passed, true);
+  });
+
+  it('passes when description is exactly min length', () => {
+    assert.equal(checkDescription({ description: exactly30 }, len).passed, true);
+  });
+
+  it('passes when description is exactly max length', () => {
+    assert.equal(checkDescription({ description: exactly150 }, len).passed, true);
   });
 
   it('fails when description is empty string', () => {
-    const r = checkDescription({ description: '' });
+    const r = checkDescription({ description: '' }, len);
     assert.equal(r.passed, false);
     assert.ok(r.detail);
   });
 
   it('fails when description is null', () => {
-    assert.equal(checkDescription({ description: null }).passed, false);
+    assert.equal(checkDescription({ description: null }, len).passed, false);
   });
 
   it('fails when description is undefined', () => {
-    assert.equal(checkDescription({}).passed, false);
+    assert.equal(checkDescription({}, len).passed, false);
   });
 
   it('fails when description is whitespace only', () => {
-    assert.equal(checkDescription({ description: '   ' }).passed, false);
+    assert.equal(checkDescription({ description: '   ' }, len).passed, false);
+  });
+
+  it('fails when description is one char below min', () => {
+    const r = checkDescription({ description: 'A'.repeat(29) }, len);
+    assert.equal(r.passed, false);
+    assert.match(r.detail, /too short/);
+    assert.match(r.detail, /minimum is 30/);
+  });
+
+  it('fails when description is one char above max', () => {
+    const r = checkDescription({ description: 'A'.repeat(151) }, len);
+    assert.equal(r.passed, false);
+    assert.match(r.detail, /too long/);
+    assert.match(r.detail, /maximum is 150/);
   });
 });
 
@@ -261,7 +294,7 @@ describe('buildIssueBody', () => {
 
   it('includes the docs link', () => {
     const body = buildIssueBody([], docsLink);
-    assert.ok(body.includes(docsLink));
+    assert.match(body, /https:\/\/example\.com\/standards/);
   });
 
   it('marks failed checks with ❌', () => {

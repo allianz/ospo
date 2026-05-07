@@ -337,4 +337,40 @@ describe('processRepos', () => {
 
     assert.equal(upcoming.length, 0);
   });
+
+  it('returns top 3 next warnings sorted by days until warning', async () => {
+    const octokit = makeOctokit({
+      paginate: async () => [],  // no open issues
+    });
+    // staleCutoff is 2024-01-01; daysUntilWarning = ceil((pushedAt - staleCutoff) / ms_per_day)
+    const repos = [
+      makeRepo('repo-d', '2025-12-01T00:00:00Z'),  // furthest away
+      makeRepo('repo-b', '2025-01-01T00:00:00Z'),
+      makeRepo('repo-a', '2024-03-01T00:00:00Z'),  // closest to stale
+      makeRepo('repo-c', '2025-06-01T00:00:00Z'),
+    ];
+
+    const { nextWarnings } = await processRepos(octokit, org, repos, config);
+
+    assert.equal(nextWarnings.length, 3, 'should return top 3 only');
+    assert.equal(nextWarnings[0].repo, 'repo-a', 'soonest should be first');
+    assert.equal(nextWarnings[1].repo, 'repo-b');
+    assert.equal(nextWarnings[2].repo, 'repo-c');
+    assert.ok(nextWarnings[0].daysUntilWarning < nextWarnings[1].daysUntilWarning, 'should be sorted ascending');
+  });
+
+  it('repos with existing warning issue do not appear in nextWarnings', async () => {
+    const octokit = makeOctokit({
+      paginate: async () => [
+        { title: 'Inactive Repository Reminder', number: 5, created_at: '2026-03-15T00:00:00Z' },
+      ],
+      issuesUpdate: async () => ({ data: {} }),
+    });
+    // Non-stale repo but has an open warning issue (will be closed)
+    const repos = [makeRepo('recovering-repo', '2026-04-01T00:00:00Z')];
+
+    const { nextWarnings } = await processRepos(octokit, org, repos, config);
+
+    assert.equal(nextWarnings.length, 0, 'repo with existing issue should not appear in nextWarnings');
+  });
 });

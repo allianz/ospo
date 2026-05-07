@@ -1,10 +1,6 @@
-# Configuration File for GitHub Repositories
-#
-# This file manages settings for GitHub repositories within the Allianz organization.
+# Integration test configuration — targets the GitHub 'ospo-sandbox' organization.
+# Not used in production.
 
-# Parameters:
-#   - name: Repository name. Use only lowercase letters and dashes.
-#   - team name: Must be identical to the corresponding GIAM group.
 repositories:
 
   - name: "new-project"

@@ -191,9 +191,8 @@ This repository has had no activity for an extended period. Inactive repositorie
 - Review and update dependencies
 - Address any open Dependabot or security alerts
 - If the project is stable and needs no changes, push an empty commit to confirm continued ownership:
-  ```bash
-  git commit --allow-empty -m "Keep repository active"
-  ```
+
+      git commit --allow-empty -m "Keep repository active"
 
 **Request for Unarchival:**
 In case the repository is archived and there's a legitimate reason to revive it, please contact ospo@allianz.com with your request for unarchiving.
@@ -320,6 +319,17 @@ my-stale-repo is stale.
   ...
 ```
 
+### Next warning issues
+
+After the main output, the script prints the top 3 repos (sorted by fewest days remaining) that will be the next to receive a warning issue. Only repos without an existing open warning issue are included.
+
+```
+Next warning issues (top 3):
+  repo-a    in 12 days
+  repo-b    in 45 days
+  repo-c    in 67 days
+```
+
 ### Dry-run mode
 
 Changes are collected but not executed. A summary block is appended at the end:
@@ -355,46 +365,11 @@ No `git`, `gh`, `yq`, `jq`, or system `date` command required.
 
 Unit tests live in `scripts/archive_repos.test.js` and run with Node's built-in test runner (`node --test`). No additional test framework required.
 
-### Test structure
+Each function is tested in isolation using a `makeOctokit(overrides)` helper for mock API methods and `makeRepo(name, pushedAt)` for repo fixtures. Key scenarios:
 
-Tests use a `makeOctokit(overrides)` helper to provide mock API methods, and `makeRepo(name, pushedAt)` to create minimal repo fixtures.
-
-### parseRelativeDate
-
-| Test | Input | Assertion |
-|---|---|---|
-| Parses years | `"2 years"` | Year is `currentYear - 2` |
-| Parses days | `"40 days"` | Date ~40 days before now (1s tolerance) |
-| Parses months | `"6 months"` | Month ~6 months before now |
-| Singular year | `"1 year"` | Year is `currentYear - 1` |
-| Singular day | `"1 day"` | Date 1 day before now |
-| Singular month | `"1 month"` | Month 1 month before now |
-| With "ago" suffix | `"2 years ago"` | Also accepted (backwards-compatible) |
-| Invalid format | `"last tuesday"` | Throws `/Invalid relative date/` |
-| Non-numeric count | `"many days"` | Throws `/Invalid relative date/` |
-
-### loadConfig
-
-| Test | Assertion |
-|---|---|
-| Parses valid config | Returns object with all fields |
-| Defaults excluded_repos to `[]` | When field absent |
-| Throws on missing warn_after | Error matches `/warn_after/` |
-| Throws on missing grace_period | Error matches `/grace_period/` |
-| Throws on invalid warn_after format | Error matches `/Invalid relative date/` |
-| Throws on invalid grace_period format | Error matches `/Invalid relative date/` |
-
-### processRepos
-
-| Scenario | Assertion |
-|---|---|
-| Stale repo, no existing issue | `issues.create` called; repo NOT archived (grace period just started) |
-| Stale repo, issue exists, grace NOT expired | No create, no archive |
-| Stale repo, issue exists, grace expired | `repos.update({ archived: true })` called |
-| Not stale, open warning issue | `issues.update({ state: 'closed' })` called |
-| Not stale, no warning issue | No API mutations |
-| Dry-run: no mutations | All stubs confirm zero calls; `planned` array has entries |
-| Dry-run: newly "created" issue doesn't trigger archive | `planned` has create but NOT archive |
+- **`parseRelativeDate`:** years, months, days (singular and plural); `"ago"` suffix accepted; invalid formats throw
+- **`loadConfig`:** valid config; `excluded_repos` defaults to `[]`; missing or invalid `warn_after`/`grace_period` throw
+- **`processRepos`:** stale with no issue (create, no archive); stale with issue in grace period (no action); stale with expired issue (archive); active with open issue (close); dry-run produces no mutations; dry-run newly created issue does not trigger archival
 
 ### Integration test (against `ospo-sandbox`)
 

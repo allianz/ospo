@@ -106,6 +106,7 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
   const { staleCutoff, graceCutoff, gracePeriod } = config;
   const planned = [];
   const upcoming = [];
+  const nextWarnings = [];
 
   console.log('READING REPOSITORIES...');
 
@@ -162,6 +163,9 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
           await closeIssue(octokit, org, repo.name, existingIssue.number);
           console.log(`  Closed the existing issue in the repository '${org}/${repo.name}'.`);
         }
+      } else {
+        const daysUntilWarning = Math.ceil((pushedAt.getTime() - staleCutoff.getTime()) / (1000 * 60 * 60 * 24));
+        nextWarnings.push({ repo: repo.name, daysUntilWarning });
       }
     }
 
@@ -169,8 +173,9 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
   }
 
   upcoming.sort((a, b) => a.daysLeft - b.daysLeft);
+  nextWarnings.sort((a, b) => a.daysUntilWarning - b.daysUntilWarning);
 
-  return { planned, upcoming };
+  return { planned, upcoming, nextWarnings: nextWarnings.slice(0, 3) };
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -240,7 +245,7 @@ async function main() {
     console.log('');
   }
 
-  const { planned, upcoming } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff, gracePeriod: config.grace_period }, { dryRun, debug });
+  const { planned, upcoming, nextWarnings } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff, gracePeriod: config.grace_period }, { dryRun, debug });
 
   if (dryRun && planned.length > 0) {
     console.log('\nPlanned changes:');
@@ -254,6 +259,15 @@ async function main() {
     console.log('\nUpcoming archival:');
     for (const { repo, daysLeft } of upcoming) {
       const label = daysLeft <= 1 ? `${daysLeft} day left` : `${daysLeft} days left`;
+      console.log(`  ${repo.padEnd(maxName)}  ${label}`);
+    }
+  }
+
+  if (nextWarnings.length > 0) {
+    const maxName = Math.max(...nextWarnings.map(u => u.repo.length));
+    console.log('\nNext warning issues (top 3):');
+    for (const { repo, daysUntilWarning } of nextWarnings) {
+      const label = daysUntilWarning <= 1 ? `in ${daysUntilWarning} day` : `in ${daysUntilWarning} days`;
       console.log(`  ${repo.padEnd(maxName)}  ${label}`);
     }
   }

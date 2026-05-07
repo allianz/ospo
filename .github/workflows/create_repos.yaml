@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths: ['config/create_repos.yaml']
 
+permissions:
+  contents: read
+
 jobs:
   dry-run:
     runs-on: ubuntu-latest

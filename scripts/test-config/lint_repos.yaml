@@ -1,3 +1,6 @@
+# Integration test configuration — targets the GitHub 'ospo-sandbox' organization.
+# Not used in production.
+
 issue_title: "Mandatory Repository Configuration"
 docs_link: "https://github.com/allianz/ospo/blob/main/guides/standards_and_compliance.md"
 

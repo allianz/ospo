@@ -8,21 +8,22 @@ Allianz OSPO (Open Source Program Office) automation suite for managing GitHub o
 
 ## Commands
 
-### Running Tests (via Makefile in scripts/test/)
+### Running Tests (via Makefile in scripts/)
 
 ```bash
-cd scripts/test
-make test_create_repos    # Test repo creation against ospo-sandbox org
-make test_lint_repos      # Test repo linting against ospo-sandbox org
-make test_archive_repos   # Test repo archival against ospo-sandbox org
+cd scripts
+make test_create_repos    # Integration test against ospo-sandbox org
+make test_lint_repos      # Integration test against ospo-sandbox org
+make test_archive_repos   # Integration test against ospo-sandbox org
+make test                 # Unit tests (node --test)
 ```
 
 ### Running Scripts Directly
 
 ```bash
-node scripts/create_repos.js --org <org> [--dry-run] [--debug] [--skip-team-sync] [--skip-custom-role]
-node scripts/lint_repos.js --org <org> [--dry-run] [--debug] [--config <file>]
-node scripts/archive_repos.js --org <org> [--dry-run] [--debug] [--config <file>]
+node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--skip-team-sync] [--skip-custom-role]
+node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 ```
 
 All scripts support `--dry-run` for safe validation and `--debug` for verbose output.
@@ -31,6 +32,14 @@ All scripts support `--dry-run` for safe validation and `--debug` for verbose ou
 
 - Node.js 22+, npm (runtime for all scripts)
 - `gh` (GitHub CLI, used for authentication token resolution in Makefile)
+
+## Specifications
+
+Detailed specs for each script — behaviour, config schema, execution flow, output format, and CI/CD setup:
+
+- [`scripts/spec/create_repos_spec.md`](scripts/spec/create_repos_spec.md)
+- [`scripts/spec/lint_repos_spec.md`](scripts/spec/lint_repos_spec.md)
+- [`scripts/spec/archive_repos_spec.md`](scripts/spec/archive_repos_spec.md)
 
 ## Architecture
 
@@ -47,7 +56,7 @@ Three independent JavaScript (ESM) scripts, each driven by a YAML config file:
 
 ### CI/CD (GitHub Actions)
 
-- `create_repos.yaml` — Dry-run on PR config changes, apply on push to main
+- `create_repos.yaml` — Dry-run then apply (two-stage, with environment gate) on push to main when `config/create_repos.yaml` changes
 - `lint_repos.yml` — Scheduled bi-weekly (Tue/Thu)
 - `archive_repos.yml` — Scheduled weekly (Sun midnight)
 - All workflows support manual dispatch
