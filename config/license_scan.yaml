@@ -5,10 +5,14 @@
 # across the Allianz GitHub organization. It is used by the dependency review
 # action to block PRs that introduce dependencies with non-compliant licenses.
 #
+# Parameters:
+#   deny-licenses:  SPDX identifiers of licenses that are not permitted. PRs adding a
+#                   dependency under any of these licenses will be blocked.
+#
+# Want to propose a change? Open a pull request and describe your reasoning.
+
 # ──────────────────────────────────────────────────────────────────────────────
 
-vulnerability-check: false
-license-check: true
 deny-licenses:
   # Copyleft
   - GPL-2.0

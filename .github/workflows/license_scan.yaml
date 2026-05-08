@@ -18,3 +18,5 @@ jobs:
         uses: actions/dependency-review-action@v4
         with:
           config-file: allianz/ospo/config/license_scan.yml@main
+          vulnerability-check: false
+          license-check: true

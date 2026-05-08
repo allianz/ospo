@@ -5,8 +5,6 @@
 # organization, along with their team assignments and policy settings.
 # The creation pipeline applies this configuration automatically on merge.
 #
-# ──────────────────────────────────────────────────────────────────────────────
-#
 # For more details, see the project launch guide:
 # https://cmp.allianz.net/spaces/ARGO/pages/2748785094/Launching+an+Open+Source+Project
 #
@@ -22,11 +20,7 @@
 #                       'triage' — read + triage issues and PRs, no push access
 #
 # To add a repository, complete the project launch process first, then open a pull request.
-
-# ──────────────────────────────────────────────────────────────────────────────
-
-
-# Repositories managed in the Allianz GitHub organization.
+#
 # Example:
 #   - name: "my-project"
 #     security: managed
@@ -36,6 +30,10 @@
 #       role: own
 #     - team: "Ops Team"
 #       role: triage 
+
+# ──────────────────────────────────────────────────────────────────────────────
+
+
 repositories:
 
   - name: ".github"

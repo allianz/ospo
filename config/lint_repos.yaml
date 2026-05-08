@@ -1,4 +1,5 @@
-# Configuration File for Repository Compliance Linting
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Repository Compliance Linting Configuration
 #
 # This file defines the standards every public repository in the Allianz GitHub
 # organization must meet. The linter checks these rules automatically and opens
