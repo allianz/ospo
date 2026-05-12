@@ -19,3 +19,4 @@ jobs:
           config-file: allianz/ospo/config/license_scan.yaml@main
           vulnerability-check: false
           license-check: true
+          
