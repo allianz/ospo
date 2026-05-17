@@ -14,7 +14,7 @@
 #                       'custom' — repo team controls GHAS settings
 #   branch-protection:  'managed' (default) — OSPO enforces branch protection via org ruleset
 #                       'custom' — repo team defines its own branch protection rules
-#   access[].team:      Team display name; must match the corresponding Entra ID group name exactly
+#   access[].team:      GIAM group granting repository access (synced to a GitHub team)
 #   access[].role:      'own' (default) — full repo ownership via custom org role
 #                       'write' — push access
 #                       'triage' — read + triage issues and PRs, no push access
