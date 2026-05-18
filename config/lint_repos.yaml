@@ -63,7 +63,7 @@ allowed_licenses:
 required_files:
   - pattern: "README*"
     description: "Readme File"
-    min_chars: 100
+    min_chars: 300
   - pattern: "CONTRIBUTING*"
     search_paths: [".", ".github", "docs"]
     description: "Contributing File"
