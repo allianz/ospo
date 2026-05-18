@@ -181,10 +181,11 @@ async function cloneOrUpdate(repoName, cloneDir, org, debug) {
   if (exists) {
     try {
       const git = simpleGit(cloneDir);
-      const fetchResult = await git.fetch(['origin', '--depth', '1']);
-      // Empty repos have nothing to reset to — skip the reset
-      if (fetchResult.branches.length > 0 || fetchResult.tags.length > 0) {
-        await git.reset(['--hard', 'origin/HEAD']);
+      await git.fetch(['origin', '--depth', '1']);
+      try {
+        await git.reset(['--hard', 'FETCH_HEAD']);
+      } catch {
+        // FETCH_HEAD not set — repo is empty on remote, nothing to reset to
       }
     } catch {
       // Stale or corrupt clone — delete and re-clone from scratch

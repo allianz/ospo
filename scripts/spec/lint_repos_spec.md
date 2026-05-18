@@ -158,7 +158,8 @@ Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the loc
    Split into active (archived: false, not excluded), archived (archived: true, not excluded), and excluded (name in `excluded_repos`) lists
 6. Run metadata checks (description, topics, license type) for all repos from API data
 7. Clone/update active repos in batches of 5 using simple-git:
-     - Directory exists: git.fetch() + git.reset(['--hard', 'origin/HEAD'])
+     - Directory exists: git.fetch(['origin', '--depth', '1']) + git.reset(['--hard', 'FETCH_HEAD'])
+       (shallow fetches only write to FETCH_HEAD, not to a tracking ref, so FETCH_HEAD is the correct reset target)
      - Directory missing: git.clone(url, lint_cache/<repo>)
    Batches run sequentially; the 5 clones within each batch run in parallel via Promise.all
    Archived repos are not cloned.
