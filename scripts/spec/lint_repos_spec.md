@@ -100,8 +100,8 @@ allowed_licenses:
 # (e.g. README* matches README.md). description is used as the check name in
 # issue body and output. search_paths defaults to ["."] if omitted.
 # min_chars (optional): if set, the matched file must also be at least this many
-# bytes; a file that exists but is smaller fails with "File exists but is too small
-# (<actual> bytes; minimum is <min_chars>)".
+# chars; a file that exists but is smaller fails with "File exists but is too short
+# (<actual> chars; minimum is <min_chars>)".
 required_files:
   - pattern: "README*"
     description: "Readme File"
