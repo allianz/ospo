@@ -9,11 +9,16 @@ excluded_repos: []
 required_files:
   - pattern: "README*"
     description: "Readme File"
+    min_chars: 100
   - pattern: "CONTRIBUTING*"
     search_paths: [".", ".github", "docs"]
     description: "Contributing File"
   - pattern: "LICENSE*"
     description: "License File"
+  - pattern: "NOTICE*"
+    description: "Notice File"
+  - pattern: "AUTHORS*"
+    description: "Authors File"
 
 allowed_licenses:
   - Apache-2.0

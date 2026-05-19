@@ -63,11 +63,16 @@ allowed_licenses:
 required_files:
   - pattern: "README*"
     description: "Readme File"
+    min_chars: 300
   - pattern: "CONTRIBUTING*"
     search_paths: [".", ".github", "docs"]
     description: "Contributing File"
   - pattern: "LICENSE*"
     description: "License File"
+  - pattern: "NOTICE*"
+    description: "Notice File"
+  - pattern: "AUTHORS*"
+    description: "Authors File"
 
 # Allowed topics for repositories. New topics can be suggested.
 # Topics are used for filtering and organisation-wide statistics, so a controlled

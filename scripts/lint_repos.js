@@ -80,7 +80,7 @@ export function checkLicense(repo, allowedLicenses) {
 }
 
 export async function checkRequiredFile(cloneDir, fileSpec) {
-  const { pattern, search_paths } = fileSpec;
+  const { pattern, search_paths, min_chars } = fileSpec;
   const searchPaths = search_paths ?? ['.'];
   // Patterns are always prefix globs (README*, CONTRIBUTING*, LICENSE*) — match case-insensitively
   const prefix = pattern.replace(/\*.*$/, '').toUpperCase();
@@ -89,7 +89,15 @@ export async function checkRequiredFile(cloneDir, fileSpec) {
     try {
       const entries = await readdir(dir);
       const match = entries.find(f => f.toUpperCase().startsWith(prefix));
-      if (match) return { passed: true };
+      if (match) {
+        if (min_chars != null) {
+          const content = await readFile(path.join(dir, match), 'utf8');
+          if (content.length < min_chars) {
+            return { passed: false, detail: `File exists but is too short (${content.length} chars; minimum is ${min_chars})` };
+          }
+        }
+        return { passed: true };
+      }
     } catch {
       // Directory doesn't exist — try next path
     }
@@ -129,12 +137,16 @@ async function findOpenIssue(octokit, org, repo, issueTitle) {
     repo,
     state: 'open',
   });
-  const found = issues.find(i => i.title === issueTitle);
+  const found = issues.find(i => i.title === issueTitle && !i.pull_request);
   return found ? found.number : null;
 }
 
 async function createIssue(octokit, org, repo, title, body) {
   await octokit.rest.issues.create({ owner: org, repo, title, body });
+}
+
+async function updateIssue(octokit, org, repo, issueNumber, body) {
+  await octokit.rest.issues.update({ owner: org, repo, issue_number: issueNumber, body });
 }
 
 async function closeIssue(octokit, org, repo, issueNumber) {
@@ -169,10 +181,11 @@ async function cloneOrUpdate(repoName, cloneDir, org, debug) {
   if (exists) {
     try {
       const git = simpleGit(cloneDir);
-      const fetchResult = await git.fetch(['origin', '--depth', '1']);
-      // Empty repos have nothing to reset to — skip the reset
-      if (fetchResult.branches.length > 0 || fetchResult.tags.length > 0) {
-        await git.reset(['--hard', 'origin/HEAD']);
+      await git.fetch(['origin', '--depth', '1']);
+      try {
+        await git.reset(['--hard', 'FETCH_HEAD']);
+      } catch {
+        // FETCH_HEAD not set — repo is empty on remote, nothing to reset to
       }
     } catch {
       // Stale or corrupt clone — delete and re-clone from scratch
@@ -278,6 +291,7 @@ async function main() {
 
   let anyFailed = false;
   const pendingCreates = [];
+  const pendingUpdates = [];
   const pendingCloses = [];
 
   for (const repo of active) {
@@ -304,12 +318,18 @@ async function main() {
         }
       }
       const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
+      const body = buildIssueBody(allChecks, config.docs_link);
       if (!existingIssue) {
         if (dryRun) {
           pendingCreates.push(repo.name);
         } else {
-          const body = buildIssueBody(allChecks, config.docs_link);
           await createIssue(octokit, org, repo.name, config.issue_title, body);
+        }
+      } else {
+        if (dryRun) {
+          pendingUpdates.push({ number: existingIssue, name: repo.name });
+        } else {
+          await updateIssue(octokit, org, repo.name, existingIssue, body);
         }
       }
     } else {
@@ -348,15 +368,17 @@ async function main() {
     }
   }
 
-  if (dryRun && (pendingCreates.length > 0 || pendingCloses.length > 0)) {
-    const createWord = pendingCreates.length !== 1 ? 'issues' : 'issue';
+  if (dryRun && (pendingCreates.length > 0 || pendingUpdates.length > 0 || pendingCloses.length > 0)) {
     console.log('');
-    console.log(`──── Dry-run: ${pendingCreates.length} ${createWord} would be created, ${pendingCloses.length} would be closed ────`);
+    console.log(`──── Dry-run: ${pendingCreates.length} would be created, ${pendingUpdates.length} would be updated, ${pendingCloses.length} would be closed ────`);
     for (const name of pendingCreates) {
       console.log(`  ✉️   create  ${name}`);
     }
+    for (const { number, name } of pendingUpdates) {
+      console.log(`  ✏️   update  #${number}  ${name}`);
+    }
     for (const { number, name } of pendingCloses) {
-      console.log(`  ✔️   close  #${number}  ${name}`);
+      console.log(`  ✔️   close   #${number}  ${name}`);
     }
   }
 

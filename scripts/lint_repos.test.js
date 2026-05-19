@@ -280,6 +280,42 @@ describe('checkRequiredFile', () => {
     });
     assert.equal(r.passed, true);
   });
+
+  it('passes when file meets min_chars exactly', async () => {
+    const sizeDir = await mkdtemp(path.join(tmpdir(), 'lint-size-'));
+    try {
+      await writeFile(path.join(sizeDir, 'README.md'), 'x'.repeat(300));
+      const r = await checkRequiredFile(sizeDir, { pattern: 'README*', min_chars: 300 });
+      assert.equal(r.passed, true);
+    } finally {
+      await rm(sizeDir, { recursive: true });
+    }
+  });
+
+  it('fails when file exists but is below min_chars', async () => {
+    const sizeDir = await mkdtemp(path.join(tmpdir(), 'lint-size-'));
+    try {
+      await writeFile(path.join(sizeDir, 'README.md'), 'x'.repeat(50));
+      const r = await checkRequiredFile(sizeDir, { pattern: 'README*', min_chars: 300 });
+      assert.equal(r.passed, false);
+      assert.match(r.detail, /too short/);
+      assert.match(r.detail, /50 chars/);
+      assert.match(r.detail, /minimum is 300/);
+    } finally {
+      await rm(sizeDir, { recursive: true });
+    }
+  });
+
+  it('passes without size check when min_chars is absent', async () => {
+    const sizeDir = await mkdtemp(path.join(tmpdir(), 'lint-size-'));
+    try {
+      await writeFile(path.join(sizeDir, 'README.md'), 'tiny');
+      const r = await checkRequiredFile(sizeDir, { pattern: 'README*' });
+      assert.equal(r.passed, true);
+    } finally {
+      await rm(sizeDir, { recursive: true });
+    }
+  });
 });
 
 // ── buildIssueBody ────────────────────────────────────────────────────────────

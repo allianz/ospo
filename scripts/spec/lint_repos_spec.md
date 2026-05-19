@@ -99,14 +99,22 @@ allowed_licenses:
 # file in the specified search_paths. pattern is a case-insensitive prefix glob
 # (e.g. README* matches README.md). description is used as the check name in
 # issue body and output. search_paths defaults to ["."] if omitted.
+# min_chars (optional): if set, the matched file must also be at least this many
+# chars; a file that exists but is smaller fails with "File exists but is too short
+# (<actual> chars; minimum is <min_chars>)".
 required_files:
   - pattern: "README*"
     description: "Readme File"
+    min_chars: 300
   - pattern: "CONTRIBUTING*"
     search_paths: [".", ".github", "docs"]
     description: "Contributing File"
   - pattern: "LICENSE*"
     description: "License File"
+  - pattern: "NOTICE*"
+    description: "Notice File"
+  - pattern: "AUTHORS*"
+    description: "Authors File"
 
 # Minimum and maximum character length for repository descriptions (inclusive).
 # Descriptions outside this range fail the check. Defaults: min: 30, max: 150.
@@ -131,7 +139,7 @@ allowed_topics:
 | 1 | **Description** | GitHub API | `description` is non-null, non-empty, and between `description_length.min` and `description_length.max` chars (inclusive) |
 | 2 | **Topics** | GitHub API | Between 1 and 5 topics assigned; all topics must be in `allowed_topics` |
 | 3 | **License type** | GitHub API | `license.spdx_id` is in `allowed_licenses`; fails with a clear message if API returns null (no license detected) or `NOASSERTION` (custom license text GitHub could not identify) |
-| 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths` (includes LICENSE*) |
+| 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths`; if `min_chars` is set the matched file must also meet that size threshold |
 
 Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the local clone.
 
@@ -150,7 +158,8 @@ Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the loc
    Split into active (archived: false, not excluded), archived (archived: true, not excluded), and excluded (name in `excluded_repos`) lists
 6. Run metadata checks (description, topics, license type) for all repos from API data
 7. Clone/update active repos in batches of 5 using simple-git:
-     - Directory exists: git.fetch() + git.reset(['--hard', 'origin/HEAD'])
+     - Directory exists: git.fetch(['origin', '--depth', '1']) + git.reset(['--hard', 'FETCH_HEAD'])
+       (shallow fetches only write to FETCH_HEAD, not to a tracking ref, so FETCH_HEAD is the correct reset target)
      - Directory missing: git.clone(url, lint_cache/<repo>)
    Batches run sequentially; the 5 clones within each batch run in parallel via Promise.all
    Archived repos are not cloned.
@@ -159,6 +168,7 @@ Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the loc
    b. Aggregate metadata + file check results into a failures list
    c. Failures present:
         - If no open issue with matching title exists: create issue (unless --dry-run)
+        - If an open issue with matching title exists: update its body with the current check results (unless --dry-run)
    d. All checks pass:
         - If an open issue with matching title exists: close it with a resolved comment (unless --dry-run)
    e. Print summary line to stdout
@@ -174,7 +184,7 @@ Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the loc
 | Repo state | Existing issue? | Action |
 |---|---|---|
 | Non-compliant | No open issue | Create issue |
-| Non-compliant | Open issue exists | Leave open (no duplicate) |
+| Non-compliant | Open issue exists | Update issue body with current check results |
 | Compliant | Open issue exists | Close issue with resolved comment |
 | Compliant | No open issue | No action |
 | Archived (any) | — | No issue action |
@@ -254,10 +264,11 @@ Skipped (configuration)
 When `--dry-run` is active and there are pending actions, a summary block is appended after the archived section:
 
 ```
-──── Dry-run: 2 issues would be created, 1 would be closed ────
+──── Dry-run: 2 issues would be created, 1 would be updated, 1 would be closed ────
   ✉️   create  another-repo
   ✉️   create  fourth-repo
-  ✔️   close  #42  third-repo
+  ✏️   update  #17  fifth-repo
+  ✔️   close   #42  third-repo
 ```
 
 ---
@@ -288,7 +299,7 @@ Each check function is tested in isolation with fake API responses and a tempora
 - **Description:** set, empty string, null
 - **Topics:** none assigned; topic not in `allowed_topics`; `allowed_topics` empty (any accepted)
 - **License type:** allowed, disallowed, API returns null, API returns `NOASSERTION` (custom license text)
-- **Required files:** all present; each file missing individually; match in `search_paths` subdirectory; case-insensitive match
+- **Required files:** all present; each file missing individually; match in `search_paths` subdirectory; case-insensitive match; file exists but is below `min_chars` threshold; file meets `min_chars` threshold exactly; `min_chars` absent (size not checked)
 - **Config loading:** valid config; missing required field `issue_title`; `allowed_topics` absent (defaults to empty); `excluded_repos` absent (defaults to empty); `excluded_repos` list preserved
 
 ### Integration test (against `ospo-sandbox`)
