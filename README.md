@@ -68,6 +68,6 @@ Ideas and content are drawn from the following sources. Content has been modifie
 
 - [GitHub OSPO template](https://github.com/github/github-ospo) — CC BY 4.0
 - [Yahoo OSS guide](https://yahoo.github.io/oss-guide/) — CC BY 4.0
-- [Google OSPO](https://opensource.google/documentation/reference) — CC BY 4.0
+- [Google open source documentation](https://opensource.google/documentation/reference) — CC BY 4.0
 
 
