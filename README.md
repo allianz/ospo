@@ -62,7 +62,7 @@ You want to help? Great!
 
 ## License and Acknowledgements
 
-This repository is licensed under MIT for code and CC BY 4.0 for documentation. The company name and logo are trademarks of Allianz and are not covered by this license.
+This repository is licensed under MIT for code and CC BY 4.0 for documentation. 
 
 Inspiration and content are drawn from the following sources, all licensed under CC BY:
 
