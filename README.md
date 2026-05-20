@@ -62,10 +62,12 @@ You want to help? Great!
 
 ## License and Acknowledgements
 
-This repository is licensed under MIT for code and CC BY 4.0 for documentation. 
+This repository is licensed under MIT for code and CC BY 4.0 for documentation. "Allianz" and the Allianz logo are trademarks of Allianz SE and are not covered by these licenses.
 
-Inspiration and content are drawn from the following sources, all licensed under CC BY:
+Ideas and content are drawn from the following sources. Content has been modified for Allianz's context.
 
-* [GitHub OSPO template](https://github.com/github/github-ospo)
-* [Yahoo OSS guide](https://yahoo.github.io/oss-guide/)
-* [Google OSPO](https://opensource.google/documentation/reference)
+- [GitHub OSPO template](https://github.com/github/github-ospo) — CC BY 4.0
+- [Yahoo OSS guide](https://yahoo.github.io/oss-guide/) — CC BY 4.0
+- [Google OSPO](https://opensource.google/documentation/reference) — CC BY 4.0
+
+
