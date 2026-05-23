@@ -55,7 +55,6 @@ export async function fetchSbomPackages(octokit, org, repo, token) {
     const { data } = await octokit.request('GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report', {
       owner: org,
       repo,
-      headers: { 'X-GitHub-Api-Version': '2026-03-10' },
     });
     reportUrl = data?.sbom_url;
   } catch (err) {
@@ -192,6 +191,9 @@ async function main() {
 
   const config = await loadConfig(configPath);
   const octokit = new Octokit({ auth: token });
+  octokit.hook.before('request', options => {
+    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
+  });
 
   const allRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
     org,
