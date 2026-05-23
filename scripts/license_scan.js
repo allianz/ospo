@@ -232,12 +232,17 @@ async function main() {
   const skippedUnavailable = [];
 
   for (const repo of active) {
-    if (debug) console.log(`  Fetching SBOM for ${repo.name}...`);
     const sbomPackages = await fetchSbomPackages(octokit, org, repo.name, token);
     if (sbomPackages === null) {
       skippedUnavailable.push(repo.name);
       continue;
     }
+    const uniqueLicenses = new Set(
+      sbomPackages
+        .map(p => p.licenseConcluded ?? p.licenseDeclared)
+        .filter(l => l && l !== 'NOASSERTION' && l !== 'NONE')
+    );
+    console.log(`  ${repo.name}: ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
 
     const violations = checkDependencyLicenses(sbomPackages, config['deny-licenses']);
 
