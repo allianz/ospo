@@ -46,6 +46,54 @@ export function checkDependencyLicenses(packages, denyList) {
   return violations;
 }
 
+// ── SBOM fetching (async API) ─────────────────────────────────────────────────
+
+// Returns packages array from the SBOM, or null if unavailable (403/404).
+export async function fetchSbomPackages(octokit, org, repo, token) {
+  let reportUrl;
+  try {
+    const { data } = await octokit.request('GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report', {
+      owner: org,
+      repo,
+      headers: { 'X-GitHub-Api-Version': '2026-03-10' },
+    });
+    reportUrl = data?.sbom_url;
+  } catch (err) {
+    if (err.status === 404 || err.status === 403) return null;
+    throw err;
+  }
+
+  if (!reportUrl) return [];
+
+  const authHeaders = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2026-03-10',
+  };
+
+  // Poll until the report is ready (202 → still processing, 302 → redirect to download)
+  for (let attempt = 0; attempt < 30; attempt++) {
+    const res = await fetch(reportUrl, { headers: authHeaders, redirect: 'manual' });
+    if (res.status === 302) {
+      const downloadUrl = res.headers.get('location');
+      const download = await fetch(downloadUrl);
+      const sbom = await download.json();
+      return sbom?.packages ?? sbom?.sbom?.packages ?? [];
+    }
+    if (res.status === 200) {
+      const sbom = await res.json();
+      return sbom?.packages ?? sbom?.sbom?.packages ?? [];
+    }
+    if (res.status === 202) {
+      await new Promise(r => setTimeout(r, 2000));
+      continue;
+    }
+    if (res.status === 404 || res.status === 403) return null;
+    throw new Error(`Unexpected status ${res.status} polling SBOM for ${repo}`);
+  }
+  throw new Error(`SBOM generation timed out for ${repo}`);
+}
+
 // ── Issue body ────────────────────────────────────────────────────────────────
 
 export function buildIssueBody(violations, config) {
@@ -174,20 +222,11 @@ async function main() {
   const skippedUnavailable = [];
 
   for (const repo of active) {
-    let sbomPackages;
-    try {
-      if (debug) console.log(`  Fetching SBOM for ${repo.name}...`);
-      const { data } = await octokit.request('GET /repos/{owner}/{repo}/dependency-graph/sbom', {
-        owner: org,
-        repo: repo.name,
-      });
-      sbomPackages = data?.sbom?.packages ?? [];
-    } catch (err) {
-      if (err.status === 404 || err.status === 403) {
-        skippedUnavailable.push(repo.name);
-        continue;
-      }
-      throw err;
+    if (debug) console.log(`  Fetching SBOM for ${repo.name}...`);
+    const sbomPackages = await fetchSbomPackages(octokit, org, repo.name, token);
+    if (sbomPackages === null) {
+      skippedUnavailable.push(repo.name);
+      continue;
     }
 
     const violations = checkDependencyLicenses(sbomPackages, config['deny-licenses']);
