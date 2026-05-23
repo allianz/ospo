@@ -89,22 +89,8 @@ excluded_repos: []
 # SPDX identifiers that are not permitted in dependencies.
 # Packages whose spdxId is NOASSERTION, NONE, or null are silently ignored.
 deny-licenses:
-  # Copyleft
   - GPL-2.0
   - GPL-2.0-only
-  - GPL-2.0-or-later
-  - GPL-3.0
-  - GPL-3.0-only
-  - GPL-3.0-or-later
-  - AGPL-3.0
-  - AGPL-3.0-only
-  - AGPL-3.0-or-later
-  # Commercial / source-available
-  - BUSL-1.1
-  - Elastic-2.0
-  - SSPL-1.0
-  - PolyForm-Noncommercial-1.0.0
-  - PolyForm-Small-Business-1.0.0
 ```
 
 Required fields: `issue_title`, `deny-licenses`.  
