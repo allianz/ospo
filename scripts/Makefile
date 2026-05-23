@@ -4,8 +4,8 @@ export GITHUB_TOKEN
 export GH_TOKEN = $(GITHUB_TOKEN)
 
 .PHONY: check-token \
-        test_lint_repos test_archive_repos test_create_repos \
-        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos \
+        test_lint_repos test_archive_repos test_create_repos test_license_scan \
+        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan \
         test
 
 check-token:
@@ -22,6 +22,9 @@ test_archive_repos: check-token
 test_create_repos: check-token
 	node create_repos.js --org ospo-sandbox --config test-config/create_repos.yaml --debug
 
+test_license_scan: check-token
+	node license_scan.js --org ospo-sandbox --config test-config/license_scan.yaml --debug
+
 # ── Dry runs (allianz) ────────────────────────────────────────────────────────
 
 dry_run_lint_repos: check-token
@@ -32,6 +35,9 @@ dry_run_archive_repos: check-token
 
 dry_run_create_repos: check-token
 	node create_repos.js --org allianz --dry-run
+
+dry_run_license_scan: check-token
+	node license_scan.js --org allianz --dry-run
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 

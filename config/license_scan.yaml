@@ -1,16 +1,23 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # Allianz OSPO — Third-Party License Policy
 #
-# This file defines which open-source licenses are denied in pull requests
-# across the Allianz GitHub organization. It is used by the dependency review
-# action to block PRs that introduce dependencies with non-compliant licenses.
+# This file configures the license_scan.js script, which scans all repositories
+# in the organization for dependencies with non-compliant licenses.
 #
 # Parameters:
-#   deny-licenses:  SPDX identifiers of licenses that are not permitted.
+#   issue_title:     Title of the GitHub issue created in non-compliant repos.
+#                    Also used as the lookup key when searching for existing issues.
+#   docs_link:       URL inserted into the issue body as the license policy link.
+#   excluded_repos:  Repos to skip entirely — no checks run, no issues created.
+#   deny-licenses:   SPDX identifiers of licenses that are not permitted.
 #
 # Want to propose a change? Open a pull request and describe your reasoning.
 
 # ──────────────────────────────────────────────────────────────────────────────
+
+issue_title: "Dependency License Violation"
+docs_link: ""
+excluded_repos: []
 
 deny-licenses:
   # Copyleft
