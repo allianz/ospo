@@ -50,7 +50,7 @@ npm install
 node license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
 ```
 
-The script requires `GITHUB_TOKEN` to be set in the environment. Default config path is resolved relative to the script file's location (repo root), not the working directory.
+The script requires `GITHUB_TOKEN` (or `GH_TOKEN`) to be set in the environment. Default config path is resolved relative to the script file's location (repo root), not the working directory.
 
 ---
 
@@ -116,7 +116,7 @@ Optional with defaults: `excluded_repos: []`, `docs_link: ""`.
 
 | # | Check | Data source | Pass condition |
 |---|---|---|---|
-| 1 | **Dependency Licenses** | GitHub Dependency Graph API (`/dependency-graph/sbom`) | No dependency has an `spdxId` matching an entry in `deny-licenses`. Packages with `spdxId` of `NOASSERTION`, `NONE`, or `null` are silently skipped. |
+| 1 | **Dependency Licenses** | GitHub Dependency Graph API (`/dependency-graph/sbom/generate-report`, async polling) | No dependency has an `spdxId` (`licenseConcluded ?? licenseDeclared`) matching an entry in `deny-licenses`. Packages with `spdxId` of `NOASSERTION`, `NONE`, or `null` are silently skipped. |
 
 ---
 
@@ -132,9 +132,11 @@ Optional with defaults: `excluded_repos: []`, `docs_link: ""`.
    Split into active (archived: false, not excluded), archived (archived: true, not excluded),
    and excluded (name in excluded_repos) lists
 6. For each active repo (sequentially):
-   a. GET /repos/{org}/{repo}/dependency-graph/sbom
-      - 404 / 403 / dependency graph disabled: add to "Skipped (dependency graph unavailable)"
-        section; skip (no issue action)
+   a. POST /repos/{org}/{repo}/dependency-graph/sbom/generate-report → get `sbom_url`
+      - 404 / 403: add to "Skipped (dependency graph unavailable)"; skip (no issue action)
+      Poll `sbom_url` with auth headers until ready (202 → wait 2s; 302 → follow redirect; 200 → parse):
+      - Times out after 30 attempts (error)
+      - 5xx responses: retry up to 3 times (2s delay between), then treat as unavailable (skip repo)
       - Empty or missing packages list: treated as passing (no violations)
    b. Filter packages where spdxId is in deny-licenses
       (skip packages where spdxId is NOASSERTION / NONE / null)
@@ -256,7 +258,7 @@ Requires `GITHUB_TOKEN`. Run via Makefile, not part of the unit test suite.
 
 ```makefile
 test_license_scan:
-    cd .. && node scripts/license_scan.js --org ospo-sandbox --config scripts/test/license_scan.yaml --debug
+    cd .. && node scripts/license_scan.js --org ospo-sandbox --config scripts/test-config/license_scan.yaml --debug
 ```
 
 Test config lives at `scripts/test/license_scan.yaml` and targets the `ospo-sandbox` org.
@@ -272,4 +274,4 @@ Test config lives at `scripts/test/license_scan.yaml` and targets the `ospo-sand
 - Run step: `node scripts/license_scan.js --org allianz`
 - Schedule: weekly (`0 0 * * 1` — every Monday at midnight UTC)
 - `workflow_dispatch` for manual runs
-- Pass the GitHub App token as `GITHUB_TOKEN` env var to the run step
+- Pass the GitHub App token as `GITHUB_TOKEN` env var to the run step (secrets: `ALLIANZ_APP_ID`, `ALLIANZ_APP_PRIVATE_KEY`)

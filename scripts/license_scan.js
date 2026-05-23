@@ -71,6 +71,7 @@ export async function fetchSbomPackages(octokit, org, repo, token) {
   };
 
   // Poll until the report is ready (202 → still processing, 302 → redirect to download)
+  let serverErrorCount = 0;
   for (let attempt = 0; attempt < 30; attempt++) {
     const res = await fetch(reportUrl, { headers: authHeaders, redirect: 'manual' });
     if (res.status === 302) {
@@ -88,6 +89,12 @@ export async function fetchSbomPackages(octokit, org, repo, token) {
       continue;
     }
     if (res.status === 404 || res.status === 403) return null;
+    if (res.status >= 500) {
+      serverErrorCount++;
+      if (serverErrorCount >= 3) return null;
+      await new Promise(r => setTimeout(r, 2000));
+      continue;
+    }
     throw new Error(`Unexpected status ${res.status} polling SBOM for ${repo}`);
   }
   throw new Error(`SBOM generation timed out for ${repo}`);
@@ -189,6 +196,7 @@ async function main() {
     process.exit(1);
   }
 
+  console.log(`Config: ${configPath}`);
   const config = await loadConfig(configPath);
   const octokit = new Octokit({ auth: token });
   octokit.hook.before('request', options => {
