@@ -223,6 +223,9 @@ async function main() {
     }
   }
 
+  const pad = name => name.length >= 20 ? name.slice(0, 20) : name.padEnd(20);
+
+  console.log('');
   console.log('Results');
   console.log('───────');
 
@@ -242,23 +245,12 @@ async function main() {
         .map(p => p.licenseConcluded ?? p.licenseDeclared)
         .filter(l => l && l !== 'NOASSERTION' && l !== 'NONE')
     );
-    console.log(`  ${repo.name}: ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
-
     const violations = checkDependencyLicenses(sbomPackages, config['deny-licenses']);
 
     if (violations.length > 0) {
-      // Group by license for the summary line
-      const byLicense = {};
+      console.log(`❌ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
       for (const v of violations) {
-        if (!byLicense[v.spdxId]) byLicense[v.spdxId] = [];
-        byLicense[v.spdxId].push(v.name);
-      }
-      const summary = Object.entries(byLicense)
-        .map(([lic, names]) => `${lic} (${names[0]})`)
-        .join(', ');
-      console.log(`❌ ${repo.name}  [${summary}]`);
-      for (const v of violations) {
-        console.log(`     ${v.spdxId}: ${v.name}@${v.version}`);
+        console.log(`       Non-compliant: ${v.name}@${v.version} (${v.spdxId})`);
       }
 
       const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
@@ -277,7 +269,7 @@ async function main() {
         }
       }
     } else {
-      console.log(`✅ ${repo.name}`);
+      console.log(`✅ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
       const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
       if (existingIssue) {
         if (dryRun) {
