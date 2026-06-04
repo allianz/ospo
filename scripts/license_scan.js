@@ -10,8 +10,6 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const repoRoot = path.join(__dirname, '..');
 const defaultConfigPath = path.join(repoRoot, 'config', 'license_scan.yaml');
 
-const CONCURRENCY = 5;
-
 // ── Config ────────────────────────────────────────────────────────────────────
 
 export async function loadConfig(configPath) {
@@ -49,9 +47,10 @@ export function checkDependencyLicenses(packages, denyList) {
 }
 
 // ── SBOM fetching (async API) ─────────────────────────────────────────────────
-
-const POLL_DELAY_MS = 5000;
-const MAX_POLL_ATTEMPTS = 12;
+const CONCURRENCY = 5;
+const POLL_DELAY_MS = 2000;
+const INITIAL_WAIT_MS = 400;
+const MAX_POLL_ATTEMPTS = 10;
 const MAX_SERVER_ERRORS = 3;
 
 // Fetches the SBOM packages list for a repo. Throws on any failure — the
@@ -77,6 +76,7 @@ export async function fetchSbomPackages(octokit, org, repo, token) {
   //   202 → still generating, wait and retry
   //   5xx → transient server error, retry up to MAX_SERVER_ERRORS times
   //   other → unexpected, abort
+  await new Promise(r => setTimeout(r, INITIAL_WAIT_MS));
   let serverErrors = 0;
   for (let attempt = 1; attempt <= MAX_POLL_ATTEMPTS; attempt++) {
     const res = await fetch(reportUrl, { headers: authHeaders, redirect: 'manual' });
@@ -88,7 +88,7 @@ export async function fetchSbomPackages(octokit, org, repo, token) {
         throw new Error(`SBOM download failed for ${org}/${repo}: status ${download.status}`);
       }
       const sbom = await download.json();
-      return sbom?.packages ?? sbom?.sbom?.packages ?? [];
+      return { packages: sbom?.packages ?? sbom?.sbom?.packages ?? [], pollAttempts: attempt };
     }
 
     // Still processing, wait and retry
@@ -250,7 +250,8 @@ async function main() {
 
   async function processRepo(repo) {
     const output = [];
-    const sbomPackages = await fetchSbomPackages(octokit, org, repo.name, token);
+    const t0 = performance.now();
+    const { packages: sbomPackages, pollAttempts } = await fetchSbomPackages(octokit, org, repo.name, token);
     const uniqueLicenses = new Set(
       sbomPackages
         .map(p => p.licenseConcluded ?? p.licenseDeclared)
@@ -297,6 +298,7 @@ async function main() {
       }
     }
 
+    if (debug) output.push(`       Performance: ${pollAttempts} poll attempt(s), ${((performance.now() - t0) / 1000).toFixed(1)}s total`);
     console.log(output.join('\n'));
   }
 
