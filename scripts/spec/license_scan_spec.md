@@ -249,7 +249,7 @@ test_license_scan:
     cd .. && node scripts/license_scan.js --org ospo-sandbox --config scripts/test-config/license_scan.yaml --debug
 ```
 
-Test config lives at `scripts/test/license_scan.yaml` and targets the `ospo-sandbox` org.
+Test config lives at `scripts/test-config/license_scan.yaml` and targets the `ospo-sandbox` org.
 
 ---
 
