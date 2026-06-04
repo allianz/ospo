@@ -245,10 +245,15 @@ async function main() {
         .map(p => p.licenseConcluded ?? p.licenseDeclared)
         .filter(l => l && l !== 'NOASSERTION' && l !== 'NONE')
     );
+    const noLicenseCount = sbomPackages.filter(p => {
+      const l = p.licenseConcluded ?? p.licenseDeclared ?? null;
+      return !l || l === 'NOASSERTION' || l === 'NONE';
+    }).length;
     const violations = checkDependencyLicenses(sbomPackages, config['deny-licenses']);
 
     if (violations.length > 0) {
       console.log(`❌ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
+      if (debug && noLicenseCount > 0) console.log(`       No license info: ${noLicenseCount} packages`);
       for (const v of violations) {
         console.log(`       Non-compliant: ${v.name}@${v.version} (${v.spdxId})`);
       }
@@ -270,6 +275,7 @@ async function main() {
       }
     } else {
       console.log(`✅ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
+      if (debug && noLicenseCount > 0) console.log(`       No license info: ${noLicenseCount} packages`);
       const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
       if (existingIssue) {
         if (dryRun) {
