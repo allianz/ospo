@@ -65,7 +65,7 @@ node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
 | `--org` | required | GitHub organization to scan |
 | `--config` | `config/license_scan.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Run checks but do not create/close issues |
-| `--debug` | false | Print verbose output |
+| `--debug` | false | Print extra per-repo stats (e.g. count of packages with no license info) |
 
 ---
 
@@ -118,12 +118,14 @@ Optional with defaults: `excluded_repos: []`, `docs_link: ""`.
    Split into active (archived: false, not excluded), archived (archived: true, not excluded),
    and excluded (name in excluded_repos) lists
 6. For each active repo (sequentially):
-   a. POST /repos/{org}/{repo}/dependency-graph/sbom/generate-report → get `sbom_url`
-      - 404 / 403: add to "Skipped (dependency graph unavailable)"; skip (no issue action)
-      Poll `sbom_url` with auth headers until ready (202 → wait 2s; 302 → follow redirect; 200 → parse):
-      - Times out after 30 attempts (error)
-      - 5xx responses: retry up to 3 times (2s delay between), then treat as unavailable (skip repo)
+   a. GET /repos/{org}/{repo}/dependency-graph/sbom/generate-report → get `sbom_url`
+      Poll `sbom_url` with auth headers until ready (202 → wait 2s; 302 → follow redirect and parse JSON):
+      - Times out after 30 attempts (60s) — throws
+      - 5xx responses: retry up to 3 times (2s delay between), then throw
+      - Any other non-success status: throw
       - Empty or missing packages list: treated as passing (no violations)
+      The dependency graph cannot be disabled, so any SBOM fetch failure is treated
+      as a fatal error rather than a skip.
    b. Filter packages where spdxId is in deny-licenses
       (skip packages where spdxId is NOASSERTION / NONE / null)
    c. Violations present:
@@ -190,10 +192,6 @@ Skipped (archived)
 – old-repo
 – archived-repo
 
-Skipped (dependency graph unavailable)
-───────────────────────────────────────
-– repo-b
-
 Skipped (configuration)
 ───────────────────────
 – excluded-repo
@@ -201,9 +199,9 @@ Skipped (configuration)
 
 Each active repo prints one line with icon, repo name (padded/truncated to 20 chars), package count, and unique license count. Violations follow as indented `Non-compliant: package@version (SPDX-ID)` lines.
 
-Icons: `✅` pass, `❌` fail (active repos). Archived, unavailable, and excluded repos are listed with `–` (no scan performed).
+Icons: `✅` pass, `❌` fail (active repos). Archived and excluded repos are listed with `–` (no scan performed).
 
-With `--debug`, additional API call details are printed before the Results section.
+With `--debug`, an extra `No license info: N packages` line is printed under each repo when packages without an SPDX identifier are present.
 
 When `--dry-run` is active and there are pending actions, a summary block is appended:
 
@@ -237,7 +235,7 @@ Each function is tested in isolation with fake API responses. Key scenarios:
 - **Config loading:** valid config; missing `issue_title`; missing `deny-licenses`; `excluded_repos` absent (defaults to `[]`); `docs_link` absent (defaults to `""`)
 - **SBOM parsing:** all packages clean; one denied license; multiple denied licenses; mixed denied/allowed; package with `NOASSERTION` spdxId (ignored); package with `NONE` spdxId (ignored); package with `null` spdxId (ignored); empty packages list (passes)
 - **Issue body:** correct table rows generated; `docs_link` inserted correctly; empty docs_link omits link
-- **Dependency graph unavailable:** 404 response → repo appears under "Skipped (dependency graph unavailable)", no issue action taken
+- **SBOM fetch failures:** non-success status codes (404, 403, 5xx after retries, timeout) cause `fetchSbomPackages` to throw
 
 ### Integration test (against `ospo-sandbox`)
 

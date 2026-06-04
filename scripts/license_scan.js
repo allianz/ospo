@@ -48,21 +48,21 @@ export function checkDependencyLicenses(packages, denyList) {
 
 // ── SBOM fetching (async API) ─────────────────────────────────────────────────
 
-// Returns packages array from the SBOM, or null if unavailable (403/404).
-export async function fetchSbomPackages(octokit, org, repo, token) {
-  let reportUrl;
-  try {
-    const { data } = await octokit.request('GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report', {
-      owner: org,
-      repo,
-    });
-    reportUrl = data?.sbom_url;
-  } catch (err) {
-    if (err.status === 404 || err.status === 403) return null;
-    throw err;
-  }
+const POLL_DELAY_MS = 2000;
+const MAX_POLL_ATTEMPTS = 30;
+const MAX_SERVER_ERRORS = 3;
 
-  if (!reportUrl) return [];
+// Fetches the SBOM packages list for a repo. Throws on any failure — the
+// dependency graph cannot be disabled, so failures here are real errors.
+export async function fetchSbomPackages(octokit, org, repo, token) {
+  const { data } = await octokit.request(
+    'GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report',
+    { owner: org, repo },
+  );
+  const reportUrl = data?.sbom_url;
+  if (!reportUrl) {
+    throw new Error(`SBOM report URL missing for ${org}/${repo}`);
+  }
 
   const authHeaders = {
     'Authorization': `Bearer ${token}`,
@@ -70,34 +70,47 @@ export async function fetchSbomPackages(octokit, org, repo, token) {
     'X-GitHub-Api-Version': '2026-03-10',
   };
 
-  // Poll until the report is ready (202 → still processing, 302 → redirect to download)
-  let serverErrorCount = 0;
-  for (let attempt = 0; attempt < 30; attempt++) {
+  // Poll the report URL until ready. Status codes from the SBOM API:
+  //   302 → SBOM ready, follow the Location header to download
+  //   202 → still generating, wait and retry
+  //   5xx → transient server error, retry up to MAX_SERVER_ERRORS times
+  //   other → unexpected, abort
+  let serverErrors = 0;
+  for (let attempt = 1; attempt <= MAX_POLL_ATTEMPTS; attempt++) {
     const res = await fetch(reportUrl, { headers: authHeaders, redirect: 'manual' });
+
+    // SBOM is ready — follow the redirect and return the packages list.
     if (res.status === 302) {
-      const downloadUrl = res.headers.get('location');
-      const download = await fetch(downloadUrl);
+      const download = await fetch(res.headers.get('location'));
+      if (!download.ok) {
+        throw new Error(`SBOM download failed for ${org}/${repo}: status ${download.status}`);
+      }
       const sbom = await download.json();
       return sbom?.packages ?? sbom?.sbom?.packages ?? [];
     }
-    if (res.status === 200) {
-      const sbom = await res.json();
-      return sbom?.packages ?? sbom?.sbom?.packages ?? [];
-    }
+
+    // Still processing, wait and retry
     if (res.status === 202) {
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, POLL_DELAY_MS));
       continue;
     }
-    if (res.status === 404 || res.status === 403) return null;
+
+    // Server error, retry with backoff
     if (res.status >= 500) {
-      serverErrorCount++;
-      if (serverErrorCount >= 3) return null;
-      await new Promise(r => setTimeout(r, 2000));
+      serverErrors++;
+      if (serverErrors >= MAX_SERVER_ERRORS) {
+        throw new Error(`SBOM polling failed for ${org}/${repo}: ${MAX_SERVER_ERRORS} consecutive 5xx responses`);
+      }
+      await new Promise(r => setTimeout(r, POLL_DELAY_MS));
       continue;
     }
-    throw new Error(`Unexpected status ${res.status} polling SBOM for ${repo}`);
+
+    // Unexpected status, abort
+    throw new Error(`SBOM polling failed for ${org}/${repo}: status ${res.status}`);
   }
-  throw new Error(`SBOM generation timed out for ${repo}`);
+
+  const totalSeconds = (MAX_POLL_ATTEMPTS * POLL_DELAY_MS) / 1000;
+  throw new Error(`SBOM for ${org}/${repo} not ready after ${totalSeconds}s. Giving up.`);
 }
 
 // ── Issue body ────────────────────────────────────────────────────────────────
@@ -232,14 +245,9 @@ async function main() {
   const pendingCreates = [];
   const pendingUpdates = [];
   const pendingCloses = [];
-  const skippedUnavailable = [];
 
   for (const repo of active) {
     const sbomPackages = await fetchSbomPackages(octokit, org, repo.name, token);
-    if (sbomPackages === null) {
-      skippedUnavailable.push(repo.name);
-      continue;
-    }
     const uniqueLicenses = new Set(
       sbomPackages
         .map(p => p.licenseConcluded ?? p.licenseDeclared)
@@ -293,15 +301,6 @@ async function main() {
     console.log('──────────────────');
     for (const repo of archived) {
       console.log(`– ${repo.name}`);
-    }
-  }
-
-  if (skippedUnavailable.length > 0) {
-    console.log('');
-    console.log('Skipped (dependency graph unavailable)');
-    console.log('───────────────────────────────────────');
-    for (const name of skippedUnavailable) {
-      console.log(`– ${name}`);
     }
   }
 

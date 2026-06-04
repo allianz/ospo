@@ -37,7 +37,7 @@ dry_run_create_repos: check-token
 	node create_repos.js --org allianz --dry-run
 
 dry_run_license_scan: check-token
-	node license_scan.js --org allianz --dry-run
+	node license_scan.js --org allianz --dry-run --debug
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 
