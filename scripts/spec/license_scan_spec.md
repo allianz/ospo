@@ -117,10 +117,11 @@ Optional with defaults: `excluded_repos: []`, `docs_link: ""`.
      octokit.paginate(octokit.rest.repos.listForOrg, { org, type: "all" })
    Split into active (archived: false, not excluded), archived (archived: true, not excluded),
    and excluded (name in excluded_repos) lists
-6. For each active repo (sequentially):
+6. Process active repos in parallel batches of `CONCURRENCY` (internal constant, default 5).
+   Per-repo work runs as a unit:
    a. GET /repos/{org}/{repo}/dependency-graph/sbom/generate-report → get `sbom_url`
-      Poll `sbom_url` with auth headers until ready (202 → wait 2s; 302 → follow redirect and parse JSON):
-      - Times out after 30 attempts (60s) — throws
+      Poll `sbom_url` with auth headers until ready (202 → wait 5s; 302 → follow redirect and parse JSON):
+      - Times out after 12 attempts (60s) — throws
       - 5xx responses: retry up to 3 times (2s delay between), then throw
       - Any other non-success status: throw
       - Empty or missing packages list: treated as passing (no violations)
@@ -133,7 +134,9 @@ Optional with defaults: `excluded_repos: []`, `docs_link: ""`.
         - Open issue with matching title: update its body with current results (unless --dry-run)
    d. No violations:
         - Open issue with matching title: close it with a resolved comment (unless --dry-run)
-   e. Print summary line to stdout
+   e. Print the repo's summary line, any non-compliant lines, and any debug lines as a
+      single contiguous block. Repos may complete in any order; output order is not
+      guaranteed, but lines belonging to one repo must not be interleaved with another's.
 7. For each archived repo: print name under "Skipped (archived)" — no checks, no issue action
 8. For each excluded repo: print name under "Skipped (configuration)" — no checks, no issue action
 9. Always exit 0 — violations are expected, not errors. Only fatal errors (missing token,

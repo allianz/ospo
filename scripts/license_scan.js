@@ -10,6 +10,8 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const repoRoot = path.join(__dirname, '..');
 const defaultConfigPath = path.join(repoRoot, 'config', 'license_scan.yaml');
 
+const CONCURRENCY = 5;
+
 // ── Config ────────────────────────────────────────────────────────────────────
 
 export async function loadConfig(configPath) {
@@ -48,8 +50,8 @@ export function checkDependencyLicenses(packages, denyList) {
 
 // ── SBOM fetching (async API) ─────────────────────────────────────────────────
 
-const POLL_DELAY_MS = 2000;
-const MAX_POLL_ATTEMPTS = 30;
+const POLL_DELAY_MS = 5000;
+const MAX_POLL_ATTEMPTS = 12;
 const MAX_SERVER_ERRORS = 3;
 
 // Fetches the SBOM packages list for a repo. Throws on any failure — the
@@ -246,7 +248,8 @@ async function main() {
   const pendingUpdates = [];
   const pendingCloses = [];
 
-  for (const repo of active) {
+  async function processRepo(repo) {
+    const output = [];
     const sbomPackages = await fetchSbomPackages(octokit, org, repo.name, token);
     const uniqueLicenses = new Set(
       sbomPackages
@@ -260,10 +263,10 @@ async function main() {
     const violations = checkDependencyLicenses(sbomPackages, config['deny-licenses']);
 
     if (violations.length > 0) {
-      console.log(`❌ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
-      if (debug && noLicenseCount > 0) console.log(`       No license info: ${noLicenseCount} packages`);
+      output.push(`❌ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
+      if (debug && noLicenseCount > 0) output.push(`       No license info: ${noLicenseCount} packages`);
       for (const v of violations) {
-        console.log(`       Non-compliant: ${v.name}@${v.version} (${v.spdxId})`);
+        output.push(`       Non-compliant: ${v.name}@${v.version} (${v.spdxId})`);
       }
 
       const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
@@ -282,8 +285,8 @@ async function main() {
         }
       }
     } else {
-      console.log(`✅ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
-      if (debug && noLicenseCount > 0) console.log(`       No license info: ${noLicenseCount} packages`);
+      output.push(`✅ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
+      if (debug && noLicenseCount > 0) output.push(`       No license info: ${noLicenseCount} packages`);
       const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
       if (existingIssue) {
         if (dryRun) {
@@ -293,7 +296,18 @@ async function main() {
         }
       }
     }
+
+    console.log(output.join('\n'));
   }
+
+  const queue = [...active];
+  const workers = Array.from({ length: CONCURRENCY }, async () => {
+    while (queue.length > 0) {
+      const repo = queue.shift();
+      await processRepo(repo);
+    }
+  });
+  await Promise.all(workers);
 
   if (archived.length > 0) {
     console.log('');
