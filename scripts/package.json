@@ -4,7 +4,8 @@
   "description": "OSPO automation scripts for GitHub organization management",
   "type": "module",
   "scripts": {
-    "test": "node --test lint_repos.test.js create_repos.test.js archive_repos.test.js license_scan.test.js"
+    "test": "node --test lint_repos.test.js create_repos.test.js archive_repos.test.js license_scan.test.js",
+    "coverage": "node --test --experimental-test-coverage --test-coverage-include='*.js' --test-coverage-exclude='*.test.js' lint_repos.test.js create_repos.test.js archive_repos.test.js license_scan.test.js"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",

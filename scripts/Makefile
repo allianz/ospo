@@ -6,7 +6,7 @@ export GH_TOKEN = $(GITHUB_TOKEN)
 .PHONY: check-token \
         test_lint_repos test_archive_repos test_create_repos test_license_scan \
         dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan \
-        test
+        test coverage
 
 check-token:
 	@test -n "$(GITHUB_TOKEN)" || (echo "Error: not authenticated. Run 'gh auth login' first." && exit 1)
@@ -42,4 +42,4 @@ dry_run_license_scan: check-token
 # ── Unit tests ────────────────────────────────────────────────────────────────
 
 test:
-	npm test
+	npm run coverage

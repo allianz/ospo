@@ -9,6 +9,7 @@ import {
   checkDependencyLicenses,
   buildIssueBody,
   findOpenIssue,
+  fetchSbomPackages,
 } from './license_scan.js';
 
 // ── loadConfig ────────────────────────────────────────────────────────────────
@@ -130,6 +131,24 @@ describe('checkDependencyLicenses', () => {
   it('passes on empty packages list', () => {
     assert.deepEqual(checkDependencyLicenses([], denyList), []);
   });
+
+  it('falls back to licenseDeclared when licenseConcluded is absent', () => {
+    const packages = [
+      { name: 'declared-bad', versionInfo: '1.0.0', licenseDeclared: 'GPL-3.0' },
+      { name: 'declared-clean', versionInfo: '1.0.0', licenseDeclared: 'MIT' },
+    ];
+    const violations = checkDependencyLicenses(packages, denyList);
+    assert.equal(violations.length, 1);
+    assert.equal(violations[0].name, 'declared-bad');
+    assert.equal(violations[0].spdxId, 'GPL-3.0');
+  });
+
+  it('prefers licenseConcluded over licenseDeclared when both are present', () => {
+    const packages = [
+      { name: 'mixed', versionInfo: '1.0.0', licenseConcluded: 'MIT', licenseDeclared: 'GPL-3.0' },
+    ];
+    assert.deepEqual(checkDependencyLicenses(packages, denyList), []);
+  });
 });
 
 // ── buildIssueBody ────────────────────────────────────────────────────────────
@@ -207,5 +226,153 @@ describe('findOpenIssue', () => {
     };
     const result = await findOpenIssue(octokit, 'org', 'repo', 'Dependency License Violation');
     assert.equal(result, null);
+  });
+});
+
+// ── fetchSbomPackages ─────────────────────────────────────────────────────────
+
+describe('fetchSbomPackages', () => {
+  const REPORT_URL = 'https://api.github.com/sbom-report/abc';
+  const DOWNLOAD_URL = 'https://api.github.com/sbom-download/abc';
+
+  // Stub setTimeout so polling waits resolve immediately. Restored after each test.
+  const realSetTimeout = globalThis.setTimeout;
+  const realFetch = globalThis.fetch;
+  before(() => {
+    globalThis.setTimeout = fn => { fn(); return 0; };
+  });
+  after(() => {
+    globalThis.setTimeout = realSetTimeout;
+    globalThis.fetch = realFetch;
+  });
+
+  // Build an octokit stub whose .request returns the given sbom_url (or omits it).
+  const octokitWithReport = (sbomUrl) => ({
+    request: async () => ({ data: sbomUrl === undefined ? {} : { sbom_url: sbomUrl } }),
+  });
+
+  // Build a fetch stub that returns scripted responses, one per call. The last
+  // response is reused for any extra calls (so download responses don't need a
+  // separate counter when paired with a single 302).
+  const scriptedFetch = (responses) => {
+    let i = 0;
+    return async (url) => {
+      const r = responses[Math.min(i, responses.length - 1)];
+      i++;
+      return typeof r === 'function' ? r(url) : r;
+    };
+  };
+
+  // Helpers for building Response-like objects.
+  const pollResponse = (status, location) => ({
+    status,
+    headers: { get: (h) => h.toLowerCase() === 'location' ? location : null },
+  });
+  const downloadResponse = (ok, payload, status = 200) => ({
+    ok,
+    status,
+    json: async () => payload,
+  });
+
+  it('returns packages from top-level sbom.packages on 302', async () => {
+    const pkgs = [{ name: 'lodash', licenseConcluded: 'MIT' }];
+    globalThis.fetch = scriptedFetch([
+      pollResponse(302, DOWNLOAD_URL),
+      downloadResponse(true, { packages: pkgs }),
+    ]);
+    const result = await fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok');
+    assert.deepEqual(result.packages, pkgs);
+    assert.equal(result.pollAttempts, 1);
+  });
+
+  it('returns packages from nested sbom.sbom.packages on 302', async () => {
+    const pkgs = [{ name: 'express', licenseConcluded: 'MIT' }];
+    globalThis.fetch = scriptedFetch([
+      pollResponse(302, DOWNLOAD_URL),
+      downloadResponse(true, { sbom: { packages: pkgs } }),
+    ]);
+    const result = await fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok');
+    assert.deepEqual(result.packages, pkgs);
+  });
+
+  it('returns empty packages list when SBOM has no packages field', async () => {
+    globalThis.fetch = scriptedFetch([
+      pollResponse(302, DOWNLOAD_URL),
+      downloadResponse(true, {}),
+    ]);
+    const result = await fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok');
+    assert.deepEqual(result.packages, []);
+  });
+
+  it('throws when sbom_url is missing from initial response', async () => {
+    await assert.rejects(
+      () => fetchSbomPackages(octokitWithReport(undefined), 'org', 'repo', 'tok'),
+      /SBOM report URL missing for org\/repo/,
+    );
+  });
+
+  it('throws when download response is not ok', async () => {
+    globalThis.fetch = scriptedFetch([
+      pollResponse(302, DOWNLOAD_URL),
+      downloadResponse(false, null, 404),
+    ]);
+    await assert.rejects(
+      () => fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok'),
+      /SBOM download failed for org\/repo: status 404/,
+    );
+  });
+
+  it('polls again on 202 and succeeds on subsequent 302', async () => {
+    const pkgs = [{ name: 'foo', licenseConcluded: 'MIT' }];
+    globalThis.fetch = scriptedFetch([
+      pollResponse(202),
+      pollResponse(202),
+      pollResponse(302, DOWNLOAD_URL),
+      downloadResponse(true, { packages: pkgs }),
+    ]);
+    const result = await fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok');
+    assert.deepEqual(result.packages, pkgs);
+    assert.equal(result.pollAttempts, 3);
+  });
+
+  it('retries on 5xx and succeeds on subsequent 302', async () => {
+    const pkgs = [{ name: 'bar', licenseConcluded: 'MIT' }];
+    globalThis.fetch = scriptedFetch([
+      pollResponse(503),
+      pollResponse(502),
+      pollResponse(302, DOWNLOAD_URL),
+      downloadResponse(true, { packages: pkgs }),
+    ]);
+    const result = await fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok');
+    assert.deepEqual(result.packages, pkgs);
+    assert.equal(result.pollAttempts, 3);
+  });
+
+  it('throws after 3 consecutive 5xx responses', async () => {
+    globalThis.fetch = scriptedFetch([
+      pollResponse(500),
+      pollResponse(502),
+      pollResponse(503),
+    ]);
+    await assert.rejects(
+      () => fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok'),
+      /3 consecutive 5xx responses/,
+    );
+  });
+
+  it('throws immediately on unexpected status (e.g. 404)', async () => {
+    globalThis.fetch = scriptedFetch([pollResponse(404)]);
+    await assert.rejects(
+      () => fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok'),
+      /SBOM polling failed for org\/repo: status 404/,
+    );
+  });
+
+  it('throws after exhausting max poll attempts on continuous 202', async () => {
+    globalThis.fetch = scriptedFetch([pollResponse(202)]);
+    await assert.rejects(
+      () => fetchSbomPackages(octokitWithReport(REPORT_URL), 'org', 'repo', 'tok'),
+      /not ready after \d+s\. Giving up\./,
+    );
   });
 });
