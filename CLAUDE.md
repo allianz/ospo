@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Allianz OSPO (Open Source Program Office) automation suite for managing GitHub organizations at enterprise scale. Provides tools to create, lint, and archive GitHub repositories while enforcing organizational standards and compliance.
+Allianz OSPO (Open Source Program Office) automation suite for managing GitHub organizations at enterprise scale. Provides tools to create, lint, archive, and license-scan GitHub repositories while enforcing organizational standards and compliance.
 
 ## Commands
 
@@ -15,7 +15,8 @@ cd scripts
 make test_create_repos    # Integration test against ospo-sandbox org
 make test_lint_repos      # Integration test against ospo-sandbox org
 make test_archive_repos   # Integration test against ospo-sandbox org
-make test                 # Unit tests (node --test)
+make test_license_scan    # Integration test against ospo-sandbox org
+make test                 # Unit tests with coverage report (node --test)
 ```
 
 ### Running Scripts Directly
@@ -24,13 +25,14 @@ make test                 # Unit tests (node --test)
 node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--skip-team-sync] [--skip-custom-role]
 node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
 ```
 
 All scripts support `--dry-run` for safe validation and `--debug` for verbose output.
 
 ### Required Tools
 
-- Node.js 22+, npm (runtime for all scripts)
+- Node.js 26+, npm (runtime for all scripts)
 - `gh` (GitHub CLI, used for authentication token resolution in Makefile)
 
 ## Specifications
@@ -40,25 +42,28 @@ Detailed specs for each script — behaviour, config schema, execution flow, out
 - [`scripts/spec/create_repos_spec.md`](scripts/spec/create_repos_spec.md)
 - [`scripts/spec/lint_repos_spec.md`](scripts/spec/lint_repos_spec.md)
 - [`scripts/spec/archive_repos_spec.md`](scripts/spec/archive_repos_spec.md)
+- [`scripts/spec/license_scan_spec.md`](scripts/spec/license_scan_spec.md)
 
 ## Architecture
 
-Three independent JavaScript (ESM) scripts, each driven by a YAML config file:
+Four independent JavaScript (ESM) scripts, each driven by a YAML config file:
 
 1. **`scripts/create_repos.js`** — Creates/manages repos and teams, assigns permissions, syncs with Azure AD. Reads `config/create_repos.yaml`.
 2. **`scripts/lint_repos.js`** — Enforces repo compliance (description, topics, license, README, CONTRIBUTING). Reads `config/lint_repos.yaml`.
 3. **`scripts/archive_repos.js`** — Archives stale repos after a grace period with warning issues. Reads `config/archive_repos.yaml`.
+4. **`scripts/license_scan.js`** — Scans dependency licenses via the GitHub SBOM API and opens issues for denied licenses. Reads `config/license_scan.yaml`.
 
 ### Configuration
 
 - **Production configs**: `config/` directory
-- **Test configs**: `scripts/test/` directory (targets `ospo-sandbox` org)
+- **Test configs**: `scripts/test-config/` directory (targets `ospo-sandbox` org)
 
 ### CI/CD (GitHub Actions)
 
 - `create_repos.yaml` — Dry-run then apply (two-stage, with environment gate) on push to main when `config/create_repos.yaml` changes
 - `lint_repos.yml` — Scheduled bi-weekly (Tue/Thu)
 - `archive_repos.yml` — Scheduled weekly (Sun midnight)
+- `license_scan.yaml` — Scheduled weekly (Mon midnight)
 - All workflows support manual dispatch
 - Authentication via GitHub App tokens (`ALLIANZ_APP_ID`, `ALLIANZ_PRIVATE_KEY`)
 
@@ -68,4 +73,5 @@ Three independent JavaScript (ESM) scripts, each driven by a YAML config file:
 - Team permission model: custom "Own" role (Enterprise) with "maintain" fallback
 - Archive script excludes `.github` and `ospo` repositories
 - Linting clones repos to `lint_cache/` for local analysis
+- License scanning fetches SBOMs via the dependency-graph API (poll-and-redirect), no cloning required
 - Non-compliant repos get GitHub issues created automatically

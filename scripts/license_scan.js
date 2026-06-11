@@ -1,0 +1,355 @@
+#!/usr/bin/env node
+
+import { Octokit } from '@octokit/rest';
+import yaml from 'js-yaml';
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const repoRoot = path.join(__dirname, '..');
+const defaultConfigPath = path.join(repoRoot, 'config', 'license_scan.yaml');
+
+// ── Config ────────────────────────────────────────────────────────────────────
+
+export async function loadConfig(configPath) {
+  const raw = await readFile(configPath, 'utf8');
+  const config = yaml.load(raw);
+  if (!config.issue_title) {
+    throw new Error(`Config missing required field: issue_title (in ${configPath})`);
+  }
+  if (!config['deny-licenses'] || config['deny-licenses'].length === 0) {
+    throw new Error(`Config missing required field: deny-licenses (in ${configPath})`);
+  }
+  config.excluded_repos = config.excluded_repos ?? [];
+  config.docs_link = config.docs_link ?? '';
+  return config;
+}
+
+// ── Check functions ───────────────────────────────────────────────────────────
+
+export function checkDependencyLicenses(packages, denyList) {
+  const violations = [];
+  for (const pkg of packages) {
+    const spdxId = pkg.licenseConcluded ?? pkg.licenseDeclared ?? null;
+    if (!spdxId || spdxId === 'NOASSERTION' || spdxId === 'NONE') {
+      continue;
+    }
+    if (denyList.includes(spdxId)) {
+      violations.push({
+        name: pkg.name ?? '',
+        version: pkg.versionInfo ?? '',
+        spdxId,
+      });
+    }
+  }
+  return violations;
+}
+
+// ── SBOM fetching (async API) ─────────────────────────────────────────────────
+const CONCURRENCY = 5;
+const POLL_DELAY_MS = 2000;
+const INITIAL_WAIT_MS = 400;
+const MAX_POLL_ATTEMPTS = 10;
+const MAX_SERVER_ERRORS = 3;
+
+// Fetches the SBOM packages list for a repo. Throws on any failure — the
+// dependency graph cannot be disabled, so failures here are real errors.
+export async function fetchSbomPackages(octokit, org, repo, token) {
+  const { data } = await octokit.request(
+    'GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report',
+    { owner: org, repo },
+  );
+  const reportUrl = data?.sbom_url;
+  if (!reportUrl) {
+    throw new Error(`SBOM report URL missing for ${org}/${repo}`);
+  }
+
+  const authHeaders = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2026-03-10',
+  };
+
+  // Poll the report URL until ready. Status codes from the SBOM API:
+  //   302 → SBOM ready, follow the Location header to download
+  //   202 → still generating, wait and retry
+  //   5xx → transient server error, retry up to MAX_SERVER_ERRORS times
+  //   other → unexpected, abort
+  await new Promise(r => setTimeout(r, INITIAL_WAIT_MS));
+  let serverErrors = 0;
+  for (let attempt = 1; attempt <= MAX_POLL_ATTEMPTS; attempt++) {
+    const res = await fetch(reportUrl, { headers: authHeaders, redirect: 'manual' });
+
+    // SBOM is ready — follow the redirect and return the packages list.
+    if (res.status === 302) {
+      const download = await fetch(res.headers.get('location'));
+      if (!download.ok) {
+        throw new Error(`SBOM download failed for ${org}/${repo}: status ${download.status}`);
+      }
+      const sbom = await download.json();
+      return { packages: sbom?.packages ?? sbom?.sbom?.packages ?? [], pollAttempts: attempt };
+    }
+
+    // Still processing, wait and retry
+    if (res.status === 202) {
+      await new Promise(r => setTimeout(r, POLL_DELAY_MS));
+      continue;
+    }
+
+    // Server error, retry with backoff
+    if (res.status >= 500) {
+      serverErrors++;
+      if (serverErrors >= MAX_SERVER_ERRORS) {
+        throw new Error(`SBOM polling failed for ${org}/${repo}: ${MAX_SERVER_ERRORS} consecutive 5xx responses`);
+      }
+      await new Promise(r => setTimeout(r, POLL_DELAY_MS));
+      continue;
+    }
+
+    // Unexpected status, abort
+    throw new Error(`SBOM polling failed for ${org}/${repo}: status ${res.status}`);
+  }
+
+  const totalSeconds = (MAX_POLL_ATTEMPTS * POLL_DELAY_MS) / 1000;
+  throw new Error(`SBOM for ${org}/${repo} not ready after ${totalSeconds}s. Giving up.`);
+}
+
+// ── Issue body ────────────────────────────────────────────────────────────────
+
+export function buildIssueBody(violations, config) {
+  const rows = violations.map(({ name, version, spdxId }) =>
+    `| ${name} | ${version} | ${spdxId} |`
+  );
+  const policyLine = config.docs_link
+    ? `Please review the [License Policy](${config.docs_link}) and replace or remove the dependencies above.`
+    : 'Please replace or remove the dependencies above.';
+  return [
+    '## Dependency License Violation',
+    '',
+    'The following dependencies use licenses that are not permitted:',
+    '',
+    '| Package | Version | License |',
+    '|---------|---------|---------|',
+    ...rows,
+    '',
+    policyLine,
+    '',
+    '_This issue was automatically generated by the OSPO license scanner._',
+  ].join('\n');
+}
+
+// ── Issue helpers ─────────────────────────────────────────────────────────────
+
+export async function findOpenIssue(octokit, org, repo, issueTitle) {
+  const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
+    owner: org,
+    repo,
+    state: 'open',
+  });
+  const found = issues.find(i => i.title === issueTitle && !i.pull_request);
+  return found ? found.number : null;
+}
+
+async function createIssue(octokit, org, repo, title, body) {
+  await octokit.rest.issues.create({ owner: org, repo, title, body });
+}
+
+async function updateIssue(octokit, org, repo, issueNumber, body) {
+  await octokit.rest.issues.update({ owner: org, repo, issue_number: issueNumber, body });
+}
+
+async function closeIssue(octokit, org, repo, issueNumber) {
+  await octokit.rest.issues.createComment({
+    owner: org,
+    repo,
+    issue_number: issueNumber,
+    body: '_All dependency license violations have been resolved. Closing this issue automatically._',
+  });
+  await octokit.rest.issues.update({
+    owner: org,
+    repo,
+    issue_number: issueNumber,
+    state: 'closed',
+  });
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+
+async function main() {
+  const args = process.argv.slice(2);
+  let org = null;
+  let configPath = defaultConfigPath;
+  let dryRun = false;
+  let debug = false;
+
+  for (let i = 0; i < args.length; i++) {
+    switch (args[i]) {
+      case '--org':
+        org = args[++i];
+        break;
+      case '--config':
+        configPath = path.resolve(args[++i]);
+        break;
+      case '--dry-run':
+        dryRun = true;
+        break;
+      case '--debug':
+        debug = true;
+        break;
+    }
+  }
+
+  if (!org) {
+    console.error('Error: --org is required');
+    process.exit(1);
+  }
+
+  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+  if (!token) {
+    console.error('Error: GITHUB_TOKEN (or GH_TOKEN) environment variable is not set');
+    process.exit(1);
+  }
+
+  console.log(`Config: ${configPath}`);
+  const config = await loadConfig(configPath);
+  const octokit = new Octokit({ auth: token });
+  octokit.hook.before('request', options => {
+    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
+  });
+
+  const allRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
+    org,
+    type: 'all',
+    per_page: 100,
+  });
+
+  const excluded = [];
+  const archived = [];
+  const active = [];
+
+  for (const repo of allRepos) {
+    if (config.excluded_repos.includes(repo.name)) {
+      excluded.push(repo);
+    } else if (repo.archived) {
+      archived.push(repo);
+    } else {
+      active.push(repo);
+    }
+  }
+
+  const pad = name => name.length >= 20 ? name.slice(0, 20) : name.padEnd(20);
+
+  console.log('');
+  console.log('Results');
+  console.log('───────');
+
+  const pendingCreates = [];
+  const pendingUpdates = [];
+  const pendingCloses = [];
+
+  async function processRepo(repo) {
+    const output = [];
+    const t0 = performance.now();
+    const { packages: sbomPackages, pollAttempts } = await fetchSbomPackages(octokit, org, repo.name, token);
+    const uniqueLicenses = new Set(
+      sbomPackages
+        .map(p => p.licenseConcluded ?? p.licenseDeclared)
+        .filter(l => l && l !== 'NOASSERTION' && l !== 'NONE')
+    );
+    const noLicenseCount = sbomPackages.filter(p => {
+      const l = p.licenseConcluded ?? p.licenseDeclared ?? null;
+      return !l || l === 'NOASSERTION' || l === 'NONE';
+    }).length;
+    const violations = checkDependencyLicenses(sbomPackages, config['deny-licenses']);
+
+    if (violations.length > 0) {
+      output.push(`❌ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
+      if (debug && noLicenseCount > 0) output.push(`       No license info: ${noLicenseCount} packages`);
+      for (const v of violations) {
+        output.push(`       Non-compliant: ${v.name}@${v.version} (${v.spdxId})`);
+      }
+
+      const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
+      const body = buildIssueBody(violations, config);
+      if (!existingIssue) {
+        if (dryRun) {
+          pendingCreates.push(repo.name);
+        } else {
+          await createIssue(octokit, org, repo.name, config.issue_title, body);
+        }
+      } else {
+        if (dryRun) {
+          pendingUpdates.push({ number: existingIssue, name: repo.name });
+        } else {
+          await updateIssue(octokit, org, repo.name, existingIssue, body);
+        }
+      }
+    } else {
+      output.push(`✅ ${pad(repo.name)}  ${sbomPackages.length} packages, ${uniqueLicenses.size} unique licenses`);
+      if (debug && noLicenseCount > 0) output.push(`       No license info: ${noLicenseCount} packages`);
+      const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
+      if (existingIssue) {
+        if (dryRun) {
+          pendingCloses.push({ number: existingIssue, name: repo.name });
+        } else {
+          await closeIssue(octokit, org, repo.name, existingIssue);
+        }
+      }
+    }
+
+    if (debug) output.push(`       Performance: ${pollAttempts} poll attempt(s), ${((performance.now() - t0) / 1000).toFixed(1)}s total`);
+    console.log(output.join('\n'));
+  }
+
+  const queue = [...active];
+  const workers = Array.from({ length: CONCURRENCY }, async () => {
+    while (queue.length > 0) {
+      const repo = queue.shift();
+      await processRepo(repo);
+    }
+  });
+  await Promise.all(workers);
+
+  if (archived.length > 0) {
+    console.log('');
+    console.log('Skipped (archived)');
+    console.log('──────────────────');
+    for (const repo of archived) {
+      console.log(`– ${repo.name}`);
+    }
+  }
+
+  if (excluded.length > 0) {
+    console.log('');
+    console.log('Skipped (configuration)');
+    console.log('───────────────────────');
+    for (const repo of excluded) {
+      console.log(`– ${repo.name}`);
+    }
+  }
+
+  if (dryRun && (pendingCreates.length > 0 || pendingUpdates.length > 0 || pendingCloses.length > 0)) {
+    console.log('');
+    console.log(`──── Dry-run: ${pendingCreates.length} issue would be created, ${pendingUpdates.length} would be updated, ${pendingCloses.length} would be closed ────`);
+    for (const name of pendingCreates) {
+      console.log(`  ✉️   create  ${name}`);
+    }
+    for (const { number, name } of pendingUpdates) {
+      console.log(`  ✏️   update  #${number}  ${name}`);
+    }
+    for (const { number, name } of pendingCloses) {
+      console.log(`  ✔️   close   #${number}  ${name}`);
+    }
+  }
+
+  process.exit(0);
+}
+
+// Only run main() when this file is the entry point (not when imported by tests)
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch(err => {
+    console.error('Fatal error:', err.message);
+    process.exit(1);
+  });
+}
