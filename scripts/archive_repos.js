@@ -217,6 +217,9 @@ async function main() {
 
   const config = await loadConfig(configPath);
   const octokit = new Octokit({ auth: token });
+  octokit.hook.before('request', options => {
+    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
+  });
 
   const staleCutoff = parseRelativeDate(config.warn_after);
   const graceCutoff = parseRelativeDate(config.grace_period);

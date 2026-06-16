@@ -70,6 +70,12 @@ Four independent JavaScript (ESM) scripts, each driven by a YAML config file:
 ### Key Patterns
 
 - Scripts use GitHub REST API via `@octokit/rest`
+- Every script must register `octokit.hook.before('request', ...)` to set `X-GitHub-Api-Version: 2026-03-10` on all requests — without this, Octokit emits deprecation warnings for PATCH/issue endpoints. See `license_scan.js` for the canonical pattern:
+  ```js
+  octokit.hook.before('request', options => {
+    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
+  });
+  ```
 - Team permission model: custom "Own" role (Enterprise) with "maintain" fallback
 - Archive script excludes `.github` and `ospo` repositories
 - Linting clones repos to `lint_cache/` for local analysis
