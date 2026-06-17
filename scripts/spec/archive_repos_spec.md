@@ -384,7 +384,7 @@ test_archive_repos: check-token
 
 ## CI/CD
 
-`.github/workflows/archive_repos.yml` setup:
+`.github/workflows/archive_repos.yaml` setup:
 
 - **Schedule:** Weekly on Sunday at midnight UTC (`0 0 * * 0`)
 - **Manual trigger:** `workflow_dispatch`

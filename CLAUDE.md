@@ -61,8 +61,8 @@ Four independent JavaScript (ESM) scripts, each driven by a YAML config file:
 ### CI/CD (GitHub Actions)
 
 - `create_repos.yaml` — Dry-run then apply (two-stage, with environment gate) on push to main when `config/create_repos.yaml` changes
-- `lint_repos.yml` — Scheduled bi-weekly (Tue/Thu)
-- `archive_repos.yml` — Scheduled weekly (Sun midnight)
+- `lint_repos.yaml` — Scheduled bi-weekly (Tue/Thu)
+- `archive_repos.yaml` — Scheduled weekly (Sun midnight)
 - `license_scan.yaml` — Scheduled weekly (Mon midnight)
 - All workflows support manual dispatch
 - Authentication via GitHub App tokens (`ALLIANZ_APP_ID`, `ALLIANZ_PRIVATE_KEY`)
