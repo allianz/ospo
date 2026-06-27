@@ -346,7 +346,16 @@ async function main() {
   await Promise.all(workers);
 
   // ── OSPO summary issue ────────────────────────────────────────────────────
-  const ospoIssue = await findOpenIssue(octokit, org, 'ospo', OSPO_LICENSE_ISSUE_TITLE);
+  let ospoIssue;
+  try {
+    ospoIssue = await findOpenIssue(octokit, org, 'ospo', OSPO_LICENSE_ISSUE_TITLE);
+  } catch (err) {
+    if (err.status === 404) {
+      console.error(`Error: repository '${org}/ospo' not found. The OSPO summary issue cannot be managed without this repository.`);
+      process.exit(1);
+    }
+    throw err;
+  }
   if (repoViolations.length > 0) {
     const body = buildOspoLicenseIssueBody(repoViolations);
     if (dryRun) {

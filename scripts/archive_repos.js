@@ -102,7 +102,7 @@ async function findOpenIssue(octokit, org, repo, issueTitle) {
     repo,
     state: 'open',
   });
-  return issues.find(i => i.title === issueTitle) ?? null;
+  return issues.find(i => i.title === issueTitle && !i.pull_request) ?? null;
 }
 
 async function createIssue(octokit, org, repo, title, body) {
@@ -130,7 +130,6 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
   const planned = [];
   const upcoming = [];
   const nextWarnings = [];
-  const staleRepos = [];
 
   console.log('READING REPOSITORIES...');
 
@@ -177,7 +176,6 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
         const msLeft = effectiveIssueDate.getTime() - graceCutoff.getTime();
         const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
         upcoming.push({ repo: repo.name, daysLeft });
-        staleRepos.push({ repo: repo.name, daysLeft });
         if (!dryRun) console.log(`  ${org}/${repo.name} has remaining grace period.`);
       }
     } else {
@@ -204,7 +202,7 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
   upcoming.sort((a, b) => a.daysLeft - b.daysLeft);
   nextWarnings.sort((a, b) => a.daysUntilWarning - b.daysUntilWarning);
 
-  return { planned, upcoming, nextWarnings: nextWarnings.slice(0, 3), staleRepos };
+  return { planned, upcoming, nextWarnings: nextWarnings.slice(0, 3) };
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -277,12 +275,21 @@ async function main() {
     console.log('');
   }
 
-  const { planned, upcoming, nextWarnings, staleRepos } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff, gracePeriod: config.grace_period }, { dryRun, debug });
+  const { planned, upcoming, nextWarnings } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff, gracePeriod: config.grace_period }, { dryRun, debug });
 
   // ── OSPO summary issue ────────────────────────────────────────────────────
-  const ospoIssue = await findOpenIssue(octokit, org, 'ospo', OSPO_ARCHIVE_ISSUE_TITLE);
-  if (staleRepos.length > 0) {
-    const body = buildOspoArchiveIssueBody(staleRepos);
+  let ospoIssue;
+  try {
+    ospoIssue = await findOpenIssue(octokit, org, 'ospo', OSPO_ARCHIVE_ISSUE_TITLE);
+  } catch (err) {
+    if (err.status === 404) {
+      console.error(`Error: repository '${org}/ospo' not found. The OSPO summary issue cannot be managed without this repository.`);
+      process.exit(1);
+    }
+    throw err;
+  }
+  if (upcoming.length > 0) {
+    const body = buildOspoArchiveIssueBody(upcoming);
     if (dryRun) {
       planned.push(ospoIssue
         ? `Would update OSPO summary issue #${ospoIssue.number} in '${org}/ospo'.`

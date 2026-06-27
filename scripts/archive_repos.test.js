@@ -374,7 +374,7 @@ describe('processRepos', () => {
     assert.equal(nextWarnings.length, 0, 'repo with existing issue should not appear in nextWarnings');
   });
 
-  it('staleRepos includes grace-period entries with daysLeft', async () => {
+  it('upcoming includes grace-period entries with daysLeft', async () => {
     const octokit = makeOctokit({
       paginate: async () => [
         { title: 'Inactive Repository Reminder', number: 12, created_at: '2026-03-15T00:00:00Z' },
@@ -382,14 +382,14 @@ describe('processRepos', () => {
     });
     const repos = [makeRepo('stale-repo', '2023-06-01T00:00:00Z')];
 
-    const { staleRepos } = await processRepos(octokit, org, repos, config);
+    const { upcoming } = await processRepos(octokit, org, repos, config);
 
-    assert.equal(staleRepos.length, 1);
-    assert.equal(staleRepos[0].repo, 'stale-repo');
-    assert.ok(typeof staleRepos[0].daysLeft === 'number');
+    assert.equal(upcoming.length, 1);
+    assert.equal(upcoming[0].repo, 'stale-repo');
+    assert.ok(typeof upcoming[0].daysLeft === 'number');
   });
 
-  it('staleRepos does not include archived repos', async () => {
+  it('upcoming does not include archived repos', async () => {
     const octokit = makeOctokit({
       paginate: async () => [
         { title: 'Inactive Repository Reminder', number: 8, created_at: '2026-01-15T00:00:00Z' },
@@ -398,18 +398,18 @@ describe('processRepos', () => {
     });
     const repos = [makeRepo('dead-repo', '2022-01-01T00:00:00Z')];
 
-    const { staleRepos } = await processRepos(octokit, org, repos, config);
+    const { upcoming } = await processRepos(octokit, org, repos, config);
 
-    assert.equal(staleRepos.length, 0, 'archived repos should not appear in staleRepos');
+    assert.equal(upcoming.length, 0, 'archived repos should not appear in upcoming');
   });
 
-  it('staleRepos is empty when all repos are active', async () => {
+  it('upcoming is empty when all repos are active', async () => {
     const octokit = makeOctokit({ paginate: async () => [] });
     const repos = [makeRepo('healthy-repo', '2026-04-01T00:00:00Z')];
 
-    const { staleRepos } = await processRepos(octokit, org, repos, config);
+    const { upcoming } = await processRepos(octokit, org, repos, config);
 
-    assert.equal(staleRepos.length, 0);
+    assert.equal(upcoming.length, 0);
   });
 });
 

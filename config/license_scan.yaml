@@ -17,7 +17,8 @@
 
 issue_title: "Dependency License Violation"
 docs_link: "https://cmp.allianz.net/spaces/ARGO/pages/2796594691/Third+Party+Dependencies"
-excluded_repos: []
+excluded_repos:
+  - ospo
 
 deny-licenses:
   # Copyleft
