@@ -315,7 +315,7 @@ test_lint_repos:
 
 ## CI/CD Changes
 
-`.github/workflows/lint_repos.yml` setup:
+`.github/workflows/lint_repos.yaml` setup:
 
 - Node.js setup step
 - `npm ci` run from the `scripts/` directory

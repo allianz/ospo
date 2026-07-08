@@ -155,7 +155,6 @@ async function validateEntraGroup(octokit, org, name) {
   const response = await octokit.request('GET /orgs/{org}/team-sync/groups', {
     org,
     q: name,
-    headers: { 'X-GitHub-Api-Version': '2022-11-28' },
   });
   const groups = response.data.groups ?? [];
   const exact = groups.filter(g => g.group_name === name);
@@ -179,7 +178,6 @@ async function syncTeamWithEntra(octokit, org, teamSlug, group) {
         group_description: group.group_description ?? '',
       },
     ],
-    headers: { 'X-GitHub-Api-Version': '2022-11-28' },
   });
 }
 
@@ -394,7 +392,7 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
   // Look up org security configurations by name
   const cfgsResponse = await octokit.request(
     'GET /orgs/{org}/code-security/configurations',
-    { org, headers: { 'X-GitHub-Api-Version': '2022-11-28' } }
+    { org }
   );
   const allCfgs = cfgsResponse.data;
 
@@ -485,7 +483,6 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
           configuration_id: ospoManaged.id,
           scope: 'selected',
           selected_repository_ids: toAssignOspo.map(r => r.id),
-          headers: { 'X-GitHub-Api-Version': '2022-11-28' },
         }
       );
       process.stdout.write('✓\n');
@@ -504,7 +501,6 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
           configuration_id: customCfg.id,
           scope: 'selected',
           selected_repository_ids: toAssignCustom.map(r => r.id),
-          headers: { 'X-GitHub-Api-Version': '2022-11-28' },
         }
       );
       process.stdout.write('✓\n');
@@ -546,7 +542,6 @@ export async function enforceBranchProtection(octokit, org, config, opts = {}) {
   // Look up the 'ospo-managed' org ruleset
   const rulesetsResponse = await octokit.request('GET /orgs/{org}/rulesets', {
     org,
-    headers: { 'X-GitHub-Api-Version': '2022-11-28' },
   });
   const rulesets = rulesetsResponse.data;
   const ruleset = rulesets.find(r => r.name === 'ospo-managed');
@@ -559,7 +554,6 @@ export async function enforceBranchProtection(octokit, org, config, opts = {}) {
   const fullRulesetResponse = await octokit.request('GET /orgs/{org}/rulesets/{ruleset_id}', {
     org,
     ruleset_id: ruleset.id,
-    headers: { 'X-GitHub-Api-Version': '2022-11-28' },
   });
   const fullRuleset = fullRulesetResponse.data;
 
@@ -624,7 +618,6 @@ export async function enforceBranchProtection(octokit, org, config, opts = {}) {
         },
       },
       rules: fullRuleset.rules,
-      headers: { 'X-GitHub-Api-Version': '2022-11-28' },
     });
     process.stdout.write('✓\n');
 
@@ -690,6 +683,9 @@ async function main() {
   const config = await loadConfig(configPath);
   const noop = () => {};
   const octokit = new Octokit({ auth: token, log: { debug: noop, info: noop, warn: noop, error: noop } });
+  octokit.hook.before('request', options => {
+    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
+  });
   const opts = { dryRun, debug, skipTeamSync, skipCustomRole };
 
   // REPOSITORIES

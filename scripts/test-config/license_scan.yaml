@@ -4,7 +4,8 @@
 issue_title: "Dependency License Violation"
 docs_link: "https://github.com/allianz/ospo/blob/main/guides/standards_and_compliance.md"
 
-excluded_repos: []
+excluded_repos:
+  - ospo
 
 deny-licenses:
   # Copyleft

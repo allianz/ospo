@@ -61,8 +61,8 @@ Four independent JavaScript (ESM) scripts, each driven by a YAML config file:
 ### CI/CD (GitHub Actions)
 
 - `create_repos.yaml` — Dry-run then apply (two-stage, with environment gate) on push to main when `config/create_repos.yaml` changes
-- `lint_repos.yml` — Scheduled bi-weekly (Tue/Thu)
-- `archive_repos.yml` — Scheduled weekly (Sun midnight)
+- `lint_repos.yaml` — Scheduled bi-weekly (Tue/Thu)
+- `archive_repos.yaml` — Scheduled weekly (Sun midnight)
 - `license_scan.yaml` — Scheduled weekly (Mon midnight)
 - All workflows support manual dispatch
 - Authentication via GitHub App tokens (`ALLIANZ_APP_ID`, `ALLIANZ_PRIVATE_KEY`)
@@ -70,6 +70,12 @@ Four independent JavaScript (ESM) scripts, each driven by a YAML config file:
 ### Key Patterns
 
 - Scripts use GitHub REST API via `@octokit/rest`
+- Every script must register `octokit.hook.before('request', ...)` to set `X-GitHub-Api-Version: 2026-03-10` on all requests — without this, Octokit emits deprecation warnings for PATCH/issue endpoints. See `license_scan.js` for the canonical pattern:
+  ```js
+  octokit.hook.before('request', options => {
+    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
+  });
+  ```
 - Team permission model: custom "Own" role (Enterprise) with "maintain" fallback
 - Archive script excludes `.github` and `ospo` repositories
 - Linting clones repos to `lint_cache/` for local analysis

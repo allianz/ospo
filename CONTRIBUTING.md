@@ -29,8 +29,8 @@ npm install
 | Script | Config | Workflow | Description |
 |---|---|---|---|
 | `scripts/create_repos.js` | `config/create_repos.yaml` | `.github/workflows/create_repos.yaml` | Create repositories, manage teams, sync with Entra ID |
-| `scripts/lint_repos.js` | `config/lint_repos.yaml` | `.github/workflows/lint_repos.yml` | Enforce minimum repository standards |
-| `scripts/archive_repos.js` | `config/archive_repos.yaml` | `.github/workflows/archive_repos.yml` | Archive stale projects |
+| `scripts/lint_repos.js` | `config/lint_repos.yaml` | `.github/workflows/lint_repos.yaml` | Enforce minimum repository standards |
+| `scripts/archive_repos.js` | `config/archive_repos.yaml` | `.github/workflows/archive_repos.yaml` | Archive stale projects |
 
 For full details on each script's behaviour, configuration, and output format, see the [specs](scripts/spec/).
 

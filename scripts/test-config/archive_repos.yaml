@@ -2,6 +2,7 @@
 # Not used in production.
 
 excluded_repos:
+  - ospo
   - new-project
 
 warn_after: "10 minutes"

@@ -255,6 +255,9 @@ async function main() {
 
   const config = await loadConfig(configPath);
   const octokit = new Octokit({ auth: token });
+  octokit.hook.before('request', options => {
+    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
+  });
 
   const allRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
     org,
