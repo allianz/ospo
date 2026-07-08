@@ -33,4 +33,12 @@ jobs:
       - name: Scan dependency licenses
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: node scripts/license_scan.js --org allianz
+        run: |
+          output=$(node scripts/license_scan.js --org allianz)
+          echo "$output"
+          {
+            echo '### License Scan Results'
+            echo '```'
+            echo "$output"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

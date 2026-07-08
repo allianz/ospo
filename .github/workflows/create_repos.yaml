@@ -34,7 +34,15 @@ jobs:
     - name: Dry-run create repositories and teams in allianz
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-      run: node scripts/create_repos.js --org allianz --dry-run
+      run: |
+        output=$(node scripts/create_repos.js --org allianz --dry-run)
+        echo "$output"
+        {
+          echo '### Create Repos Dry-run Results'
+          echo '```'
+          echo "$output"
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"
 
   apply:
     needs: dry-run
@@ -62,4 +70,12 @@ jobs:
     - name: Create repositories and teams in allianz
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-      run: node scripts/create_repos.js --org allianz
+      run: |
+        output=$(node scripts/create_repos.js --org allianz)
+        echo "$output"
+        {
+          echo '### Create Repos Results'
+          echo '```'
+          echo "$output"
+          echo '```'
+        } >> "$GITHUB_STEP_SUMMARY"

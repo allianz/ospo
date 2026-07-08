@@ -33,4 +33,12 @@ jobs:
       - name: Archive Allianz Repos
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: node scripts/archive_repos.js --org allianz
+        run: |
+          output=$(node scripts/archive_repos.js --org allianz)
+          echo "$output"
+          {
+            echo '### Archive Results'
+            echo '```'
+            echo "$output"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
