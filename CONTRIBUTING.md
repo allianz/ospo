@@ -13,7 +13,7 @@ Reach out on our collaboration channels if you need assistance.
 
 Required tools:
 
-- [Node.js](https://nodejs.org/) 22+, npm
+- [Node.js](https://nodejs.org/) 26+, npm
 - [gh](https://cli.github.com/) (GitHub CLI — used for authentication token resolution in the Makefile)
 - `git` (required at runtime by `lint_repos.js` for cloning repositories)
 
@@ -31,6 +31,7 @@ npm install
 | `scripts/create_repos.js` | `config/create_repos.yaml` | `.github/workflows/create_repos.yaml` | Create repositories, manage teams, sync with Entra ID |
 | `scripts/lint_repos.js` | `config/lint_repos.yaml` | `.github/workflows/lint_repos.yaml` | Enforce minimum repository standards |
 | `scripts/archive_repos.js` | `config/archive_repos.yaml` | `.github/workflows/archive_repos.yaml` | Archive stale projects |
+| `scripts/license_scan.js` | `config/license_scan.yaml` | `.github/workflows/license_scan.yaml` | Scan dependency licenses for policy violations |
 
 For full details on each script's behaviour, configuration, and output format, see the [specs](scripts/spec/).
 
@@ -48,6 +49,7 @@ Then run from the repo root:
 node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--skip-team-sync] [--skip-custom-role]
 node scripts/lint_repos.js   --org <org> [--config <file>] [--dry-run] [--debug]
 node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/license_scan.js  --org <org> [--config <file>] [--dry-run] [--debug]
 ```
 
 All scripts support `--dry-run` (validate without making changes) and `--debug` (verbose output).
@@ -61,6 +63,7 @@ cd scripts
 make test_create_repos    # Test repo creation
 make test_lint_repos      # Test repo linting
 make test_archive_repos   # Test repo archival
+make test_license_scan    # Test license scanning
 make test                 # Run unit tests
 ```
 

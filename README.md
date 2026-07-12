@@ -53,7 +53,7 @@ Take a look at the [guides](https://cmp.allianz.net/spaces/ARGO/pages/2748784994
 ## Contact
 
 * For general inquiries, please reach out to us via email at [ospo@allianz.com](mailto:ospo@allianz.com).
-* Explore our [Teams Channel](https://teams.microsoft.com/l/channel/19%3A4c5d8ef68e484a82bf3a80b73ed8c5ae%40thread.tacv2/OSPO?groupId=03328808-70b1-499c-8f61-29447febed23&tenantId=6e06e42d-6925-47c6-b9e7-9581c7ca302a) (internal) for additional assistance.
+* Explore our [Teams Channel](https://teams.microsoft.com/l/channel/19%3A71694e5f8fa8432fbb96666b18e96fed%40thread.tacv2/Development?groupId=03328808-70b1-499c-8f61-29447febed23&tenantId=6e06e42d-6925-47c6-b9e7-9581c7ca302a) (internal) for additional assistance.
 
 ## Contributing 
 
@@ -67,7 +67,7 @@ This repository is licensed under MIT for code and CC BY 4.0 for documentation. 
 Ideas and content are drawn from the following sources. Content has been modified for Allianz's context.
 
 - [GitHub OSPO template](https://github.com/github/github-ospo) — CC BY 4.0
-- [Yahoo OSS guide](https://yahoo.github.io/oss-guide/) — CC BY 4.0
+- [Yahoo OSS guide](https://github.com/yahoo/oss-guide) — CC BY 4.0
 - [Google open source documentation](https://opensource.google/documentation/reference) — CC BY 4.0
 
 
