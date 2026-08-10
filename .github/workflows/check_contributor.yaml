@@ -1,0 +1,52 @@
+name: Contributor Whitelist Check
+
+on:
+  workflow_call:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-contributor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR opener against whitelist
+        env:
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${PR_AUTHOR}" ]]; then
+            echo "No PR author available on this event — skipping." >&2
+            exit 0
+          fi
+
+          if [[ "${PR_AUTHOR}" == *"[bot]" ]]; then
+            echo "Author ${PR_AUTHOR} is a bot — allowed."
+            exit 0
+          fi
+
+          WHITELIST_URL="https://raw.githubusercontent.com/allianz/ospo/main/config/contributor_whitelist.yaml"
+          curl -fsSL "${WHITELIST_URL}" -o /tmp/whitelist.yaml
+
+          CLA_HIT=$(yq '.cla_signers[] | select(. == env(PR_AUTHOR))' /tmp/whitelist.yaml || true)
+          ORG_HIT=$(yq '.org_members[] | select(. == env(PR_AUTHOR))' /tmp/whitelist.yaml || true)
+
+          if [[ -n "${CLA_HIT}" || -n "${ORG_HIT}" ]]; then
+            echo "Author ${PR_AUTHOR} is on the whitelist — allowed."
+            exit 0
+          fi
+
+          {
+            echo "## Contributor check failed"
+            echo ""
+            echo "**@${PR_AUTHOR}** is not on the OSPO contributor whitelist."
+            echo ""
+            echo "To proceed, an OSPO maintainer must add this username to either"
+            echo "\`cla_signers\` (external, after CLA sign-off) or \`org_members\` in"
+            echo "[config/contributor_whitelist.yaml](https://github.com/allianz/ospo/blob/main/config/contributor_whitelist.yaml)."
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+          echo "::error::Author ${PR_AUTHOR} is not on the contributor whitelist." >&2
+          exit 1

@@ -1,0 +1,33 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Contributor Whitelist
+#
+# This file lists the GitHub usernames permitted to open pull requests against
+# repositories in the Allianz GitHub organization. PRs from any other account
+# are blocked automatically by the contributor check workflow until a
+# maintainer adds the user here.
+#
+# Parameters:
+#   cla_signers:  External contributors who have signed the Allianz CLA.
+#   org_members:  Allianz employees / known org members (no CLA required).
+#
+# Usernames ending in [bot] (e.g. dependabot[bot]) are auto-allowed and do not
+# need to be listed here.
+#
+# Want to propose a change? Open a pull request and describe your reasoning.
+
+# ──────────────────────────────────────────────────────────────────────────────
+
+cla_signers: []
+  # - example-external-contributor
+
+org_members:
+  - allianz-ospo
+  - cheld
+  - d-gs
+  - duxsco
+  - edugarciac
+  - giotab
+  - mert-okumus
+  - micxer
+  - nauar
+  - Phil147
