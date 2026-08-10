@@ -67,5 +67,6 @@ repositories:
     - team: "Yukimi"
   
   - name: "geofeed"
+    branch-protection: custom
     access:
       - team: "AGN-IPSERVICES-GEOFEED-MGMT"
