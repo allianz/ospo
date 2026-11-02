@@ -37,7 +37,7 @@ All scripts support `--dry-run` for safe validation and `--debug` for verbose ou
 
 ## Specifications
 
-Detailed specs for each script — behaviour, config schema, execution flow, output format, and CI/CD setup:
+Detailed specs for each script — behaviour, config schema, and output format:
 
 - [`scripts/spec/create_repos_spec.md`](scripts/spec/create_repos_spec.md)
 - [`scripts/spec/lint_repos_spec.md`](scripts/spec/lint_repos_spec.md)

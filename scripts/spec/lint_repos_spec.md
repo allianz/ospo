@@ -17,19 +17,7 @@ All rules are configurable via a YAML configuration file — see [Configuration 
 
 ---
 
-## Implementation Approach
-
-A single JavaScript file `scripts/lint_repos.js`, run with `node`. Dependencies managed via `scripts/package.json` (shared across all JS scripts added to this repo in the future).
-
-### npm packages
-
-| Package | Purpose |
-|---|---|
-| `@octokit/rest` | GitHub REST API (repos, issues, license detection via `spdx_id`). Auth via `GITHUB_TOKEN` environment variable. Eliminates the `licensee` Ruby gem dependency. |
-| `simple-git` | Async wrapper around the `git` CLI. Repos are cloned in parallel batches of 5, then file checks run on the completed clones. |
-| `js-yaml` | Parse YAML config files |
-
-### Project structure
+## Project Structure
 
 ```
 scripts/
@@ -38,19 +26,6 @@ scripts/
   node_modules/
   lint_repos.js
 ```
-
-### Local usage
-
-```bash
-export GITHUB_TOKEN=$(gh auth token)   # or set a PAT directly
-cd scripts
-npm install
-node lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
-```
-
-The script requires `GITHUB_TOKEN` to be set in the environment. No other external tool dependencies beyond `git`.
-
-`lint_cache/` and the default config path are resolved relative to the script file's location (repo root), not the working directory — so the script behaves correctly regardless of where it is invoked from.
 
 ---
 
@@ -66,6 +41,10 @@ node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 | `--config` | `config/lint_repos.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Run checks but do not create/close issues |
 | `--debug` | false | Print verbose output |
+
+Exit codes: `0` whenever the run completes (lint failures are expected, not errors), `1` on missing `--org`, missing token, or fatal error.
+
+Requires `GITHUB_TOKEN` (or `GH_TOKEN`) in the environment and `git` on the `PATH`. The default config path and `lint_cache/` are resolved relative to the repo root, not the working directory.
 
 ---
 
@@ -87,8 +66,8 @@ docs_link: "https://..."
 excluded_repos: []
 
 # SPDX identifiers accepted by the license check. Compared against
-# repo.license.spdx_id from the GitHub API. null and NOASSERTION are
-# always rejected regardless of this list.
+# the license GitHub detects for the repo. A missing or unidentified
+# license (NOASSERTION) is always rejected regardless of this list.
 allowed_licenses:
   - Apache-2.0
   - MIT
@@ -138,44 +117,12 @@ allowed_topics:
 |---|---|---|---|
 | 1 | **Description** | GitHub API | `description` is non-null, non-empty, and between `description_length.min` and `description_length.max` chars (inclusive) |
 | 2 | **Topics** | GitHub API | Between 1 and 5 topics assigned; all topics must be in `allowed_topics` |
-| 3 | **License type** | GitHub API | `license.spdx_id` is in `allowed_licenses`; fails with a clear message if API returns null (no license detected) or `NOASSERTION` (custom license text GitHub could not identify) |
+| 3 | **License type** | GitHub API | The license GitHub detects is in `allowed_licenses`; fails with a clear message if no license is detected or GitHub cannot identify it (`NOASSERTION`, e.g. custom license text) |
 | 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths`; if `min_chars` is set the matched file must also meet that size threshold |
 
 Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the local clone.
 
----
-
-## Execution Flow
-
-```
-1. Read GITHUB_TOKEN from environment — exit with clear error if missing
-2. Parse CLI arguments
-3. Load config with js-yaml
-4. Instantiate Octokit with the token
-5. Fetch all repos in org (paginated):
-     octokit.paginate(octokit.rest.repos.listForOrg, { org, type: "all" })
-   Each repo object includes: name, description, license, topics, archived
-   Split into active (archived: false, not excluded), archived (archived: true, not excluded), and excluded (name in `excluded_repos`) lists
-6. Run metadata checks (description, topics, license type) for all repos from API data
-7. Clone/update active repos in batches of 5 using simple-git:
-     - Directory exists: git.fetch(['origin', '--depth', '1']) + git.reset(['--hard', 'FETCH_HEAD'])
-       (shallow fetches only write to FETCH_HEAD, not to a tracking ref, so FETCH_HEAD is the correct reset target)
-     - Directory missing: git.clone(url, lint_cache/<repo>)
-   Batches run sequentially; the 5 clones within each batch run in parallel via Promise.all
-   Archived repos are not cloned.
-8. For each active repo (sequentially after cloning):
-   a. Run file-existence checks on local clone
-   b. Aggregate metadata + file check results into a failures list
-   c. Failures present:
-        - If no open issue with matching title exists: create issue (unless --dry-run)
-        - If an open issue with matching title exists: update its body with the current check results (unless --dry-run)
-   d. All checks pass:
-        - If an open issue with matching title exists: close it with a resolved comment (unless --dry-run)
-   e. Print summary line to stdout
-9. For each archived repo: run all checks (metadata only, no clone) and print summary line — no issue action taken
-10. For each excluded repo: print name only under "Skipped (configuration)" — no checks, no issue action
-11. Always exit 0 — lint failures are expected, not errors. Only fatal errors (missing token, unreadable config, API failure) exit non-zero.
-```
+Active repos are shallow-cloned into `lint_cache/` in parallel batches of 5. Existing clones are updated in place; a clone that fails to update is deleted and re-cloned. Archived repos are not cloned, so they only get checks 1–3.
 
 ---
 
@@ -192,9 +139,7 @@ Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the loc
 
 The script only considers **open** issues. If a user manually closes the issue but the repo remains non-compliant, a new issue will be created on the next run.
 
-Archived repos are checked for compliance and shown in a separate output section, but no issues are ever created or closed for them.
-
-Issue lookup uses `octokit.rest.issues.listForRepo` filtered by `state: "open"` and matching `issue_title` from config.
+Archived repos are checked for compliance (checks 1–3 only) and shown in a separate output section, but no issues are ever created or closed for them.
 
 ### Issue body template
 
@@ -270,55 +215,3 @@ When `--dry-run` is active and there are pending actions, a summary block is app
   ✏️   update  #17  fifth-repo
   ✔️   close   #42  third-repo
 ```
-
----
-
-## Dependencies
-
-| Tool | Purpose | Change vs. today |
-|---|---|---|
-| `node` + `npm` | Run the script, install packages | Node was already needed; npm replaces `npm install -g repolinter` |
-| `@octokit/rest` | GitHub API + issue management | Replaces `gh api` calls |
-| `js-yaml` | Parse YAML config | Replaces `yq` for config parsing |
-| `simple-git` | Async clone and update repos | Replaces `child_process.execSync` git calls |
-| `git` | Required by simple-git at runtime | Was already implicitly required |
-
-**Removed dependencies:**
-- `gh` CLI (no longer required by this script)
-- `repolinter` (archived npm global)
-- `licensee` Ruby gem + Ruby runtime
-
----
-
-## Unit Tests
-
-Unit tests live in `scripts/lint_repos.test.js` (next to the source file) and run with Node's built-in test runner (`node --test`). No additional test framework required.
-
-Each check function is tested in isolation with fake API responses and a temporary directory for file-system checks. Key scenarios per check:
-
-- **Description:** set, empty string, null
-- **Topics:** none assigned; topic not in `allowed_topics`; `allowed_topics` empty (any accepted)
-- **License type:** allowed, disallowed, API returns null, API returns `NOASSERTION` (custom license text)
-- **Required files:** all present; each file missing individually; match in `search_paths` subdirectory; case-insensitive match; file exists but is below `min_chars` threshold; file meets `min_chars` threshold exactly; `min_chars` absent (size not checked)
-- **Config loading:** valid config; missing required field `issue_title`; `allowed_topics` absent (defaults to empty); `excluded_repos` absent (defaults to empty); `excluded_repos` list preserved
-
-### Integration test (against `ospo-sandbox`)
-
-Requires `GITHUB_TOKEN`. Run via Makefile, not part of the unit test suite.
-
-```makefile
-test_lint_repos:
-    cd .. && node scripts/lint_repos.js --org ospo-sandbox --config scripts/test-config/lint_repos.yaml --debug
-```
-
----
-
-## CI/CD Changes
-
-`.github/workflows/lint_repos.yaml` setup:
-
-- Node.js setup step
-- `npm ci` run from the `scripts/` directory
-- `actions/cache` restores/saves `lint_cache/` under key `lint-cache-allianz` — repos are cloned once and updated in place on subsequent runs
-- Run step: `node scripts/lint_repos.js --org allianz`
-- Pass the GitHub App token as `GITHUB_TOKEN` env var to the run step

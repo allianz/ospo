@@ -157,6 +157,7 @@ export async function processRepos(octokit, org, repos, config, opts = {}) {
           await createIssue(octokit, org, repo.name, ISSUE_TITLE, buildIssueBody(gracePeriod));
           console.log('  Created warning issue.');
         }
+        // Treat a new (or, in dry-run, would-be) issue as created now, so it never archives in the same run
         effectiveIssueDate = new Date();
       } else {
         effectiveIssueDate = new Date(existingIssue.created_at);

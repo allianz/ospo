@@ -145,6 +145,7 @@ function toApiRole(role) {
 }
 
 // Map GitHub API role_name values back to config role names.
+// Without this, every 'write' repo would look changed on every run ('push' !== 'write').
 function fromApiRole(roleName) {
   const r = roleName?.toLowerCase() ?? '';
   if (r === 'push') return 'write';
@@ -418,6 +419,7 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
     ),
   ]);
 
+  // Items nest the repo under `.repository`; fall back to a flat shape defensively
   const ospoAssigned = new Set(ospoRepos.map(r => r.repository?.name ?? r.name));
   const customAssigned = new Set(customRepos.map(r => r.repository?.name ?? r.name));
 
@@ -481,7 +483,7 @@ export async function enforceSecurityConfig(octokit, org, config, opts = {}) {
         {
           org,
           configuration_id: ospoManaged.id,
-          scope: 'selected',
+          scope: 'selected', // required, otherwise 422 "missing required key: scope"
           selected_repository_ids: toAssignOspo.map(r => r.id),
         }
       );
@@ -681,6 +683,7 @@ async function main() {
   }
 
   const config = await loadConfig(configPath);
+  // Silence Octokit's own logging so it doesn't interleave with the script's output
   const noop = () => {};
   const octokit = new Octokit({ auth: token, log: { debug: noop, info: noop, warn: noop, error: noop } });
   octokit.hook.before('request', options => {
