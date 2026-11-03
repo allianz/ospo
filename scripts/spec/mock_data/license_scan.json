@@ -6,6 +6,29 @@
   "config_file": "config/license_scan.yaml",
   "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "max_noassertion_share": 0.05,
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    }
+  ],
   "results": [
     {
       "repo": "pricing-engine",
@@ -27,8 +50,7 @@
         "packages": 412,
         "noassertion": 6,
         "share": 0.015
-      },
-      "info_only": true
+      }
     },
     {
       "repo": "pricing-engine",
@@ -36,7 +58,7 @@
       "result": "pass",
       "detail": null,
       "evidence": {
-        "denied_found": 0
+        "denied": []
       }
     },
     {
@@ -59,8 +81,7 @@
         "packages": 188,
         "noassertion": 2,
         "share": 0.011
-      },
-      "info_only": true
+      }
     },
     {
       "repo": "insurance-rule-dsl",
@@ -68,7 +89,7 @@
       "result": "pass",
       "detail": null,
       "evidence": {
-        "denied_found": 0
+        "denied": []
       }
     },
     {
@@ -91,8 +112,7 @@
         "packages": 903,
         "noassertion": 41,
         "share": 0.045
-      },
-      "info_only": true
+      }
     },
     {
       "repo": "quote-calculator-demo",
@@ -100,7 +120,7 @@
       "result": "fail",
       "detail": "1 dependency uses a denied license",
       "evidence": {
-        "packages": [
+        "denied": [
           {
             "name": "npm:left-pad-gpl",
             "version": "1.0.2",
@@ -138,8 +158,7 @@
         "packages": 356,
         "noassertion": 11,
         "share": 0.031
-      },
-      "info_only": true
+      }
     },
     {
       "repo": "pdf-render-service",
@@ -147,7 +166,7 @@
       "result": "pass",
       "detail": null,
       "evidence": {
-        "denied_found": 0
+        "denied": []
       }
     },
     {
@@ -165,13 +184,21 @@
       "repo": "design-guidelines",
       "check": "sbom/license-coverage",
       "result": "fail",
-      "detail": "97 of 1210 packages have no license information",
+      "detail": "97 of 1210 packages have no license information (maximum is 5%)",
       "evidence": {
         "packages": 1210,
         "noassertion": 97,
         "share": 0.08
       },
-      "info_only": true
+      "tracking": {
+        "type": "issue",
+        "number": 15,
+        "url": "https://github.com/allianz/design-guidelines/issues/15",
+        "labels": [
+          "sbom/license-coverage"
+        ],
+        "created_at": "2026-10-06"
+      }
     },
     {
       "repo": "design-guidelines",
@@ -179,7 +206,7 @@
       "result": "pass",
       "detail": null,
       "evidence": {
-        "denied_found": 0
+        "denied": []
       }
     },
     {
@@ -197,13 +224,21 @@
       "repo": "mobile-sdk-ios",
       "check": "sbom/license-coverage",
       "result": "fail",
-      "detail": "10 of 57 packages have no license information",
+      "detail": "10 of 57 packages have no license information (maximum is 5%)",
       "evidence": {
         "packages": 57,
         "noassertion": 10,
         "share": 0.175
       },
-      "info_only": true
+      "tracking": {
+        "type": "issue",
+        "number": 58,
+        "url": "https://github.com/allianz/mobile-sdk-ios/issues/58",
+        "labels": [
+          "sbom/license-coverage"
+        ],
+        "created_at": "2026-09-15"
+      }
     },
     {
       "repo": "mobile-sdk-ios",
@@ -211,14 +246,14 @@
       "result": "pass",
       "detail": null,
       "evidence": {
-        "denied_found": 0
+        "denied": []
       }
     },
     {
       "repo": "pricing-sandbox",
       "check": "sbom/available",
       "result": "fail",
-      "detail": "Dependency graph is disabled (SBOM request returned 404)",
+      "detail": "No SBOM available (request returned 404)",
       "evidence": {},
       "tracking": {
         "type": "issue",
@@ -229,6 +264,20 @@
         ],
         "created_at": "2026-11-03"
       }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "sbom/license-coverage",
+      "result": "na",
+      "detail": "no SBOM available",
+      "evidence": {}
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "license/denied",
+      "result": "na",
+      "detail": "no SBOM available",
+      "evidence": {}
     },
     {
       "repo": "claims-event-schemas",
@@ -244,14 +293,13 @@
     {
       "repo": "claims-event-schemas",
       "check": "sbom/license-coverage",
-      "result": "pass",
-      "detail": null,
+      "result": "na",
+      "detail": "no dependencies in SBOM",
       "evidence": {
         "packages": 0,
         "noassertion": 0,
         "share": 0
-      },
-      "info_only": true
+      }
     },
     {
       "repo": "claims-event-schemas",
@@ -259,7 +307,7 @@
       "result": "pass",
       "detail": null,
       "evidence": {
-        "denied_found": 0
+        "denied": []
       }
     },
     {
@@ -282,8 +330,7 @@
         "packages": 143,
         "noassertion": 3,
         "share": 0.021
-      },
-      "info_only": true
+      }
     },
     {
       "repo": "kafka-schema-tools",
@@ -291,7 +338,7 @@
       "result": "pass",
       "detail": null,
       "evidence": {
-        "denied_found": 0
+        "denied": []
       }
     }
   ]

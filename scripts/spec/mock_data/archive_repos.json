@@ -8,6 +8,16 @@
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
   "warn_after": "1 years",
   "grace_period": "60 days",
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    }
+  ],
   "results": [
     {
       "repo": "legacy-xml-mapper",
@@ -20,6 +30,14 @@
         "archived_date": "2026-11-03",
         "days_notice": 60
       }
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "check": "archive/migration-path",
+      "result": "fail",
+      "detail": "README names no successor or alternative",
+      "evidence": {},
+      "info_only": true
     }
   ]
 }
