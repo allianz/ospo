@@ -1,0 +1,1053 @@
+{
+  "report_id": "OSPO-CR-2026-11-03",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "report_config": "config/compliance_report.yaml",
+  "inputs": [
+    {
+      "file": "lint_repos.json",
+      "tool": "lint_repos",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "0d820ea59a08d14c29076f51198ed18bf71d1e8b8ecb3a21a63f709d9a92a0c9"
+    },
+    {
+      "file": "license_scan.json",
+      "tool": "license_scan",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "b53674ce33c6985a160f4ab7d50e0a1999551ac6b5d329ceb46a5774c4e5f546"
+    },
+    {
+      "file": "archive_repos.json",
+      "tool": "archive_repos",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "fcb1a52ffe9d83628512263091f0f617994eafb7349760895371cb7c12d20ed3"
+    },
+    {
+      "file": "drift.json",
+      "tool": "create_repos --dry-run",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "c825678f05c370a78dec85abe0842d873269f595248bfc9a12052e7681230c2b"
+    },
+    {
+      "file": "org_snapshot.json",
+      "tool": "org_snapshot",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "1b506561132f330f7a75a24a447ece7150951f6cc2aa165684ff228b722465f9"
+    },
+    {
+      "file": "scorecard.json",
+      "tool": "scorecard_check",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "1b2ffc8cbe1cb3c587591222f033785bba92b4d5ba2ec137742a7beaaa66095f"
+    }
+  ],
+  "previous_report": {
+    "report_id": "OSPO-CR-2026-10-27",
+    "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10-27/data.json"
+  },
+  "scope": {
+    "active": [
+      "pricing-engine",
+      "insurance-rule-dsl",
+      "quote-calculator-demo",
+      "pdf-render-service",
+      "design-guidelines",
+      "mobile-sdk-ios",
+      "pricing-sandbox",
+      "claims-event-schemas",
+      "kafka-schema-tools"
+    ],
+    "archived": [
+      "legacy-xml-mapper",
+      "old-batch-tools"
+    ],
+    "excluded": [
+      {
+        "repo": "ng-aquila",
+        "deviation": "D-03"
+      }
+    ]
+  },
+  "summary": {
+    "checks_evaluated": 143,
+    "checks_passed": 124,
+    "compliance_pct": 86.7,
+    "requirements_by_status": {
+      "met": 5,
+      "met-tracked": 12,
+      "not-met": 1,
+      "deviation-accepted": 1,
+      "optional": 1
+    },
+    "must_met": 14,
+    "must_total": 15,
+    "open_findings": 19,
+    "overdue_findings": 1,
+    "repositories_without_findings": 3
+  },
+  "requirements": [
+    {
+      "id": "GV.01",
+      "level": "MUST",
+      "title": "How to contribute is documented",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/contributing"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 7,
+            "failing": 2,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 12
+        },
+        {
+          "part": "SHOULD",
+          "status": "not-verified",
+          "deviation": "D-04"
+        }
+      ]
+    },
+    {
+      "id": "GV.02",
+      "level": "MUST",
+      "title": "Protected against unauthorised actions",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "org/settings",
+            "org/ruleset",
+            "org/security-configuration",
+            "drift/access",
+            "lint/no-direct-collaborators",
+            "lint/secret-scanning",
+            "scorecard/branch-protection",
+            "scorecard/dangerous-workflow",
+            "scorecard/token-permissions"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "org_checks": {
+            "drift/access": "pass",
+            "org/settings": "pass",
+            "org/ruleset": "pass",
+            "org/security-configuration": "pass"
+          },
+          "oldest_finding_days": 5,
+          "attestation": {
+            "id": "A-identity",
+            "file": "attestations/2026-10-15-identity.md",
+            "date": "2026-10-15",
+            "valid_until": "2027-10-15"
+          }
+        }
+      ]
+    },
+    {
+      "id": "LE.01",
+      "level": "MUST",
+      "title": "License stated for all content",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/license-file",
+            "lint/license-type"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 9
+        }
+      ]
+    },
+    {
+      "id": "LE.02",
+      "level": "MUST",
+      "title": "Licenses of all components referenced",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "sbom/available"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 0
+        }
+      ]
+    },
+    {
+      "id": "QA.01",
+      "level": "MUST",
+      "title": "List of third-party components available",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "org/security-configuration",
+            "sbom/available"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "org_checks": {
+            "org/security-configuration": "pass"
+          },
+          "oldest_finding_days": 0
+        }
+      ]
+    },
+    {
+      "id": "QA.02",
+      "level": "MUST",
+      "title": "Source code publicly readable",
+      "status": "met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met",
+          "checks": [
+            "org/settings",
+            "lint/public"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 9,
+            "failing": 0,
+            "not_applicable": 0
+          },
+          "org_checks": {
+            "org/settings": "pass"
+          }
+        }
+      ]
+    },
+    {
+      "id": "QA.03",
+      "level": "MUST",
+      "title": "How to report defects is communicated",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/issues-enabled"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 5
+        }
+      ]
+    },
+    {
+      "id": "QA.04",
+      "level": "MUST",
+      "title": "Testing procedures implemented and used",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "Implemented",
+          "status": "met-tracked",
+          "checks": [
+            "lint/development-test"
+          ],
+          "repositories": {
+            "applicable": 8,
+            "passing": 6,
+            "failing": 2,
+            "not_applicable": 1
+          },
+          "oldest_finding_days": 34
+        },
+        {
+          "part": "Utilised",
+          "status": "met-tracked",
+          "checks": [
+            "scorecard/ci-tests"
+          ],
+          "repositories": {
+            "applicable": 6,
+            "passing": 5,
+            "failing": 1,
+            "not_applicable": 3
+          },
+          "oldest_finding_days": 61
+        }
+      ]
+    },
+    {
+      "id": "QA.05",
+      "level": "SHOULD",
+      "title": "Memory safety issues reduced",
+      "status": "met",
+      "parts": [
+        {
+          "part": "SHOULD",
+          "status": "met",
+          "checks": [
+            "lint/memory-safety-section"
+          ],
+          "repositories": {
+            "applicable": 1,
+            "passing": 1,
+            "failing": 0,
+            "not_applicable": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "QA.06",
+      "level": "SHOULD",
+      "title": "Changes peer-reviewed",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "SHOULD",
+          "status": "met-tracked",
+          "checks": [
+            "org/ruleset",
+            "scorecard/code-review"
+          ],
+          "repositories": {
+            "applicable": 8,
+            "passing": 7,
+            "failing": 1,
+            "not_applicable": 1
+          },
+          "org_checks": {
+            "org/ruleset": "pass"
+          },
+          "oldest_finding_days": 74
+        }
+      ]
+    },
+    {
+      "id": "BR.01",
+      "level": "MUST",
+      "title": "Build information public",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/development-file",
+            "lint/development-build"
+          ],
+          "repositories": {
+            "applicable": 8,
+            "passing": 6,
+            "failing": 2,
+            "not_applicable": 1
+          },
+          "oldest_finding_days": 34
+        }
+      ]
+    },
+    {
+      "id": "BR.02",
+      "level": "MUST",
+      "title": "Unique, increasing version identifiers",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/versioning"
+          ],
+          "repositories": {
+            "applicable": 4,
+            "passing": 3,
+            "failing": 1,
+            "not_applicable": 5
+          },
+          "oldest_finding_days": 52
+        }
+      ]
+    },
+    {
+      "id": "BR.03",
+      "level": "MUST",
+      "title": "Integrity of distributed assets verifiable",
+      "status": "not-met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "not-met",
+          "checks": [
+            "scorecard/signed-releases"
+          ],
+          "repositories": {
+            "applicable": 4,
+            "passing": 2,
+            "failing": 2,
+            "not_applicable": 5
+          },
+          "oldest_finding_days": 112
+        }
+      ]
+    },
+    {
+      "id": "BR.04",
+      "level": "MUST",
+      "title": "Change log per release",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/release-notes"
+          ],
+          "repositories": {
+            "applicable": 4,
+            "passing": 3,
+            "failing": 1,
+            "not_applicable": 5
+          },
+          "oldest_finding_days": 28
+        }
+      ]
+    },
+    {
+      "id": "BR.05",
+      "level": "MUST",
+      "title": "Source packages match the repository",
+      "status": "met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met",
+          "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
+        }
+      ]
+    },
+    {
+      "id": "BR.06",
+      "level": "SHOULD",
+      "title": "Builds reproducible",
+      "status": "deviation-accepted",
+      "parts": [
+        {
+          "part": "SHOULD",
+          "status": "not-verified",
+          "deviation": "D-01"
+        }
+      ]
+    },
+    {
+      "id": "VM.01",
+      "level": "MUST",
+      "title": "Security contact and private reporting",
+      "status": "met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met",
+          "checks": [
+            "org/security-policy"
+          ],
+          "org_checks": {
+            "org/security-policy": "pass"
+          }
+        },
+        {
+          "part": "SHOULD",
+          "status": "met",
+          "checks": [
+            "org/security-configuration",
+            "lint/private-reporting"
+          ],
+          "repositories": {
+            "applicable": 1,
+            "passing": 1,
+            "failing": 0,
+            "not_applicable": 8
+          },
+          "org_checks": {
+            "org/security-configuration": "pass"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VM.02",
+      "level": "MUST",
+      "title": "Vulnerabilities published in reasonable time",
+      "status": "met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met",
+          "checks": [
+            "advisories/published-in-time"
+          ],
+          "org_checks": {
+            "advisories/published-in-time": "pass"
+          }
+        }
+      ]
+    },
+    {
+      "id": "DE.01",
+      "level": "SHOULD",
+      "title": "Discontinuation communicated",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "SHOULD",
+          "status": "met-tracked",
+          "checks": [
+            "archive/notice-before-archival"
+          ],
+          "repositories": {
+            "applicable": 2,
+            "passing": 1,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 14
+        }
+      ]
+    },
+    {
+      "id": "DE.02",
+      "level": "MAY",
+      "title": "Migration paths outlined",
+      "status": "optional",
+      "parts": [
+        {
+          "part": "MAY",
+          "status": "optional"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/signed-releases",
+      "requirements": [
+        "BR.03"
+      ],
+      "detail": "Score 0 is below 8",
+      "since": "2026-07-14",
+      "age_days": 112,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 15,
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15",
+        "labels": [
+          "scorecard/code-review",
+          "scorecard/signed-releases"
+        ],
+        "created_at": "2026-07-14"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/code-review",
+      "requirements": [
+        "QA.06"
+      ],
+      "detail": "Score 4 is below 7",
+      "since": "2026-08-21",
+      "age_days": 74,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 15,
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15",
+        "labels": [
+          "scorecard/code-review",
+          "scorecard/signed-releases"
+        ],
+        "created_at": "2026-07-14"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/ci-tests",
+      "requirements": [
+        "QA.04"
+      ],
+      "detail": "Score 2 is below 8",
+      "since": "2026-09-03",
+      "age_days": 61,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 33,
+        "url": "https://github.com/allianz/pdf-render-service/issues/33",
+        "labels": [
+          "scorecard/ci-tests",
+          "scorecard/signed-releases"
+        ],
+        "created_at": "2026-09-03"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/signed-releases",
+      "requirements": [
+        "BR.03"
+      ],
+      "detail": "Score 0 is below 8",
+      "since": "2026-09-03",
+      "age_days": 61,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 33,
+        "url": "https://github.com/allianz/pdf-render-service/issues/33",
+        "labels": [
+          "scorecard/ci-tests",
+          "scorecard/signed-releases"
+        ],
+        "created_at": "2026-09-03"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/versioning",
+      "requirements": [
+        "BR.02"
+      ],
+      "detail": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
+      "since": "2026-09-12",
+      "age_days": 52,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 57,
+        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57",
+        "labels": [
+          "lint/versioning"
+        ],
+        "created_at": "2026-09-12"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-build",
+      "requirements": [
+        "BR.01"
+      ],
+      "detail": "No DEVELOPMENT file",
+      "since": "2026-09-30",
+      "age_days": 34,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 31,
+        "url": "https://github.com/allianz/pdf-render-service/issues/31",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test",
+          "lint/release-notes"
+        ],
+        "created_at": "2026-09-30"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-file",
+      "requirements": [
+        "BR.01"
+      ],
+      "detail": "File not found in ., docs, .github",
+      "since": "2026-09-30",
+      "age_days": 34,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 31,
+        "url": "https://github.com/allianz/pdf-render-service/issues/31",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test",
+          "lint/release-notes"
+        ],
+        "created_at": "2026-09-30"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-test",
+      "requirements": [
+        "QA.04"
+      ],
+      "detail": "No DEVELOPMENT file",
+      "since": "2026-09-30",
+      "age_days": 34,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 31,
+        "url": "https://github.com/allianz/pdf-render-service/issues/31",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test",
+          "lint/release-notes"
+        ],
+        "created_at": "2026-09-30"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/release-notes",
+      "requirements": [
+        "BR.04"
+      ],
+      "detail": "Release v1.8.0 has no release notes and is not in CHANGELOG",
+      "since": "2026-10-06",
+      "age_days": 28,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 31,
+        "url": "https://github.com/allianz/pdf-render-service/issues/31",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test",
+          "lint/release-notes"
+        ],
+        "created_at": "2026-09-30"
+      }
+    },
+    {
+      "repo": "old-batch-tools",
+      "check": "archive/notice-before-archival",
+      "requirements": [
+        "DE.01"
+      ],
+      "detail": "Archived outside the process (no notice issue)",
+      "since": "2026-10-20",
+      "age_days": 14,
+      "target_days": 90,
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "archived outside the process",
+        "since": "2026-10-20"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/contributing",
+      "requirements": [
+        "GV.01"
+      ],
+      "detail": "File not found in ., .github, docs",
+      "since": "2026-10-22",
+      "age_days": 12,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 12,
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12",
+        "labels": [
+          "lint/contributing"
+        ],
+        "created_at": "2026-10-22"
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/license-type",
+      "requirements": [
+        "LE.01"
+      ],
+      "detail": "'WTFPL' is not in the approved list",
+      "since": "2026-10-25",
+      "age_days": 9,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 7,
+        "url": "https://github.com/allianz/quote-calculator-demo/issues/7",
+        "labels": [
+          "lint/license-type"
+        ],
+        "created_at": "2026-10-25"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/contributing",
+      "requirements": [
+        "GV.01"
+      ],
+      "detail": "File not found in ., .github, docs",
+      "since": "2026-10-29",
+      "age_days": 5,
+      "target_days": 90,
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository",
+        "since": "2026-10-29"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/issues-enabled",
+      "requirements": [
+        "QA.03"
+      ],
+      "detail": "Issues are disabled",
+      "since": "2026-10-29",
+      "age_days": 5,
+      "target_days": 90,
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository",
+        "since": "2026-10-29"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/no-direct-collaborators",
+      "requirements": [
+        "GV.02"
+      ],
+      "detail": "1 user has direct access",
+      "since": "2026-10-29",
+      "age_days": 5,
+      "target_days": 90,
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository",
+        "since": "2026-10-29"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-build",
+      "requirements": [
+        "BR.01"
+      ],
+      "detail": "No DEVELOPMENT file",
+      "since": "2026-11-03",
+      "age_days": 0,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 1,
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test"
+        ],
+        "created_at": "2026-11-03"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-file",
+      "requirements": [
+        "BR.01"
+      ],
+      "detail": "File not found in ., docs, .github",
+      "since": "2026-11-03",
+      "age_days": 0,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 1,
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test"
+        ],
+        "created_at": "2026-11-03"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-test",
+      "requirements": [
+        "QA.04"
+      ],
+      "detail": "No DEVELOPMENT file",
+      "since": "2026-11-03",
+      "age_days": 0,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 1,
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test"
+        ],
+        "created_at": "2026-11-03"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "sbom/available",
+      "requirements": [
+        "LE.02",
+        "QA.01"
+      ],
+      "detail": "Dependency graph is disabled (SBOM request returned 404)",
+      "since": "2026-11-03",
+      "age_days": 0,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "number": 2,
+        "url": "https://github.com/allianz/pricing-sandbox/issues/2",
+        "labels": [
+          "sbom/available"
+        ],
+        "created_at": "2026-11-03"
+      }
+    }
+  ],
+  "archivals": [
+    {
+      "repo": "legacy-xml-mapper",
+      "archived_date": "2026-11-03",
+      "by": "archive_repos",
+      "notice_date": "2026-09-04",
+      "days_notice": 60
+    },
+    {
+      "repo": "old-batch-tools",
+      "archived_date": "2026-10-20",
+      "date_accuracy": "detected in weekly run",
+      "by": "outside the process",
+      "notice_date": null
+    }
+  ],
+  "deviations": [
+    {
+      "id": "D-01",
+      "requirement": "BR.06",
+      "scope": "all repositories",
+      "approved_by": "Head of OSPO, ISO",
+      "valid_until": "2027-09-30",
+      "expired": false
+    },
+    {
+      "id": "D-03",
+      "requirement": "scope",
+      "scope": "ng-aquila",
+      "approved_by": "Legal, Head of OSPO",
+      "valid_until": "2026-12-31",
+      "expired": false
+    },
+    {
+      "id": "D-04",
+      "requirement": "GV.01 (SHOULD)",
+      "scope": "all repositories",
+      "approved_by": "Head of OSPO",
+      "valid_until": "2027-03-31",
+      "expired": false
+    }
+  ],
+  "actions": [
+    {
+      "id": "R-01",
+      "requirement": "BR.03",
+      "action": "Release workflow template with checksums and artifact attestations",
+      "owner": "OSPO",
+      "due": "2027-03-31",
+      "overdue": false
+    },
+    {
+      "id": "R-07",
+      "requirement": "GV.01",
+      "action": "Heading check for quality expectations in CONTRIBUTING",
+      "owner": "OSPO",
+      "due": "2027-03-31",
+      "overdue": false
+    }
+  ],
+  "attestations": [
+    {
+      "id": "A-identity",
+      "file": "attestations/2026-10-15-identity.md",
+      "approved_by": "ISO",
+      "date": "2026-10-15",
+      "covers": [
+        "SSO",
+        "MFA",
+        "Entra ID team sync"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-10-06",
+      "compliance_pct": 89.1,
+      "open_findings": 24
+    },
+    {
+      "date": "2026-10-13",
+      "compliance_pct": 89.6,
+      "open_findings": 23
+    },
+    {
+      "date": "2026-10-20",
+      "compliance_pct": 90.3,
+      "open_findings": 22
+    },
+    {
+      "date": "2026-10-27",
+      "compliance_pct": 90.8,
+      "open_findings": 21
+    },
+    {
+      "date": "2026-11-03",
+      "compliance_pct": 86.7,
+      "open_findings": 19
+    }
+  ]
+}

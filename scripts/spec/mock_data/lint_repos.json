@@ -1,0 +1,1478 @@
+{
+  "tool": "lint_repos",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/lint_repos.yaml",
+  "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "repositories": [
+    {
+      "repo": "pricing-engine",
+      "archived": false,
+      "topics": [
+        "library",
+        "java"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": true,
+      "languages": {
+        "Java": 97.2,
+        "Shell": 2.8
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "archived": false,
+      "topics": [
+        "library",
+        "kotlin"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": true,
+      "languages": {
+        "Kotlin": 100.0
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "archived": false,
+      "topics": [
+        "web"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": false,
+      "languages": {
+        "TypeScript": 88.0,
+        "CSS": 12.0
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "archived": false,
+      "topics": [
+        "service",
+        "java"
+      ],
+      "visibility": "public",
+      "security": "custom",
+      "branch_protection": "custom",
+      "releasing": true,
+      "languages": {
+        "Java": 91.5,
+        "Dockerfile": 8.5
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "archived": false,
+      "topics": [
+        "docs"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": false,
+      "languages": {
+        "MDX": 76.0,
+        "JavaScript": 24.0
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "archived": false,
+      "topics": [
+        "mobile",
+        "sdk"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": true,
+      "languages": {
+        "Swift": 71.0,
+        "Objective-C": 26.0,
+        "C": 3.0
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "archived": false,
+      "topics": [
+        "service"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": false,
+      "languages": {
+        "Python": 100.0
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "archived": false,
+      "topics": [
+        "api"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": false,
+      "languages": {
+        "JSON": 100.0
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "archived": false,
+      "topics": [
+        "cli",
+        "java"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": false,
+      "languages": {
+        "Java": 100.0
+      }
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "archived": true,
+      "topics": [
+        "library"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": false,
+      "languages": {
+        "Java": 100.0
+      }
+    },
+    {
+      "repo": "old-batch-tools",
+      "archived": true,
+      "topics": [
+        "cli"
+      ],
+      "visibility": "public",
+      "security": "managed",
+      "branch_protection": "managed",
+      "releasing": false,
+      "languages": {
+        "Shell": 100.0
+      }
+    }
+  ],
+  "skipped": [
+    {
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    }
+  ],
+  "results": [
+    {
+      "repo": "pricing-engine",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "Apache-2.0"
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/contributing",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "CONTRIBUTING.md"
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/issues-enabled",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "has_issues": true
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/no-direct-collaborators",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "direct_collaborators": []
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/secret-scanning",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/private-reporting",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/development-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "DEVELOPMENT.md",
+        "chars": 2140
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/development-build",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Build"
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/development-test",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Test"
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/versioning",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "releases_checked": [
+          "v2.3.0",
+          "v2.4.0",
+          "v2.4.1"
+        ],
+        "scheme": "semver"
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/release-notes",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "releases_checked": 3,
+        "source": "release body"
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/memory-safety-section",
+      "result": "na",
+      "detail": "no non-memory-safe language above 5%",
+      "evidence": {
+        "languages": {
+          "Java": 97.2,
+          "Shell": 2.8
+        }
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "Apache-2.0"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/contributing",
+      "result": "fail",
+      "detail": "File not found in ., .github, docs",
+      "evidence": {},
+      "tracking": {
+        "type": "issue",
+        "number": 12,
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12",
+        "labels": [
+          "lint/contributing"
+        ],
+        "created_at": "2026-10-22"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/issues-enabled",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "has_issues": true
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/no-direct-collaborators",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "direct_collaborators": []
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/secret-scanning",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/private-reporting",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "DEVELOPMENT.md",
+        "chars": 2140
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-build",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Build"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-test",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Test"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/versioning",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "releases_checked": [
+          "v2.3.0",
+          "v2.4.0",
+          "v2.4.1"
+        ],
+        "scheme": "semver"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/release-notes",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "releases_checked": 3,
+        "source": "release body"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/memory-safety-section",
+      "result": "na",
+      "detail": "no non-memory-safe language above 5%",
+      "evidence": {
+        "languages": {
+          "Kotlin": 100.0
+        }
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/license-type",
+      "result": "fail",
+      "detail": "'WTFPL' is not in the approved list",
+      "evidence": {
+        "spdx_id": "WTFPL"
+      },
+      "tracking": {
+        "type": "issue",
+        "number": 7,
+        "url": "https://github.com/allianz/quote-calculator-demo/issues/7",
+        "labels": [
+          "lint/license-type"
+        ],
+        "created_at": "2026-10-25"
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/contributing",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": ".github/CONTRIBUTING.md"
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/issues-enabled",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "has_issues": true
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/no-direct-collaborators",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "direct_collaborators": []
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/secret-scanning",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/private-reporting",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "DEVELOPMENT.md",
+        "chars": 2140
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-build",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Build"
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-test",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Test"
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/versioning",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/release-notes",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/memory-safety-section",
+      "result": "na",
+      "detail": "no non-memory-safe language above 5%",
+      "evidence": {
+        "languages": {
+          "TypeScript": 88.0,
+          "CSS": 12.0
+        }
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "Apache-2.0"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/contributing",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": ".github/CONTRIBUTING.md"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/issues-enabled",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "has_issues": true
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/no-direct-collaborators",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "direct_collaborators": []
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/secret-scanning",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "secret_scanning": "enabled",
+        "push_protection": "enabled"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/private-reporting",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "private_vulnerability_reporting": true
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-file",
+      "result": "fail",
+      "detail": "File not found in ., docs, .github",
+      "evidence": {},
+      "tracking": {
+        "type": "issue",
+        "number": 31,
+        "url": "https://github.com/allianz/pdf-render-service/issues/31",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test",
+          "lint/release-notes"
+        ],
+        "created_at": "2026-09-30"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-build",
+      "result": "fail",
+      "detail": "No DEVELOPMENT file",
+      "evidence": {},
+      "tracking": {
+        "type": "issue",
+        "number": 31,
+        "url": "https://github.com/allianz/pdf-render-service/issues/31",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test",
+          "lint/release-notes"
+        ],
+        "created_at": "2026-09-30"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-test",
+      "result": "fail",
+      "detail": "No DEVELOPMENT file",
+      "evidence": {},
+      "tracking": {
+        "type": "issue",
+        "number": 31,
+        "url": "https://github.com/allianz/pdf-render-service/issues/31",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test",
+          "lint/release-notes"
+        ],
+        "created_at": "2026-09-30"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/versioning",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "releases_checked": [
+          "v2.3.0",
+          "v2.4.0",
+          "v2.4.1"
+        ],
+        "scheme": "semver"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/release-notes",
+      "result": "fail",
+      "detail": "Release v1.8.0 has no release notes and is not in CHANGELOG",
+      "evidence": {
+        "releases_without_notes": [
+          "v1.8.0"
+        ]
+      },
+      "tracking": {
+        "type": "issue",
+        "number": 31,
+        "url": "https://github.com/allianz/pdf-render-service/issues/31",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test",
+          "lint/release-notes"
+        ],
+        "created_at": "2026-09-30"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/memory-safety-section",
+      "result": "na",
+      "detail": "no non-memory-safe language above 5%",
+      "evidence": {
+        "languages": {
+          "Java": 91.5,
+          "Dockerfile": 8.5
+        }
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "MIT"
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/contributing",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": ".github/CONTRIBUTING.md"
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/issues-enabled",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "has_issues": true
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/no-direct-collaborators",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "direct_collaborators": []
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/secret-scanning",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/private-reporting",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/development-file",
+      "result": "na",
+      "detail": "topic 'docs' or 'template': nothing to build",
+      "evidence": {
+        "topics": [
+          "docs"
+        ]
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/development-build",
+      "result": "na",
+      "detail": "topic 'docs' or 'template': nothing to build",
+      "evidence": {
+        "topics": [
+          "docs"
+        ]
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/development-test",
+      "result": "na",
+      "detail": "topic 'docs' or 'template': nothing to build",
+      "evidence": {
+        "topics": [
+          "docs"
+        ]
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/versioning",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/release-notes",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/memory-safety-section",
+      "result": "na",
+      "detail": "no non-memory-safe language above 5%",
+      "evidence": {
+        "languages": {
+          "MDX": 76.0,
+          "JavaScript": 24.0
+        }
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "MIT"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/contributing",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": ".github/CONTRIBUTING.md"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/issues-enabled",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "has_issues": true
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/no-direct-collaborators",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "direct_collaborators": []
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/secret-scanning",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/private-reporting",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "DEVELOPMENT.md",
+        "chars": 2140
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-build",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Build"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-test",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Test"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/versioning",
+      "result": "fail",
+      "detail": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
+      "evidence": {
+        "releases_checked": [
+          "v3.1.0",
+          "v3.0.9",
+          "v3.1.1"
+        ],
+        "scheme": "semver"
+      },
+      "tracking": {
+        "type": "issue",
+        "number": 57,
+        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57",
+        "labels": [
+          "lint/versioning"
+        ],
+        "created_at": "2026-09-12"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/release-notes",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "releases_checked": 3,
+        "source": "release body"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/memory-safety-section",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "languages": {
+          "Objective-C": 26.0,
+          "C": 3.0
+        },
+        "heading": "## Memory safety"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "Apache-2.0"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/contributing",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": ".github/CONTRIBUTING.md"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/issues-enabled",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "has_issues": true
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/no-direct-collaborators",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "direct_collaborators": []
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/secret-scanning",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/private-reporting",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-file",
+      "result": "fail",
+      "detail": "File not found in ., docs, .github",
+      "evidence": {},
+      "tracking": {
+        "type": "issue",
+        "number": 1,
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test"
+        ],
+        "created_at": "2026-11-03"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-build",
+      "result": "fail",
+      "detail": "No DEVELOPMENT file",
+      "evidence": {},
+      "tracking": {
+        "type": "issue",
+        "number": 1,
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test"
+        ],
+        "created_at": "2026-11-03"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-test",
+      "result": "fail",
+      "detail": "No DEVELOPMENT file",
+      "evidence": {},
+      "tracking": {
+        "type": "issue",
+        "number": 1,
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
+        "labels": [
+          "lint/development-build",
+          "lint/development-file",
+          "lint/development-test"
+        ],
+        "created_at": "2026-11-03"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/versioning",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/release-notes",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/memory-safety-section",
+      "result": "na",
+      "detail": "no non-memory-safe language above 5%",
+      "evidence": {
+        "languages": {
+          "Python": 100.0
+        }
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "Apache-2.0"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/contributing",
+      "result": "fail",
+      "detail": "File not found in ., .github, docs",
+      "evidence": {},
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository",
+        "since": "2026-10-29"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/issues-enabled",
+      "result": "fail",
+      "detail": "Issues are disabled",
+      "evidence": {
+        "has_issues": false
+      },
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository",
+        "since": "2026-10-29"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/no-direct-collaborators",
+      "result": "fail",
+      "detail": "1 user has direct access",
+      "evidence": {
+        "direct_collaborators": [
+          {
+            "login": "ext-contractor-42",
+            "permission": "write"
+          }
+        ]
+      },
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository",
+        "since": "2026-10-29"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/secret-scanning",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/private-reporting",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/development-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "DEVELOPMENT.md",
+        "chars": 2140
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/development-build",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Build"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/development-test",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Test"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/versioning",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/release-notes",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/memory-safety-section",
+      "result": "na",
+      "detail": "no non-memory-safe language above 5%",
+      "evidence": {
+        "languages": {
+          "JSON": 100.0
+        }
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "Apache-2.0"
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/contributing",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": ".github/CONTRIBUTING.md"
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/public",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "visibility": "public"
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/issues-enabled",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "has_issues": true
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/no-direct-collaborators",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "direct_collaborators": []
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/secret-scanning",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/private-reporting",
+      "result": "na",
+      "detail": "security: managed (covered by org/security-configuration)",
+      "evidence": {}
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "DEVELOPMENT.md",
+        "chars": 2140
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-build",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Build"
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-test",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "heading": "## Test"
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/versioning",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/release-notes",
+      "result": "na",
+      "detail": "no releases in the last 12 months",
+      "evidence": {}
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/memory-safety-section",
+      "result": "na",
+      "detail": "no non-memory-safe language above 5%",
+      "evidence": {
+        "languages": {
+          "Java": 100.0
+        }
+      }
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "check": "lint/license-file",
+      "result": "fail",
+      "detail": "File not found in .",
+      "evidence": {},
+      "info_only": true
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "check": "lint/license-type",
+      "result": "fail",
+      "detail": "No license detected",
+      "evidence": {
+        "spdx_id": null
+      },
+      "info_only": true
+    },
+    {
+      "repo": "old-batch-tools",
+      "check": "lint/license-file",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "file": "LICENSE"
+      },
+      "info_only": true
+    },
+    {
+      "repo": "old-batch-tools",
+      "check": "lint/license-type",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "spdx_id": "Apache-2.0"
+      },
+      "info_only": true
+    }
+  ]
+}

@@ -1,0 +1,882 @@
+{
+  "tool": "scorecard_check",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/scorecard_check.yaml",
+  "config_sha256": "670210fd6b478339b7f953cc4943faadfe1a2a3372b5e336a5c29638522b5d9f",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "source": "https://api.scorecard.dev/projects/github.com/allianz/{repo}",
+  "scorecard_version": "v5.3.0",
+  "stale_after_days": 14,
+  "thresholds": {
+    "scorecard/ci-tests": 8,
+    "scorecard/code-review": 7,
+    "scorecard/signed-releases": 8,
+    "scorecard/dangerous-workflow": 10,
+    "scorecard/token-permissions": 8,
+    "scorecard/branch-protection": 6
+  },
+  "results": [
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/ci-tests",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "9e1a0c4",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-engine",
+        "score": 10,
+        "threshold": 8,
+        "pull_requests_with_ci": 24,
+        "pull_requests_examined": 24
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/code-review",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "9e1a0c4",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-engine",
+        "score": 10,
+        "threshold": 7
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/signed-releases",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "9e1a0c4",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-engine",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "9e1a0c4",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-engine",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "9e1a0c4",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-engine",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/branch-protection",
+      "result": "na",
+      "detail": "branch-protection: managed (covered by org/ruleset)",
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "9e1a0c4",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-engine",
+        "score": 8
+      }
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "9e1a0c4",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-engine",
+        "score": 0
+      },
+      "info_only": true
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/ci-tests",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "41bd7e2",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/insurance-rule-dsl",
+        "score": 10,
+        "threshold": 8,
+        "pull_requests_with_ci": 11,
+        "pull_requests_examined": 11
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/code-review",
+      "result": "fail",
+      "detail": "Score 4 is below 7",
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "41bd7e2",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/insurance-rule-dsl",
+        "score": 4,
+        "threshold": 7
+      },
+      "tracking": {
+        "type": "issue",
+        "number": 15,
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15",
+        "labels": [
+          "scorecard/code-review",
+          "scorecard/signed-releases"
+        ],
+        "created_at": "2026-07-14"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/signed-releases",
+      "result": "fail",
+      "detail": "Score 0 is below 8",
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "41bd7e2",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/insurance-rule-dsl",
+        "score": 0,
+        "threshold": 8
+      },
+      "tracking": {
+        "type": "issue",
+        "number": 15,
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15",
+        "labels": [
+          "scorecard/code-review",
+          "scorecard/signed-releases"
+        ],
+        "created_at": "2026-07-14"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "41bd7e2",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/insurance-rule-dsl",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "41bd7e2",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/insurance-rule-dsl",
+        "score": 9,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/branch-protection",
+      "result": "na",
+      "detail": "branch-protection: managed (covered by org/ruleset)",
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "41bd7e2",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/insurance-rule-dsl",
+        "score": 8
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "41bd7e2",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/insurance-rule-dsl",
+        "score": 0
+      },
+      "info_only": true
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/ci-tests",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-31",
+        "commit": "c07f3aa",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/quote-calculator-demo",
+        "score": 9,
+        "threshold": 8,
+        "pull_requests_with_ci": 19,
+        "pull_requests_examined": 21
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/code-review",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-31",
+        "commit": "c07f3aa",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/quote-calculator-demo",
+        "score": 8,
+        "threshold": 7
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/signed-releases",
+      "result": "na",
+      "detail": "no uploaded release assets (source archives only)",
+      "evidence": {
+        "scorecard_date": "2026-10-31",
+        "commit": "c07f3aa",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/quote-calculator-demo",
+        "score": -1
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-31",
+        "commit": "c07f3aa",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/quote-calculator-demo",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-31",
+        "commit": "c07f3aa",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/quote-calculator-demo",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/branch-protection",
+      "result": "na",
+      "detail": "branch-protection: managed (covered by org/ruleset)",
+      "evidence": {
+        "scorecard_date": "2026-10-31",
+        "commit": "c07f3aa",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/quote-calculator-demo",
+        "score": 8
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-10-31",
+        "commit": "c07f3aa",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/quote-calculator-demo",
+        "score": 0
+      },
+      "info_only": true
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/ci-tests",
+      "result": "fail",
+      "detail": "Score 2 is below 8",
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "5d22e91",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pdf-render-service",
+        "score": 2,
+        "threshold": 8,
+        "pull_requests_with_ci": 4,
+        "pull_requests_examined": 21
+      },
+      "tracking": {
+        "type": "issue",
+        "number": 33,
+        "url": "https://github.com/allianz/pdf-render-service/issues/33",
+        "labels": [
+          "scorecard/ci-tests",
+          "scorecard/signed-releases"
+        ],
+        "created_at": "2026-09-03"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/code-review",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "5d22e91",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pdf-render-service",
+        "score": 7,
+        "threshold": 7
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/signed-releases",
+      "result": "fail",
+      "detail": "Score 0 is below 8",
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "5d22e91",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pdf-render-service",
+        "score": 0,
+        "threshold": 8
+      },
+      "tracking": {
+        "type": "issue",
+        "number": 33,
+        "url": "https://github.com/allianz/pdf-render-service/issues/33",
+        "labels": [
+          "scorecard/ci-tests",
+          "scorecard/signed-releases"
+        ],
+        "created_at": "2026-09-03"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "5d22e91",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pdf-render-service",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "5d22e91",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pdf-render-service",
+        "score": 8,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/branch-protection",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "5d22e91",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pdf-render-service",
+        "score": 6,
+        "threshold": 6
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-11-02",
+        "commit": "5d22e91",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pdf-render-service",
+        "score": 0
+      },
+      "info_only": true
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/ci-tests",
+      "result": "na",
+      "detail": "topic 'docs' or 'template'",
+      "evidence": {
+        "scorecard_date": "2026-10-30",
+        "commit": "77a1b0d",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/design-guidelines",
+        "score": -1,
+        "pull_requests_with_ci": 0,
+        "pull_requests_examined": 0
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/code-review",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-30",
+        "commit": "77a1b0d",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/design-guidelines",
+        "score": 10,
+        "threshold": 7
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/signed-releases",
+      "result": "na",
+      "detail": "no uploaded release assets (source archives only)",
+      "evidence": {
+        "scorecard_date": "2026-10-30",
+        "commit": "77a1b0d",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/design-guidelines",
+        "score": -1
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-30",
+        "commit": "77a1b0d",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/design-guidelines",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-30",
+        "commit": "77a1b0d",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/design-guidelines",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/branch-protection",
+      "result": "na",
+      "detail": "branch-protection: managed (covered by org/ruleset)",
+      "evidence": {
+        "scorecard_date": "2026-10-30",
+        "commit": "77a1b0d",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/design-guidelines",
+        "score": 8
+      }
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-10-30",
+        "commit": "77a1b0d",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/design-guidelines",
+        "score": 0
+      },
+      "info_only": true
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/ci-tests",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "e3c9d58",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/mobile-sdk-ios",
+        "score": 10,
+        "threshold": 8,
+        "pull_requests_with_ci": 14,
+        "pull_requests_examined": 14
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/code-review",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "e3c9d58",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/mobile-sdk-ios",
+        "score": 9,
+        "threshold": 7
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/signed-releases",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "e3c9d58",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/mobile-sdk-ios",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "e3c9d58",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/mobile-sdk-ios",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "e3c9d58",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/mobile-sdk-ios",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/branch-protection",
+      "result": "na",
+      "detail": "branch-protection: managed (covered by org/ruleset)",
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "e3c9d58",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/mobile-sdk-ios",
+        "score": 8
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-11-01",
+        "commit": "e3c9d58",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/mobile-sdk-ios",
+        "score": 0
+      },
+      "info_only": true
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/ci-tests",
+      "result": "na",
+      "detail": "Scorecard inconclusive: no merged pull requests in the window",
+      "evidence": {
+        "scorecard_date": "2026-11-03",
+        "commit": "0b6f2c1",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-sandbox",
+        "score": -1,
+        "pull_requests_with_ci": 0,
+        "pull_requests_examined": 0
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/code-review",
+      "result": "na",
+      "detail": "Scorecard inconclusive: no changes in the window",
+      "evidence": {
+        "scorecard_date": "2026-11-03",
+        "commit": "0b6f2c1",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-sandbox",
+        "score": -1
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/signed-releases",
+      "result": "na",
+      "detail": "no uploaded release assets (source archives only)",
+      "evidence": {
+        "scorecard_date": "2026-11-03",
+        "commit": "0b6f2c1",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-sandbox",
+        "score": -1
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-03",
+        "commit": "0b6f2c1",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-sandbox",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-11-03",
+        "commit": "0b6f2c1",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-sandbox",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/branch-protection",
+      "result": "na",
+      "detail": "branch-protection: managed (covered by org/ruleset)",
+      "evidence": {
+        "scorecard_date": "2026-11-03",
+        "commit": "0b6f2c1",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-sandbox",
+        "score": 8
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-11-03",
+        "commit": "0b6f2c1",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/pricing-sandbox",
+        "score": 0
+      },
+      "info_only": true
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/ci-tests",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-29",
+        "commit": "a9e40f7",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/claims-event-schemas",
+        "score": 8,
+        "threshold": 8,
+        "pull_requests_with_ci": 8,
+        "pull_requests_examined": 10
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/code-review",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-29",
+        "commit": "a9e40f7",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/claims-event-schemas",
+        "score": 8,
+        "threshold": 7
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/signed-releases",
+      "result": "na",
+      "detail": "no uploaded release assets (source archives only)",
+      "evidence": {
+        "scorecard_date": "2026-10-29",
+        "commit": "a9e40f7",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/claims-event-schemas",
+        "score": -1
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-29",
+        "commit": "a9e40f7",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/claims-event-schemas",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-29",
+        "commit": "a9e40f7",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/claims-event-schemas",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/branch-protection",
+      "result": "na",
+      "detail": "branch-protection: managed (covered by org/ruleset)",
+      "evidence": {
+        "scorecard_date": "2026-10-29",
+        "commit": "a9e40f7",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/claims-event-schemas",
+        "score": 8
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-10-29",
+        "commit": "a9e40f7",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/claims-event-schemas",
+        "score": 0
+      },
+      "info_only": true
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/ci-tests",
+      "result": "na",
+      "detail": "Scorecard inconclusive: no merged pull requests in the window",
+      "evidence": {
+        "scorecard_date": "2026-10-28",
+        "commit": "1c8d3e6",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/kafka-schema-tools",
+        "score": -1,
+        "pull_requests_with_ci": 0,
+        "pull_requests_examined": 0
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/code-review",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-28",
+        "commit": "1c8d3e6",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/kafka-schema-tools",
+        "score": 10,
+        "threshold": 7
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/signed-releases",
+      "result": "na",
+      "detail": "no uploaded release assets (source archives only)",
+      "evidence": {
+        "scorecard_date": "2026-10-28",
+        "commit": "1c8d3e6",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/kafka-schema-tools",
+        "score": -1
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/dangerous-workflow",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-28",
+        "commit": "1c8d3e6",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/kafka-schema-tools",
+        "score": 10,
+        "threshold": 10
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/token-permissions",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "scorecard_date": "2026-10-28",
+        "commit": "1c8d3e6",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/kafka-schema-tools",
+        "score": 10,
+        "threshold": 8
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/branch-protection",
+      "result": "na",
+      "detail": "branch-protection: managed (covered by org/ruleset)",
+      "evidence": {
+        "scorecard_date": "2026-10-28",
+        "commit": "1c8d3e6",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/kafka-schema-tools",
+        "score": 8
+      }
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/fuzzing",
+      "result": "fail",
+      "detail": "No fuzzing detected",
+      "evidence": {
+        "scorecard_date": "2026-10-28",
+        "commit": "1c8d3e6",
+        "viewer": "https://scorecard.dev/viewer/?uri=github.com/allianz/kafka-schema-tools",
+        "score": 0
+      },
+      "info_only": true
+    }
+  ]
+}

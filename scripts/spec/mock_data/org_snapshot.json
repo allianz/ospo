@@ -1,0 +1,177 @@
+{
+  "tool": "org_snapshot",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/org_snapshot.yaml",
+  "config_sha256": "cae59b3b176c28941ae773f81c6d20f6148f3d0ff8ce1eb9bbfef8b1f94ff70b",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "snapshot": {
+    "org_settings": {
+      "two_factor_requirement_enabled": true,
+      "default_repository_permission": "none",
+      "members_can_create_repositories": false,
+      "members_can_create_public_repositories": false
+    },
+    "rulesets": {
+      "ospo-managed": {
+        "id": 4412,
+        "enforcement": "active",
+        "target": "branch",
+        "conditions": {
+          "ref_name": {
+            "include": [
+              "~DEFAULT_BRANCH"
+            ]
+          }
+        },
+        "rules": [
+          "deletion",
+          "non_fast_forward",
+          "pull_request"
+        ],
+        "pull_request": {
+          "required_approving_review_count": 1
+        },
+        "bypass_actors": [
+          {
+            "actor_type": "OrganizationAdmin",
+            "bypass_mode": "pull_request"
+          }
+        ],
+        "targeted_repositories": 8
+      }
+    },
+    "code_security_configurations": {
+      "ospo-managed": {
+        "enforcement": "enforced",
+        "dependency_graph": "enabled",
+        "secret_scanning": "enabled",
+        "secret_scanning_push_protection": "enabled",
+        "code_scanning_default_setup": "enabled",
+        "private_vulnerability_reporting": "enabled",
+        "repositories": 8
+      },
+      "custom": {
+        "enforcement": "unenforced",
+        "repositories": 1
+      }
+    },
+    "org_security_policy": {
+      "file": "allianz/.github/SECURITY.md",
+      "sha": "a3f19c2",
+      "contact_found": "ospo@allianz.com"
+    }
+  },
+  "previous_snapshot_date": "2026-10-27",
+  "changes_since_previous": [],
+  "results": [
+    {
+      "repo": null,
+      "check": "org/settings",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "expected": {
+          "two_factor_requirement_enabled": true,
+          "default_repository_permission": "none",
+          "members_can_create_repositories": false
+        },
+        "unchanged_since": "2026-08-04"
+      }
+    },
+    {
+      "repo": null,
+      "check": "org/ruleset",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "expected": {
+          "enforcement": "active",
+          "rules_include": [
+            "deletion",
+            "non_fast_forward",
+            "pull_request"
+          ],
+          "required_approving_review_count_min": 1
+        },
+        "unchanged_since": "2026-08-04"
+      }
+    },
+    {
+      "repo": null,
+      "check": "org/security-configuration",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "expected": {
+          "enforcement": "enforced",
+          "dependency_graph": "enabled",
+          "secret_scanning": "enabled",
+          "secret_scanning_push_protection": "enabled",
+          "code_scanning_default_setup": "enabled",
+          "private_vulnerability_reporting": "enabled"
+        },
+        "unchanged_since": "2026-08-04"
+      }
+    },
+    {
+      "repo": null,
+      "check": "org/security-policy",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "expected": {
+          "file_exists": true,
+          "contact_required": true
+        },
+        "unchanged_since": "2026-08-04"
+      }
+    },
+    {
+      "repo": null,
+      "check": "advisories/published-in-time",
+      "result": "pass",
+      "detail": null,
+      "evidence": {
+        "published_in_period": [
+          {
+            "ghsa": "GHSA-7q4x-2m9c-h3vf",
+            "repo": "pricing-engine",
+            "severity": "high",
+            "created_at": "2026-08-19",
+            "published_at": "2026-09-06",
+            "days_to_publish": 18,
+            "cve": "CVE-2026-41102"
+          },
+          {
+            "ghsa": "GHSA-p2w8-xr6j-9cq4",
+            "repo": "pdf-render-service",
+            "severity": "medium",
+            "created_at": "2026-09-02",
+            "published_at": "2026-10-13",
+            "days_to_publish": 41,
+            "cve": "CVE-2026-43877"
+          },
+          {
+            "ghsa": "GHSA-m5hv-6f3k-q8tz",
+            "repo": "mobile-sdk-ios",
+            "severity": "low",
+            "created_at": "2026-10-08",
+            "published_at": "2026-10-17",
+            "days_to_publish": 9,
+            "cve": "CVE-2026-45010"
+          }
+        ],
+        "unpublished": [
+          {
+            "state": "triage",
+            "age_days": 12,
+            "redacted": "repository and details withheld (unpublished vulnerability)"
+          }
+        ],
+        "target_days": 90
+      }
+    }
+  ]
+}
