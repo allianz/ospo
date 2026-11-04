@@ -10,37 +10,37 @@
       "file": "lint_repos.json",
       "tool": "lint_repos",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "0d820ea59a08d14c29076f51198ed18bf71d1e8b8ecb3a21a63f709d9a92a0c9"
+      "sha256": "92d6b5380dde1e1cc2950180fb4777f7c8be59f4d5fefbfd23796abfb721de33"
     },
     {
       "file": "license_scan.json",
       "tool": "license_scan",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "b53674ce33c6985a160f4ab7d50e0a1999551ac6b5d329ceb46a5774c4e5f546"
+      "sha256": "c48cdd0a0abd90597df216758992477c3ee84573d5fb08dc8bb092490b8c6d7e"
     },
     {
       "file": "archive_repos.json",
       "tool": "archive_repos",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "fcb1a52ffe9d83628512263091f0f617994eafb7349760895371cb7c12d20ed3"
+      "sha256": "96a5847a4cf720cb54fe43670670a0b7fbc04bf73a93a77b3e96e5ebc80e4e0e"
     },
     {
       "file": "drift.json",
       "tool": "create_repos --dry-run",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "c825678f05c370a78dec85abe0842d873269f595248bfc9a12052e7681230c2b"
+      "sha256": "5eb58ea19017e88dc4899265bbb07d60505712a5480b62dd0fdc45870690d810"
     },
     {
       "file": "org_snapshot.json",
       "tool": "org_snapshot",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "1b506561132f330f7a75a24a447ece7150951f6cc2aa165684ff228b722465f9"
+      "sha256": "13a872675a20862dca0275f98208d3c21c09831c1d990ecc8b334288732a21a6"
     },
     {
       "file": "scorecard.json",
       "tool": "scorecard_check",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "1b2ffc8cbe1cb3c587591222f033785bba92b4d5ba2ec137742a7beaaa66095f"
+      "sha256": "bbaf62709227af00d4b8398a88d7bd65adf0cccdd967a631d22e81d67b32ac14"
     }
   ],
   "previous_report": {
@@ -565,389 +565,307 @@
     {
       "repo": "insurance-rule-dsl",
       "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
       "requirements": [
         "BR.03"
       ],
-      "detail": "Score 0 is below 8",
       "since": "2026-07-14",
       "age_days": 112,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 15,
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15",
-        "labels": [
-          "scorecard/code-review",
-          "scorecard/signed-releases"
-        ],
-        "created_at": "2026-07-14"
-      }
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
+      },
+      "reason": "Project has not signed or included provenance with any releases."
     },
     {
       "repo": "insurance-rule-dsl",
       "check": "scorecard/code-review",
+      "name": "Code-Review",
       "requirements": [
         "QA.06"
       ],
-      "detail": "Score 4 is below 7",
       "since": "2026-08-21",
       "age_days": 74,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 15,
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15",
-        "labels": [
-          "scorecard/code-review",
-          "scorecard/signed-releases"
-        ],
-        "created_at": "2026-07-14"
-      }
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
+      },
+      "reason": "Found 12/30 approved changesets -- score normalized to 4"
     },
     {
       "repo": "pdf-render-service",
       "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
       "requirements": [
         "QA.04"
       ],
-      "detail": "Score 2 is below 8",
       "since": "2026-09-03",
       "age_days": 61,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 33,
-        "url": "https://github.com/allianz/pdf-render-service/issues/33",
-        "labels": [
-          "scorecard/ci-tests",
-          "scorecard/signed-releases"
-        ],
-        "created_at": "2026-09-03"
-      }
+        "url": "https://github.com/allianz/pdf-render-service/issues/33"
+      },
+      "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2"
     },
     {
       "repo": "pdf-render-service",
       "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
       "requirements": [
         "BR.03"
       ],
-      "detail": "Score 0 is below 8",
       "since": "2026-09-03",
       "age_days": 61,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 33,
-        "url": "https://github.com/allianz/pdf-render-service/issues/33",
-        "labels": [
-          "scorecard/ci-tests",
-          "scorecard/signed-releases"
-        ],
-        "created_at": "2026-09-03"
-      }
+        "url": "https://github.com/allianz/pdf-render-service/issues/33"
+      },
+      "reason": "Project has not signed or included provenance with any releases."
     },
     {
       "repo": "mobile-sdk-ios",
       "check": "lint/versioning",
+      "name": "Versioning",
       "requirements": [
         "BR.02"
       ],
-      "detail": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
       "since": "2026-09-12",
       "age_days": 52,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 57,
-        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57",
-        "labels": [
-          "lint/versioning"
-        ],
-        "created_at": "2026-09-12"
-      }
+        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
+      },
+      "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3"
     },
     {
       "repo": "pdf-render-service",
       "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
       "requirements": [
         "BR.01"
       ],
-      "detail": "No DEVELOPMENT file",
       "since": "2026-09-30",
       "age_days": 34,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 31,
-        "url": "https://github.com/allianz/pdf-render-service/issues/31",
-        "labels": [
-          "lint/development-build",
-          "lint/development-file",
-          "lint/development-test",
-          "lint/release-notes"
-        ],
-        "created_at": "2026-09-30"
-      }
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      },
+      "reason": "No DEVELOPMENT file"
     },
     {
       "repo": "pdf-render-service",
       "check": "lint/development-file",
+      "name": "Development Guide",
       "requirements": [
         "BR.01"
       ],
-      "detail": "File not found in ., docs, .github",
       "since": "2026-09-30",
       "age_days": 34,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 31,
-        "url": "https://github.com/allianz/pdf-render-service/issues/31",
-        "labels": [
-          "lint/development-build",
-          "lint/development-file",
-          "lint/development-test",
-          "lint/release-notes"
-        ],
-        "created_at": "2026-09-30"
-      }
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      },
+      "reason": "File not found in ., docs, .github"
     },
     {
       "repo": "pdf-render-service",
       "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
       "requirements": [
         "QA.04"
       ],
-      "detail": "No DEVELOPMENT file",
       "since": "2026-09-30",
       "age_days": 34,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 31,
-        "url": "https://github.com/allianz/pdf-render-service/issues/31",
-        "labels": [
-          "lint/development-build",
-          "lint/development-file",
-          "lint/development-test",
-          "lint/release-notes"
-        ],
-        "created_at": "2026-09-30"
-      }
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      },
+      "reason": "No DEVELOPMENT file"
     },
     {
       "repo": "pdf-render-service",
       "check": "lint/release-notes",
+      "name": "Release Notes",
       "requirements": [
         "BR.04"
       ],
-      "detail": "Release v1.8.0 has no release notes and is not in CHANGELOG",
       "since": "2026-10-06",
       "age_days": 28,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 31,
-        "url": "https://github.com/allianz/pdf-render-service/issues/31",
-        "labels": [
-          "lint/development-build",
-          "lint/development-file",
-          "lint/development-test",
-          "lint/release-notes"
-        ],
-        "created_at": "2026-09-30"
-      }
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      },
+      "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG"
     },
     {
       "repo": "old-batch-tools",
       "check": "archive/notice-before-archival",
+      "name": "Notice Before Archival",
       "requirements": [
         "DE.01"
       ],
-      "detail": "Archived outside the process (no notice issue)",
       "since": "2026-10-20",
       "age_days": 14,
       "target_days": 90,
       "tracking": {
         "type": "ospo-notification",
-        "reason": "archived outside the process",
-        "since": "2026-10-20"
-      }
+        "reason": "archived outside the process"
+      },
+      "reason": "Archived outside the process (no notice issue)"
     },
     {
       "repo": "insurance-rule-dsl",
       "check": "lint/contributing",
+      "name": "Contributing File",
       "requirements": [
         "GV.01"
       ],
-      "detail": "File not found in ., .github, docs",
       "since": "2026-10-22",
       "age_days": 12,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 12,
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12",
-        "labels": [
-          "lint/contributing"
-        ],
-        "created_at": "2026-10-22"
-      }
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
+      },
+      "reason": "File not found in ., .github, docs"
     },
     {
       "repo": "quote-calculator-demo",
       "check": "lint/license-type",
+      "name": "License Type",
       "requirements": [
         "LE.01"
       ],
-      "detail": "'WTFPL' is not in the approved list",
       "since": "2026-10-25",
       "age_days": 9,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 7,
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/7",
-        "labels": [
-          "lint/license-type"
-        ],
-        "created_at": "2026-10-25"
-      }
+        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
+      },
+      "reason": "'WTFPL' is not in the approved list"
     },
     {
       "repo": "claims-event-schemas",
       "check": "lint/contributing",
+      "name": "Contributing File",
       "requirements": [
         "GV.01"
       ],
-      "detail": "File not found in ., .github, docs",
       "since": "2026-10-29",
       "age_days": 5,
       "target_days": 90,
       "tracking": {
         "type": "ospo-notification",
-        "reason": "issues disabled in repository",
-        "since": "2026-10-29"
-      }
+        "reason": "issues disabled in repository"
+      },
+      "reason": "File not found in ., .github, docs"
     },
     {
       "repo": "claims-event-schemas",
       "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
       "requirements": [
         "QA.03"
       ],
-      "detail": "Issues are disabled",
       "since": "2026-10-29",
       "age_days": 5,
       "target_days": 90,
       "tracking": {
         "type": "ospo-notification",
-        "reason": "issues disabled in repository",
-        "since": "2026-10-29"
-      }
+        "reason": "issues disabled in repository"
+      },
+      "reason": "Issues are disabled"
     },
     {
       "repo": "claims-event-schemas",
       "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
       "requirements": [
         "GV.02"
       ],
-      "detail": "1 user has direct access",
       "since": "2026-10-29",
       "age_days": 5,
       "target_days": 90,
       "tracking": {
         "type": "ospo-notification",
-        "reason": "issues disabled in repository",
-        "since": "2026-10-29"
-      }
+        "reason": "issues disabled in repository"
+      },
+      "reason": "1 user has direct access"
     },
     {
       "repo": "pricing-sandbox",
       "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
       "requirements": [
         "BR.01"
       ],
-      "detail": "No DEVELOPMENT file",
       "since": "2026-11-03",
       "age_days": 0,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 1,
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
-        "labels": [
-          "lint/development-build",
-          "lint/development-file",
-          "lint/development-test"
-        ],
-        "created_at": "2026-11-03"
-      }
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      },
+      "reason": "No DEVELOPMENT file"
     },
     {
       "repo": "pricing-sandbox",
       "check": "lint/development-file",
+      "name": "Development Guide",
       "requirements": [
         "BR.01"
       ],
-      "detail": "File not found in ., docs, .github",
       "since": "2026-11-03",
       "age_days": 0,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 1,
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
-        "labels": [
-          "lint/development-build",
-          "lint/development-file",
-          "lint/development-test"
-        ],
-        "created_at": "2026-11-03"
-      }
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      },
+      "reason": "File not found in ., docs, .github"
     },
     {
       "repo": "pricing-sandbox",
       "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
       "requirements": [
         "QA.04"
       ],
-      "detail": "No DEVELOPMENT file",
       "since": "2026-11-03",
       "age_days": 0,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 1,
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1",
-        "labels": [
-          "lint/development-build",
-          "lint/development-file",
-          "lint/development-test"
-        ],
-        "created_at": "2026-11-03"
-      }
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      },
+      "reason": "No DEVELOPMENT file"
     },
     {
       "repo": "pricing-sandbox",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "requirements": [
         "LE.02",
         "QA.01"
       ],
-      "detail": "Dependency graph is disabled (SBOM request returned 404)",
       "since": "2026-11-03",
       "age_days": 0,
       "target_days": 90,
       "tracking": {
         "type": "issue",
-        "number": 2,
-        "url": "https://github.com/allianz/pricing-sandbox/issues/2",
-        "labels": [
-          "sbom/available"
-        ],
-        "created_at": "2026-11-03"
-      }
+        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
+      },
+      "reason": "No SBOM available (request returned 404)"
     }
   ],
   "archivals": [

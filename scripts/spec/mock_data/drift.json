@@ -12,17 +12,17 @@
     "security": [],
     "branch_protection": []
   },
+  "skipped": [],
+  "errors": [],
   "results": [
     {
       "repo": null,
       "check": "drift/access",
+      "name": "Access Drift",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "planned_changes": 0,
-        "repositories_in_config": 10,
-        "teams_in_config": 14
-      }
+      "score": null,
+      "reason": "No planned changes (10 repositories, 14 teams in config)",
+      "details": []
     }
   ]
 }

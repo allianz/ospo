@@ -61,117 +61,96 @@
       "file": "allianz/.github/SECURITY.md",
       "sha": "a3f19c2",
       "contact_found": "ospo@allianz.com"
+    },
+    "advisories": {
+      "published_in_period": [
+        {
+          "ghsa": "GHSA-7q4x-2m9c-h3vf",
+          "repo": "pricing-engine",
+          "severity": "high",
+          "created_at": "2026-08-19",
+          "published_at": "2026-09-06",
+          "days_to_publish": 18,
+          "cve": "CVE-2026-41102"
+        },
+        {
+          "ghsa": "GHSA-p2w8-xr6j-9cq4",
+          "repo": "pdf-render-service",
+          "severity": "medium",
+          "created_at": "2026-09-02",
+          "published_at": "2026-10-13",
+          "days_to_publish": 41,
+          "cve": "CVE-2026-43877"
+        },
+        {
+          "ghsa": "GHSA-m5hv-6f3k-q8tz",
+          "repo": "mobile-sdk-ios",
+          "severity": "low",
+          "created_at": "2026-10-08",
+          "published_at": "2026-10-17",
+          "days_to_publish": 9,
+          "cve": "CVE-2026-45010"
+        }
+      ],
+      "unpublished": [
+        {
+          "state": "triage",
+          "age_days": 12,
+          "redacted": "repository and details withheld (unpublished vulnerability)"
+        }
+      ],
+      "target_days": 90
     }
   },
   "previous_snapshot_date": "2026-10-27",
   "changes_since_previous": [],
+  "skipped": [],
+  "errors": [],
   "results": [
     {
       "repo": null,
       "check": "org/settings",
+      "name": "Org Settings",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "expected": {
-          "two_factor_requirement_enabled": true,
-          "default_repository_permission": "none",
-          "members_can_create_repositories": false
-        },
-        "unchanged_since": "2026-08-04"
-      }
+      "score": null,
+      "reason": "Matches the expected values, unchanged since 2026-08-04",
+      "details": []
     },
     {
       "repo": null,
       "check": "org/ruleset",
+      "name": "Org Ruleset",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "expected": {
-          "enforcement": "active",
-          "rules_include": [
-            "deletion",
-            "non_fast_forward",
-            "pull_request"
-          ],
-          "required_approving_review_count_min": 1
-        },
-        "unchanged_since": "2026-08-04"
-      }
+      "score": null,
+      "reason": "Matches the expected values, unchanged since 2026-08-04",
+      "details": []
     },
     {
       "repo": null,
       "check": "org/security-configuration",
+      "name": "Security Configuration",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "expected": {
-          "enforcement": "enforced",
-          "dependency_graph": "enabled",
-          "secret_scanning": "enabled",
-          "secret_scanning_push_protection": "enabled",
-          "code_scanning_default_setup": "enabled",
-          "private_vulnerability_reporting": "enabled"
-        },
-        "unchanged_since": "2026-08-04"
-      }
+      "score": null,
+      "reason": "Matches the expected values, unchanged since 2026-08-04",
+      "details": []
     },
     {
       "repo": null,
       "check": "org/security-policy",
+      "name": "Org Security Policy",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "expected": {
-          "file_exists": true,
-          "contact_required": true
-        },
-        "unchanged_since": "2026-08-04"
-      }
+      "score": null,
+      "reason": "Matches the expected values, unchanged since 2026-08-04",
+      "details": []
     },
     {
       "repo": null,
       "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "published_in_period": [
-          {
-            "ghsa": "GHSA-7q4x-2m9c-h3vf",
-            "repo": "pricing-engine",
-            "severity": "high",
-            "created_at": "2026-08-19",
-            "published_at": "2026-09-06",
-            "days_to_publish": 18,
-            "cve": "CVE-2026-41102"
-          },
-          {
-            "ghsa": "GHSA-p2w8-xr6j-9cq4",
-            "repo": "pdf-render-service",
-            "severity": "medium",
-            "created_at": "2026-09-02",
-            "published_at": "2026-10-13",
-            "days_to_publish": 41,
-            "cve": "CVE-2026-43877"
-          },
-          {
-            "ghsa": "GHSA-m5hv-6f3k-q8tz",
-            "repo": "mobile-sdk-ios",
-            "severity": "low",
-            "created_at": "2026-10-08",
-            "published_at": "2026-10-17",
-            "days_to_publish": 9,
-            "cve": "CVE-2026-45010"
-          }
-        ],
-        "unpublished": [
-          {
-            "state": "triage",
-            "age_days": 12,
-            "redacted": "repository and details withheld (unpublished vulnerability)"
-          }
-        ],
-        "target_days": 90
-      }
+      "score": null,
+      "reason": "3 of 3 advisories published within 90 days (median 18 days, maximum 41 days)",
+      "details": []
     }
   ]
 }

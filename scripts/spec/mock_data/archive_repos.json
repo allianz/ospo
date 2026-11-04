@@ -8,6 +8,15 @@
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
   "warn_after": "1 years",
   "grace_period": "60 days",
+  "archivals": [
+    {
+      "repo": "legacy-xml-mapper",
+      "notice_issue": "https://github.com/allianz/legacy-xml-mapper/issues/3",
+      "notice_date": "2026-09-04",
+      "archived_date": "2026-11-03",
+      "days_notice": 60
+    }
+  ],
   "skipped": [
     {
       "repo": ".github",
@@ -18,26 +27,25 @@
       "reason": "assessment tooling, reviewed separately"
     }
   ],
+  "errors": [],
   "results": [
     {
       "repo": "legacy-xml-mapper",
       "check": "archive/notice-before-archival",
+      "name": "Notice Before Archival",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "notice_issue": "https://github.com/allianz/legacy-xml-mapper/issues/3",
-        "notice_date": "2026-09-04",
-        "archived_date": "2026-11-03",
-        "days_notice": 60
-      }
+      "score": null,
+      "reason": "Archived 60 days after the notice of 2026-09-04 (https://github.com/allianz/legacy-xml-mapper/issues/3)",
+      "details": []
     },
     {
       "repo": "legacy-xml-mapper",
       "check": "archive/migration-path",
+      "name": "Migration Path",
       "result": "fail",
-      "detail": "README names no successor or alternative",
-      "evidence": {},
-      "info_only": true
+      "score": null,
+      "reason": "README names no successor or alternative",
+      "details": []
     }
   ]
 }

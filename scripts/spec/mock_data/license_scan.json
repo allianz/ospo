@@ -6,7 +6,6 @@
   "config_file": "config/license_scan.yaml",
   "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
-  "max_noassertion_share": 0.05,
   "skipped": [
     {
       "repo": ".github",
@@ -29,317 +28,260 @@
       "reason": "archived"
     }
   ],
+  "errors": [],
   "results": [
     {
       "repo": "pricing-engine",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "format": "SPDX-2.3",
-        "packages": 412,
-        "sbom_url": "https://api.github.com/repos/allianz/pricing-engine/dependency-graph/sbom"
-      }
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 412 packages",
+      "details": []
     },
     {
       "repo": "pricing-engine",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "packages": 412,
-        "noassertion": 6,
-        "share": 0.015
-      }
+      "score": null,
+      "reason": "6 of 412 packages (1.5%) have no license information",
+      "details": []
     },
     {
       "repo": "pricing-engine",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "denied": []
-      }
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "format": "SPDX-2.3",
-        "packages": 188,
-        "sbom_url": "https://api.github.com/repos/allianz/insurance-rule-dsl/dependency-graph/sbom"
-      }
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 188 packages",
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "packages": 188,
-        "noassertion": 2,
-        "share": 0.011
-      }
+      "score": null,
+      "reason": "2 of 188 packages (1.1%) have no license information",
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "denied": []
-      }
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
     },
     {
       "repo": "quote-calculator-demo",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "format": "SPDX-2.3",
-        "packages": 903,
-        "sbom_url": "https://api.github.com/repos/allianz/quote-calculator-demo/dependency-graph/sbom"
-      }
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 903 packages",
+      "details": []
     },
     {
       "repo": "quote-calculator-demo",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "packages": 903,
-        "noassertion": 41,
-        "share": 0.045
-      }
+      "score": null,
+      "reason": "41 of 903 packages (4.5%) have no license information",
+      "details": []
     },
     {
       "repo": "quote-calculator-demo",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "fail",
-      "detail": "1 dependency uses a denied license",
-      "evidence": {
-        "denied": [
-          {
-            "name": "npm:left-pad-gpl",
-            "version": "1.0.2",
-            "license": "GPL-3.0-only"
-          }
-        ]
-      },
+      "score": null,
+      "reason": "1 dependency uses a denied license",
+      "details": [
+        "Warn: npm:left-pad-gpl@1.0.2 is licensed GPL-3.0-only"
+      ],
       "tracking": {
         "type": "issue",
-        "number": 9,
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/9",
-        "labels": [
-          "license/denied"
-        ],
-        "created_at": "2026-10-27"
+        "url": "https://github.com/allianz/quote-calculator-demo/issues/9"
       }
     },
     {
       "repo": "pdf-render-service",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "format": "SPDX-2.3",
-        "packages": 356,
-        "sbom_url": "https://api.github.com/repos/allianz/pdf-render-service/dependency-graph/sbom"
-      }
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 356 packages",
+      "details": []
     },
     {
       "repo": "pdf-render-service",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "packages": 356,
-        "noassertion": 11,
-        "share": 0.031
-      }
+      "score": null,
+      "reason": "11 of 356 packages (3.1%) have no license information",
+      "details": []
     },
     {
       "repo": "pdf-render-service",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "denied": []
-      }
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
     },
     {
       "repo": "design-guidelines",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "format": "SPDX-2.3",
-        "packages": 1210,
-        "sbom_url": "https://api.github.com/repos/allianz/design-guidelines/dependency-graph/sbom"
-      }
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 1210 packages",
+      "details": []
     },
     {
       "repo": "design-guidelines",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "fail",
-      "detail": "97 of 1210 packages have no license information (maximum is 5%)",
-      "evidence": {
-        "packages": 1210,
-        "noassertion": 97,
-        "share": 0.08
-      },
-      "tracking": {
-        "type": "issue",
-        "number": 15,
-        "url": "https://github.com/allianz/design-guidelines/issues/15",
-        "labels": [
-          "sbom/license-coverage"
-        ],
-        "created_at": "2026-10-06"
-      }
+      "score": null,
+      "reason": "97 of 1210 packages (8.0%) have no license information",
+      "details": []
     },
     {
       "repo": "design-guidelines",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "denied": []
-      }
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
     },
     {
       "repo": "mobile-sdk-ios",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "format": "SPDX-2.3",
-        "packages": 57,
-        "sbom_url": "https://api.github.com/repos/allianz/mobile-sdk-ios/dependency-graph/sbom"
-      }
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 57 packages",
+      "details": []
     },
     {
       "repo": "mobile-sdk-ios",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "fail",
-      "detail": "10 of 57 packages have no license information (maximum is 5%)",
-      "evidence": {
-        "packages": 57,
-        "noassertion": 10,
-        "share": 0.175
-      },
-      "tracking": {
-        "type": "issue",
-        "number": 58,
-        "url": "https://github.com/allianz/mobile-sdk-ios/issues/58",
-        "labels": [
-          "sbom/license-coverage"
-        ],
-        "created_at": "2026-09-15"
-      }
+      "score": null,
+      "reason": "10 of 57 packages (17.5%) have no license information",
+      "details": []
     },
     {
       "repo": "mobile-sdk-ios",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "denied": []
-      }
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "fail",
-      "detail": "No SBOM available (request returned 404)",
-      "evidence": {},
+      "score": null,
+      "reason": "No SBOM available (request returned 404)",
+      "details": [],
       "tracking": {
         "type": "issue",
-        "number": 2,
-        "url": "https://github.com/allianz/pricing-sandbox/issues/2",
-        "labels": [
-          "sbom/available"
-        ],
-        "created_at": "2026-11-03"
+        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
       }
     },
     {
       "repo": "pricing-sandbox",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "na",
-      "detail": "no SBOM available",
-      "evidence": {}
+      "score": null,
+      "reason": "no SBOM available",
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "na",
-      "detail": "no SBOM available",
-      "evidence": {}
+      "score": null,
+      "reason": "no SBOM available",
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "format": "SPDX-2.3",
-        "packages": 0,
-        "sbom_url": "https://api.github.com/repos/allianz/claims-event-schemas/dependency-graph/sbom"
-      }
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 0 packages",
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "na",
-      "detail": "no dependencies in SBOM",
-      "evidence": {
-        "packages": 0,
-        "noassertion": 0,
-        "share": 0
-      }
+      "score": null,
+      "reason": "no dependencies in SBOM",
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "denied": []
-      }
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
     },
     {
       "repo": "kafka-schema-tools",
       "check": "sbom/available",
+      "name": "SBOM Available",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "format": "SPDX-2.3",
-        "packages": 143,
-        "sbom_url": "https://api.github.com/repos/allianz/kafka-schema-tools/dependency-graph/sbom"
-      }
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 143 packages",
+      "details": []
     },
     {
       "repo": "kafka-schema-tools",
       "check": "sbom/license-coverage",
+      "name": "License Coverage",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "packages": 143,
-        "noassertion": 3,
-        "share": 0.021
-      }
+      "score": null,
+      "reason": "3 of 143 packages (2.1%) have no license information",
+      "details": []
     },
     {
       "repo": "kafka-schema-tools",
       "check": "license/denied",
+      "name": "Denied Licenses",
       "result": "pass",
-      "detail": null,
-      "evidence": {
-        "denied": []
-      }
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
     }
   ]
 }

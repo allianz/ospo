@@ -26,10 +26,10 @@ Rule: a MUST can never rely on **Not verifiable**. Deviations are only allowed f
 ### 1.2 Scope and applicability
 
 - **In scope:** all active (not archived) repositories of the organisation, except `excluded_repos` in `config/compliance_report.yaml`. Each exclusion needs a deviation entry with an expiry date.
-- **Archived repositories:** only DE.01 and DE.02 apply. Other checks may report them for information, without issues.
+- **Archived repositories:** only DE.01 and DE.02 apply. All other tools list them under `skipped` (reason `archived`) and write no results for them.
 - **Not applicable by topic:** repositories tagged `docs` or `template` have no software to build or test. BR.01 and QA.04 do not apply to them.
 - **Releasing repositories:** repositories with at least one GitHub release in the last 12 months. BR.02–BR.05 only apply to these.
-- **Not applicable by data:** when a check has no data to judge (e.g. Scorecard "inconclusive" because there were no pull requests), the result is `na`, not `pass`.
+- **Not applicable by data:** when a check has no data to judge (e.g. Scorecard "inconclusive" because there were no changes), the result is `na`, not `pass`. A tool error is never `na`: it goes to `errors`, which the report treats as "no data".
 
 ### 1.3 Scripts and their roles
 
@@ -42,7 +42,7 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `license_scan.js` | exists, extend | SBOM retrieval and dependency licenses |
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
 | `org_snapshot.js` | **new** | Saves org settings, ruleset, security configurations, org security policy and security advisories. Compares them with expected values. No issues. |
-| `scorecard_check.js` | **new** | Reads Scorecard results from the public API, applies thresholds, opens and closes issues |
+| `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds, opens and closes issues (see 1.10) |
 | `compliance_report.js` | **new** | Merges all JSON results, maps checks to requirements, computes statuses, renders HTML, Markdown and `data.json` |
 
 ### 1.4 Weekly workflow
@@ -82,14 +82,32 @@ scorecard_check ─┘
   "config_sha256": "…",
   "run_url": "https://github.com/allianz/ospo/actions/runs/…",
   "results": [
-    { "repo": "foo", "check": "lint/contributing", "result": "pass",
-      "detail": null, "evidence": { "file": ".github/CONTRIBUTING.md" } }
-  ]
+    { "repo": "foo", "check": "lint/contributing", "name": "Contributing File",
+      "result": "pass", "score": null,
+      "reason": ".github/CONTRIBUTING.md found", "details": [] }
+  ],
+  "skipped": [ { "repo": "old-repo", "reason": "archived" } ],
+  "errors": []
 }
 ```
 
-- `result` is one of `pass`, `fail` or `na`.
-- `evidence` records *what* was found, so an auditor can verify a sample by hand.
+The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details`), so one parser reads both.
+
+| Field | Content |
+|---|---|
+| `repo` | Repository name; `null` for org-level checks |
+| `check` | Stable ID `<tool>/<check>`. Key for history, labels and the requirement mapping |
+| `name` | Readable name, e.g. "Contributing File" or Scorecard's "CI-Tests". Display only; renaming it breaks nothing |
+| `result` | `pass`, `fail` or `na` |
+| `score` | 0–10 where the tool measures a score (Scorecard), otherwise `null`. Scorecard's `-1` becomes `null`. Not used by the report yet |
+| `reason` | One sentence for people, always filled (also for `pass` and `na`), e.g. "6 of 412 packages (1.5%) have no license information" |
+| `details` | List of lines for people, Scorecard style (`Warn: …`, `Info: …`), e.g. one line per denied package. Always a list, `[]` if empty. Never parsed |
+| `tracking` | Only on failures: `{ "type": "issue", "url": … }` for the tool's issue in that repository (one issue per repository and tool, so several results share it), or `{ "type": "ospo-notification", "reason": … }` when no public issue is possible. The report uses it to tell tracked from untracked failures (1.7) and to link the issue |
+
+- **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header: `snapshot` (org settings, advisories) in `org_snapshot`, `archivals` in `archive_repos`, `planned_changes` in `create_repos --json`.
+- **Thresholds are configuration**, not part of the results. `config_sha256` pins the configuration of each run.
+- **Whether a check counts** is decided only by the mapping in `config/compliance_report.yaml`. Unmapped checks (e.g. `sbom/license-coverage`, `scorecard/fuzzing`) are written like any other result and do not affect a status.
+- `skipped` lists repositories without results (excluded, archived). `errors` lists repository × check pairs the tool could not evaluate. Both are always present, `[]` if empty, so every file has the same shape.
 
 ### 1.7 Status logic (computed by the report)
 
@@ -153,6 +171,26 @@ actions:
 ### 1.9 Attestations
 
 A manual attestation is a Markdown file added by pull request, e.g. `attestations/2026-10-15-identity.md`. The ISO or the Head of OSPO approves the PR, and that approval is the signature. The report reads the date of the latest attestation and flags it when it is older than 12 months.
+
+### 1.10 Scorecard conversion (`scorecard_check`)
+
+**Source:** the Scorecard CLI, `scorecard --repo=github.com/<org>/<repo> --format=json --show-details`, run for every in-scope repository in the weekly workflow, with a pinned version. The public API (`api.scorecard.dev`) only has results for repositories that run the Scorecard Action with `publish_results`; on 4 Nov 2026 that was 1 of 5 active allianz repositories. The CLI output is identical to the API response except `date` (local time) and an extra `metadata: null` (see `mock_data/scorecard_*_real_yukimi.json`).
+
+**Conversion per check** (match by `name`, not by position):
+
+| Scorecard | Result |
+|---|---|
+| `score` ≥ threshold | `pass` |
+| `score` < threshold | `fail` |
+| `-1`, reason starts with `internal error` | `errors` (no data), never `na` |
+| `-1` on CI-Tests while Code-Review counted changesets ("Found x/N approved changesets", N > 0) | `fail`: changes without pull requests |
+| any other `-1` | `na` |
+| Branch-Protection on a `branch-protection: managed` repository | `na` (covered by the org ruleset) |
+
+- `name`, `score`, `reason` and `details` are copied unchanged from Scorecard. `-1` becomes `score: null`, `details: null` becomes `[]`, `date` is converted to UTC.
+- When `scorecard_check` decides the result itself (managed branch protection, topic `docs`/`template`, changes without pull requests), `reason` stays Scorecard's text and the first `details` line explains the decision, e.g. `Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)` or `Warn: scorecard_check: 30 changesets reached the default branch without pull requests`.
+- **Reason text is parsed** only for the changeset count. A reason the parser does not recognise goes to `errors`, so a new Scorecard wording cannot silently turn a `fail` into `na`. The real outputs in `mock_data/` serve as test fixtures.
+- **Observed on real data:** ng-aquila had CI-Tests `-1` ("no pull request found") but 30 changesets in Code-Review, i.e. direct pushes to `main`. yukimi's Branch-Protection is 5 with the current ruleset (no status checks, 1 approval, no code-owner review), so a threshold of 6 needs a stricter ruleset. **(verify)**
 
 ---
 
@@ -226,7 +264,7 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Issue:** lint issue, labels as above.
 
-**Archived repositories:** checked for information, no issues (the existing behaviour).
+**Archived repositories:** not checked (listed under `skipped`).
 
 **Exclusions:** ng-aquila (D-03).
 
@@ -323,7 +361,7 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 - **Structural check:** `lint/development-test`. `DEVELOPMENT.md` has a "Test" heading. This is a separate check from BR.01's `lint/development-build`, so a missing "Build" heading does not fail QA.04.
 
 **Utilised**
-- **Exact check:** `scorecard/ci-tests` ≥ 8. Scorecard "inconclusive" (no merged pull requests) → `na`.
+- **Exact check:** `scorecard/ci-tests` ≥ 8. Scorecard "inconclusive" → `na`, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is `fail` (see 1.10).
 
 **Not applicable:** topics `docs` or `template`.
 
