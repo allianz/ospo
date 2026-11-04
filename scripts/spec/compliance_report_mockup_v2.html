@@ -1,0 +1,5155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BSI TR-03185 Compliance Report (MOCK-UP v2)</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --accent-wash: rgba(42,120,214,0.10);
+    --track: #cde2fb;
+    --good: #0ca30c;
+    --good-2: #077a07;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --neutral: #898781;
+    --delta-good: #006300;
+    --delta-bad: #b42f2f;
+    --ord-1: #86b6ef; --ord-1-ink: #0b0b0b;
+    --ord-2: #2a78d6; --ord-2-ink: #ffffff;
+    --ord-3: #104281; --ord-3-ink: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #f0efec;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-wash: rgba(57,135,229,0.12);
+      --track: #184f95;
+      --good-2: #0a8a0a;
+      --delta-good: #0ca30c;
+      --delta-bad: #e66767;
+      --ord-1: #184f95; --ord-1-ink: #ffffff;
+      --ord-2: #3987e5; --ord-2-ink: #ffffff;
+      --ord-3: #9ec5f4; --ord-3-ink: #0b0b0b;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .page { max-width: 1120px; margin: 0 auto; padding: 24px 24px 64px; }
+
+  .draft {
+    background: repeating-linear-gradient(135deg, transparent 0 10px, rgba(250,178,25,0.12) 10px 20px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    color: var(--ink-2);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .draft strong { color: var(--ink); }
+
+  header.report {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--grid);
+    margin-bottom: 28px;
+  }
+  .brand { font-size: 13px; color: var(--ink-2); letter-spacing: 0.02em; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 6px 0 4px; font-weight: 650; }
+  .subtitle { color: var(--ink-2); margin: 0; }
+  dl.meta {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2px 16px;
+    margin: 0;
+    font-size: 13px;
+  }
+  dl.meta dt { color: var(--muted); }
+  dl.meta dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+  nav.toc { font-size: 13px; color: var(--ink-2); margin: -12px 0 28px; }
+  nav.toc a { margin-right: 14px; white-space: nowrap; }
+
+  section { margin-bottom: 36px; }
+  h2 { font-size: 19px; margin: 0 0 4px; font-weight: 650; }
+  h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px; }
+  .lead { color: var(--ink-2); margin: 0 0 16px; max-width: 760px; }
+  h3 { font-size: 15px; margin: 0 0 4px; font-weight: 600; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-hero { display: grid; grid-template-columns: 1.15fr 2fr; gap: 16px; margin-bottom: 16px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 860px) { .grid-2, .grid-hero, .tiles { grid-template-columns: 1fr; } header.report { grid-template-columns: 1fr; } }
+
+  .hero .label, .tile .label { color: var(--ink-2); font-size: 13px; }
+  .hero .value { font-size: 56px; font-weight: 650; line-height: 1.05; margin: 6px 0 4px; }
+  .hero .value small { font-size: 28px; font-weight: 600; }
+  .hero .note { color: var(--ink-2); font-size: 13px; margin-top: 10px; }
+  .tile .value { font-size: 28px; font-weight: 650; line-height: 1.2; margin-top: 2px; }
+  .tile .value small { font-size: 15px; color: var(--ink-2); font-weight: 500; }
+  .tile .sub { font-size: 12px; color: var(--muted); }
+  .delta { font-size: 13px; font-weight: 600; }
+  .delta.good { color: var(--delta-good); }
+  .delta.bad { color: var(--delta-bad); }
+  .delta.flat { color: var(--ink-2); }
+  .delta span { color: var(--muted); font-weight: 400; }
+  .tile { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .tile .spark { margin-top: 4px; }
+
+  ul.points { margin: 8px 0 0; padding-left: 18px; }
+  ul.points li { margin-bottom: 8px; }
+
+  /* status */
+  .status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; }
+  .status .ico {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex: none;
+  }
+  .status .ico.ring { background: transparent !important; border: 1.5px solid var(--muted); color: var(--muted) !important; }
+  .status .ico.ring-good { background: transparent !important; border: 1.5px solid var(--good); color: var(--good) !important; }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 8px 10px; border-bottom: 1px solid var(--axis); white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  .chapter-row td { background: var(--page); font-weight: 600; color: var(--ink-2); padding-top: 12px; }
+  .id { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .nowrap { white-space: nowrap; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .level { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-2); border: 1px solid var(--axis); border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
+  details.req > summary { cursor: pointer; list-style: none; }
+  details.req > summary::-webkit-details-marker { display: none; }
+  details.req > summary::before { content: "▸"; color: var(--muted); display: inline-block; width: 14px; transition: transform .15s; }
+  details.req[open] > summary::before { transform: rotate(90deg); }
+  tr.card-row > td { background: var(--page); padding: 4px 10px 18px; }
+  tr.card-row[hidden] { display: none; }
+  .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: grid; gap: 16px; min-width: 0; }
+  .rcard h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .rcard p { margin: 0; max-width: 820px; }
+  .rcard .part { display: grid; grid-template-columns: 100px 1fr; gap: 4px 14px; padding: 10px 0; border-top: 1px solid var(--grid); }
+  .rcard .part:first-of-type { border-top: none; padding-top: 2px; }
+  .rcard .part p + p { margin-top: 4px; }
+  .links { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .links a { margin-right: 4px; }
+  .rcard .part .head { display: flex; gap: 10px; align-items: center; margin-bottom: 2px; }
+  .rcard table { font-size: 12.5px; }
+  .rcard td, .rcard th { padding: 6px 8px; }
+  .cov-list { display: grid; gap: 4px; }
+  .cov { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
+  .cov .plabel { grid-column: 1 / -1; font-size: 11px; color: var(--muted); margin-bottom: -6px; }
+  .meter { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
+  .meter > div { height: 100%; background: var(--accent); border-radius: 3px; }
+  .cov .txt, .cov-txt { font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; }
+  .cov .txt b { color: var(--ink); font-weight: 600; }
+  .tag { display: inline-block; font-size: 12px; border: 1px solid var(--grid); border-radius: 4px; padding: 0 5px; margin: 0 4px 2px 0; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  a.tag:hover { border-color: var(--accent); text-decoration: none; }
+  pre.det { margin: 4px 0 0; font: 11.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); white-space: pre-wrap; }
+  dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px; margin: 4px 0 0; font-size: 12.5px; }
+  dl.kv dt { color: var(--muted); }
+  dl.kv dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+  /* charts */
+  svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+  svg.chart:focus { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .grid-line { stroke: var(--grid); stroke-width: 1; }
+  .axis-line { stroke: var(--axis); stroke-width: 1; }
+  .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .vlabel { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .clabel { fill: var(--ink-2); font-size: 12px; }
+  .chart-title { margin-bottom: 2px; }
+  .chart-sub { color: var(--ink-2); font-size: 13px; margin: 0 0 10px; }
+
+  .segbar { display: flex; gap: 2px; height: 28px; margin: 8px 0 8px; }
+  .segbar > div {
+    border-radius: 4px; display: flex; align-items: center; padding: 0 8px;
+    font-size: 12px; font-weight: 600; white-space: nowrap; overflow: visible; min-width: 0; cursor: default;
+  }
+  .segbar > div:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .segbar > div:hover { filter: brightness(1.07); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); }
+  .legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .seg-row { margin-bottom: 14px; }
+  .seg-row .seg-label { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; }
+  .seg-row .seg-label b { color: var(--ink); font-weight: 600; }
+
+  details.datatable { margin-top: 10px; font-size: 12px; }
+  details.datatable > summary, details.more > summary { color: var(--accent); cursor: pointer; font-size: 12.5px; }
+  details.datatable table, details.more table { margin-top: 6px; }
+
+  /* results matrix */
+  .scroll-x { overflow-x: auto; }
+  table.matrix { width: auto; }
+  table.matrix th, table.matrix td { padding: 4px 3px; text-align: center; border-bottom: 1px solid var(--grid); }
+  table.matrix th.rowh, table.matrix td.rowh { text-align: left; padding-right: 12px; }
+  table.matrix th.vh { vertical-align: bottom; height: 190px; font-weight: 500; }
+  table.matrix th.vh > span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; display: inline-block; }
+  table.matrix th.vh.unmapped { color: var(--muted); font-style: italic; }
+  table.matrix th.grp { text-align: center; font-size: 12px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--grid); }
+  table.matrix td.sep, table.matrix th.sep { border-left: 1px solid var(--axis); }
+  .mcell { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; cursor: default; font-variant-numeric: tabular-nums; }
+  .mcell:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .mcell.pass { background: var(--good); color: #fff; }
+  .mcell.fail { background: var(--critical); color: #fff; }
+  .mcell.na { border: 1.5px solid var(--axis); color: var(--muted); }
+  .mcell.none { color: var(--grid); }
+
+  #tip {
+    position: fixed; z-index: 10; pointer-events: none;
+    background: var(--surface); border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px;
+    display: grid; gap: 1px; max-width: 320px;
+  }
+  #tip strong { font-size: 14px; color: var(--ink); }
+  #tip span { color: var(--ink-2); white-space: pre-line; }
+  #tip[hidden] { display: none; }
+
+  .integrity { font-size: 12px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 12px; margin-top: 28px; font-variant-numeric: tabular-nums; }
+  code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); }
+
+  @media print {
+    :root { color-scheme: light; }
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: #fff; font-size: 11.5px; }
+    .page { max-width: none; padding: 0; }
+    nav.toc, details.datatable, #tip { display: none !important; }
+    .card { break-inside: avoid; }
+    section.break { break-before: page; }
+    tr { break-inside: avoid; }
+    details.req > summary::before { content: ""; width: 0; }
+    tr.card-row { break-inside: auto; }
+    a { color: inherit; }
+  }
+</style>
+</head>
+<body>
+<div id="tip" hidden></div>
+<div class="page">
+
+  <div class="draft"><strong>MOCK-UP v2 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix C. Only headings, column labels, chapter names and the status definitions are fixed template text.</div>
+
+  <header class="report">
+    <div>
+      <div class="brand">Open Source Program Office</div>
+      <h1>Secure Open Source Lifecycle<br>Compliance Report</h1>
+      <p class="subtitle" id="subtitle"></p>
+    </div>
+    <dl class="meta" id="meta"></dl>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <a href="#summary">1 Summary</a>
+    <a href="#requirements">2 Requirements</a>
+    <a href="#trends">3 Trends</a>
+    <a href="#findings">4 Findings</a>
+    <a href="#plan">5 Remediation actions</a>
+    <a href="#deviations">6 Deviations</a>
+    <a href="#changes">7 Changes</a>
+    <a href="#method">A Scope &amp; method</a>
+    <a href="#catalogue">B Checks</a>
+    <a href="#evidence">C Evidence</a>
+    <a href="#register">D Findings register</a>
+    <a href="#results">E Results per repository</a>
+  </nav>
+
+  <!-- ─────────────────────────── 1 Summary ─────────────────────────── -->
+  <section id="summary">
+    <h2><span class="num">1</span>Management summary</h2>
+    <p class="lead" id="summary-lead"></p>
+
+    <div class="grid-hero">
+      <div class="card hero">
+        <div class="label">Overall compliance</div>
+        <div class="value" id="hero-value"></div>
+        <div id="hero-delta"></div>
+        <div id="hero-spark" class="spark"></div>
+        <div class="note" id="hero-note"></div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px">
+      <h3>Requirement status</h3>
+      <div id="status-bars"></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Key messages</h3>
+        <ul class="points" id="key-messages"></ul>
+      </div>
+      <div class="card">
+        <h3>Needs attention</h3>
+        <ul class="points" id="attention"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 2 Requirements ─────────────────────────── -->
+  <section id="requirements" class="break">
+    <h2><span class="num">2</span>Requirement status</h2>
+    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and the age of its oldest open finding. Expand a row to see the checks, the results per repository and the evidence.</p>
+    <div class="card" style="padding:6px 8px">
+      <table id="req-table">
+        <thead><tr>
+          <th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th class="num">Oldest finding</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 3 Trends ─────────────────────────── -->
+  <section id="trends">
+    <h2><span class="num">3</span>Trends</h2>
+    <p class="lead" id="trends-lead"></p>
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="chart-title">Overall compliance</h3>
+        <p class="chart-sub">Share of evaluated checks passed, per weekly run</p>
+        <div id="chart-compliance"></div>
+      </div>
+      <div class="card">
+        <h3 class="chart-title">Open findings</h3>
+        <p class="chart-sub">Failing repository checks at each weekly run</p>
+        <div id="chart-findings"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 4 Findings ─────────────────────────── -->
+  <section id="findings" class="break">
+    <h2><span class="num">4</span>Findings</h2>
+    <p class="lead">A finding is one repository failing one check that is mapped to a requirement. Each finding is tracked by the tool's issue in the affected repository, or by an OSPO notification where no public issue is possible.</p>
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="card">
+        <h3 class="chart-title">Open findings by requirement</h3>
+        <p class="chart-sub" id="byreq-sub"></p>
+        <div id="chart-byreq"></div>
+      </div>
+      <div class="card">
+        <h3 class="chart-title">Active repositories by number of open findings</h3>
+        <p class="chart-sub" id="repos-sub"></p>
+        <div id="seg-repos"></div>
+        <h3 class="chart-title" style="margin-top:22px">Age of open findings</h3>
+        <p class="chart-sub" id="aging-sub"></p>
+        <div id="seg-aging"></div>
+      </div>
+    </div>
+    <div class="card" style="padding:6px 8px">
+      <table id="repo-table">
+        <thead><tr>
+          <th>Repositories with open findings</th><th class="num">Open findings</th><th>Requirements affected</th><th class="num">Oldest finding</th><th>Tracking</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 5 Plan ─────────────────────────── -->
+  <section id="plan">
+    <h2><span class="num">5</span>Remediation actions</h2>
+    <p class="lead">Planned actions recorded in the report configuration.</p>
+    <div class="card" style="padding:6px 8px">
+      <table id="plan-table">
+        <thead><tr><th>ID</th><th>Req.</th><th>Action</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 6 Deviations ─────────────────────────── -->
+  <section id="deviations">
+    <h2><span class="num">6</span>Deviations and exclusions</h2>
+    <p class="lead">Approved deviations from a requirement, and repositories excluded from scope. Each has an expiry date.</p>
+    <div class="card" style="padding:6px 8px">
+      <table id="dev-table">
+        <thead><tr><th>ID</th><th>Req.</th><th>Scope</th><th>Approved by</th><th>Valid until</th><th>Status</th><th>Used by</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 7 Changes ─────────────────────────── -->
+  <section id="changes">
+    <h2><span class="num">7</span>Changes since the previous report</h2>
+    <p class="lead" id="changes-lead"></p>
+    <div class="card" style="padding:6px 8px">
+      <table id="change-table">
+        <thead><tr><th>Event</th><th class="num">Value</th><th>Details</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── A Method ─────────────────────────── -->
+  <section id="method" class="break">
+    <h2><span class="num">A</span>Scope and method</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Scope</h3>
+        <table id="scope-table"><tbody></tbody></table>
+      </div>
+      <div class="card">
+        <h3>Status definitions</h3>
+        <table id="def-table"><tbody></tbody></table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;padding:14px 8px 6px">
+      <h3 style="padding:0 10px">Tool runs</h3>
+      <p class="chart-sub" style="padding:0 10px">Each tool runs its checks, owns its issues and writes one JSON file. The report only reads these files.</p>
+      <div class="scroll-x">
+        <table id="run-table">
+          <thead><tr><th>Tool</th><th>Run at</th><th>Configuration</th><th>Version</th><th class="num">Results</th><th class="num">Skipped</th><th class="num">Errors</th><th>Workflow run</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── B Checks ─────────────────────────── -->
+  <section id="catalogue">
+    <h2><span class="num">B</span>Check catalogue</h2>
+    <p class="lead">Every check that ran, with its rule and the requirements it is mapped to. Unmapped checks are reported for information and never affect a status.</p>
+    <div class="card" style="padding:6px 8px">
+      <table id="check-table">
+        <thead><tr><th>Check</th><th>Rule</th><th>Threshold</th><th>Requirements</th><th class="num">Pass / fail / n.a.</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── C Evidence ─────────────────────────── -->
+  <section id="evidence">
+    <h2><span class="num">C</span>Evidence index and data freshness</h2>
+    <p class="lead" id="evidence-lead"></p>
+    <div class="card" style="padding:6px 8px;margin-bottom:16px">
+      <table id="ev-table">
+        <thead><tr><th>Evidence</th><th>Tool</th><th>Data as of</th><th class="num">Age at report</th><th>SHA-256</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="card" style="padding:6px 8px">
+      <table id="att-table">
+        <thead><tr><th>Attestation</th><th>File</th><th>Covers</th><th>Approved by</th><th>Date</th><th>Valid until</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── D Register ─────────────────────────── -->
+  <section id="register" class="break">
+    <h2><span class="num">D</span>Findings register</h2>
+    <p class="lead">Every open finding at the time of this report, grouped by requirement. This is the frozen record; the current state is on GitHub.</p>
+    <div class="card" style="padding:6px 8px">
+      <table id="reg-table">
+        <thead><tr><th>Check</th><th>Repository</th><th>Reason</th><th>Failing since</th><th class="num">Age / target</th><th>Tracking</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── E Results ─────────────────────────── -->
+  <section id="results">
+    <h2><span class="num">E</span>Results per repository</h2>
+    <p class="lead">Every result of the repository-level checks for the active repositories. Hover or focus a cell for the reason. Numbers are Scorecard scores (0–10).</p>
+    <div class="card" style="padding:10px 8px;margin-bottom:16px">
+      <div class="scroll-x"><table class="matrix" id="matrix"></table></div>
+      <div class="legend" style="margin:10px 6px 0" id="matrix-legend"></div>
+    </div>
+    <div class="grid-2">
+      <div class="card" style="padding:14px 8px 6px">
+        <h3 style="padding:0 10px">Org-level checks</h3>
+        <table id="org-table"><thead><tr><th>Check</th><th>Result</th><th>Reason</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="card" style="padding:14px 8px 6px">
+        <h3 style="padding:0 10px">Archived repositories</h3>
+        <table id="arch-table"><thead><tr><th>Repository</th><th>Check</th><th>Result</th><th>Reason</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+    <div class="integrity" id="integrity"></div>
+  </section>
+</div>
+
+<!-- ═══════════════ Embedded input data (verbatim copies of mock_data/*.json) ═══════════════ -->
+<script type="application/json" id="data.json">{
+  "report_id": "OSPO-CR-2026-11-03",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "report_config": "config/compliance_report.yaml",
+  "inputs": [
+    {
+      "file": "lint_repos.json",
+      "tool": "lint_repos",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "421d2ae091968d4d228edc673b0f5a547bb33c642a9cfa84e36ae8c6b1608637"
+    },
+    {
+      "file": "license_scan.json",
+      "tool": "license_scan",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "737c949d230a659385e4cf9feceabb3386f3541667c5440dfd79937ff2619c0e"
+    },
+    {
+      "file": "archive_repos.json",
+      "tool": "archive_repos",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "7c5788f75b31fb82a4537a6741472fbf74d319e090e83125c51aa7dc799c3439"
+    },
+    {
+      "file": "drift.json",
+      "tool": "create_repos --dry-run",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "2170948306646ded5017ceef2ad291710c3b4ad561d079848ff871e68de847ce"
+    },
+    {
+      "file": "org_snapshot.json",
+      "tool": "org_snapshot",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "8d8b4621b88f1a47c5693f0aec8009714f74070fff6532e58b1420ceacaaf0e9"
+    },
+    {
+      "file": "scorecard.json",
+      "tool": "scorecard_check",
+      "run_at": "2026-11-03T02:00:00Z",
+      "sha256": "3c300a6e86c6f916a290ce54f1400237723536b2e289411a32face3062ddca73"
+    }
+  ],
+  "checks": {
+    "advisories/published-in-time": {
+      "name": "Advisories Published in Time",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#advisories-published-in-time",
+        "short": "Every confirmed vulnerability is published as a security advisory within 90 days. Unpublished advisories older than 90 days fail."
+      }
+    },
+    "archive/migration-path": {
+      "name": "Migration Path",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#migration-path",
+        "short": "The README of the archived repository names a successor or an alternative."
+      }
+    },
+    "archive/notice-before-archival": {
+      "name": "Notice Before Archival",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
+        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days)."
+      }
+    },
+    "drift/access": {
+      "name": "Access Drift",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/create_repos_spec.md#access-drift",
+        "short": "create_repos --dry-run plans no changes: actual access on GitHub matches the approved configuration."
+      }
+    },
+    "license/denied": {
+      "name": "Denied Licenses",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#denied-licenses",
+        "short": "No dependency in the SBOM uses a license on the deny list."
+      }
+    },
+    "lint/contributing": {
+      "name": "Contributing File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#contributing-file",
+        "short": "A file CONTRIBUTING* exists in ., .github or docs."
+      }
+    },
+    "lint/development-build": {
+      "name": "Development Guide: Build Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-build-section",
+        "short": "The development guide has a \"Build\" heading. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/development-file": {
+      "name": "Development Guide",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide",
+        "short": "A file DEVELOPMENT* exists in ., docs or .github, with at least 300 characters. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/development-test": {
+      "name": "Development Guide: Test Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-test-section",
+        "short": "The development guide has a \"Test\" heading. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/issues-enabled": {
+      "name": "Issues Enabled",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#issues-enabled",
+        "short": "Issues are enabled, so defects can be reported."
+      }
+    },
+    "lint/license-file": {
+      "name": "License File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-file",
+        "short": "A file LICENSE* exists in the repository root."
+      }
+    },
+    "lint/license-type": {
+      "name": "License Type",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-type",
+        "short": "The license GitHub detects is on the approved list. A missing or unidentified license (NOASSERTION) fails."
+      }
+    },
+    "lint/memory-safety-section": {
+      "name": "Memory Safety Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#memory-safety-section",
+        "short": "Repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly) have a \"Memory safety\" heading in the development guide."
+      }
+    },
+    "lint/no-direct-collaborators": {
+      "name": "No Direct Collaborators",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#no-direct-collaborators",
+        "short": "No user has direct access to the repository; access is granted to teams only."
+      }
+    },
+    "lint/private-reporting": {
+      "name": "Private Vulnerability Reporting",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#private-vulnerability-reporting",
+        "short": "For repositories with security: custom, private vulnerability reporting is enabled. Other repositories are covered by the org security configuration."
+      }
+    },
+    "lint/public": {
+      "name": "Public Visibility",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#public-visibility",
+        "short": "The repository is public."
+      }
+    },
+    "lint/release-notes": {
+      "name": "Release Notes",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#release-notes",
+        "short": "Every release of the last 12 months has release notes of at least 50 characters, or the CHANGELOG mentions the version."
+      }
+    },
+    "lint/secret-scanning": {
+      "name": "Secret Scanning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#secret-scanning",
+        "short": "For repositories with security: custom, secret scanning and push protection are enabled. Other repositories are covered by the org security configuration."
+      }
+    },
+    "lint/versioning": {
+      "name": "Versioning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#versioning",
+        "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line."
+      }
+    },
+    "org/ruleset": {
+      "name": "Org Ruleset",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-ruleset",
+        "short": "The ospo-managed ruleset is active on default branches: pull request with at least 1 approval, no force push, no deletion."
+      }
+    },
+    "org/security-configuration": {
+      "name": "Security Configuration",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#security-configuration",
+        "short": "The ospo-managed security configuration is enforced: dependency graph, secret scanning, push protection, code scanning and private vulnerability reporting."
+      }
+    },
+    "org/security-policy": {
+      "name": "Org Security Policy",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-security-policy",
+        "short": "The org default allianz/.github/SECURITY.md exists and names a security contact."
+      }
+    },
+    "org/settings": {
+      "name": "Org Settings",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-settings",
+        "short": "Org settings match the expected values: 2FA required, base permission none, members cannot create repositories."
+      }
+    },
+    "sbom/available": {
+      "name": "SBOM Available",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
+        "short": "The dependency graph SBOM can be retrieved for the default branch."
+      }
+    },
+    "sbom/license-coverage": {
+      "name": "License Coverage",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#license-coverage",
+        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION)."
+      }
+    },
+    "scorecard/branch-protection": {
+      "name": "Branch-Protection",
+      "threshold": 6,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#branch-protection",
+        "short": "Determines if the default and release branches are protected with GitHub's branch protection settings."
+      }
+    },
+    "scorecard/ci-tests": {
+      "name": "CI-Tests",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#ci-tests",
+        "short": "Determines if the project runs tests before pull requests are merged."
+      }
+    },
+    "scorecard/code-review": {
+      "name": "Code-Review",
+      "threshold": 7,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#code-review",
+        "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged."
+      }
+    },
+    "scorecard/dangerous-workflow": {
+      "name": "Dangerous-Workflow",
+      "threshold": 10,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#dangerous-workflow",
+        "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns."
+      }
+    },
+    "scorecard/fuzzing": {
+      "name": "Fuzzing",
+      "threshold": 10,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#fuzzing",
+        "short": "Determines if the project uses fuzzing."
+      }
+    },
+    "scorecard/signed-releases": {
+      "name": "Signed-Releases",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#signed-releases",
+        "short": "Determines if the project cryptographically signs release artifacts."
+      }
+    },
+    "scorecard/token-permissions": {
+      "name": "Token-Permissions",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#token-permissions",
+        "short": "Determines if the project's workflows follow the principle of least privilege."
+      }
+    }
+  },
+  "previous_report": {
+    "report_id": "OSPO-CR-2026-10-27",
+    "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10-27/data.json"
+  },
+  "scope": {
+    "active": [
+      "pricing-engine",
+      "insurance-rule-dsl",
+      "quote-calculator-demo",
+      "pdf-render-service",
+      "design-guidelines",
+      "mobile-sdk-ios",
+      "pricing-sandbox",
+      "claims-event-schemas",
+      "kafka-schema-tools"
+    ],
+    "archived": [
+      "legacy-xml-mapper",
+      "old-batch-tools"
+    ],
+    "excluded": [
+      {
+        "repo": "ng-aquila",
+        "deviation": "D-03"
+      }
+    ]
+  },
+  "summary": {
+    "checks_evaluated": 143,
+    "checks_passed": 124,
+    "compliance_pct": 86.7,
+    "requirements_by_status": {
+      "met": 5,
+      "met-tracked": 12,
+      "not-met": 1,
+      "deviation-accepted": 1,
+      "optional": 1
+    },
+    "must_met": 14,
+    "must_total": 15,
+    "open_findings": 19,
+    "overdue_findings": 1,
+    "repositories_without_findings": 3
+  },
+  "requirements": [
+    {
+      "id": "GV.01",
+      "level": "MUST",
+      "title": "How to contribute is documented",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/contributing"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 7,
+            "failing": 2,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 12
+        },
+        {
+          "part": "SHOULD",
+          "status": "not-verified",
+          "deviation": "D-04"
+        }
+      ]
+    },
+    {
+      "id": "GV.02",
+      "level": "MUST",
+      "title": "Protected against unauthorised actions",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "org/settings",
+            "org/ruleset",
+            "org/security-configuration",
+            "drift/access",
+            "lint/no-direct-collaborators",
+            "lint/secret-scanning",
+            "scorecard/branch-protection",
+            "scorecard/dangerous-workflow",
+            "scorecard/token-permissions"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "org_checks": {
+            "drift/access": "pass",
+            "org/settings": "pass",
+            "org/ruleset": "pass",
+            "org/security-configuration": "pass"
+          },
+          "oldest_finding_days": 5,
+          "attestation": {
+            "id": "A-identity",
+            "file": "attestations/2026-10-15-identity.md",
+            "date": "2026-10-15",
+            "valid_until": "2027-10-15"
+          }
+        }
+      ]
+    },
+    {
+      "id": "LE.01",
+      "level": "MUST",
+      "title": "License stated for all content",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/license-file",
+            "lint/license-type"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 9
+        }
+      ]
+    },
+    {
+      "id": "LE.02",
+      "level": "MUST",
+      "title": "Licenses of all components referenced",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "sbom/available"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 0
+        }
+      ]
+    },
+    {
+      "id": "QA.01",
+      "level": "MUST",
+      "title": "List of third-party components available",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "org/security-configuration",
+            "sbom/available"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "org_checks": {
+            "org/security-configuration": "pass"
+          },
+          "oldest_finding_days": 0
+        }
+      ]
+    },
+    {
+      "id": "QA.02",
+      "level": "MUST",
+      "title": "Source code publicly readable",
+      "status": "met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met",
+          "checks": [
+            "org/settings",
+            "lint/public"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 9,
+            "failing": 0,
+            "not_applicable": 0
+          },
+          "org_checks": {
+            "org/settings": "pass"
+          }
+        }
+      ]
+    },
+    {
+      "id": "QA.03",
+      "level": "MUST",
+      "title": "How to report defects is communicated",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/issues-enabled"
+          ],
+          "repositories": {
+            "applicable": 9,
+            "passing": 8,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 5
+        }
+      ]
+    },
+    {
+      "id": "QA.04",
+      "level": "MUST",
+      "title": "Testing procedures implemented and used",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "Implemented",
+          "status": "met-tracked",
+          "checks": [
+            "lint/development-test"
+          ],
+          "repositories": {
+            "applicable": 8,
+            "passing": 6,
+            "failing": 2,
+            "not_applicable": 1
+          },
+          "oldest_finding_days": 34
+        },
+        {
+          "part": "Utilised",
+          "status": "met-tracked",
+          "checks": [
+            "scorecard/ci-tests"
+          ],
+          "repositories": {
+            "applicable": 6,
+            "passing": 5,
+            "failing": 1,
+            "not_applicable": 3
+          },
+          "oldest_finding_days": 61
+        }
+      ]
+    },
+    {
+      "id": "QA.05",
+      "level": "SHOULD",
+      "title": "Memory safety issues reduced",
+      "status": "met",
+      "parts": [
+        {
+          "part": "SHOULD",
+          "status": "met",
+          "checks": [
+            "lint/memory-safety-section"
+          ],
+          "repositories": {
+            "applicable": 1,
+            "passing": 1,
+            "failing": 0,
+            "not_applicable": 8
+          }
+        }
+      ]
+    },
+    {
+      "id": "QA.06",
+      "level": "SHOULD",
+      "title": "Changes peer-reviewed",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "SHOULD",
+          "status": "met-tracked",
+          "checks": [
+            "org/ruleset",
+            "scorecard/code-review"
+          ],
+          "repositories": {
+            "applicable": 8,
+            "passing": 7,
+            "failing": 1,
+            "not_applicable": 1
+          },
+          "org_checks": {
+            "org/ruleset": "pass"
+          },
+          "oldest_finding_days": 74
+        }
+      ]
+    },
+    {
+      "id": "BR.01",
+      "level": "MUST",
+      "title": "Build information public",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/development-file",
+            "lint/development-build"
+          ],
+          "repositories": {
+            "applicable": 8,
+            "passing": 6,
+            "failing": 2,
+            "not_applicable": 1
+          },
+          "oldest_finding_days": 34
+        }
+      ]
+    },
+    {
+      "id": "BR.02",
+      "level": "MUST",
+      "title": "Unique, increasing version identifiers",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/versioning"
+          ],
+          "repositories": {
+            "applicable": 4,
+            "passing": 3,
+            "failing": 1,
+            "not_applicable": 5
+          },
+          "oldest_finding_days": 52
+        }
+      ]
+    },
+    {
+      "id": "BR.03",
+      "level": "MUST",
+      "title": "Integrity of distributed assets verifiable",
+      "status": "not-met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "not-met",
+          "checks": [
+            "scorecard/signed-releases"
+          ],
+          "repositories": {
+            "applicable": 4,
+            "passing": 2,
+            "failing": 2,
+            "not_applicable": 5
+          },
+          "oldest_finding_days": 112
+        }
+      ]
+    },
+    {
+      "id": "BR.04",
+      "level": "MUST",
+      "title": "Change log per release",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met-tracked",
+          "checks": [
+            "lint/release-notes"
+          ],
+          "repositories": {
+            "applicable": 4,
+            "passing": 3,
+            "failing": 1,
+            "not_applicable": 5
+          },
+          "oldest_finding_days": 28
+        }
+      ]
+    },
+    {
+      "id": "BR.05",
+      "level": "MUST",
+      "title": "Source packages match the repository",
+      "status": "met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met",
+          "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
+        }
+      ]
+    },
+    {
+      "id": "BR.06",
+      "level": "SHOULD",
+      "title": "Builds reproducible",
+      "status": "deviation-accepted",
+      "parts": [
+        {
+          "part": "SHOULD",
+          "status": "not-verified",
+          "deviation": "D-01"
+        }
+      ]
+    },
+    {
+      "id": "VM.01",
+      "level": "MUST",
+      "title": "Security contact and private reporting",
+      "status": "met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met",
+          "checks": [
+            "org/security-policy"
+          ],
+          "org_checks": {
+            "org/security-policy": "pass"
+          }
+        },
+        {
+          "part": "SHOULD",
+          "status": "met",
+          "checks": [
+            "org/security-configuration",
+            "lint/private-reporting"
+          ],
+          "repositories": {
+            "applicable": 1,
+            "passing": 1,
+            "failing": 0,
+            "not_applicable": 8
+          },
+          "org_checks": {
+            "org/security-configuration": "pass"
+          }
+        }
+      ]
+    },
+    {
+      "id": "VM.02",
+      "level": "MUST",
+      "title": "Vulnerabilities published in reasonable time",
+      "status": "met",
+      "parts": [
+        {
+          "part": "MUST",
+          "status": "met",
+          "checks": [
+            "advisories/published-in-time"
+          ],
+          "org_checks": {
+            "advisories/published-in-time": "pass"
+          }
+        }
+      ]
+    },
+    {
+      "id": "DE.01",
+      "level": "SHOULD",
+      "title": "Discontinuation communicated",
+      "status": "met-tracked",
+      "parts": [
+        {
+          "part": "SHOULD",
+          "status": "met-tracked",
+          "checks": [
+            "archive/notice-before-archival"
+          ],
+          "repositories": {
+            "applicable": 2,
+            "passing": 1,
+            "failing": 1,
+            "not_applicable": 0
+          },
+          "oldest_finding_days": 14
+        }
+      ]
+    },
+    {
+      "id": "DE.02",
+      "level": "MAY",
+      "title": "Migration paths outlined",
+      "status": "optional",
+      "parts": [
+        {
+          "part": "MAY",
+          "status": "optional"
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "requirements": [
+        "BR.03"
+      ],
+      "since": "2026-07-14",
+      "age_days": 112,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
+      },
+      "reason": "Project has not signed or included provenance with any releases."
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "requirements": [
+        "QA.06"
+      ],
+      "since": "2026-08-21",
+      "age_days": 74,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
+      },
+      "reason": "Found 12/30 approved changesets -- score normalized to 4"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "requirements": [
+        "QA.04"
+      ],
+      "since": "2026-09-03",
+      "age_days": 61,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/33"
+      },
+      "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "requirements": [
+        "BR.03"
+      ],
+      "since": "2026-09-03",
+      "age_days": 61,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/33"
+      },
+      "reason": "Project has not signed or included provenance with any releases."
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "requirements": [
+        "BR.02"
+      ],
+      "since": "2026-09-12",
+      "age_days": 52,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
+      },
+      "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "requirements": [
+        "BR.01"
+      ],
+      "since": "2026-09-30",
+      "age_days": 34,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      },
+      "reason": "No DEVELOPMENT file"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "requirements": [
+        "BR.01"
+      ],
+      "since": "2026-09-30",
+      "age_days": 34,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      },
+      "reason": "File not found in ., docs, .github"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "requirements": [
+        "QA.04"
+      ],
+      "since": "2026-09-30",
+      "age_days": 34,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      },
+      "reason": "No DEVELOPMENT file"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "requirements": [
+        "BR.04"
+      ],
+      "since": "2026-10-06",
+      "age_days": 28,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      },
+      "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG"
+    },
+    {
+      "repo": "old-batch-tools",
+      "check": "archive/notice-before-archival",
+      "name": "Notice Before Archival",
+      "requirements": [
+        "DE.01"
+      ],
+      "since": "2026-10-20",
+      "age_days": 14,
+      "target_days": 90,
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "archived outside the process"
+      },
+      "reason": "Archived outside the process (no notice issue)"
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "requirements": [
+        "GV.01"
+      ],
+      "since": "2026-10-22",
+      "age_days": 12,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
+      },
+      "reason": "File not found in ., .github, docs"
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "requirements": [
+        "LE.01"
+      ],
+      "since": "2026-10-25",
+      "age_days": 9,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
+      },
+      "reason": "'WTFPL' is not in the approved list"
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "requirements": [
+        "GV.01"
+      ],
+      "since": "2026-10-29",
+      "age_days": 5,
+      "target_days": 90,
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository"
+      },
+      "reason": "File not found in ., .github, docs"
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "requirements": [
+        "QA.03"
+      ],
+      "since": "2026-10-29",
+      "age_days": 5,
+      "target_days": 90,
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository"
+      },
+      "reason": "Issues are disabled"
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "requirements": [
+        "GV.02"
+      ],
+      "since": "2026-10-29",
+      "age_days": 5,
+      "target_days": 90,
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository"
+      },
+      "reason": "1 user has direct access"
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "requirements": [
+        "BR.01"
+      ],
+      "since": "2026-11-03",
+      "age_days": 0,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      },
+      "reason": "No DEVELOPMENT file"
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "requirements": [
+        "BR.01"
+      ],
+      "since": "2026-11-03",
+      "age_days": 0,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      },
+      "reason": "File not found in ., docs, .github"
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "requirements": [
+        "QA.04"
+      ],
+      "since": "2026-11-03",
+      "age_days": 0,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      },
+      "reason": "No DEVELOPMENT file"
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "requirements": [
+        "LE.02",
+        "QA.01"
+      ],
+      "since": "2026-11-03",
+      "age_days": 0,
+      "target_days": 90,
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
+      },
+      "reason": "No SBOM available (request returned 404)"
+    }
+  ],
+  "archivals": [
+    {
+      "repo": "legacy-xml-mapper",
+      "archived_date": "2026-11-03",
+      "by": "archive_repos",
+      "notice_date": "2026-09-04",
+      "days_notice": 60
+    },
+    {
+      "repo": "old-batch-tools",
+      "archived_date": "2026-10-20",
+      "date_accuracy": "detected in weekly run",
+      "by": "outside the process",
+      "notice_date": null
+    }
+  ],
+  "deviations": [
+    {
+      "id": "D-01",
+      "requirement": "BR.06",
+      "scope": "all repositories",
+      "approved_by": "Head of OSPO, ISO",
+      "valid_until": "2027-09-30",
+      "expired": false
+    },
+    {
+      "id": "D-03",
+      "requirement": "scope",
+      "scope": "ng-aquila",
+      "approved_by": "Legal, Head of OSPO",
+      "valid_until": "2026-12-31",
+      "expired": false
+    },
+    {
+      "id": "D-04",
+      "requirement": "GV.01 (SHOULD)",
+      "scope": "all repositories",
+      "approved_by": "Head of OSPO",
+      "valid_until": "2027-03-31",
+      "expired": false
+    }
+  ],
+  "actions": [
+    {
+      "id": "R-01",
+      "requirement": "BR.03",
+      "action": "Release workflow template with checksums and artifact attestations",
+      "owner": "OSPO",
+      "due": "2027-03-31",
+      "overdue": false
+    },
+    {
+      "id": "R-07",
+      "requirement": "GV.01",
+      "action": "Heading check for quality expectations in CONTRIBUTING",
+      "owner": "OSPO",
+      "due": "2027-03-31",
+      "overdue": false
+    }
+  ],
+  "attestations": [
+    {
+      "id": "A-identity",
+      "file": "attestations/2026-10-15-identity.md",
+      "approved_by": "ISO",
+      "date": "2026-10-15",
+      "covers": [
+        "SSO",
+        "MFA",
+        "Entra ID team sync"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-10-06",
+      "compliance_pct": 89.1,
+      "open_findings": 24
+    },
+    {
+      "date": "2026-10-13",
+      "compliance_pct": 89.6,
+      "open_findings": 23
+    },
+    {
+      "date": "2026-10-20",
+      "compliance_pct": 90.3,
+      "open_findings": 22
+    },
+    {
+      "date": "2026-10-27",
+      "compliance_pct": 90.8,
+      "open_findings": 21
+    },
+    {
+      "date": "2026-11-03",
+      "compliance_pct": 86.7,
+      "open_findings": 19
+    }
+  ]
+}</script>
+<script type="application/json" id="lint_repos.json">{
+  "tool": "lint_repos",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/lint_repos.yaml",
+  "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "checks": {
+    "lint/license-file": {
+      "name": "License File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-file",
+        "short": "A file LICENSE* exists in the repository root."
+      }
+    },
+    "lint/license-type": {
+      "name": "License Type",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-type",
+        "short": "The license GitHub detects is on the approved list. A missing or unidentified license (NOASSERTION) fails."
+      }
+    },
+    "lint/contributing": {
+      "name": "Contributing File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#contributing-file",
+        "short": "A file CONTRIBUTING* exists in ., .github or docs."
+      }
+    },
+    "lint/public": {
+      "name": "Public Visibility",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#public-visibility",
+        "short": "The repository is public."
+      }
+    },
+    "lint/issues-enabled": {
+      "name": "Issues Enabled",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#issues-enabled",
+        "short": "Issues are enabled, so defects can be reported."
+      }
+    },
+    "lint/no-direct-collaborators": {
+      "name": "No Direct Collaborators",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#no-direct-collaborators",
+        "short": "No user has direct access to the repository; access is granted to teams only."
+      }
+    },
+    "lint/secret-scanning": {
+      "name": "Secret Scanning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#secret-scanning",
+        "short": "For repositories with security: custom, secret scanning and push protection are enabled. Other repositories are covered by the org security configuration."
+      }
+    },
+    "lint/private-reporting": {
+      "name": "Private Vulnerability Reporting",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#private-vulnerability-reporting",
+        "short": "For repositories with security: custom, private vulnerability reporting is enabled. Other repositories are covered by the org security configuration."
+      }
+    },
+    "lint/development-file": {
+      "name": "Development Guide",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide",
+        "short": "A file DEVELOPMENT* exists in ., docs or .github, with at least 300 characters. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/development-build": {
+      "name": "Development Guide: Build Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-build-section",
+        "short": "The development guide has a \"Build\" heading. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/development-test": {
+      "name": "Development Guide: Test Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-test-section",
+        "short": "The development guide has a \"Test\" heading. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/versioning": {
+      "name": "Versioning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#versioning",
+        "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line."
+      }
+    },
+    "lint/release-notes": {
+      "name": "Release Notes",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#release-notes",
+        "short": "Every release of the last 12 months has release notes of at least 50 characters, or the CHANGELOG mentions the version."
+      }
+    },
+    "lint/memory-safety-section": {
+      "name": "Memory Safety Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#memory-safety-section",
+        "short": "Repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly) have a \"Memory safety\" heading in the development guide."
+      }
+    }
+  },
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    }
+  ],
+  "errors": [],
+  "results": [
+    {
+      "repo": "pricing-engine",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": "CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "pass",
+      "score": null,
+      "reason": "3 releases follow semver and increase",
+      "details": [
+        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
+      ]
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "pass",
+      "score": null,
+      "reason": "All 3 releases have notes (release body)",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in ., .github, docs",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "pass",
+      "score": null,
+      "reason": "3 releases follow semver and increase",
+      "details": [
+        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
+      ]
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "pass",
+      "score": null,
+      "reason": "All 3 releases have notes (release body)",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "fail",
+      "score": null,
+      "reason": "'WTFPL' is not in the approved list",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
+      }
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "pass",
+      "score": null,
+      "reason": "Secret scanning and push protection are enabled",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "pass",
+      "score": null,
+      "reason": "Private vulnerability reporting is enabled",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in ., docs, .github",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "fail",
+      "score": null,
+      "reason": "No DEVELOPMENT file",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "fail",
+      "score": null,
+      "reason": "No DEVELOPMENT file",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "pass",
+      "score": null,
+      "reason": "3 releases follow semver and increase",
+      "details": [
+        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
+      ]
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "fail",
+      "score": null,
+      "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG",
+      "details": [
+        "Warn: v1.8.0 has no release notes"
+      ],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/31"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "MIT is on the approved list",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "na",
+      "score": null,
+      "reason": "topic 'docs' or 'template': nothing to build",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "na",
+      "score": null,
+      "reason": "topic 'docs' or 'template': nothing to build",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "na",
+      "score": null,
+      "reason": "topic 'docs' or 'template': nothing to build",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "MIT is on the approved list",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "fail",
+      "score": null,
+      "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
+      "details": [
+        "Info: releases checked: v3.1.0, v3.0.9, v3.1.1"
+      ],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
+      }
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "pass",
+      "score": null,
+      "reason": "All 3 releases have notes (release body)",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Objective-C 26%, C 3% → heading '## Memory safety' found",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in ., docs, .github",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "fail",
+      "score": null,
+      "reason": "No DEVELOPMENT file",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "fail",
+      "score": null,
+      "reason": "No DEVELOPMENT file",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in ., .github, docs",
+      "details": [],
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "fail",
+      "score": null,
+      "reason": "Issues are disabled",
+      "details": [],
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "fail",
+      "score": null,
+      "reason": "1 user has direct access",
+      "details": [
+        "Warn: ext-contractor-42 has direct write access"
+      ],
+      "tracking": {
+        "type": "ospo-notification",
+        "reason": "issues disabled in repository"
+      }
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/security-configuration)",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    }
+  ]
+}</script>
+<script type="application/json" id="license_scan.json">{
+  "tool": "license_scan",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/license_scan.yaml",
+  "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "checks": {
+    "sbom/available": {
+      "name": "SBOM Available",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
+        "short": "The dependency graph SBOM can be retrieved for the default branch."
+      }
+    },
+    "sbom/license-coverage": {
+      "name": "License Coverage",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#license-coverage",
+        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION)."
+      }
+    },
+    "license/denied": {
+      "name": "Denied Licenses",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#denied-licenses",
+        "short": "No dependency in the SBOM uses a license on the deny list."
+      }
+    }
+  },
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    }
+  ],
+  "errors": [],
+  "results": [
+    {
+      "repo": "pricing-engine",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 412 packages",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "6 of 412 packages (1.5%) have no license information",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 188 packages",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "2 of 188 packages (1.1%) have no license information",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 903 packages",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "41 of 903 packages (4.5%) have no license information",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "fail",
+      "score": null,
+      "reason": "1 dependency uses a denied license",
+      "details": [
+        "Warn: npm:left-pad-gpl@1.0.2 is licensed GPL-3.0-only"
+      ],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/quote-calculator-demo/issues/9"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 356 packages",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "11 of 356 packages (3.1%) have no license information",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 1210 packages",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "fail",
+      "score": null,
+      "reason": "97 of 1210 packages (8.0%) have no license information",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 57 packages",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "fail",
+      "score": null,
+      "reason": "10 of 57 packages (17.5%) have no license information",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "fail",
+      "score": null,
+      "reason": "No SBOM available (request returned 404)",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
+      }
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "na",
+      "score": null,
+      "reason": "no SBOM available",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "na",
+      "score": null,
+      "reason": "no SBOM available",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 0 packages",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "na",
+      "score": null,
+      "reason": "no dependencies in SBOM",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 143 packages",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "3 of 143 packages (2.1%) have no license information",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    }
+  ]
+}</script>
+<script type="application/json" id="archive_repos.json">{
+  "tool": "archive_repos",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/archive_repos.yaml",
+  "config_sha256": "c0fc81434204a00b7702804ee9846f6496635045949c082f4af8ccaadac0ee9f",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "warn_after": "1 years",
+  "grace_period": "60 days",
+  "archivals": [
+    {
+      "repo": "legacy-xml-mapper",
+      "notice_issue": "https://github.com/allianz/legacy-xml-mapper/issues/3",
+      "notice_date": "2026-09-04",
+      "archived_date": "2026-11-03",
+      "days_notice": 60
+    }
+  ],
+  "checks": {
+    "archive/notice-before-archival": {
+      "name": "Notice Before Archival",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
+        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days)."
+      }
+    },
+    "archive/migration-path": {
+      "name": "Migration Path",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#migration-path",
+        "short": "The README of the archived repository names a successor or an alternative."
+      }
+    }
+  },
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    }
+  ],
+  "errors": [],
+  "results": [
+    {
+      "repo": "legacy-xml-mapper",
+      "check": "archive/notice-before-archival",
+      "name": "Notice Before Archival",
+      "result": "pass",
+      "score": null,
+      "reason": "Archived 60 days after the notice of 2026-09-04 (https://github.com/allianz/legacy-xml-mapper/issues/3)",
+      "details": []
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "check": "archive/migration-path",
+      "name": "Migration Path",
+      "result": "fail",
+      "score": null,
+      "reason": "README names no successor or alternative",
+      "details": []
+    }
+  ]
+}</script>
+<script type="application/json" id="drift.json">{
+  "tool": "create_repos --dry-run",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/create_repos.yaml",
+  "config_sha256": "fa6e76d54796952731a514dcc1f60c9b265a835f36a658705f2bad8cb2634799",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "planned_changes": {
+    "repositories": [],
+    "teams": [],
+    "security": [],
+    "branch_protection": []
+  },
+  "checks": {
+    "drift/access": {
+      "name": "Access Drift",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/create_repos_spec.md#access-drift",
+        "short": "create_repos --dry-run plans no changes: actual access on GitHub matches the approved configuration."
+      }
+    }
+  },
+  "skipped": [],
+  "errors": [],
+  "results": [
+    {
+      "repo": null,
+      "check": "drift/access",
+      "name": "Access Drift",
+      "result": "pass",
+      "score": null,
+      "reason": "No planned changes (10 repositories, 14 teams in config)",
+      "details": []
+    }
+  ]
+}</script>
+<script type="application/json" id="org_snapshot.json">{
+  "tool": "org_snapshot",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/org_snapshot.yaml",
+  "config_sha256": "cae59b3b176c28941ae773f81c6d20f6148f3d0ff8ce1eb9bbfef8b1f94ff70b",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "snapshot": {
+    "org_settings": {
+      "two_factor_requirement_enabled": true,
+      "default_repository_permission": "none",
+      "members_can_create_repositories": false,
+      "members_can_create_public_repositories": false
+    },
+    "rulesets": {
+      "ospo-managed": {
+        "id": 4412,
+        "enforcement": "active",
+        "target": "branch",
+        "conditions": {
+          "ref_name": {
+            "include": [
+              "~DEFAULT_BRANCH"
+            ]
+          }
+        },
+        "rules": [
+          "deletion",
+          "non_fast_forward",
+          "pull_request"
+        ],
+        "pull_request": {
+          "required_approving_review_count": 1
+        },
+        "bypass_actors": [
+          {
+            "actor_type": "OrganizationAdmin",
+            "bypass_mode": "pull_request"
+          }
+        ],
+        "targeted_repositories": 8
+      }
+    },
+    "code_security_configurations": {
+      "ospo-managed": {
+        "enforcement": "enforced",
+        "dependency_graph": "enabled",
+        "secret_scanning": "enabled",
+        "secret_scanning_push_protection": "enabled",
+        "code_scanning_default_setup": "enabled",
+        "private_vulnerability_reporting": "enabled",
+        "repositories": 8
+      },
+      "custom": {
+        "enforcement": "unenforced",
+        "repositories": 1
+      }
+    },
+    "org_security_policy": {
+      "file": "allianz/.github/SECURITY.md",
+      "sha": "a3f19c2",
+      "contact_found": "ospo@allianz.com"
+    },
+    "advisories": {
+      "published_in_period": [
+        {
+          "ghsa": "GHSA-7q4x-2m9c-h3vf",
+          "repo": "pricing-engine",
+          "severity": "high",
+          "created_at": "2026-08-19",
+          "published_at": "2026-09-06",
+          "days_to_publish": 18,
+          "cve": "CVE-2026-41102"
+        },
+        {
+          "ghsa": "GHSA-p2w8-xr6j-9cq4",
+          "repo": "pdf-render-service",
+          "severity": "medium",
+          "created_at": "2026-09-02",
+          "published_at": "2026-10-13",
+          "days_to_publish": 41,
+          "cve": "CVE-2026-43877"
+        },
+        {
+          "ghsa": "GHSA-m5hv-6f3k-q8tz",
+          "repo": "mobile-sdk-ios",
+          "severity": "low",
+          "created_at": "2026-10-08",
+          "published_at": "2026-10-17",
+          "days_to_publish": 9,
+          "cve": "CVE-2026-45010"
+        }
+      ],
+      "unpublished": [
+        {
+          "state": "triage",
+          "age_days": 12,
+          "redacted": "repository and details withheld (unpublished vulnerability)"
+        }
+      ],
+      "target_days": 90
+    }
+  },
+  "previous_snapshot_date": "2026-10-27",
+  "changes_since_previous": [],
+  "checks": {
+    "org/settings": {
+      "name": "Org Settings",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-settings",
+        "short": "Org settings match the expected values: 2FA required, base permission none, members cannot create repositories."
+      }
+    },
+    "org/ruleset": {
+      "name": "Org Ruleset",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-ruleset",
+        "short": "The ospo-managed ruleset is active on default branches: pull request with at least 1 approval, no force push, no deletion."
+      }
+    },
+    "org/security-configuration": {
+      "name": "Security Configuration",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#security-configuration",
+        "short": "The ospo-managed security configuration is enforced: dependency graph, secret scanning, push protection, code scanning and private vulnerability reporting."
+      }
+    },
+    "org/security-policy": {
+      "name": "Org Security Policy",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-security-policy",
+        "short": "The org default allianz/.github/SECURITY.md exists and names a security contact."
+      }
+    },
+    "advisories/published-in-time": {
+      "name": "Advisories Published in Time",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#advisories-published-in-time",
+        "short": "Every confirmed vulnerability is published as a security advisory within 90 days. Unpublished advisories older than 90 days fail."
+      }
+    }
+  },
+  "skipped": [],
+  "errors": [],
+  "results": [
+    {
+      "repo": null,
+      "check": "org/settings",
+      "name": "Org Settings",
+      "result": "pass",
+      "score": null,
+      "reason": "Matches the expected values, unchanged since 2026-08-04",
+      "details": []
+    },
+    {
+      "repo": null,
+      "check": "org/ruleset",
+      "name": "Org Ruleset",
+      "result": "pass",
+      "score": null,
+      "reason": "Matches the expected values, unchanged since 2026-08-04",
+      "details": []
+    },
+    {
+      "repo": null,
+      "check": "org/security-configuration",
+      "name": "Security Configuration",
+      "result": "pass",
+      "score": null,
+      "reason": "Matches the expected values, unchanged since 2026-08-04",
+      "details": []
+    },
+    {
+      "repo": null,
+      "check": "org/security-policy",
+      "name": "Org Security Policy",
+      "result": "pass",
+      "score": null,
+      "reason": "Matches the expected values, unchanged since 2026-08-04",
+      "details": []
+    },
+    {
+      "repo": null,
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "3 of 3 advisories published within 90 days (median 18 days, maximum 41 days)",
+      "details": []
+    }
+  ]
+}</script>
+<script type="application/json" id="scorecard.json">{
+  "tool": "scorecard_check",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/scorecard_check.yaml",
+  "config_sha256": "670210fd6b478339b7f953cc4943faadfe1a2a3372b5e336a5c29638522b5d9f",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "source": "scorecard CLI (--format=json --show-details), run per repository in this workflow",
+  "scorecard_version": "v5.6.0",
+  "checks": {
+    "scorecard/ci-tests": {
+      "name": "CI-Tests",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#ci-tests",
+        "short": "Determines if the project runs tests before pull requests are merged."
+      }
+    },
+    "scorecard/code-review": {
+      "name": "Code-Review",
+      "threshold": 7,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#code-review",
+        "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged."
+      }
+    },
+    "scorecard/signed-releases": {
+      "name": "Signed-Releases",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#signed-releases",
+        "short": "Determines if the project cryptographically signs release artifacts."
+      }
+    },
+    "scorecard/dangerous-workflow": {
+      "name": "Dangerous-Workflow",
+      "threshold": 10,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#dangerous-workflow",
+        "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns."
+      }
+    },
+    "scorecard/token-permissions": {
+      "name": "Token-Permissions",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#token-permissions",
+        "short": "Determines if the project's workflows follow the principle of least privilege."
+      }
+    },
+    "scorecard/branch-protection": {
+      "name": "Branch-Protection",
+      "threshold": 6,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#branch-protection",
+        "short": "Determines if the default and release branches are protected with GitHub's branch protection settings."
+      }
+    },
+    "scorecard/fuzzing": {
+      "name": "Fuzzing",
+      "threshold": 10,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#fuzzing",
+        "short": "Determines if the project uses fuzzing."
+      }
+    }
+  },
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    }
+  ],
+  "errors": [],
+  "results": [
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 10,
+      "reason": "24 out of 24 merged PRs checked by a CI test -- score normalized to 10",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 10,
+      "reason": "all changesets reviewed",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "pass",
+      "score": 10,
+      "reason": "5 out of the last 5 releases have a total of 5 signed artifacts.",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+      ]
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 10,
+      "reason": "11 out of 11 merged PRs checked by a CI test -- score normalized to 10",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "fail",
+      "score": 4,
+      "reason": "Found 12/30 approved changesets -- score normalized to 4",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "fail",
+      "score": 0,
+      "reason": "Project has not signed or included provenance with any releases.",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
+      }
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 9,
+      "reason": "detected GitHub workflow tokens with excessive permissions",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+      ]
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 9,
+      "reason": "19 out of 21 merged PRs checked by a CI test -- score normalized to 9",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 8,
+      "reason": "Found 24/30 approved changesets -- score normalized to 8",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+      ]
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "fail",
+      "score": 2,
+      "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/33"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 7,
+      "reason": "Found 21/30 approved changesets -- score normalized to 7",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "fail",
+      "score": 0,
+      "reason": "Project has not signed or included provenance with any releases.",
+      "details": [],
+      "tracking": {
+        "type": "issue",
+        "url": "https://github.com/allianz/pdf-render-service/issues/33"
+      }
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 8,
+      "reason": "detected GitHub workflow tokens with excessive permissions",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "pass",
+      "score": 6,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "na",
+      "score": null,
+      "reason": "no pull request found",
+      "details": [
+        "Info: scorecard_check: not applicable, topic 'docs' or 'template'"
+      ]
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 10,
+      "reason": "all changesets reviewed",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+      ]
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 10,
+      "reason": "14 out of 14 merged PRs checked by a CI test -- score normalized to 10",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 9,
+      "reason": "Found 27/30 approved changesets -- score normalized to 9",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "pass",
+      "score": 10,
+      "reason": "5 out of the last 5 releases have a total of 5 signed artifacts.",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+      ]
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "na",
+      "score": null,
+      "reason": "no pull request found",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "na",
+      "score": null,
+      "reason": "no commits found",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+      ]
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 8,
+      "reason": "8 out of 10 merged PRs checked by a CI test -- score normalized to 8",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 8,
+      "reason": "Found 24/30 approved changesets -- score normalized to 8",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+      ]
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "na",
+      "score": null,
+      "reason": "no pull request found",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 10,
+      "reason": "all changesets reviewed",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+      ]
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    }
+  ]
+}</script>
+
+<script>
+/* ═══════════════════════════ Load data ═══════════════════════════ */
+const $ = id => document.getElementById(id);
+const readJson = id => JSON.parse($(id).textContent);
+const DATA = readJson('data.json');
+const FILES = Object.fromEntries(DATA.inputs.map(i => [i.file, readJson(i.file)]));
+const ORG = DATA.org;
+const RESULTS = Object.entries(FILES).flatMap(([file, t]) => t.results.map(r => ({ ...r, file })));
+const REPO_RESULTS = RESULTS.filter(r => r.repo);
+const ORG_RESULTS = RESULTS.filter(r => !r.repo);
+
+const CHECK_FILE = {};
+for (const [file, t] of Object.entries(FILES)) for (const id of Object.keys(t.checks)) CHECK_FILE[id] ??= file;
+const REQS_OF_CHECK = {};
+for (const q of DATA.requirements) for (const p of q.parts) for (const c of p.checks ?? []) (REQS_OF_CHECK[c] ??= new Set()).add(q.id);
+const DEV = Object.fromEntries(DATA.deviations.map(d => [d.id, d]));
+const ATT = Object.fromEntries(DATA.attestations.map(a => [a.id, a]));
+const FINDINGS = DATA.findings;
+/* Findings that compliance_report derived itself (no tool result), e.g. archived outside the process */
+const DERIVED = FINDINGS.filter(f => !RESULTS.some(r => r.repo === f.repo && r.check === f.check))
+  .map(f => ({ repo: f.repo, check: f.check, name: f.name, result: 'fail', score: null, reason: f.reason, details: ['Info: derived by compliance_report (no tool result)'], tracking: f.tracking, file: 'data.json', derived: true }));
+const findingsOf = reqId => FINDINGS.filter(f => f.requirements.includes(reqId));
+const HISTORY = DATA.history;
+const PREV = HISTORY.length > 1 ? HISTORY[HISTORY.length - 2] : null;
+const ACTIVE = DATA.scope.active, ARCHIVED = DATA.scope.archived;
+const S = DATA.summary;
+
+/* Fixed template text: chapter names of TR-03185 Chapter 2 */
+const CHAPTERS = { GV: 'Governance', LE: 'Legal', QA: 'Quality', BR: 'Build and release', VM: 'Vulnerability management', DE: 'Decommissioning' };
+
+const STATUS = {
+  'met':                { label: 'Met',                        color: 'var(--good)',     glyph: '✓', ink: '#fff' },
+  'met-tracked':        { label: 'Met, with tracked findings', color: 'repeating-linear-gradient(135deg, var(--good) 0 6px, var(--good-2) 6px 9px)', glyph: '✓', ink: '#fff', ring: 'ring-good' },
+  'not-met':            { label: 'Not met',                    color: 'var(--critical)', glyph: '✕', ink: '#fff' },
+  'not-verified':       { label: 'Not verified',               color: 'transparent',     glyph: '?', ink: 'var(--muted)', ring: 'ring' },
+  'deviation-accepted': { label: 'Deviation accepted',         color: 'var(--neutral)',  glyph: 'D', ink: '#fff' },
+  'optional':           { label: 'Optional',                   color: 'transparent',     glyph: '–', ink: 'var(--muted)', ring: 'ring' },
+  'pass':               { label: 'Pass',                       color: 'var(--good)',     glyph: '✓', ink: '#fff' },
+  'fail':               { label: 'Fail',                       color: 'var(--critical)', glyph: '✕', ink: '#fff' },
+  'na':                 { label: 'Not applicable',             color: 'transparent',     glyph: '–', ink: 'var(--muted)', ring: 'ring' },
+};
+
+/* ═══════════════════════════ Helpers ═══════════════════════════ */
+const NS = 'http://www.w3.org/2000/svg';
+function s(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function h(tag, attrs = {}, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'style') e.style.cssText = v;
+    else e.setAttribute(k, v);
+  }
+  for (const c of children.flat(Infinity)) if (c != null && c !== false) e.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  return e;
+}
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ymd = iso => iso.slice(0, 10).split('-').map(Number);
+const fmtDate = iso => { if (!iso) return '–'; const [y, m, d] = ymd(iso); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const fmtDay = iso => { const [, m, d] = ymd(iso); return `${d} ${MONTHS[m - 1]}`; };
+const fmtDateTime = iso => `${fmtDate(iso)}, ${iso.slice(11, 16)} UTC`;
+const daysBetween = (a, b) => Math.round((Date.parse(b.slice(0, 10)) - Date.parse(a.slice(0, 10))) / 864e5);
+const fmtPct = v => v.toFixed(1) + '%';
+const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
+const shortSha = x => x.length > 12 ? `${x.slice(0, 4)}…${x.slice(-4)}` : x;
+const uniq = xs => [...new Set(xs)];
+const checkName = id => DATA.checks[id]?.name ?? id;
+const isMapped = id => !!REQS_OF_CHECK[id];
+const joinNodes = (nodes, sep = ' · ') => nodes.flatMap((n, i) => i ? [sep, n] : [n]);
+
+const tip = $('tip');
+function showTip(evt, value, label) {
+  tip.replaceChildren(h('strong', { text: value }), h('span', { text: label }));
+  tip.hidden = false;
+  let x, y;
+  if (evt && evt.clientX != null && evt.type !== 'focus') { x = evt.clientX; y = evt.clientY; }
+  else { const r = evt.target.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top; }
+  const w = tip.offsetWidth, hgt = tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(x + 14, innerWidth - w - 8)) + 'px';
+  tip.style.top = (y - hgt - 12 < 0 ? y + 16 : y - hgt - 12) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+
+function statusPill(key, label) {
+  const st = STATUS[key];
+  const ico = h('span', { class: 'ico' + (st.ring ? ' ' + st.ring : ''), style: `background:${st.color};color:${st.ink}`, 'aria-hidden': 'true', text: st.glyph });
+  return h('span', { class: 'status' }, ico, label ?? st.label);
+}
+function resultPill(r) {
+  const thr = DATA.checks[r.check]?.threshold;
+  const score = r.score != null ? ` · score ${r.score}${thr != null ? ` (≥ ${thr})` : ''}` : '';
+  return statusPill(r.result, STATUS[r.result].label + score);
+}
+function overdueAge(f) {
+  const txt = `${f.age_days} / ${f.target_days} days`;
+  return f.age_days > f.target_days
+    ? h('span', { class: 'status' }, h('span', { class: 'ico', style: 'background:var(--critical);color:#fff', 'aria-hidden': 'true', text: '!' }), txt)
+    : txt;
+}
+function trackingNode(t) {
+  if (!t) return h('span', { class: 'muted', text: '–' });
+  if (t.type === 'issue') {
+    const m = t.url.match(/github\.com\/[^/]+\/([^/]+)\/issues\/(\d+)/);
+    return h('a', { href: t.url, text: m ? `${m[1]}#${m[2]}` : t.url });
+  }
+  return h('span', { class: 'muted' }, 'OSPO notification: ', t.reason);
+}
+function checkLink(id) {
+  const c = DATA.checks[id];
+  return h('span', {}, c?.documentation?.url ? h('a', { href: c.documentation.url, text: c.name }) : checkName(id), ' ', h('code', { text: id }));
+}
+function liveIssuesUrl(checks) {
+  return `https://github.com/search?q=${encodeURIComponent(`org:${ORG} is:issue is:open label:${checks.join(',')}`)}&type=issues`;
+}
+function linksRow(links) {
+  links = links.filter(Boolean);
+  return links.length ? h('div', { class: 'links' }, '→ ', joinNodes(links.map(([t, href]) => h('a', { href, text: t })))) : null;
+}
+
+function dataTable(headers, rows, numericCols = []) {
+  const t = h('table');
+  t.append(h('thead', {}, h('tr', {}, ...headers.map((x, i) => h('th', { class: numericCols.includes(i) ? 'num' : '', text: x })))));
+  t.append(h('tbody', {}, ...rows.map(r => h('tr', {}, ...r.map((c, i) => h('td', { class: numericCols.includes(i) ? 'num' : '', text: c }))))));
+  return h('details', { class: 'datatable' }, h('summary', { text: 'Show data table' }), t);
+}
+
+function sparkline(values, { w = 96, hgt = 24, min, max } = {}) {
+  const lo = min ?? Math.min(...values), hi = max ?? Math.max(...values);
+  const span = hi - lo || 1;
+  const x = i => 2 + i * (w - 6) / Math.max(1, values.length - 1);
+  const y = v => hgt - 4 - (v - lo) * (hgt - 8) / span;
+  const svg = s('svg', { width: w, height: hgt, viewBox: `0 0 ${w} ${hgt}`, 'aria-hidden': 'true' });
+  s('polyline', { points: values.map((v, i) => `${x(i)},${y(v)}`).join(' '), fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  const last = values.length - 1;
+  s('circle', { cx: x(last), cy: y(values[last]), r: 3, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
+  return svg;
+}
+
+/* ═══════════════════════════ Charts ═══════════════════════════ */
+const showLabel = (i, n) => n <= 8 || (n - 1 - i) % 2 === 0;
+
+function lineChart(el, { labels, values, yMin, yMax, yTicks, fmt, name }) {
+  const W = 560, H = 250, m = { t: 14, r: 52, b: 30, l: 44 };
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', tabindex: 0, 'aria-label': `${name}: ${fmt(values[0])} on ${labels[0]} to ${fmt(values.at(-1))} on ${labels.at(-1)}` });
+  const x = i => m.l + i * (W - m.l - m.r) / Math.max(1, values.length - 1);
+  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / (yMax - yMin);
+  for (const t of yTicks) {
+    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
+    s('text', { class: 'tick', x: m.l - 8, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = fmt(t);
+  }
+  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
+  labels.forEach((l, i) => { if (showLabel(i, labels.length)) s('text', { class: 'tick', x: x(i), y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = l; });
+  const pts = values.map((v, i) => `${x(i)},${y(v)}`);
+  s('path', { d: `M${x(0)},${H - m.b} L${pts.join(' L')} L${x(values.length - 1)},${H - m.b} Z`, fill: 'var(--accent-wash)' }, svg);
+  s('path', { d: `M${pts.join(' L')}`, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  const li = values.length - 1;
+  s('circle', { cx: x(li), cy: y(values[li]), r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+  s('text', { class: 'vlabel', x: x(li) + 10, y: y(values[li]) + 4 }, svg).textContent = fmt(values[li]);
+
+  const cross = s('line', { x1: 0, x2: 0, y1: m.t, y2: H - m.b, stroke: 'var(--axis)', 'stroke-width': 1, visibility: 'hidden' }, svg);
+  const dot = s('circle', { r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' }, svg);
+  const hit = s('rect', { x: m.l - 10, y: m.t, width: W - m.l - m.r + 20, height: H - m.t - m.b, fill: 'transparent' }, svg);
+  let cur = li;
+  const show = (i, evt) => {
+    cur = i;
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(values[i])); dot.setAttribute('visibility', 'visible');
+    showTip(evt, fmt(values[i]), `${name} · run of ${labels[i]}`);
+  };
+  const hide = () => { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); hideTip(); };
+  hit.addEventListener('pointermove', evt => {
+    const r = svg.getBoundingClientRect();
+    const px = (evt.clientX - r.left) * W / r.width;
+    show(Math.max(0, Math.min(li, Math.round((px - m.l) / ((W - m.l - m.r) / Math.max(1, li))))), evt);
+  });
+  hit.addEventListener('pointerleave', hide);
+  svg.addEventListener('focus', () => show(cur, { target: dot, type: 'focus' }));
+  svg.addEventListener('blur', hide);
+  svg.addEventListener('keydown', evt => {
+    if (evt.key === 'ArrowLeft' || evt.key === 'ArrowRight') {
+      evt.preventDefault();
+      show(Math.max(0, Math.min(li, cur + (evt.key === 'ArrowRight' ? 1 : -1))), { target: dot, type: 'focus' });
+    }
+  });
+  el.append(svg, dataTable(['Run', name], labels.map((l, i) => [l, fmt(values[i])]), [1]));
+}
+
+function roundedTop(x, y, w, base, r) {
+  r = Math.min(r, w / 2, base - y);
+  return `M${x},${base} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${base} Z`;
+}
+function roundedRight(x, y, w, hgt, r) {
+  r = Math.min(r, w, hgt / 2);
+  return `M${x},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + hgt - r} Q${x + w},${y + hgt} ${x + w - r},${y + hgt} H${x} Z`;
+}
+
+function columnChart(el, { labels, values, yMax, yTicks, name }) {
+  const W = 560, H = 250, m = { t: 20, r: 16, b: 30, l: 44 };
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${name}: ${values[0]} on ${labels[0]} to ${values.at(-1)} on ${labels.at(-1)}` });
+  const band = (W - m.l - m.r) / values.length;
+  const bw = Math.min(24, band * 0.62);
+  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / yMax;
+  for (const t of yTicks) {
+    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
+    s('text', { class: 'tick', x: m.l - 8, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = t;
+  }
+  values.forEach((v, i) => {
+    const cx = m.l + band * i + band / 2;
+    const bar = s('path', { d: roundedTop(cx - bw / 2, y(v), bw, H - m.b, 4), fill: 'var(--accent)' }, svg);
+    if (showLabel(i, values.length)) s('text', { class: 'tick', x: cx, y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = labels[i];
+    if (i === values.length - 1) s('text', { class: 'vlabel', x: cx, y: y(v) - 6, 'text-anchor': 'middle' }, svg).textContent = v;
+    const hit = s('rect', { x: m.l + band * i, y: m.t, width: band, height: H - m.t - m.b, fill: 'transparent', tabindex: 0, 'aria-label': `${labels[i]}: ${v}` }, svg);
+    const on = evt => { bar.setAttribute('opacity', 0.8); showTip(evt, String(v), `${name} · run of ${labels[i]}`); };
+    const off = () => { bar.removeAttribute('opacity'); hideTip(); };
+    hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
+    hit.addEventListener('focus', on); hit.addEventListener('blur', off);
+  });
+  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
+  el.append(svg, dataTable(['Run', name], labels.map((l, i) => [l, values[i]]), [1]));
+}
+
+function hbarChart(el, items, name) {
+  const W = 600, row = 26, m = { t: 4, r: 36, l: 290 };
+  const H = m.t + row * items.length + 4;
+  const max = Math.max(1, ...items.map(d => d.value));
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': name });
+  const xw = v => v * (W - m.l - m.r) / max;
+  s('line', { class: 'axis-line', x1: m.l, x2: m.l, y1: m.t, y2: H - 4 }, svg);
+  items.forEach((d, i) => {
+    const y0 = m.t + row * i;
+    s('text', { class: 'clabel', x: m.l - 10, y: y0 + row / 2 + 4, 'text-anchor': 'end' }, svg).textContent = `${d.id} ${d.label}`;
+    const bar = s('path', { d: roundedRight(m.l, y0 + 6, Math.max(2, xw(d.value)), row - 12, 4), fill: 'var(--accent)' }, svg);
+    s('text', { class: 'vlabel', x: m.l + xw(d.value) + 6, y: y0 + row / 2 + 4 }, svg).textContent = d.value;
+    const hit = s('rect', { x: 0, y: y0, width: W, height: row, fill: 'transparent', tabindex: 0, 'aria-label': `${d.id}: ${d.value} open findings` }, svg);
+    const on = evt => { bar.setAttribute('opacity', 0.8); showTip(evt, plural(d.value, 'open finding'), `${d.id} ${d.label}`); };
+    const off = () => { bar.removeAttribute('opacity'); hideTip(); };
+    hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
+    hit.addEventListener('focus', on); hit.addEventListener('blur', off);
+  });
+  el.append(svg, dataTable(['Requirement', 'Open findings'], items.map(d => [`${d.id} ${d.label}`, d.value]), [1]));
+}
+
+function segBar(el, parts, { title, unit, table = true } = {}) {
+  parts = parts.filter(p => p.value > 0);
+  const total = parts.reduce((a, p) => a + p.value, 0);
+  const wrap = h('div', { class: 'seg-row' });
+  if (title) wrap.append(h('div', { class: 'seg-label' }, h('span', { text: title }), h('b', { text: `${total} ${unit}` })));
+  const bar = h('div', { class: 'segbar', role: 'img', 'aria-label': `${title || ''}: ` + parts.map(p => `${p.label} ${p.value}`).join(', ') });
+  for (const p of parts) {
+    const share = Math.round(p.value / total * 100);
+    const seg = h('div', { style: `flex:${p.value} 1 0;background:${p.color};color:${p.ink};${p.border ? 'border:1.5px solid var(--axis);' : ''}`, tabindex: 0 }, h('span', { text: String(p.value) }));
+    const on = evt => showTip(evt, `${p.value} ${unit} · ${share}%`, p.label + (p.names ? '\n' + p.names.join(', ') : ''));
+    seg.addEventListener('pointermove', on); seg.addEventListener('pointerleave', hideTip);
+    seg.addEventListener('focus', on); seg.addEventListener('blur', hideTip);
+    bar.append(seg);
+  }
+  wrap.append(bar, h('div', { class: 'legend' }, ...parts.map(p => h('span', {}, h('span', { class: 'sw', style: `background:${p.color};${p.border ? 'border:1px solid var(--axis);' : ''}` }), p.label))));
+  if (table) wrap.append(dataTable(['Category', unit[0].toUpperCase() + unit.slice(1), 'Share'], parts.map(p => [p.label, p.value, Math.round(p.value / total * 100) + '%']), [1, 2]));
+  el.append(wrap);
+  requestAnimationFrame(() => bar.querySelectorAll('div').forEach(d => { const sp = d.firstChild; if (sp.offsetWidth + 16 > d.clientWidth) sp.style.visibility = 'hidden'; }));
+}
+
+function niceTicks(lo, hi, count = 4) {
+  const raw = (hi - lo) / count;
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 5, 10].map(k => k * mag).find(st => st >= raw);
+  const a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step;
+  const ticks = [];
+  for (let t = a; t <= b + 1e-9; t += step) ticks.push(+t.toFixed(6));
+  return ticks;
+}
+
+/* ═══════════════════════════ Header ═══════════════════════════ */
+$('subtitle').textContent = `Open source projects published under github.com/${ORG}, assessed against BSI TR-03185 Chapter 2`;
+document.title = `BSI TR-03185 Compliance Report · ${ORG} · ${fmtDate(DATA.run_at)} (MOCK-UP v2)`;
+const meta = $('meta');
+const metaRow = (k, v) => meta.append(h('dt', { text: k }), h('dd', {}, v));
+metaRow('Report ID', DATA.report_id);
+metaRow('Status as of', fmtDateTime(DATA.run_at));
+metaRow('Trend period', `${fmtDate(HISTORY[0].date)} – ${fmtDate(HISTORY.at(-1).date)}`);
+metaRow('Previous report', h('a', { href: DATA.previous_report.data_url, text: DATA.previous_report.report_id }));
+metaRow('Scope', `${plural(ACTIVE.length, 'active repository', 'active repositories')}`);
+metaRow('Workflow run', h('a', { href: DATA.run_url, text: DATA.run_url.split('/').pop() }));
+
+/* ═══════════════════════════ 1 Summary ═══════════════════════════ */
+const notMet = DATA.requirements.filter(q => q.status === 'not-met');
+const overdue = FINDINGS.filter(f => f.age_days > f.target_days);
+$('summary-lead').textContent =
+  `${S.must_met} of ${S.must_total} MUST requirements are met. ` +
+  (notMet.length ? `Not met: ${notMet.map(q => `${q.id} (${q.title})`).join(', ')}. ` : '') +
+  `${plural(S.open_findings, 'finding is', 'findings are')} open, ${S.overdue_findings} of them older than ${S.overdue_findings === 1 ? 'its' : 'their'} target.`;
+
+function deltaNode(cur, prev, { unit = '', goodWhenUp = true, fmt = v => v } = {}) {
+  if (prev == null) return null;
+  const d = +(cur - prev).toFixed(1);
+  const cls = d === 0 ? 'flat' : (d > 0) === goodWhenUp ? 'good' : 'bad';
+  const arrow = d > 0 ? '▲' : d < 0 ? '▼' : '■';
+  return h('div', { class: `delta ${cls}` }, `${arrow} ${fmt(Math.abs(d))}${unit} `, h('span', { text: `vs ${fmtDate(PREV.date)}` }));
+}
+$('hero-value').append(String(S.compliance_pct), h('small', { text: '%' }));
+$('hero-delta').append(deltaNode(S.compliance_pct, PREV?.compliance_pct, { unit: ' pts' }) ?? '');
+$('hero-spark').append(sparkline(HISTORY.map(x => x.compliance_pct), { w: 220, hgt: 36 }));
+$('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results and unmapped checks are not counted.`;
+
+const tile = (label, value, small, extra) => h('div', { class: 'card tile' }, h('div', { class: 'label', text: label }), h('div', { class: 'value' }, String(value), small ? h('small', { text: ' ' + small }) : null), extra);
+$('tiles').append(
+  tile('MUST requirements met', S.must_met, `of ${S.must_total}`, h('div', { class: 'sub', text: notMet.length ? `Not met: ${notMet.map(q => q.id).join(', ')}` : 'All MUST requirements met' })),
+  tile('Active repositories without findings', S.repositories_without_findings, `of ${ACTIVE.length} · ${Math.round(S.repositories_without_findings / ACTIVE.length * 100)}%`,
+    h('div', { class: 'sub', text: ACTIVE.filter(r => !FINDINGS.some(f => f.repo === r)).join(', ') })),
+  tile('Open findings', S.open_findings, null, deltaNode(S.open_findings, PREV?.open_findings, { goodWhenUp: false })),
+  tile('Findings older than target', S.overdue_findings, null, h('div', { class: 'sub', text: overdue.map(f => `${f.repo} · ${f.name}`).join('; ') || 'None' })),
+);
+
+// Requirement status bars
+const sb = $('status-bars');
+const BAR_ORDER = ['met', 'met-tracked', 'not-met', 'deviation-accepted', 'optional'];
+for (const lvl of ['MUST', 'SHOULD']) {
+  const reqs = DATA.requirements.filter(q => q.level === lvl);
+  segBar(sb, BAR_ORDER.map(st => {
+    const qs = reqs.filter(q => q.status === st);
+    return { label: STATUS[st].label, color: STATUS[st].color, ink: STATUS[st].ink, border: STATUS[st].ring === 'ring', value: qs.length, names: qs.map(q => q.id) };
+  }), { title: `${lvl} requirements`, unit: 'requirements', table: false });
+}
+const mayReqs = DATA.requirements.filter(q => q.level === 'MAY');
+if (mayReqs.length) sb.append(h('p', { class: 'chart-sub', style: 'margin:4px 0 0', text: `Plus ${plural(mayReqs.length, 'MAY requirement')} (${mayReqs.map(q => q.id).join(', ')}), reported for information. Details per requirement in section 2.` }));
+
+// Key messages (generated)
+const km = $('key-messages');
+for (const q of notMet) {
+  const p = q.parts.find(x => x.status === 'not-met');
+  const qf = findingsOf(q.id);
+  const r = p.repositories;
+  km.append(h('li', {}, h('b', { text: `${q.id} ${q.title}: not met. ` }),
+    r ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.name)).join(', ')}). ` : '',
+    p.oldest_finding_days != null ? `The oldest finding is ${p.oldest_finding_days} days old (target: ${Math.max(...qf.map(f => f.target_days))} days).` : ''));
+}
+const orgFail = ORG_RESULTS.filter(r => r.result === 'fail');
+km.append(h('li', {}, h('b', { text: orgFail.length ? `${orgFail.length} of ${ORG_RESULTS.length} org-level checks fail. ` : `All ${ORG_RESULTS.length} org-level checks pass. ` }),
+  ORG_RESULTS.map(r => r.name).join(', ') + '.'));
+const snap = FILES['org_snapshot.json'];
+const drift = FILES['drift.json'];
+const plannedN = Object.values(drift.planned_changes).reduce((a, x) => a + x.length, 0);
+km.append(h('li', {}, h('b', { text: snap.changes_since_previous.length ? `${plural(snap.changes_since_previous.length, 'org configuration change')} since ${fmtDate(snap.previous_snapshot_date)}. ` : `No org configuration change since ${fmtDate(snap.previous_snapshot_date)}. ` }),
+  plannedN ? `Access drift: ${plural(plannedN, 'planned change')}.` : `No access drift: ${drift.results[0].reason}.`));
+const issueN = FINDINGS.filter(f => f.tracking?.type === 'issue').length;
+const ospoF = FINDINGS.filter(f => f.tracking?.type === 'ospo-notification');
+const untracked = FINDINGS.filter(f => !f.tracking);
+km.append(h('li', {}, h('b', { text: `${issueN} of ${FINDINGS.length} open findings have a public issue. ` }),
+  ospoF.length ? `${ospoF.length} are tracked by OSPO notification (${uniq(ospoF.map(f => `${f.repo}: ${f.tracking.reason}`)).join('; ')}). ` : '',
+  untracked.length ? `${untracked.length} are untracked.` : 'None is untracked.'));
+const adv = snap.snapshot.advisories;
+const advRes = ORG_RESULTS.find(r => r.check === 'advisories/published-in-time');
+if (advRes) km.append(h('li', {}, h('b', { text: 'Vulnerability handling: ' }), `${advRes.reason}. `,
+  adv.unpublished.length ? `${plural(adv.unpublished.length, 'advisory is', 'advisories are')} not yet published (${adv.unpublished.map(u => `${u.state}, ${u.age_days} days`).join('; ')}; details withheld).` : ''));
+
+// Needs attention (generated)
+const at = $('attention');
+for (const f of overdue) at.append(h('li', {}, h('b', { text: `${f.repo} · ${f.name} (${f.requirements.join(', ')}): ` }), `${f.age_days} days old, target ${f.target_days} days. ${f.reason}. Tracked by `, trackingNode(f.tracking), '.'));
+const soon = FINDINGS.filter(f => f.age_days <= f.target_days && f.age_days >= f.target_days - 30).sort((a, b) => b.age_days - a.age_days);
+for (const f of soon) at.append(h('li', {}, h('b', { text: `${f.repo} · ${f.name} (${f.requirements.join(', ')}): ` }), `${f.age_days} days old, reaches its ${f.target_days}-day target in ${f.target_days - f.age_days} days. Tracked by `, trackingNode(f.tracking), '.'));
+const expiredDev = DATA.deviations.filter(d => d.expired), overdueAct = DATA.actions.filter(a => a.overdue);
+at.append(h('li', {}, h('b', { text: 'Deviations and actions: ' }),
+  expiredDev.length ? `${plural(expiredDev.length, 'deviation has', 'deviations have')} expired (${expiredDev.map(d => d.id).join(', ')}). ` : `None of the ${DATA.deviations.length} deviations has expired. `,
+  overdueAct.length ? `${plural(overdueAct.length, 'action is', 'actions are')} overdue (${overdueAct.map(a => a.id).join(', ')}).` : `None of the ${DATA.actions.length} remediation actions is overdue.`));
+const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
+at.append(h('li', {}, h('b', { text: 'Data: ' }), errN ? `${plural(errN, 'check')} could not be evaluated (tool errors, treated as no data).` : `All ${Object.keys(FILES).length} tool outputs are present, with no tool errors.`));
+
+/* ═══════════════════════════ 2 Requirements ═══════════════════════════ */
+const targetOf = fs => fs.length ? Math.max(...fs.map(f => f.target_days)) : null;
+const partFindings = (q, p) => findingsOf(q.id).filter(f => (p.checks ?? []).includes(f.check));
+
+function coverageNode(q) {
+  const multi = q.parts.length > 1;
+  return h('div', { class: 'cov-list' }, q.parts.map(p => {
+    const lbl = multi ? h('span', { class: 'plabel', text: p.part }) : null;
+    if (p.repositories) {
+      const { applicable: a, passing: ps } = p.repositories;
+      const pct = a ? ps / a * 100 : 0;
+      return h('div', { class: 'cov' }, lbl,
+        h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct.toFixed(1), 'aria-label': `${q.id} ${p.part} coverage` }, h('div', { style: `width:${pct}%` })),
+        h('span', { class: 'txt' }, h('b', { text: fmtPct(pct) }), ` · ${ps}/${a} repositories`));
+    }
+    let txt;
+    if (p.org_checks) { const v = Object.values(p.org_checks); txt = `Org level · ${v.filter(x => x === 'pass').length}/${v.length} checks pass`; }
+    else if (p.deviation) txt = `Not verified · ${p.deviation}`;
+    else if (p.basis) txt = 'By construction';
+    else txt = 'Not assessed';
+    return h('div', {}, multi ? h('div', { class: 'small muted', text: p.part }) : null, h('span', { class: 'cov-txt', text: txt }));
+  }));
+}
+
+function flatten(obj, prefix = '') {
+  if (obj == null || typeof obj !== 'object') return [[prefix, String(obj)]];
+  if (Array.isArray(obj)) {
+    if (!obj.length) return [[prefix, 'none']];
+    if (obj.every(x => typeof x !== 'object')) return [[prefix, obj.join(', ')]];
+    return obj.flatMap((x, i) => flatten(x, `${prefix}[${i}]`));
+  }
+  return Object.entries(obj).flatMap(([k, v]) => flatten(v, prefix ? `${prefix}.${k}` : k));
+}
+const SNAPSHOT_OF = {
+  'org/settings': () => snap.snapshot.org_settings,
+  'org/ruleset': () => snap.snapshot.rulesets,
+  'org/security-configuration': () => snap.snapshot.code_security_configurations,
+  'org/security-policy': () => snap.snapshot.org_security_policy,
+  'drift/access': () => drift.planned_changes,
+};
+function snapshotNode(check) {
+  if (check === 'advisories/published-in-time') {
+    return h('details', { class: 'more' }, h('summary', { text: `Advisories (${adv.published_in_period.length} published, ${adv.unpublished.length} unpublished)` }),
+      h('table', {}, h('thead', {}, h('tr', {}, ['Advisory', 'Repository', 'Severity', 'Created', 'Published', 'Days', 'CVE'].map((x, i) => h('th', { class: i === 5 ? 'num' : '', text: x })))),
+        h('tbody', {}, adv.published_in_period.map(a => h('tr', {}, h('td', { class: 'id', text: a.ghsa }), h('td', { text: a.repo }), h('td', { text: a.severity }), h('td', { class: 'nowrap', text: fmtDate(a.created_at) }), h('td', { class: 'nowrap', text: fmtDate(a.published_at) }), h('td', { class: 'num', text: a.days_to_publish }), h('td', { class: 'nowrap', text: a.cve }))),
+          adv.unpublished.map(u => h('tr', {}, h('td', { class: 'muted', text: `unpublished (${u.state})` }), h('td', { colspan: 4, class: 'muted', text: u.redacted }), h('td', { class: 'num', text: u.age_days }), h('td', { text: '–' }))))));
+  }
+  const get = SNAPSHOT_OF[check];
+  if (!get) return null;
+  const src = check === 'drift/access' ? 'drift.json → planned_changes' : 'org_snapshot.json → snapshot';
+  return h('details', { class: 'more' }, h('summary', { text: `Recorded values (${src})` }),
+    h('dl', { class: 'kv' }, flatten(get()).flatMap(([k, v]) => [h('dt', { text: k }), h('dd', { text: v })])));
+}
+
+function resultsTable(rows, withResult = true) {
+  return h('table', {},
+    h('thead', {}, h('tr', {}, h('th', { text: 'Repository' }), h('th', { text: 'Check' }), withResult ? h('th', { text: 'Result' }) : null, h('th', { text: 'Reason' }), h('th', { text: 'Tracking' }))),
+    h('tbody', {}, rows.map(r => h('tr', {},
+      h('td', { class: 'id', text: r.repo }), h('td', { class: 'nowrap', text: r.name }),
+      withResult ? h('td', {}, resultPill(r)) : null,
+      h('td', {}, r.reason, r.details?.length ? h('pre', { class: 'det', text: r.details.join('\n') }) : null),
+      h('td', { class: 'nowrap' }, r.result === 'fail' ? trackingNode(r.tracking) : h('span', { class: 'muted', text: '–' }))))));
+}
+
+function renderCard(q) {
+  const sec = (title, ...kids) => h('div', { style: 'min-width:0' }, h('h4', { text: title }), ...kids);
+  const qf = findingsOf(q.id);
+  const allChecks = uniq(q.parts.flatMap(p => p.checks ?? []));
+
+  // Result per part
+  const partNodes = q.parts.map(p => {
+    const pf = partFindings(q, p);
+    const lines = [];
+    if (p.repositories) {
+      const r = p.repositories;
+      lines.push(`${r.passing} of ${r.applicable} applicable repositories pass` + (r.failing ? `, ${r.failing} fail` : '') + '.' +
+        (r.not_applicable ? ` ${plural(r.not_applicable, 'repository is', 'repositories are')} not applicable.` : ''));
+    }
+    if (p.org_checks) lines.push('Org-level: ' + Object.entries(p.org_checks).map(([c, v]) => `${checkName(c)} ${v}`).join(' · ') + '.');
+    if (p.oldest_finding_days != null) lines.push(`Oldest finding: ${p.oldest_finding_days} days (target: ${targetOf(pf)} days).`);
+    if (pf.some(f => f.tracking?.type === 'ospo-notification')) lines.push(`${pf.filter(f => f.tracking?.type === 'ospo-notification').length} of ${pf.length} findings are tracked by OSPO notification instead of a public issue.`);
+    if (p.basis) lines.push(`Basis: ${p.basis}.`);
+    if (p.deviation) {
+      const d = DEV[p.deviation];
+      lines.push(d ? `No check covers this part. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this part. Deviation ${p.deviation}.`);
+    }
+    if (p.attestation) {
+      const a = { ...ATT[p.attestation.id], ...p.attestation };
+      lines.push(`Attestation ${a.id} (${a.file}): ${(a.covers ?? []).join(', ')}. Approved by ${a.approved_by} on ${fmtDate(a.date)}, valid until ${fmtDate(a.valid_until)}.`);
+    }
+    if (p.status === 'optional' && !p.checks?.length) lines.push('No check is mapped to this part. Reported for information.');
+    const issueChecks = uniq(pf.filter(f => f.tracking?.type === 'issue').map(f => f.check));
+    return h('div', { class: 'part' },
+      h('span', { class: 'level', style: 'justify-self:start;align-self:start', text: p.part }),
+      h('div', {},
+        h('div', { class: 'head' }, statusPill(p.status)),
+        lines.map(t => h('p', { text: t })),
+        linksRow([
+          pf.length ? ['Findings register', `#findings-${q.id}`] : null,
+          issueChecks.length ? ['Live issues on GitHub', liveIssuesUrl(issueChecks)] : null,
+          p.deviation ? [`Deviation ${p.deviation}`, '#deviations'] : null,
+        ])));
+  });
+
+  // How it is verified
+  const verified = allChecks.length ? h('table', {},
+    h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Part', 'Source'].map(x => h('th', { text: x })))),
+    h('tbody', {}, allChecks.map(c => {
+      const def = DATA.checks[c];
+      const orgR = ORG_RESULTS.find(r => r.check === c);
+      return h('tr', {},
+        h('td', {}, checkLink(c), def?.threshold != null ? h('div', { class: 'small muted', text: `threshold: score ≥ ${def.threshold}` }) : null),
+        h('td', {}, def?.documentation?.short ?? '–',
+          orgR ? h('div', { style: 'margin-top:4px' }, resultPill(orgR), ' ', h('span', { class: 'small', text: orgR.reason })) : null,
+          snapshotNode(c)),
+        h('td', { class: 'nowrap', text: q.parts.filter(p => p.checks?.includes(c)).map(p => p.part).join(', ') }),
+        h('td', {}, h('code', { text: CHECK_FILE[c] ?? 'data.json' })));
+    }))) : h('p', { class: 'muted', text: 'No check is mapped to this requirement.' });
+
+  // Results per repository
+  const repoChecks = allChecks.filter(c => !ORG_RESULTS.some(r => r.check === c));
+  const rows = [...REPO_RESULTS, ...DERIVED].filter(r => repoChecks.includes(r.check));
+  const fails = rows.filter(r => r.result === 'fail');
+  const cnt = k => rows.filter(r => r.result === k).length;
+  const resultsSec = rows.length ? sec('Results per repository',
+    fails.length ? resultsTable(fails, false) : h('p', { class: 'muted', text: 'No failing results.' }),
+    h('details', { class: 'more', style: 'margin-top:6px' }, h('summary', { text: `All ${rows.length} results (${cnt('pass')} pass, ${cnt('fail')} fail, ${cnt('na')} not applicable)` }),
+      resultsTable([...rows].sort((a, b) => a.repo.localeCompare(b.repo) || a.check.localeCompare(b.check))))) : null;
+
+  // Archivals (DE.01)
+  const archSec = allChecks.includes('archive/notice-before-archival') && DATA.archivals.length ? sec('Archivals recorded',
+    h('table', {}, h('thead', {}, h('tr', {}, ['Repository', 'Archived', 'By', 'Notice', 'Days of notice'].map((x, i) => h('th', { class: i === 4 ? 'num' : '', text: x })))),
+      h('tbody', {}, DATA.archivals.map(a => h('tr', {}, h('td', { class: 'id', text: a.repo }),
+        h('td', { class: 'nowrap' }, fmtDate(a.archived_date), a.date_accuracy ? h('div', { class: 'small muted', text: a.date_accuracy }) : null),
+        h('td', { text: a.by }), h('td', { class: 'nowrap', text: a.notice_date ? fmtDate(a.notice_date) : 'none' }), h('td', { class: 'num', text: a.days_notice ?? '–' })))))) : null;
+
+  const acts = DATA.actions.filter(a => a.requirement === q.id);
+  const actSec = acts.length ? sec('Remediation actions', acts.map(a => h('p', {}, h('a', { href: '#plan', class: 'id', text: a.id }), ` ${a.action}. Owner: ${a.owner}, due ${fmtDate(a.due)}${a.overdue ? ' (overdue)' : ''}.`))) : null;
+
+  const evFiles = uniq([...allChecks.map(c => CHECK_FILE[c]).filter(Boolean), ...rows.filter(r => r.file === 'data.json').map(() => 'data.json')]);
+  const atts = q.parts.filter(p => p.attestation).map(p => p.attestation.file);
+  const evSec = evFiles.length || atts.length ? sec('Evidence', h('p', {}, joinNodes([
+    ...evFiles.map(f => { const i = DATA.inputs.find(x => x.file === f); return h('span', {}, h('a', { href: '#evidence', text: f }), i ? h('span', { class: 'muted', text: ` (SHA-256 ${shortSha(i.sha256)})` }) : null); }),
+    ...atts.map(f => h('span', {}, h('a', { href: '#evidence', text: f }), h('span', { class: 'muted', text: ' (attestation)' }))),
+  ]))) : null;
+
+  return h('div', { class: 'rcard' },
+    sec('Result', partNodes),
+    sec('How it is verified', verified),
+    resultsSec, archSec, actSec, evSec);
+}
+
+const tbody = document.querySelector('#req-table tbody');
+let lastCh = null;
+for (const q of DATA.requirements) {
+  const ch = q.id.slice(0, 2);
+  if (ch !== lastCh) { tbody.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 6, text: `${ch} · ${CHAPTERS[ch] ?? ''}` }))); lastCh = ch; }
+  const det = h('details', { class: 'req' }, h('summary', { text: q.title }));
+  const levels = uniq([q.level, ...q.parts.map(p => p.part).filter(x => ['MUST', 'SHOULD', 'MAY'].includes(x))]);
+  const qf = findingsOf(q.id);
+  const oldest = Math.max(-1, ...q.parts.map(p => p.oldest_finding_days ?? -1));
+  const od = qf.some(f => f.age_days > f.target_days);
+  tbody.append(h('tr', {},
+    h('td', { class: 'id', text: q.id }),
+    h('td', {}, det, qf.length ? h('div', { class: 'small muted', style: 'margin-left:14px', text: plural(qf.length, 'open finding') }) : null),
+    h('td', {}, joinNodes(levels.map(l => h('span', { class: 'level', text: l })), ' ')),
+    h('td', {}, statusPill(q.status)),
+    h('td', {}, coverageNode(q)),
+    h('td', { class: 'num' }, oldest < 0 ? h('span', { class: 'muted', text: '–' })
+      : od ? h('span', { class: 'status' }, h('span', { class: 'ico', style: 'background:var(--critical);color:#fff', 'aria-hidden': 'true', text: '!' }), `${oldest} days`)
+      : `${oldest} days`),
+  ));
+  const row = h('tr', { class: 'card-row', hidden: '' }, h('td', { colspan: 6 }, renderCard(q)));
+  det.addEventListener('toggle', () => { row.hidden = !det.open; });
+  tbody.append(row);
+}
+
+/* ═══════════════════════════ 3 Trends ═══════════════════════════ */
+$('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${fmtDate(HISTORY[0].date)} to ${fmtDate(HISTORY.at(-1).date)}, carried forward in data.json → history.`;
+{
+  const labels = HISTORY.map(x => fmtDay(x.date));
+  const cv = HISTORY.map(x => x.compliance_pct);
+  const ct = niceTicks(Math.floor(Math.min(...cv)) - 1, Math.min(100, Math.ceil(Math.max(...cv)) + 1));
+  lineChart($('chart-compliance'), { labels, values: cv, yMin: ct[0], yMax: ct.at(-1), yTicks: ct, fmt: v => fmtPct(v), name: 'Overall compliance' });
+  const fv = HISTORY.map(x => x.open_findings);
+  const ft = niceTicks(0, Math.max(...fv) * 1.15, 3);
+  columnChart($('chart-findings'), { labels, values: fv, yMax: ft.at(-1), yTicks: ft, name: 'Open findings' });
+}
+
+/* ═══════════════════════════ 4 Findings ═══════════════════════════ */
+{
+  const multi = FINDINGS.filter(f => f.requirements.length > 1);
+  $('byreq-sub').textContent = `${FINDINGS.length} open findings` + (multi.length ? `; ${plural(multi.length, 'finding counts', 'findings count')} for more than one requirement (${uniq(multi.map(f => f.check)).join(', ')})` : '');
+  hbarChart($('chart-byreq'),
+    DATA.requirements.map(q => ({ id: q.id, label: q.title, value: findingsOf(q.id).length })).filter(d => d.value).sort((a, b) => b.value - a.value),
+    'Open findings by requirement');
+
+  const nOf = r => FINDINGS.filter(f => f.repo === r).length;
+  const bucket = (lo, hi) => ACTIVE.filter(r => nOf(r) >= lo && nOf(r) <= hi);
+  $('repos-sub').textContent = `${ACTIVE.length} active repositories in scope`;
+  segBar($('seg-repos'), [
+    { label: 'No findings', names: bucket(0, 0), color: 'var(--good)', ink: '#fff' },
+    { label: '1 finding', names: bucket(1, 1), color: 'var(--warning)', ink: '#0b0b0b' },
+    { label: '2–3 findings', names: bucket(2, 3), color: 'var(--serious)', ink: '#fff' },
+    { label: '4 or more', names: bucket(4, Infinity), color: 'var(--critical)', ink: '#fff' },
+  ].map(p => ({ ...p, value: p.names.length })), { unit: 'repositories' });
+
+  const tgt = uniq(FINDINGS.map(f => f.target_days));
+  $('aging-sub').textContent = `Target: resolved within ${tgt.join(' or ')} days`;
+  segBar($('seg-aging'), [
+    { label: 'Under 30 days', value: FINDINGS.filter(f => f.age_days < 30).length, color: 'var(--ord-1)', ink: 'var(--ord-1-ink)' },
+    { label: '30 days to target', value: FINDINGS.filter(f => f.age_days >= 30 && f.age_days <= f.target_days).length, color: 'var(--ord-2)', ink: 'var(--ord-2-ink)' },
+    { label: 'Older than target (overdue)', value: overdue.length, color: 'var(--ord-3)', ink: 'var(--ord-3-ink)' },
+  ], { unit: 'findings' });
+
+  const rt = document.querySelector('#repo-table tbody');
+  const repos = uniq(FINDINGS.map(f => f.repo)).map(repo => {
+    const fs = FINDINGS.filter(f => f.repo === repo);
+    return { repo, fs, n: fs.length, oldest: fs.reduce((a, f) => f.age_days > a.age_days ? f : a) };
+  }).sort((a, b) => b.n - a.n || b.oldest.age_days - a.oldest.age_days);
+  for (const r of repos) {
+    const tracks = uniq(r.fs.map(f => JSON.stringify(f.tracking ?? null))).map(t => JSON.parse(t));
+    rt.append(h('tr', {},
+      h('td', { class: 'id' }, r.repo, ARCHIVED.includes(r.repo) ? h('span', { class: 'small muted', style: 'font-weight:400', text: ' (archived)' }) : null),
+      h('td', { class: 'num', text: r.n }),
+      h('td', {}, uniq(r.fs.flatMap(f => f.requirements)).sort().map(x => h('a', { class: 'tag', href: `#findings-${x}`, text: x }))),
+      h('td', { class: 'num' }, overdueAge(r.oldest)),
+      h('td', {}, joinNodes(tracks.map(trackingNode), h('br')))));
+  }
+}
+
+/* ═══════════════════════════ 5 Actions ═══════════════════════════ */
+{
+  const pt = document.querySelector('#plan-table tbody');
+  for (const a of DATA.actions) pt.append(h('tr', {},
+    h('td', { class: 'id', text: a.id }), h('td', { class: 'id', text: a.requirement }), h('td', { text: a.action }), h('td', { text: a.owner }),
+    h('td', { class: 'nowrap', text: fmtDate(a.due) }),
+    h('td', {}, a.overdue ? statusPill('not-met', 'Overdue') : h('span', { class: 'cov-txt', text: `Open · due in ${daysBetween(DATA.run_at, a.due)} days` }))));
+}
+
+/* ═══════════════════════════ 6 Deviations ═══════════════════════════ */
+{
+  const dt = document.querySelector('#dev-table tbody');
+  for (const d of DATA.deviations) {
+    const users = [
+      ...DATA.requirements.flatMap(q => q.parts.filter(p => p.deviation === d.id).map(p => `${q.id} ${p.part}`)),
+      ...DATA.scope.excluded.filter(x => x.deviation === d.id).map(x => `excludes ${x.repo}`),
+    ];
+    dt.append(h('tr', {},
+      h('td', { class: 'id', text: d.id }), h('td', { class: 'id', text: d.requirement }), h('td', { text: d.scope }), h('td', { text: d.approved_by }),
+      h('td', { class: 'nowrap', text: fmtDate(d.valid_until) }),
+      h('td', {}, d.expired ? statusPill('not-met', 'Expired') : h('span', { class: 'cov-txt', text: `Valid · ${daysBetween(DATA.run_at, d.valid_until)} days left` })),
+      h('td', {}, users.map(u => h('span', { class: 'tag', text: u })))));
+  }
+}
+
+/* ═══════════════════════════ 7 Changes ═══════════════════════════ */
+{
+  const prevDate = PREV?.date;
+  $('changes-lead').textContent = `Compared with ${DATA.previous_report.report_id} (run of ${fmtDate(prevDate)}).`;
+  const ct = document.querySelector('#change-table tbody');
+  const row = (e, n, d) => ct.append(h('tr', {}, h('td', { text: e }), h('td', { class: 'num nowrap', text: n }), h('td', {}, d)));
+  row('Overall compliance', `${fmtPct(PREV.compliance_pct)} → ${fmtPct(S.compliance_pct)}`, `${(S.compliance_pct - PREV.compliance_pct).toFixed(1)} pts. Now ${S.checks_passed} of ${S.checks_evaluated} evaluated checks pass.`);
+  row('Open findings', `${PREV.open_findings} → ${S.open_findings}`, `Net change ${S.open_findings - PREV.open_findings}.`);
+  const newF = FINDINGS.filter(f => f.since > prevDate);
+  row('New findings', newF.length, newF.length ? joinNodes(uniq(newF.map(f => f.repo)).map(r => `${r}: ${newF.filter(f => f.repo === r).map(f => f.name).join(', ')}`), '; ') : 'None');
+  const arch = DATA.archivals.filter(a => a.archived_date > prevDate);
+  row('Repositories archived', arch.length, arch.length ? arch.map(a => `${a.repo} on ${fmtDate(a.archived_date)} by ${a.by}` + (a.days_notice != null ? `, after ${a.days_notice} days of notice` : '')).join('; ') : 'None');
+  row('Org configuration changes', snap.changes_since_previous.length, snap.changes_since_previous.length ? flatten(snap.changes_since_previous).map(x => x.join(': ')).join('; ') : `Org settings, ruleset, security configuration and org security policy unchanged since the snapshot of ${fmtDate(snap.previous_snapshot_date)}.`);
+  row('Access drift (planned changes)', plannedN, drift.results[0].reason);
+  const advNew = adv.published_in_period.filter(a => a.published_at > prevDate);
+  row('Security advisories published', advNew.length, `${adv.published_in_period.length} published in the snapshot period, the latest on ${fmtDate(adv.published_in_period.map(a => a.published_at).sort().at(-1))}.`);
+  row('Tool errors', errN, errN ? 'See Appendix A.' : 'No repository × check pair failed to evaluate.');
+}
+
+/* ═══════════════════════════ A Scope & method ═══════════════════════════ */
+{
+  const st = document.querySelector('#scope-table tbody');
+  const skipped = {};
+  for (const t of Object.values(FILES)) for (const x of t.skipped) (skipped[x.repo] ??= new Set()).add(x.reason);
+  const notAssessed = Object.keys(skipped).filter(r => !ARCHIVED.includes(r) && !DATA.scope.excluded.some(x => x.repo === r));
+  const srow = (k, n, names) => st.append(h('tr', {}, h('td', {}, k, names ? h('div', { class: 'small muted', text: names }) : null), h('td', { class: 'num', text: n })));
+  srow('Active repositories in scope', ACTIVE.length, ACTIVE.join(', '));
+  srow('Archived repositories (only DE.01 and DE.02 apply)', ARCHIVED.length, ARCHIVED.join(', '));
+  srow('Excluded from scope', DATA.scope.excluded.length, DATA.scope.excluded.map(x => `${x.repo} (deviation ${x.deviation})`).join(', '));
+  srow('Not assessed by any tool', notAssessed.length, notAssessed.map(r => `${r}: ${[...skipped[r]].join('; ')}`).join(' · '));
+
+  const DEFS = [ // fixed template text (status logic of compliance_report)
+    ['met', 'All applicable repositories pass, and all org-level checks pass.'],
+    ['met-tracked', 'Some repositories fail, but every failure has an open issue or an OSPO notification, and none is older than its target.'],
+    ['not-met', 'At least one failure is older than its target or untracked, or an org-level check fails.'],
+    ['not-verified', 'No check covers this part. For a SHOULD it links to a deviation; for a MUST it counts as Not met.'],
+    ['deviation-accepted', 'SHOULD requirement that is not verified, with an approved deviation (section 6).'],
+    ['optional', 'MAY requirement. Reported for information only.'],
+  ];
+  const df = document.querySelector('#def-table tbody');
+  for (const [k, d] of DEFS) df.append(h('tr', {}, h('td', {}, statusPill(k)), h('td', { text: d })));
+
+  const rt = document.querySelector('#run-table tbody');
+  for (const i of DATA.inputs) {
+    const t = FILES[i.file];
+    rt.append(h('tr', {},
+      h('td', {}, h('b', { text: t.tool }), h('div', { class: 'small' }, h('code', { text: i.file })), t.source ? h('div', { class: 'small muted', text: t.source }) : null),
+      h('td', { class: 'nowrap', text: fmtDateTime(t.run_at) }),
+      h('td', {}, h('code', { text: t.config_file ?? '–' }), t.config_sha256 ? h('div', { class: 'small muted', title: t.config_sha256, text: `SHA-256 ${shortSha(t.config_sha256)}` }) : null),
+      h('td', { class: 'nowrap' }, h('code', { text: `ospo@${t.ospo_sha}` }), t.scorecard_version ? h('div', { class: 'small muted', text: `Scorecard ${t.scorecard_version}` }) : null),
+      h('td', { class: 'num', text: t.results.length }),
+      h('td', { class: 'num', title: t.skipped.map(x => `${x.repo}: ${x.reason}`).join('\n'), text: t.skipped.length }),
+      h('td', { class: 'num', text: t.errors.length }),
+      h('td', {}, h('a', { href: t.run_url, text: t.run_url.split('/').pop() }))));
+  }
+}
+
+/* ═══════════════════════════ B Check catalogue ═══════════════════════════ */
+{
+  const ct = document.querySelector('#check-table tbody');
+  for (const i of DATA.inputs) {
+    const ids = Object.keys(FILES[i.file].checks);
+    ct.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 5, text: `${FILES[i.file].tool} · ${i.file}` })));
+    for (const id of ids) {
+      const c = DATA.checks[id] ?? FILES[i.file].checks[id];
+      const rs = [...RESULTS, ...DERIVED].filter(r => r.check === id);
+      const n = k => rs.filter(r => r.result === k).length;
+      ct.append(h('tr', {},
+        h('td', {}, checkLink(id)),
+        h('td', { text: c.documentation?.short ?? '–' }),
+        h('td', { class: 'nowrap', text: c.threshold != null ? `score ≥ ${c.threshold}` : '–' }),
+        h('td', {}, isMapped(id) ? [...REQS_OF_CHECK[id]].map(x => h('span', { class: 'tag', text: x })) : h('span', { class: 'muted small', text: 'Not mapped (information only)' })),
+        h('td', { class: 'num nowrap', text: `${n('pass')} / ${n('fail')} / ${n('na')}` })));
+    }
+  }
+}
+
+/* ═══════════════════════════ C Evidence ═══════════════════════════ */
+{
+  $('evidence-lead').textContent = `The input files of run ${DATA.run_url.split('/').pop()}, identified by SHA-256, plus the attestations the report relies on. Report configuration: ${DATA.report_config}.`;
+  const et = document.querySelector('#ev-table tbody');
+  for (const i of DATA.inputs) {
+    const age = daysBetween(i.run_at, DATA.run_at);
+    et.append(h('tr', {},
+      h('td', {}, h('code', { text: i.file })), h('td', { text: i.tool }),
+      h('td', { class: 'nowrap', text: fmtDateTime(i.run_at) }),
+      h('td', { class: 'num nowrap', text: plural(age, 'day') }),
+      h('td', { class: 'nowrap' }, h('code', { title: i.sha256, text: shortSha(i.sha256) }))));
+  }
+  const tt = document.querySelector('#att-table tbody');
+  for (const a of DATA.attestations) {
+    const part = DATA.requirements.flatMap(q => q.parts.filter(p => p.attestation?.id === a.id).map(p => ({ q, p })))[0];
+    tt.append(h('tr', {},
+      h('td', { class: 'id' }, a.id, part ? h('div', { class: 'small muted', style: 'font-weight:400', text: `used by ${part.q.id}` }) : null),
+      h('td', {}, h('code', { text: a.file })), h('td', { text: a.covers.join(', ') }), h('td', { text: a.approved_by }),
+      h('td', { class: 'nowrap', text: fmtDate(a.date) }), h('td', { class: 'nowrap', text: part ? fmtDate(part.p.attestation.valid_until) : '–' })));
+  }
+}
+
+/* ═══════════════════════════ D Findings register ═══════════════════════════ */
+{
+  const rg = document.querySelector('#reg-table tbody');
+  for (const q of DATA.requirements) {
+    const fs = findingsOf(q.id).sort((a, b) => b.age_days - a.age_days);
+    if (!fs.length) continue;
+    rg.append(h('tr', { class: 'chapter-row', id: `findings-${q.id}` }, h('td', { colspan: 6 }, `${q.id} · ${q.title} · ${plural(fs.length, 'open finding')} · `, statusPill(q.status))));
+    for (const f of fs) rg.append(h('tr', {},
+      h('td', {}, checkLink(f.check), f.requirements.length > 1 ? h('div', { class: 'small muted', text: `also counts for ${f.requirements.filter(x => x !== q.id).join(', ')}` }) : null),
+      h('td', { class: 'id' }, f.repo, ARCHIVED.includes(f.repo) ? h('div', { class: 'small muted', style: 'font-weight:400', text: 'archived' }) : null),
+      h('td', { text: f.reason }),
+      h('td', { class: 'nowrap', text: fmtDate(f.since) }),
+      h('td', { class: 'num nowrap' }, overdueAge(f)),
+      h('td', { class: 'nowrap' }, trackingNode(f.tracking))));
+  }
+  const multi = FINDINGS.filter(f => f.requirements.length > 1);
+  if (multi.length) rg.append(h('tr', {}, h('td', { colspan: 6, class: 'chart-sub', text: `${plural(multi.length, 'finding maps', 'findings map')} to more than one requirement and ${multi.length === 1 ? 'is' : 'are'} listed under each. The total of ${FINDINGS.length} open findings counts each once.` })));
+}
+
+/* ═══════════════════════════ E Results per repository ═══════════════════════════ */
+{
+  const groups = DATA.inputs.map(i => ({ file: i.file, tool: FILES[i.file].tool, checks: Object.keys(FILES[i.file].checks).filter(c => REPO_RESULTS.some(r => r.check === c && ACTIVE.includes(r.repo))) })).filter(g => g.checks.length);
+  const m = $('matrix');
+  m.append(h('thead', {},
+    h('tr', {}, h('th', { class: 'rowh' }), groups.map(g => h('th', { class: 'grp sep', colspan: g.checks.length, text: g.tool }))),
+    h('tr', {}, h('th', { class: 'rowh', style: 'vertical-align:bottom', text: 'Repository' }),
+      groups.map(g => g.checks.map((c, i) => h('th', { class: 'vh' + (isMapped(c) ? '' : ' unmapped') + (i === 0 ? ' sep' : ''), title: c }, h('span', { text: checkName(c) + (isMapped(c) ? '' : ' †') })))))));
+  const tb = h('tbody');
+  for (const repo of ACTIVE) {
+    tb.append(h('tr', {}, h('td', { class: 'rowh id', text: repo }),
+      groups.map(g => g.checks.map((c, i) => {
+        const r = REPO_RESULTS.find(x => x.repo === repo && x.check === c);
+        const td = h('td', { class: i === 0 ? 'sep' : '' });
+        if (!r) { td.append(h('span', { class: 'mcell none', text: '·' })); return td; }
+        const cell = h('span', { class: `mcell ${r.result}`, tabindex: 0, 'aria-label': `${repo}, ${r.name}: ${STATUS[r.result].label}${r.score != null ? `, score ${r.score}` : ''}. ${r.reason}`,
+          text: r.score != null && r.result !== 'na' ? r.score : STATUS[r.result].glyph });
+        const thr = DATA.checks[c]?.threshold;
+        const on = evt => showTip(evt, `${r.name}: ${STATUS[r.result].label}${r.score != null ? ` · score ${r.score}${thr != null ? ` (≥ ${thr})` : ''}` : ''}`,
+          `${repo}\n${r.reason}${r.details.length ? '\n' + r.details.join('\n') : ''}${r.tracking ? '\nTracking: ' + (r.tracking.url ?? 'OSPO notification, ' + r.tracking.reason) : ''}${isMapped(c) ? '' : '\nNot mapped to a requirement (information only)'}`);
+        cell.addEventListener('pointermove', on); cell.addEventListener('pointerleave', hideTip);
+        cell.addEventListener('focus', on); cell.addEventListener('blur', hideTip);
+        td.append(cell);
+        return td;
+      }))));
+  }
+  m.append(tb);
+  $('matrix-legend').append(
+    h('span', {}, h('span', { class: 'mcell pass', style: 'width:16px;height:16px;font-size:9px;margin-right:6px', text: '✓' }), 'Pass'),
+    h('span', {}, h('span', { class: 'mcell fail', style: 'width:16px;height:16px;font-size:9px;margin-right:6px', text: '✕' }), 'Fail'),
+    h('span', {}, h('span', { class: 'mcell na', style: 'width:16px;height:16px;font-size:9px;margin-right:6px', text: '–' }), 'Not applicable'),
+    h('span', { text: 'Number: Scorecard score, coloured by pass or fail against the threshold' }),
+    h('span', { text: '† not mapped to a requirement, never affects a status' }));
+
+  const ot = document.querySelector('#org-table tbody');
+  for (const r of ORG_RESULTS) ot.append(h('tr', {}, h('td', {}, checkLink(r.check), h('div', { class: 'small muted' }, h('code', { text: r.file }))), h('td', {}, resultPill(r)), h('td', { text: r.reason })));
+
+  const at2 = document.querySelector('#arch-table tbody');
+  const archRows = [...REPO_RESULTS, ...DERIVED].filter(r => ARCHIVED.includes(r.repo));
+  for (const r of archRows) at2.append(h('tr', {},
+    h('td', { class: 'id', text: r.repo }),
+    h('td', {}, checkName(r.check), isMapped(r.check) ? null : h('div', { class: 'small muted', text: 'not mapped (information only)' }), r.derived ? h('div', { class: 'small muted', text: 'derived by compliance_report' }) : null),
+    h('td', {}, resultPill(r)), h('td', { text: r.reason })));
+
+  $('integrity').append('Generated from ', h('code', { text: `${ORG}/ospo@${DATA.ospo_sha}` }), ' · ', h('a', { href: DATA.run_url, text: `workflow run ${DATA.run_url.split('/').pop()}` }),
+    ' · report configuration ', h('code', { text: DATA.report_config }), ' · inputs: ',
+    h('span', {}, joinNodes(DATA.inputs.map(i => h('span', {}, h('code', { text: i.file }), ' ', h('code', { title: i.sha256, text: shortSha(i.sha256) }))), ', ')),
+    ' · report template v2 (mock-up)');
+}
+
+// Print: expand requirement details so the PDF contains them
+addEventListener('beforeprint', () => document.querySelectorAll('details.req').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; }));
+addEventListener('afterprint', () => document.querySelectorAll('details.req').forEach(d => { d.open = d.dataset.wasOpen === 'true'; }));
+</script>
+</body>
+</html>
