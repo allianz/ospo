@@ -9,36 +9,42 @@
     {
       "file": "lint_repos.json",
       "tool": "lint_repos",
+      "script": "scripts/lint_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "421d2ae091968d4d228edc673b0f5a547bb33c642a9cfa84e36ae8c6b1608637"
     },
     {
       "file": "license_scan.json",
       "tool": "license_scan",
+      "script": "scripts/license_scan.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "737c949d230a659385e4cf9feceabb3386f3541667c5440dfd79937ff2619c0e"
     },
     {
       "file": "archive_repos.json",
       "tool": "archive_repos",
+      "script": "scripts/archive_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "7c5788f75b31fb82a4537a6741472fbf74d319e090e83125c51aa7dc799c3439"
     },
     {
       "file": "drift.json",
       "tool": "create_repos --dry-run",
+      "script": "scripts/create_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "2170948306646ded5017ceef2ad291710c3b4ad561d079848ff871e68de847ce"
     },
     {
       "file": "org_snapshot.json",
       "tool": "org_snapshot",
+      "script": "scripts/org_snapshot.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "8d8b4621b88f1a47c5693f0aec8009714f74070fff6532e58b1420ceacaaf0e9"
     },
     {
       "file": "scorecard.json",
       "tool": "scorecard_check",
+      "script": "scripts/scorecard_check.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "3c300a6e86c6f916a290ce54f1400237723536b2e289411a32face3062ddca73"
     }

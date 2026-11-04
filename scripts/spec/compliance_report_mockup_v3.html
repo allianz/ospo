@@ -165,11 +165,11 @@
   .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: grid; gap: 16px; min-width: 0; }
   .rcard h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
   .rcard p { margin: 0; max-width: 820px; }
-  .rcard .part { padding-top: 2px; }
-  .rcard .part p + p { margin-top: 4px; }
+  .tr-clauses { display: grid; gap: 6px; max-width: 820px; }
+  .tr-clause { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
+  .tr-clause .level { justify-self: start; }
   .links { color: var(--muted); font-size: 13px; margin-top: 4px; }
   .links a { margin-right: 4px; }
-  .rcard .part .head { display: flex; gap: 10px; align-items: center; margin-bottom: 2px; }
   .rcard table { font-size: 12.5px; }
   .rcard td, .rcard th { padding: 6px 8px; }
   .cov { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
@@ -287,7 +287,7 @@
 <div id="tip" hidden></div>
 <div class="page">
 
-  <div class="draft"><strong>MOCK-UP v3 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix C. Only headings, column labels, chapter names and the status definitions are fixed template text.
+  <div class="draft"><strong>MOCK-UP v3 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix C. Only headings, column labels, chapter names, a short summary of each TR-03185 requirement and the status definitions are fixed template text.
     <div class="mockctl"><label>Scale <select id="ctl-scale"></select></label><label>Worst case <select id="ctl-worst"></select></label><span id="ctl-note"></span></div>
   </div>
 
@@ -342,7 +342,7 @@
   <!-- ─────────────────────────── 2 Requirements ─────────────────────────── -->
   <section id="requirements" class="break">
     <h2><span class="num">2</span>Requirement status</h2>
-    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see why repositories fail and the evidence. The full list of failing repositories is in the findings register (Appendix D).</p>
+    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. The full list of failing repositories is in the findings register (Appendix D).</p>
     <div class="card" style="padding:6px 8px">
       <table id="req-table">
         <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th id="req-trend-h">Trend</th></tr></thead>
@@ -542,36 +542,42 @@
     {
       "file": "lint_repos.json",
       "tool": "lint_repos",
+      "script": "scripts/lint_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "421d2ae091968d4d228edc673b0f5a547bb33c642a9cfa84e36ae8c6b1608637"
     },
     {
       "file": "license_scan.json",
       "tool": "license_scan",
+      "script": "scripts/license_scan.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "737c949d230a659385e4cf9feceabb3386f3541667c5440dfd79937ff2619c0e"
     },
     {
       "file": "archive_repos.json",
       "tool": "archive_repos",
+      "script": "scripts/archive_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "7c5788f75b31fb82a4537a6741472fbf74d319e090e83125c51aa7dc799c3439"
     },
     {
       "file": "drift.json",
       "tool": "create_repos --dry-run",
+      "script": "scripts/create_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "2170948306646ded5017ceef2ad291710c3b4ad561d079848ff871e68de847ce"
     },
     {
       "file": "org_snapshot.json",
       "tool": "org_snapshot",
+      "script": "scripts/org_snapshot.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "8d8b4621b88f1a47c5693f0aec8009714f74070fff6532e58b1420ceacaaf0e9"
     },
     {
       "file": "scorecard.json",
       "tool": "scorecard_check",
+      "script": "scripts/scorecard_check.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "3c300a6e86c6f916a290ce54f1400237723536b2e289411a32face3062ddca73"
     }
@@ -4204,6 +4210,14 @@ const REPO_RESULTS = RESULTS.filter(r => r.repo);
 const ORG_RESULTS = RESULTS.filter(r => !r.repo);
 const CHECK_FILE = {};
 for (const [file, t] of Object.entries(FILES)) for (const id of Object.keys(t.checks)) CHECK_FILE[id] ??= file;
+/* The tool that produced a check: its script in the ospo repository, pinned to the commit of this run */
+function sourceNode(check) {
+  const file = CHECK_FILE[check], inp = DATA.inputs.find(i => i.file === file);
+  if (!inp?.script) return h('span', { class: 'muted', text: '–' });
+  const sv = FILES[file]?.scorecard_version;
+  return h('span', {}, h('a', { href: `https://github.com/${ORG}/ospo/blob/${DATA.ospo_sha}/${inp.script}` }, h('code', { style: 'color:inherit', text: inp.script.split('/').pop() })),
+    sv ? h('div', { class: 'small muted', text: `Scorecard ${sv}` }) : null);
+}
 const DEV = Object.fromEntries(DATA.deviations.map(d => [d.id, d]));
 const ATT = Object.fromEntries(DATA.attestations.map(a => [a.id, a]));
 const FINDINGS = DATA.findings;
@@ -4221,6 +4235,29 @@ const PREV = HISTORY.length > 1 ? HISTORY[HISTORY.length - 2] : null;
 const ACTIVE = DATA.scope.active, ARCHIVED = DATA.scope.archived;
 const S = DATA.summary;
 
+/* Fixed template text: a short summary of each requirement of BSI TR-03185 v1.1.1 Chapter 2, per level (not a quotation) */
+const TR_TEXT = {
+  'GV.01': [['MUST', 'Information on how to contribute to the project MUST be documented.'], ['SHOULD', 'Information about the expected quality of contributions SHOULD be given.']],
+  'GV.02': [['MUST', "The project's repository, websites and sensitive data MUST be protected against unauthorized actions."]],
+  'LE.01': [['MUST', "A license MUST be stated for all content made available by the project, including the project's documentation."]],
+  'LE.02': [['MUST', 'A copy of all licenses in use, or references hereto, MUST be provided.']],
+  'QA.01': [['MUST', 'A list of third-party components used in the software MUST be available.']],
+  'QA.02': [['MUST', "All of the project's source code MUST be publicly readable."]],
+  'QA.03': [['MUST', 'The project MUST inform how to report defects.']],
+  'QA.04': [['MUST', 'Procedures for testing MUST be implemented and utilised.']],
+  'QA.05': [['SHOULD', 'The project SHOULD take measures to reduce or avoid memory safety issues.']],
+  'QA.06': [['SHOULD', 'All changes to the source code SHOULD be peer-reviewed.']],
+  'BR.01': [['MUST', 'Information on how to build all software assets MUST be publicly available.']],
+  'BR.02': [['MUST', 'All releases and released software assets intended for use MUST be assigned unique, monotonically increasing version identifiers.']],
+  'BR.03': [['MUST', 'All assets MUST be distributed in a way that maintains integrity or at least allows its verification.'], ['MAY', 'Means to maintain and verify authenticity MAY be deployed.']],
+  'BR.04': [['MUST', 'All releases MUST provide a descriptive log of functional and security modifications.']],
+  'BR.05': [['MUST', "Released source packages MUST NOT contain any content that is not present in the project's repository or cannot be deterministically generated from it."]],
+  'BR.06': [['SHOULD', 'Builds SHOULD be reproducible.']],
+  'VM.01': [['MUST', 'The project documentation MUST contain security contacts for reporting vulnerabilities.'], ['SHOULD', 'There SHOULD be a way to do so privately.']],
+  'VM.02': [['MUST', 'The project MUST publish information about discovered vulnerabilities within a reasonable period of time.']],
+  'DE.01': [['SHOULD', 'Discontinuation of the project, parts of it, or specific versions or version ranges SHOULD be communicated adequately.']],
+  'DE.02': [['MAY', 'Migration paths MAY be outlined.']],
+};
 /* Fixed template text: chapter names of TR-03185 Chapter 2 */
 const CHAPTERS = { GV: 'Governance', LE: 'Legal', QA: 'Quality', BR: 'Build and release', VM: 'Vulnerability management', DE: 'Decommissioning' };
 
@@ -4666,38 +4703,6 @@ function snapshotNode(check) {
 }
 
 /* Group failing findings by check and reason. Scorecard checks form one group per check (the histogram shows the scores); numbers in other reasons are masked so "1 user…" and "3 users…" group together. */
-function reasonGroups(qf) {
-  const groups = new Map();
-  for (const f of qf) {
-    const r = RESULT_KEY.get(f.repo + '|' + f.check);
-    const thr = DATA.checks[f.check]?.threshold;
-    const scored = thr != null && r?.score != null;
-    const k = f.check + '|' + (scored ? 'below-threshold' : f.reason.replace(/\d+(?:\.\d+)*/g, '#'));
-    if (!groups.has(k)) groups.set(k, { check: f.check, scored, scores: [], thr, items: [], reasons: new Map() });
-    const g = groups.get(k);
-    g.items.push(f);
-    if (scored) g.scores.push(r.score);
-    g.reasons.set(f.reason, (g.reasons.get(f.reason) ?? 0) + 1);
-  }
-  return [...groups.values()].sort((a, b) => b.items.length - a.items.length);
-}
-function groupsTable(groups, cap = 8) {
-  const shown = groups.slice(0, cap), rest = groups.slice(cap);
-  return h('table', {},
-    h('thead', {}, h('tr', {}, ['Check', 'Reason', 'Repositories', 'Issues'].map((x, i) => h('th', { class: i === 2 ? 'num' : '', text: x })))),
-    h('tbody', {}, shown.map(g => {
-      const top = [...g.reasons.entries()].sort((a, b) => b[1] - a[1])[0][0];
-      return h('tr', {},
-        h('td', { class: 'nowrap', text: checkName(g.check) }),
-        h('td', {},
-          g.scored ? h('div', {}, h('b', { text: Math.min(...g.scores) === Math.max(...g.scores) ? `Score ${g.scores[0]}` : `Score ${Math.min(...g.scores)}–${Math.max(...g.scores)}` }), ` (threshold ≥ ${g.thr}; distribution above)`) : null,
-          h('div', { class: g.scored ? 'small muted' : null }, g.scored ? `e.g. ${top}` : top),
-          g.reasons.size > 1 && !g.scored ? h('div', { class: 'small muted', text: `${g.reasons.size} variants of this text; the most frequent is shown` }) : null),
-        h('td', { class: 'num', text: g.items.length }),
-        h('td', { class: 'small nowrap' }, liveIssuesLink([g.check])));
-    })),
-    rest.length ? h('tfoot', {}, h('tr', {}, h('td', { colspan: 4, class: 'chart-sub', text: `… and ${plural(rest.length, 'more group')} with ${plural(rest.reduce((a, g) => a + g.items.length, 0), 'finding')}.` }))) : null);
-}
 
 function renderCard(q) {
   const sec = (title, ...kids) => h('div', { style: 'min-width:0' }, h('h4', { text: title }), ...kids);
@@ -4705,35 +4710,22 @@ function renderCard(q) {
   const allChecks = q.checks ?? [];
   const repoChecks = allChecks.filter(c => !ORG_CHECKS.has(c));
 
-  const lines = [];
-  {
-    const p = q;
-    if (p.repositories) {
-      const r = p.repositories;
-      lines.push(`${r.passing} of ${r.applicable} applicable repositories pass` + (r.failing ? `, ${r.failing} fail` : '') + '.' +
-        (r.not_applicable ? ` ${plural(r.not_applicable, 'repository is', 'repositories are')} not applicable.` : ''));
-    }
-    if (p.org_checks) lines.push('Org-level: ' + Object.entries(p.org_checks).map(([c, v]) => `${checkName(c)} ${v}`).join(' · ') + '.');
-    if (p.basis) lines.push(`Basis: ${p.basis}.`);
-    if (p.deviation) {
-      const d = DEV[p.deviation];
-      lines.push(d ? `No check covers this requirement. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this requirement. Deviation ${p.deviation}.`);
-    }
-    if (p.attestation) {
-      const a = { ...ATT[p.attestation.id], ...p.attestation };
-      lines.push(`Attestation ${a.id} (${a.file}): ${(a.covers ?? []).join(', ')}. Approved by ${a.approved_by} on ${fmtDate(a.date)}, valid until ${fmtDate(a.valid_until)}.`);
-    }
-    if (p.status === 'optional' && !p.checks?.length) lines.push('No check is mapped to this requirement. Reported for information.');
+  // Requirement summary (static): each clause with its level; only the requirement's own level is assessed
+  const textNode = h('div', { class: 'tr-clauses' }, (TR_TEXT[q.id] ?? []).map(([lvl, txt]) => h('div', { class: 'tr-clause' + (lvl === q.level ? '' : ' muted') },
+    h('span', { class: 'level', text: lvl }),
+    h('span', {}, txt, lvl === q.level ? null : h('span', { class: 'small', text: ' Not assessed in this version.' })))));
+
+  // What the check table does not show: basis, deviation, attestation
+  const notes = [];
+  if (q.basis) notes.push(`Basis: ${q.basis}.`);
+  if (q.deviation) {
+    const d = DEV[q.deviation];
+    notes.push(d ? `No check covers this requirement. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this requirement. Deviation ${q.deviation}.`);
   }
-  const issueChecks = uniq(qf.map(f => f.check));
-  const resultNode = h('div', { class: 'part' },
-    h('div', { class: 'head' }, statusPill(q.status)),
-    lines.map(t => h('p', { text: t })),
-    linksRow([
-      qf.length ? registerLink(`${plural(qf.length, 'finding')} in the register`, { req: q.id, check: issueChecks.length === 1 ? issueChecks[0] : '' }) : null,
-      issueChecks.length ? liveIssuesLink(issueChecks, null, 'Live issues on GitHub') : null,
-      q.deviation ? h('a', { href: '#deviations', text: `Deviation ${q.deviation}` }) : null,
-    ]));
+  if (q.attestation) {
+    const a = { ...ATT[q.attestation.id], ...q.attestation };
+    notes.push(`Attestation ${a.id} (${a.file}): ${(a.covers ?? []).join(', ')}. Approved by ${a.approved_by} on ${fmtDate(a.date)}, valid until ${fmtDate(a.valid_until)}.`);
+  }
 
   const verified = allChecks.length ? h('table', {},
     h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Source'].map(x => h('th', { text: x })))),
@@ -4745,16 +4737,14 @@ function renderCard(q) {
         h('td', {}, def?.documentation?.short ?? '–',
           orgR ? h('div', { style: 'margin-top:4px' }, resultPill(orgR), ' ', h('span', { class: 'small', text: orgR.reason })) : null,
           snapshotNode(c)),
-        h('td', {}, h('code', { text: CHECK_FILE[c] ?? 'data.json' })));
+        h('td', { class: 'nowrap' }, sourceNode(c)));
     }))) : h('p', { class: 'muted', text: 'No check is mapped to this requirement.' });
+  const verifiedSec = sec('How it is verified', verified, notes.map(t => h('p', { style: 'margin-top:8px', text: t })));
 
   const scoredChecks = repoChecks.filter(c => DATA.checks[c]?.threshold != null);
   const histSec = scoredChecks.length ? sec('Score distribution',
     h('div', { class: 'hist-grid' }, scoredChecks.map(c => scoreHistogram(c, ALL_REPO_RESULTS.filter(r => r.check === c && ACTIVE.includes(r.repo)))))) : null;
 
-  const failSec = repoChecks.length ? sec(`Why repositories fail${qf.length ? ` · ${plural(qf.length, 'open finding')}` : ''}`,
-    qf.length ? groupsTable(reasonGroups(qf)) : h('p', { class: 'muted', text: 'No repository fails.' }),
-    qf.length ? linksRow([registerLink(`All ${plural(qf.length, 'open finding')} of ${q.id} in the findings register`, { req: q.id }), h('a', { href: '#results', text: 'Results per repository (Appendix E)' })]) : null) : null;
 
   const archSec = allChecks.includes('archive/notice-before-archival') && DATA.archivals.length ? sec('Archivals recorded',
     h('table', {}, h('thead', {}, h('tr', {}, ['Repository', 'Archived', 'By', 'Notice', 'Days of notice'].map((x, i) => h('th', { class: i === 4 ? 'num' : '', text: x })))),
@@ -4765,14 +4755,12 @@ function renderCard(q) {
   const acts = DATA.actions.filter(a => a.requirement === q.id);
   const actSec = acts.length ? sec('Remediation actions', acts.map(a => h('p', {}, h('a', { href: '#plan', class: 'id', text: a.id }), ` ${a.action}. Owner: ${a.owner}, due ${fmtDate(a.due)}${a.overdue ? ' (overdue)' : ''}.`))) : null;
 
-  const evFiles = uniq([...allChecks.map(c => CHECK_FILE[c]).filter(Boolean), ...(qf.some(f => RESULT_KEY.get(f.repo + '|' + f.check)?.derived) ? ['data.json'] : [])]);
-  const atts = q.attestation ? [q.attestation.file] : [];
-  const evSec = evFiles.length || atts.length ? sec('Evidence', h('p', {}, joinNodes([
-    ...evFiles.map(f => { const i = DATA.inputs.find(x => x.file === f); return h('span', {}, h('a', { href: '#evidence', text: f }), i ? h('span', { class: 'muted', text: ` (SHA-256 ${shortSha(i.sha256)})` }) : null); }),
-    ...atts.map(f => h('span', {}, h('a', { href: '#evidence', text: f }), h('span', { class: 'muted', text: ' (attestation)' }))),
-  ]))) : null;
+  const infoSec = repoChecks.length ? sec('Additional information', linksRow([
+    liveIssuesLink(repoChecks, null, 'Live issues on GitHub'),
+    h('a', { href: '#results', text: 'Results per repository (Appendix E)' }),
+  ])) : null;
 
-  return h('div', { class: 'rcard' }, sec('Result', resultNode), sec('How it is verified', verified), histSec, failSec, archSec, actSec, evSec);
+  return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, histSec, archSec, actSec, infoSec);
 }
 
 {
