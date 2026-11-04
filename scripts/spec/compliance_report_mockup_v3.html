@@ -254,13 +254,22 @@
   th.sortable { cursor: pointer; user-select: none; }
   th.sortable:hover { color: var(--ink); }
   th .arrow { color: var(--accent); margin-left: 3px; }
+  .pager-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding: 10px 10px 4px; }
+  .pager { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12.5px; color: var(--muted); }
+  .pager-size { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+  .pager-size select { font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 6px; padding: 3px 6px; }
+  .pager button { font: inherit; font-size: 12.5px; min-width: 30px; color: var(--ink-2); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 3px 8px; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .pager button[aria-current="page"] { color: var(--surface); background: var(--accent); border-color: var(--accent); }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
+  .pager button:disabled[aria-current="page"] { color: var(--ink-2); background: none; border-color: var(--axis); }
+  .pager .gap { padding: 0 2px; }
   .showall { margin: 8px 10px; font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
   ul.sub { margin: 4px 0 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-2); }
   ul.sub li { margin-bottom: 2px; }
   .rcard tfoot td { border-bottom: none; padding-top: 8px; }
   .why { white-space: nowrap; }
   @media print {
-    .filters, .filter-count, .showall, .mockctl { display: none !important; }
+    .filters, .filter-count, .showall, .pager-bar, .mockctl { display: none !important; }
   }
 </style>
 </head>
@@ -386,7 +395,10 @@
         </tr></thead>
         <tbody></tbody>
       </table>
-      <div id="r-more"></div>
+      <div class="pager-bar">
+        <nav class="pager" id="r-pager" aria-label="Repository table pages"></nav>
+        <label class="pager-size">Rows per page <select id="r-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label>
+      </div>
     </div>
   </section>
 
@@ -4517,6 +4529,7 @@ function renderCard(q) {
 
   const infoSec = repoChecks.length ? sec('Additional information', linksRow([
     liveIssuesLink(repoChecks, null, 'Live issues on GitHub'),
+    qf.length ? repoListLink(`Repositories failing ${q.id} (section 5)`, { req: q.id }) : null,
   ])) : null;
 
   return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, archSec, infoSec);
@@ -4631,7 +4644,7 @@ function repoListTag(text, filter) { const a = repoListLink(text, filter); a.cla
 }
 
 /* ═══════════════════════════ 5 Repositories (sortable, filterable) ═══════════════════════════ */
-const RL = { sort: 'findings', repo: '', req: '', failing: false, limit: 200 };
+const RL = { sort: 'findings', repo: '', req: '', failing: false, page: 1, size: 25 };
 const REPO_ROWS = uniq([...ACTIVE, ...FINDINGS.map(f => f.repo)]).map(repo => {
   const fs = FINDINGS.filter(f => f.repo === repo);
   const counted = REPO_RESULTS.filter(r => r.repo === repo && isMapped(r.check) && r.result !== 'na');
@@ -4645,7 +4658,8 @@ const RL_SORT = {
   repo: (a, b) => a.repo.localeCompare(b.repo),
 };
 function readRepoControls() {
-  RL.sort = $('r-sort').value; RL.repo = $('r-repo').value.trim().toLowerCase(); RL.req = $('r-req').value; RL.failing = $('r-failing').checked; RL.limit = 200;
+  RL.sort = $('r-sort').value; RL.repo = $('r-repo').value.trim().toLowerCase(); RL.req = $('r-req').value; RL.failing = $('r-failing').checked;
+  RL.size = +$('r-size').value; RL.page = 1;
   renderRepos();
 }
 function applyRepoFilter(f) {
@@ -4655,7 +4669,10 @@ function applyRepoFilter(f) {
 function renderRepos() {
   const rows = REPO_ROWS.filter(r => (!RL.repo || r.repo.toLowerCase().includes(RL.repo)) && (!RL.req || r.reqs.includes(RL.req)) && (!RL.failing || r.n))
     .sort(RL_SORT[RL.sort]);
-  document.querySelector('#repos-table tbody').replaceChildren(...rows.slice(0, RL.limit).map(r => h('tr', {},
+  const pages = Math.max(1, Math.ceil(rows.length / RL.size));
+  RL.page = Math.min(Math.max(1, RL.page), pages);
+  const from = RL.page > 1 ? (RL.page - 1) * RL.size : 0, shown = rows.slice(from, from + RL.size);  // size is Infinity when printing
+  document.querySelector('#repos-table tbody').replaceChildren(...shown.map(r => h('tr', {},
     h('td', { class: 'id' }, r.repo, ARCHIVED.includes(r.repo) ? h('div', { class: 'small muted', style: 'font-weight:400', text: 'archived' }) : null),
     h('td', { class: 'num', text: r.n || '–' }),
     h('td', { class: 'small' }, joinNodes(r.checks.map(c => checkName(c)), ', ')),
@@ -4664,19 +4681,32 @@ function renderRepos() {
     h('td', { class: 'nowrap' }, r.n ? liveIssuesLink(r.checks, r.repo) : null))));
   const active = RL.repo || RL.req || RL.failing;
   $('r-count').textContent = (active ? `${rows.length} of ${REPO_ROWS.length} repositories match the filter` : `${REPO_ROWS.length} repositories`) +
-    (rows.length > RL.limit ? `; showing the first ${RL.limit}` : '') + '. Checks passed counts the mapped checks that apply to the repository.';
-  const more = $('r-more');
-  more.replaceChildren();
-  if (rows.length > RL.limit) {
-    const b = h('button', { class: 'showall', type: 'button', text: `Show all ${rows.length}` });
-    b.addEventListener('click', () => { RL.limit = Infinity; renderRepos(); });
-    more.append(b);
-  }
+    (rows.length > shown.length ? `; showing ${from + 1}–${from + shown.length}` : '') + '. Checks passed counts the mapped checks that apply to the repository.';
+  renderPager($('r-pager'), RL.page, pages, p => { RL.page = p; renderRepos(); });
+}
+/* Page buttons: previous, first, a window around the current page, last, next */
+function renderPager(el, page, pages, go) {
+  el.replaceChildren();
+  const single = pages <= 1;  // one page only: show the pager greyed out
+  const btn = (label, p, opts = {}) => {
+    if (single) opts.disabled = true;
+    const b = h('button', { type: 'button', text: label, 'aria-label': opts.aria ?? `Page ${p}`, 'aria-current': opts.current ? 'page' : null, disabled: opts.disabled ? '' : null });
+    if (!opts.disabled && !opts.current) b.addEventListener('click', () => go(p));
+    return b;
+  };
+  el.append(btn('‹ Previous', page - 1, { aria: 'Previous page', disabled: page === 1 }));
+  const nums = uniq([1, page - 2, page - 1, page, page + 1, page + 2, pages].filter(p => p >= 1 && p <= pages)).sort((a, b) => a - b);
+  nums.forEach((p, i) => {
+    if (i && p - nums[i - 1] > 1) el.append(h('span', { class: 'gap', text: '…' }));
+    el.append(btn(String(p), p, { current: p === page }));
+  });
+  el.append(btn('Next ›', page + 1, { aria: 'Next page', disabled: page === pages }));
+  el.append(h('span', { style: 'margin-left:8px', text: `Page ${page} of ${pages}` }));
 }
 {
   $('r-req').append(h('option', { value: '', text: 'All requirements' }),
     ...DATA.requirements.filter(q => findingsOf(q.id).length).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
-  for (const id of ['r-sort', 'r-req', 'r-failing']) $(id).addEventListener('change', readRepoControls);
+  for (const id of ['r-sort', 'r-req', 'r-failing', 'r-size']) $(id).addEventListener('change', readRepoControls);
   $('r-repo').addEventListener('input', readRepoControls);
   $('r-reset').addEventListener('click', () => applyRepoFilter({}));
   renderRepos();
@@ -4695,7 +4725,7 @@ function renderRepos() {
 let saved = null;
 addEventListener('beforeprint', () => {
   saved = { rl: { ...RL } };
-  Object.assign(RL, { repo: '', req: '', failing: false, limit: Infinity }); renderRepos();
+  Object.assign(RL, { repo: '', req: '', failing: false, page: 1, size: Infinity }); renderRepos();
   document.querySelectorAll('details.req').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; d.dispatchEvent(new Event('toggle')); });
 });
 addEventListener('afterprint', () => {
