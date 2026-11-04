@@ -104,6 +104,43 @@
   },
   "previous_snapshot_date": "2026-10-27",
   "changes_since_previous": [],
+  "checks": {
+    "org/settings": {
+      "name": "Org Settings",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-settings",
+        "short": "Org settings match the expected values: 2FA required, base permission none, members cannot create repositories."
+      }
+    },
+    "org/ruleset": {
+      "name": "Org Ruleset",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-ruleset",
+        "short": "The ospo-managed ruleset is active on default branches: pull request with at least 1 approval, no force push, no deletion."
+      }
+    },
+    "org/security-configuration": {
+      "name": "Security Configuration",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#security-configuration",
+        "short": "The ospo-managed security configuration is enforced: dependency graph, secret scanning, push protection, code scanning and private vulnerability reporting."
+      }
+    },
+    "org/security-policy": {
+      "name": "Org Security Policy",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-security-policy",
+        "short": "The org default allianz/.github/SECURITY.md exists and names a security contact."
+      }
+    },
+    "advisories/published-in-time": {
+      "name": "Advisories Published in Time",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#advisories-published-in-time",
+        "short": "Every confirmed vulnerability is published as a security advisory within 90 days. Unpublished advisories older than 90 days fail."
+      }
+    }
+  },
   "skipped": [],
   "errors": [],
   "results": [

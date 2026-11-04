@@ -46,6 +46,7 @@ On 4 Nov 2026, yukimi was the only active public allianz repository with results
 - Every result has `repo`, `check`, `name`, `result` (`pass`, `fail`, `na`), `score` (Scorecard 0–10, otherwise `null`), `reason` (always filled) and `details` (list, Scorecard style). See section 1.6 of the draft.
 - Checks that are not mapped in `data.json` → `requirements` (license coverage, fuzzing, migration path, deny list) never affect a status.
 - `repo: null` marks org-level checks (`org/*`, `drift/access`, `advisories/*`).
+- Every file has a `checks` catalogue (`name`, `documentation.url`, `documentation.short`); `data.json` → `checks` merges them. The OSPO URLs point to spec headings that do not exist yet; the Scorecard URLs are real.
 - Data the report computes with is in a header block (`archivals`, `snapshot`, `planned_changes`), never in `reason` or `details`.
 - Every `fail` that counts has `tracking`: `{type: issue, url}` or `{type: ospo-notification, reason}`. Each tool keeps one issue per repository, so all failing checks of a repository point to the same issue. Labels on that issue (= the failing check IDs) exist on GitHub only.
 - Unpublished security advisories are redacted: the `unpublished` entries in `org_snapshot.json` carry no repository name.

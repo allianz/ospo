@@ -6,6 +6,29 @@
   "config_file": "config/license_scan.yaml",
   "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "checks": {
+    "sbom/available": {
+      "name": "SBOM Available",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
+        "short": "The dependency graph SBOM can be retrieved for the default branch."
+      }
+    },
+    "sbom/license-coverage": {
+      "name": "License Coverage",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#license-coverage",
+        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION)."
+      }
+    },
+    "license/denied": {
+      "name": "Denied Licenses",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#denied-licenses",
+        "short": "No dependency in the SBOM uses a license on the deny list."
+      }
+    }
+  },
   "skipped": [
     {
       "repo": ".github",

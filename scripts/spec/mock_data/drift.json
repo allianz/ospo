@@ -12,6 +12,15 @@
     "security": [],
     "branch_protection": []
   },
+  "checks": {
+    "drift/access": {
+      "name": "Access Drift",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/create_repos_spec.md#access-drift",
+        "short": "create_repos --dry-run plans no changes: actual access on GitHub matches the approved configuration."
+      }
+    }
+  },
   "skipped": [],
   "errors": [],
   "results": [

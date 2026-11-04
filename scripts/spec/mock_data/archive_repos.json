@@ -17,6 +17,22 @@
       "days_notice": 60
     }
   ],
+  "checks": {
+    "archive/notice-before-archival": {
+      "name": "Notice Before Archival",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
+        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days)."
+      }
+    },
+    "archive/migration-path": {
+      "name": "Migration Path",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#migration-path",
+        "short": "The README of the archived repository names a successor or an alternative."
+      }
+    }
+  },
   "skipped": [
     {
       "repo": ".github",

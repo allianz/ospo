@@ -10,39 +10,265 @@
       "file": "lint_repos.json",
       "tool": "lint_repos",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "92d6b5380dde1e1cc2950180fb4777f7c8be59f4d5fefbfd23796abfb721de33"
+      "sha256": "421d2ae091968d4d228edc673b0f5a547bb33c642a9cfa84e36ae8c6b1608637"
     },
     {
       "file": "license_scan.json",
       "tool": "license_scan",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "c48cdd0a0abd90597df216758992477c3ee84573d5fb08dc8bb092490b8c6d7e"
+      "sha256": "737c949d230a659385e4cf9feceabb3386f3541667c5440dfd79937ff2619c0e"
     },
     {
       "file": "archive_repos.json",
       "tool": "archive_repos",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "96a5847a4cf720cb54fe43670670a0b7fbc04bf73a93a77b3e96e5ebc80e4e0e"
+      "sha256": "7c5788f75b31fb82a4537a6741472fbf74d319e090e83125c51aa7dc799c3439"
     },
     {
       "file": "drift.json",
       "tool": "create_repos --dry-run",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "5eb58ea19017e88dc4899265bbb07d60505712a5480b62dd0fdc45870690d810"
+      "sha256": "2170948306646ded5017ceef2ad291710c3b4ad561d079848ff871e68de847ce"
     },
     {
       "file": "org_snapshot.json",
       "tool": "org_snapshot",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "13a872675a20862dca0275f98208d3c21c09831c1d990ecc8b334288732a21a6"
+      "sha256": "8d8b4621b88f1a47c5693f0aec8009714f74070fff6532e58b1420ceacaaf0e9"
     },
     {
       "file": "scorecard.json",
       "tool": "scorecard_check",
       "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "bbaf62709227af00d4b8398a88d7bd65adf0cccdd967a631d22e81d67b32ac14"
+      "sha256": "4a4b9d87cb96332c65d99585d4228c2e7b75be786cbf1a7a9e842ca4aea6e479"
     }
   ],
+  "checks": {
+    "advisories/published-in-time": {
+      "name": "Advisories Published in Time",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#advisories-published-in-time",
+        "short": "Every confirmed vulnerability is published as a security advisory within 90 days. Unpublished advisories older than 90 days fail."
+      }
+    },
+    "archive/migration-path": {
+      "name": "Migration Path",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#migration-path",
+        "short": "The README of the archived repository names a successor or an alternative."
+      }
+    },
+    "archive/notice-before-archival": {
+      "name": "Notice Before Archival",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
+        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days)."
+      }
+    },
+    "drift/access": {
+      "name": "Access Drift",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/create_repos_spec.md#access-drift",
+        "short": "create_repos --dry-run plans no changes: actual access on GitHub matches the approved configuration."
+      }
+    },
+    "license/denied": {
+      "name": "Denied Licenses",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#denied-licenses",
+        "short": "No dependency in the SBOM uses a license on the deny list."
+      }
+    },
+    "lint/contributing": {
+      "name": "Contributing File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#contributing-file",
+        "short": "A file CONTRIBUTING* exists in ., .github or docs."
+      }
+    },
+    "lint/development-build": {
+      "name": "Development Guide: Build Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-build-section",
+        "short": "The development guide has a \"Build\" heading. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/development-file": {
+      "name": "Development Guide",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide",
+        "short": "A file DEVELOPMENT* exists in ., docs or .github, with at least 300 characters. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/development-test": {
+      "name": "Development Guide: Test Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-test-section",
+        "short": "The development guide has a \"Test\" heading. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/issues-enabled": {
+      "name": "Issues Enabled",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#issues-enabled",
+        "short": "Issues are enabled, so defects can be reported."
+      }
+    },
+    "lint/license-file": {
+      "name": "License File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-file",
+        "short": "A file LICENSE* exists in the repository root."
+      }
+    },
+    "lint/license-type": {
+      "name": "License Type",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-type",
+        "short": "The license GitHub detects is on the approved list. A missing or unidentified license (NOASSERTION) fails."
+      }
+    },
+    "lint/memory-safety-section": {
+      "name": "Memory Safety Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#memory-safety-section",
+        "short": "Repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly) have a \"Memory safety\" heading in the development guide."
+      }
+    },
+    "lint/no-direct-collaborators": {
+      "name": "No Direct Collaborators",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#no-direct-collaborators",
+        "short": "No user has direct access to the repository; access is granted to teams only."
+      }
+    },
+    "lint/private-reporting": {
+      "name": "Private Vulnerability Reporting",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#private-vulnerability-reporting",
+        "short": "For repositories with security: custom, private vulnerability reporting is enabled. Other repositories are covered by the org security configuration."
+      }
+    },
+    "lint/public": {
+      "name": "Public Visibility",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#public-visibility",
+        "short": "The repository is public."
+      }
+    },
+    "lint/release-notes": {
+      "name": "Release Notes",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#release-notes",
+        "short": "Every release of the last 12 months has release notes of at least 50 characters, or the CHANGELOG mentions the version."
+      }
+    },
+    "lint/secret-scanning": {
+      "name": "Secret Scanning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#secret-scanning",
+        "short": "For repositories with security: custom, secret scanning and push protection are enabled. Other repositories are covered by the org security configuration."
+      }
+    },
+    "lint/versioning": {
+      "name": "Versioning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#versioning",
+        "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line."
+      }
+    },
+    "org/ruleset": {
+      "name": "Org Ruleset",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-ruleset",
+        "short": "The ospo-managed ruleset is active on default branches: pull request with at least 1 approval, no force push, no deletion."
+      }
+    },
+    "org/security-configuration": {
+      "name": "Security Configuration",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#security-configuration",
+        "short": "The ospo-managed security configuration is enforced: dependency graph, secret scanning, push protection, code scanning and private vulnerability reporting."
+      }
+    },
+    "org/security-policy": {
+      "name": "Org Security Policy",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-security-policy",
+        "short": "The org default allianz/.github/SECURITY.md exists and names a security contact."
+      }
+    },
+    "org/settings": {
+      "name": "Org Settings",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-settings",
+        "short": "Org settings match the expected values: 2FA required, base permission none, members cannot create repositories."
+      }
+    },
+    "sbom/available": {
+      "name": "SBOM Available",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
+        "short": "The dependency graph SBOM can be retrieved for the default branch."
+      }
+    },
+    "sbom/license-coverage": {
+      "name": "License Coverage",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#license-coverage",
+        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION)."
+      }
+    },
+    "scorecard/branch-protection": {
+      "name": "Branch-Protection",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#branch-protection",
+        "short": "Determines if the default and release branches are protected with GitHub's branch protection settings."
+      }
+    },
+    "scorecard/ci-tests": {
+      "name": "CI-Tests",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#ci-tests",
+        "short": "Determines if the project runs tests before pull requests are merged."
+      }
+    },
+    "scorecard/code-review": {
+      "name": "Code-Review",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#code-review",
+        "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged."
+      }
+    },
+    "scorecard/dangerous-workflow": {
+      "name": "Dangerous-Workflow",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#dangerous-workflow",
+        "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns."
+      }
+    },
+    "scorecard/fuzzing": {
+      "name": "Fuzzing",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#fuzzing",
+        "short": "Determines if the project uses fuzzing."
+      }
+    },
+    "scorecard/signed-releases": {
+      "name": "Signed-Releases",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#signed-releases",
+        "short": "Determines if the project cryptographically signs release artifacts."
+      }
+    },
+    "scorecard/token-permissions": {
+      "name": "Token-Permissions",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#token-permissions",
+        "short": "Determines if the project's workflows follow the principle of least privilege."
+      }
+    }
+  },
   "previous_report": {
     "report_id": "OSPO-CR-2026-10-27",
     "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10-27/data.json"

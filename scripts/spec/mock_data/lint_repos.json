@@ -6,6 +6,106 @@
   "config_file": "config/lint_repos.yaml",
   "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "checks": {
+    "lint/license-file": {
+      "name": "License File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-file",
+        "short": "A file LICENSE* exists in the repository root."
+      }
+    },
+    "lint/license-type": {
+      "name": "License Type",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-type",
+        "short": "The license GitHub detects is on the approved list. A missing or unidentified license (NOASSERTION) fails."
+      }
+    },
+    "lint/contributing": {
+      "name": "Contributing File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#contributing-file",
+        "short": "A file CONTRIBUTING* exists in ., .github or docs."
+      }
+    },
+    "lint/public": {
+      "name": "Public Visibility",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#public-visibility",
+        "short": "The repository is public."
+      }
+    },
+    "lint/issues-enabled": {
+      "name": "Issues Enabled",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#issues-enabled",
+        "short": "Issues are enabled, so defects can be reported."
+      }
+    },
+    "lint/no-direct-collaborators": {
+      "name": "No Direct Collaborators",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#no-direct-collaborators",
+        "short": "No user has direct access to the repository; access is granted to teams only."
+      }
+    },
+    "lint/secret-scanning": {
+      "name": "Secret Scanning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#secret-scanning",
+        "short": "For repositories with security: custom, secret scanning and push protection are enabled. Other repositories are covered by the org security configuration."
+      }
+    },
+    "lint/private-reporting": {
+      "name": "Private Vulnerability Reporting",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#private-vulnerability-reporting",
+        "short": "For repositories with security: custom, private vulnerability reporting is enabled. Other repositories are covered by the org security configuration."
+      }
+    },
+    "lint/development-file": {
+      "name": "Development Guide",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide",
+        "short": "A file DEVELOPMENT* exists in ., docs or .github, with at least 300 characters. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/development-build": {
+      "name": "Development Guide: Build Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-build-section",
+        "short": "The development guide has a \"Build\" heading. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/development-test": {
+      "name": "Development Guide: Test Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-test-section",
+        "short": "The development guide has a \"Test\" heading. Not applicable to repositories tagged docs or template."
+      }
+    },
+    "lint/versioning": {
+      "name": "Versioning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#versioning",
+        "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line."
+      }
+    },
+    "lint/release-notes": {
+      "name": "Release Notes",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#release-notes",
+        "short": "Every release of the last 12 months has release notes of at least 50 characters, or the CHANGELOG mentions the version."
+      }
+    },
+    "lint/memory-safety-section": {
+      "name": "Memory Safety Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#memory-safety-section",
+        "short": "Repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly) have a \"Memory safety\" heading in the development guide."
+      }
+    }
+  },
   "skipped": [
     {
       "repo": ".github",

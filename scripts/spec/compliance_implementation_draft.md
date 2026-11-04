@@ -86,6 +86,11 @@ scorecard_check ─┘
       "result": "pass", "score": null,
       "reason": ".github/CONTRIBUTING.md found", "details": [] }
   ],
+  "checks": {
+    "lint/contributing": { "name": "Contributing File",
+      "documentation": { "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#contributing-file",
+                         "short": "A file CONTRIBUTING* exists in ., .github or docs." } }
+  },
   "skipped": [ { "repo": "old-repo", "reason": "archived" } ],
   "errors": []
 }
@@ -105,6 +110,7 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 | `tracking` | Only on failures: `{ "type": "issue", "url": … }` for the tool's issue in that repository (one issue per repository and tool, so several results share it), or `{ "type": "ospo-notification", "reason": … }` when no public issue is possible. The report uses it to tell tracked from untracked failures (1.7) and to link the issue |
 
 - **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header: `snapshot` (org settings, advisories) in `org_snapshot`, `archivals` in `archive_repos`, `planned_changes` in `create_repos --json`.
+- **`checks` catalogue:** once per file, one entry per check the tool ran: `name` and `documentation` (`url`, `short`), the same fields as Scorecard. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `checks`, which the report uses for "How it is verified" and the links in the findings register. Each spec therefore needs one heading per check, named like the check's `name`.
 - **Thresholds are configuration**, not part of the results. `config_sha256` pins the configuration of each run.
 - **Whether a check counts** is decided only by the mapping in `config/compliance_report.yaml`. Unmapped checks (e.g. `sbom/license-coverage`, `scorecard/fuzzing`) are written like any other result and do not affect a status.
 - `skipped` lists repositories without results (excluded, archived). `errors` lists repository × check pairs the tool could not evaluate. Both are always present, `[]` if empty, so every file has the same shape.
