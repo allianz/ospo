@@ -134,11 +134,7 @@
       "reason": "1 dependency uses a denied license",
       "details": [
         "Warn: npm:left-pad-gpl@1.0.2 is licensed GPL-3.0-only"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/9"
-      }
+      ]
     },
     {
       "repo": "pdf-render-service",
@@ -228,11 +224,7 @@
       "result": "fail",
       "score": null,
       "reason": "No SBOM available (request returned 404)",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",

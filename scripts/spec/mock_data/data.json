@@ -309,15 +309,14 @@
     "compliance_pct": 86.7,
     "requirements_by_status": {
       "met": 5,
-      "met-tracked": 12,
-      "not-met": 1,
+      "met-findings": 13,
+      "not-met": 0,
       "deviation-accepted": 1,
       "optional": 1
     },
-    "must_met": 14,
+    "must_met": 15,
     "must_total": 15,
     "open_findings": 19,
-    "overdue_findings": 1,
     "repositories_without_findings": 3
   },
   "requirements": [
@@ -325,11 +324,11 @@
       "id": "GV.01",
       "level": "MUST",
       "title": "How to contribute is documented",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/contributing"
           ],
@@ -338,8 +337,7 @@
             "passing": 7,
             "failing": 2,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 12
+          }
         },
         {
           "part": "SHOULD",
@@ -352,11 +350,11 @@
       "id": "GV.02",
       "level": "MUST",
       "title": "Protected against unauthorised actions",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "org/settings",
             "org/ruleset",
@@ -380,7 +378,6 @@
             "org/ruleset": "pass",
             "org/security-configuration": "pass"
           },
-          "oldest_finding_days": 5,
           "attestation": {
             "id": "A-identity",
             "file": "attestations/2026-10-15-identity.md",
@@ -394,11 +391,11 @@
       "id": "LE.01",
       "level": "MUST",
       "title": "License stated for all content",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/license-file",
             "lint/license-type"
@@ -408,8 +405,7 @@
             "passing": 8,
             "failing": 1,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 9
+          }
         }
       ]
     },
@@ -417,11 +413,11 @@
       "id": "LE.02",
       "level": "MUST",
       "title": "Licenses of all components referenced",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "sbom/available"
           ],
@@ -430,8 +426,7 @@
             "passing": 8,
             "failing": 1,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 0
+          }
         }
       ]
     },
@@ -439,11 +434,11 @@
       "id": "QA.01",
       "level": "MUST",
       "title": "List of third-party components available",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "org/security-configuration",
             "sbom/available"
@@ -456,8 +451,7 @@
           },
           "org_checks": {
             "org/security-configuration": "pass"
-          },
-          "oldest_finding_days": 0
+          }
         }
       ]
     },
@@ -490,11 +484,11 @@
       "id": "QA.03",
       "level": "MUST",
       "title": "How to report defects is communicated",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/issues-enabled"
           ],
@@ -503,8 +497,7 @@
             "passing": 8,
             "failing": 1,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 5
+          }
         }
       ]
     },
@@ -512,11 +505,11 @@
       "id": "QA.04",
       "level": "MUST",
       "title": "Testing procedures implemented and used",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "Implemented",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/development-test"
           ],
@@ -525,12 +518,11 @@
             "passing": 6,
             "failing": 2,
             "not_applicable": 1
-          },
-          "oldest_finding_days": 34
+          }
         },
         {
           "part": "Utilised",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "scorecard/ci-tests"
           ],
@@ -539,8 +531,7 @@
             "passing": 5,
             "failing": 1,
             "not_applicable": 3
-          },
-          "oldest_finding_days": 61
+          }
         }
       ]
     },
@@ -569,11 +560,11 @@
       "id": "QA.06",
       "level": "SHOULD",
       "title": "Changes peer-reviewed",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "SHOULD",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "org/ruleset",
             "scorecard/code-review"
@@ -586,8 +577,7 @@
           },
           "org_checks": {
             "org/ruleset": "pass"
-          },
-          "oldest_finding_days": 74
+          }
         }
       ]
     },
@@ -595,11 +585,11 @@
       "id": "BR.01",
       "level": "MUST",
       "title": "Build information public",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/development-file",
             "lint/development-build"
@@ -609,8 +599,7 @@
             "passing": 6,
             "failing": 2,
             "not_applicable": 1
-          },
-          "oldest_finding_days": 34
+          }
         }
       ]
     },
@@ -618,11 +607,11 @@
       "id": "BR.02",
       "level": "MUST",
       "title": "Unique, increasing version identifiers",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/versioning"
           ],
@@ -631,8 +620,7 @@
             "passing": 3,
             "failing": 1,
             "not_applicable": 5
-          },
-          "oldest_finding_days": 52
+          }
         }
       ]
     },
@@ -640,11 +628,11 @@
       "id": "BR.03",
       "level": "MUST",
       "title": "Integrity of distributed assets verifiable",
-      "status": "not-met",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "not-met",
+          "status": "met-findings",
           "checks": [
             "scorecard/signed-releases"
           ],
@@ -653,8 +641,7 @@
             "passing": 2,
             "failing": 2,
             "not_applicable": 5
-          },
-          "oldest_finding_days": 112
+          }
         }
       ]
     },
@@ -662,11 +649,11 @@
       "id": "BR.04",
       "level": "MUST",
       "title": "Change log per release",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/release-notes"
           ],
@@ -675,8 +662,7 @@
             "passing": 3,
             "failing": 1,
             "not_applicable": 5
-          },
-          "oldest_finding_days": 28
+          }
         }
       ]
     },
@@ -763,11 +749,11 @@
       "id": "DE.01",
       "level": "SHOULD",
       "title": "Discontinuation communicated",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "SHOULD",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "archive/notice-before-archival"
           ],
@@ -776,8 +762,7 @@
             "passing": 1,
             "failing": 1,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 14
+          }
         }
       ]
     },
@@ -802,13 +787,6 @@
       "requirements": [
         "BR.03"
       ],
-      "since": "2026-07-14",
-      "age_days": 112,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      },
       "reason": "Project has not signed or included provenance with any releases."
     },
     {
@@ -818,13 +796,6 @@
       "requirements": [
         "QA.06"
       ],
-      "since": "2026-08-21",
-      "age_days": 74,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      },
       "reason": "Found 12/30 approved changesets -- score normalized to 4"
     },
     {
@@ -834,13 +805,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-09-03",
-      "age_days": 61,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      },
       "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2"
     },
     {
@@ -850,13 +814,6 @@
       "requirements": [
         "BR.03"
       ],
-      "since": "2026-09-03",
-      "age_days": 61,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      },
       "reason": "Project has not signed or included provenance with any releases."
     },
     {
@@ -866,13 +823,6 @@
       "requirements": [
         "BR.02"
       ],
-      "since": "2026-09-12",
-      "age_days": 52,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
-      },
       "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3"
     },
     {
@@ -882,13 +832,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -898,13 +841,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "File not found in ., docs, .github"
     },
     {
@@ -914,13 +850,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -930,13 +859,6 @@
       "requirements": [
         "BR.04"
       ],
-      "since": "2026-10-06",
-      "age_days": 28,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG"
     },
     {
@@ -946,13 +868,6 @@
       "requirements": [
         "DE.01"
       ],
-      "since": "2026-10-20",
-      "age_days": 14,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "archived outside the process"
-      },
       "reason": "Archived outside the process (no notice issue)"
     },
     {
@@ -962,13 +877,6 @@
       "requirements": [
         "GV.01"
       ],
-      "since": "2026-10-22",
-      "age_days": 12,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
-      },
       "reason": "File not found in ., .github, docs"
     },
     {
@@ -978,13 +886,6 @@
       "requirements": [
         "LE.01"
       ],
-      "since": "2026-10-25",
-      "age_days": 9,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
-      },
       "reason": "'WTFPL' is not in the approved list"
     },
     {
@@ -994,13 +895,6 @@
       "requirements": [
         "GV.01"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "File not found in ., .github, docs"
     },
     {
@@ -1010,13 +904,6 @@
       "requirements": [
         "QA.03"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "Issues are disabled"
     },
     {
@@ -1026,13 +913,6 @@
       "requirements": [
         "GV.02"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "1 user has direct access"
     },
     {
@@ -1042,13 +922,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1058,13 +931,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "File not found in ., docs, .github"
     },
     {
@@ -1074,13 +940,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1091,13 +950,6 @@
         "LE.02",
         "QA.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
-      },
       "reason": "No SBOM available (request returned 404)"
     }
   ],

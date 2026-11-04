@@ -345,10 +345,10 @@
   <!-- ─────────────────────────── 2 Requirements ─────────────────────────── -->
   <section id="requirements" class="break">
     <h2><span class="num">2</span>Requirement status</h2>
-    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and the age of its oldest open finding. Expand a row to see why repositories fail, which findings to act on first, and the evidence. The full list of failing repositories is in the findings register (Appendix D).</p>
+    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, and the share of applicable repositories that pass. Expand a row to see why repositories fail, which findings to act on first, and the evidence. The full list of failing repositories is in the findings register (Appendix D).</p>
     <div class="card" style="padding:6px 8px">
       <table id="req-table">
-        <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th class="num">Oldest finding</th></tr></thead>
+        <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -375,7 +375,7 @@
   <!-- ─────────────────────────── 4 Findings ─────────────────────────── -->
   <section id="findings" class="break">
     <h2><span class="num">4</span>Findings</h2>
-    <p class="lead">A finding is one repository failing one check that is mapped to a requirement. Each finding is tracked by the tool's issue in the affected repository, or by an OSPO notification where no public issue is possible.</p>
+    <p class="lead">A finding is one repository failing one check that is mapped to a requirement. The tools also open issues in the affected repositories; the report does not read them and only links to the live issues on GitHub.</p>
     <div class="grid-2" style="margin-bottom:16px">
       <div class="card">
         <h3 class="chart-title">Open findings by requirement</h3>
@@ -386,14 +386,11 @@
         <h3 class="chart-title">Active repositories by number of open findings</h3>
         <p class="chart-sub" id="repos-sub"></p>
         <div id="seg-repos"></div>
-        <h3 class="chart-title" style="margin-top:22px">Age of open findings</h3>
-        <p class="chart-sub" id="aging-sub"></p>
-        <div id="seg-aging"></div>
       </div>
     </div>
     <div class="card" style="padding:6px 8px">
       <table id="repo-table">
-        <thead><tr><th>Repositories with the most open findings</th><th class="num">Open findings</th><th>Requirements affected</th><th class="num">Oldest finding</th><th>Tracking</th></tr></thead>
+        <thead><tr><th>Repositories with the most open findings</th><th class="num">Open findings</th><th>Requirements affected</th><th>Issues</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -493,17 +490,13 @@
         <label>Requirement <select id="f-req"></select></label>
         <label>Check <select id="f-check"></select></label>
         <label>Repository <input id="f-repo" type="search" placeholder="name contains…"></label>
-        <label>Tracking <select id="f-track">
-          <option value="">All</option><option value="issue">Issue</option><option value="ospo-notification">OSPO notification</option><option value="none">Untracked</option>
-        </select></label>
-        <label class="chk"><input type="checkbox" id="f-overdue"> Older than target only</label>
         <button type="button" id="f-reset">Reset</button>
       </div>
       <div class="filter-count" id="reg-count"></div>
       <table id="reg-table">
         <thead><tr>
           <th class="sortable" data-sort="req">Req.</th><th class="sortable" data-sort="check">Check</th><th class="sortable" data-sort="repo">Repository</th>
-          <th>Reason</th><th class="sortable" data-sort="since">Failing since</th><th class="sortable num" data-sort="age">Age / target</th><th>Tracking</th>
+          <th>Reason</th><th>Issues</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -852,15 +845,14 @@
     "compliance_pct": 86.7,
     "requirements_by_status": {
       "met": 5,
-      "met-tracked": 12,
-      "not-met": 1,
+      "met-findings": 13,
+      "not-met": 0,
       "deviation-accepted": 1,
       "optional": 1
     },
-    "must_met": 14,
+    "must_met": 15,
     "must_total": 15,
     "open_findings": 19,
-    "overdue_findings": 1,
     "repositories_without_findings": 3
   },
   "requirements": [
@@ -868,11 +860,11 @@
       "id": "GV.01",
       "level": "MUST",
       "title": "How to contribute is documented",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/contributing"
           ],
@@ -881,8 +873,7 @@
             "passing": 7,
             "failing": 2,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 12
+          }
         },
         {
           "part": "SHOULD",
@@ -895,11 +886,11 @@
       "id": "GV.02",
       "level": "MUST",
       "title": "Protected against unauthorised actions",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "org/settings",
             "org/ruleset",
@@ -923,7 +914,6 @@
             "org/ruleset": "pass",
             "org/security-configuration": "pass"
           },
-          "oldest_finding_days": 5,
           "attestation": {
             "id": "A-identity",
             "file": "attestations/2026-10-15-identity.md",
@@ -937,11 +927,11 @@
       "id": "LE.01",
       "level": "MUST",
       "title": "License stated for all content",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/license-file",
             "lint/license-type"
@@ -951,8 +941,7 @@
             "passing": 8,
             "failing": 1,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 9
+          }
         }
       ]
     },
@@ -960,11 +949,11 @@
       "id": "LE.02",
       "level": "MUST",
       "title": "Licenses of all components referenced",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "sbom/available"
           ],
@@ -973,8 +962,7 @@
             "passing": 8,
             "failing": 1,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 0
+          }
         }
       ]
     },
@@ -982,11 +970,11 @@
       "id": "QA.01",
       "level": "MUST",
       "title": "List of third-party components available",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "org/security-configuration",
             "sbom/available"
@@ -999,8 +987,7 @@
           },
           "org_checks": {
             "org/security-configuration": "pass"
-          },
-          "oldest_finding_days": 0
+          }
         }
       ]
     },
@@ -1033,11 +1020,11 @@
       "id": "QA.03",
       "level": "MUST",
       "title": "How to report defects is communicated",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/issues-enabled"
           ],
@@ -1046,8 +1033,7 @@
             "passing": 8,
             "failing": 1,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 5
+          }
         }
       ]
     },
@@ -1055,11 +1041,11 @@
       "id": "QA.04",
       "level": "MUST",
       "title": "Testing procedures implemented and used",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "Implemented",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/development-test"
           ],
@@ -1068,12 +1054,11 @@
             "passing": 6,
             "failing": 2,
             "not_applicable": 1
-          },
-          "oldest_finding_days": 34
+          }
         },
         {
           "part": "Utilised",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "scorecard/ci-tests"
           ],
@@ -1082,8 +1067,7 @@
             "passing": 5,
             "failing": 1,
             "not_applicable": 3
-          },
-          "oldest_finding_days": 61
+          }
         }
       ]
     },
@@ -1112,11 +1096,11 @@
       "id": "QA.06",
       "level": "SHOULD",
       "title": "Changes peer-reviewed",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "SHOULD",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "org/ruleset",
             "scorecard/code-review"
@@ -1129,8 +1113,7 @@
           },
           "org_checks": {
             "org/ruleset": "pass"
-          },
-          "oldest_finding_days": 74
+          }
         }
       ]
     },
@@ -1138,11 +1121,11 @@
       "id": "BR.01",
       "level": "MUST",
       "title": "Build information public",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/development-file",
             "lint/development-build"
@@ -1152,8 +1135,7 @@
             "passing": 6,
             "failing": 2,
             "not_applicable": 1
-          },
-          "oldest_finding_days": 34
+          }
         }
       ]
     },
@@ -1161,11 +1143,11 @@
       "id": "BR.02",
       "level": "MUST",
       "title": "Unique, increasing version identifiers",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/versioning"
           ],
@@ -1174,8 +1156,7 @@
             "passing": 3,
             "failing": 1,
             "not_applicable": 5
-          },
-          "oldest_finding_days": 52
+          }
         }
       ]
     },
@@ -1183,11 +1164,11 @@
       "id": "BR.03",
       "level": "MUST",
       "title": "Integrity of distributed assets verifiable",
-      "status": "not-met",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "not-met",
+          "status": "met-findings",
           "checks": [
             "scorecard/signed-releases"
           ],
@@ -1196,8 +1177,7 @@
             "passing": 2,
             "failing": 2,
             "not_applicable": 5
-          },
-          "oldest_finding_days": 112
+          }
         }
       ]
     },
@@ -1205,11 +1185,11 @@
       "id": "BR.04",
       "level": "MUST",
       "title": "Change log per release",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "MUST",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "lint/release-notes"
           ],
@@ -1218,8 +1198,7 @@
             "passing": 3,
             "failing": 1,
             "not_applicable": 5
-          },
-          "oldest_finding_days": 28
+          }
         }
       ]
     },
@@ -1306,11 +1285,11 @@
       "id": "DE.01",
       "level": "SHOULD",
       "title": "Discontinuation communicated",
-      "status": "met-tracked",
+      "status": "met-findings",
       "parts": [
         {
           "part": "SHOULD",
-          "status": "met-tracked",
+          "status": "met-findings",
           "checks": [
             "archive/notice-before-archival"
           ],
@@ -1319,8 +1298,7 @@
             "passing": 1,
             "failing": 1,
             "not_applicable": 0
-          },
-          "oldest_finding_days": 14
+          }
         }
       ]
     },
@@ -1345,13 +1323,6 @@
       "requirements": [
         "BR.03"
       ],
-      "since": "2026-07-14",
-      "age_days": 112,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      },
       "reason": "Project has not signed or included provenance with any releases."
     },
     {
@@ -1361,13 +1332,6 @@
       "requirements": [
         "QA.06"
       ],
-      "since": "2026-08-21",
-      "age_days": 74,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      },
       "reason": "Found 12/30 approved changesets -- score normalized to 4"
     },
     {
@@ -1377,13 +1341,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-09-03",
-      "age_days": 61,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      },
       "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2"
     },
     {
@@ -1393,13 +1350,6 @@
       "requirements": [
         "BR.03"
       ],
-      "since": "2026-09-03",
-      "age_days": 61,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      },
       "reason": "Project has not signed or included provenance with any releases."
     },
     {
@@ -1409,13 +1359,6 @@
       "requirements": [
         "BR.02"
       ],
-      "since": "2026-09-12",
-      "age_days": 52,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
-      },
       "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3"
     },
     {
@@ -1425,13 +1368,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1441,13 +1377,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "File not found in ., docs, .github"
     },
     {
@@ -1457,13 +1386,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1473,13 +1395,6 @@
       "requirements": [
         "BR.04"
       ],
-      "since": "2026-10-06",
-      "age_days": 28,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG"
     },
     {
@@ -1489,13 +1404,6 @@
       "requirements": [
         "DE.01"
       ],
-      "since": "2026-10-20",
-      "age_days": 14,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "archived outside the process"
-      },
       "reason": "Archived outside the process (no notice issue)"
     },
     {
@@ -1505,13 +1413,6 @@
       "requirements": [
         "GV.01"
       ],
-      "since": "2026-10-22",
-      "age_days": 12,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
-      },
       "reason": "File not found in ., .github, docs"
     },
     {
@@ -1521,13 +1422,6 @@
       "requirements": [
         "LE.01"
       ],
-      "since": "2026-10-25",
-      "age_days": 9,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
-      },
       "reason": "'WTFPL' is not in the approved list"
     },
     {
@@ -1537,13 +1431,6 @@
       "requirements": [
         "GV.01"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "File not found in ., .github, docs"
     },
     {
@@ -1553,13 +1440,6 @@
       "requirements": [
         "QA.03"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "Issues are disabled"
     },
     {
@@ -1569,13 +1449,6 @@
       "requirements": [
         "GV.02"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "1 user has direct access"
     },
     {
@@ -1585,13 +1458,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1601,13 +1467,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "File not found in ., docs, .github"
     },
     {
@@ -1617,13 +1476,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1634,13 +1486,6 @@
         "LE.02",
         "QA.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
-      },
       "reason": "No SBOM available (request returned 404)"
     }
   ],
@@ -2030,11 +1875,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., .github, docs",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -2153,11 +1994,7 @@
       "result": "fail",
       "score": null,
       "reason": "'WTFPL' is not in the approved list",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
-      }
+      "details": []
     },
     {
       "repo": "quote-calculator-demo",
@@ -2346,11 +2183,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., docs, .github",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -2359,11 +2192,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -2372,11 +2201,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -2398,11 +2223,7 @@
       "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG",
       "details": [
         "Warn: v1.8.0 has no release notes"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      ]
     },
     {
       "repo": "pdf-render-service",
@@ -2647,11 +2468,7 @@
       "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
       "details": [
         "Info: releases checked: v3.1.0, v3.0.9, v3.1.1"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
-      }
+      ]
     },
     {
       "repo": "mobile-sdk-ios",
@@ -2750,11 +2567,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., docs, .github",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -2763,11 +2576,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -2776,11 +2585,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -2834,11 +2639,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., .github, docs",
-      "details": [],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
@@ -2856,11 +2657,7 @@
       "result": "fail",
       "score": null,
       "reason": "Issues are disabled",
-      "details": [],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
@@ -2871,11 +2668,7 @@
       "reason": "1 user has direct access",
       "details": [
         "Warn: ext-contractor-42 has direct write access"
-      ],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      ]
     },
     {
       "repo": "claims-event-schemas",
@@ -3213,11 +3006,7 @@
       "reason": "1 dependency uses a denied license",
       "details": [
         "Warn: npm:left-pad-gpl@1.0.2 is licensed GPL-3.0-only"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/9"
-      }
+      ]
     },
     {
       "repo": "pdf-render-service",
@@ -3307,11 +3096,7 @@
       "result": "fail",
       "score": null,
       "reason": "No SBOM available (request returned 404)",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -3857,11 +3642,7 @@
       "result": "fail",
       "score": 4,
       "reason": "Found 12/30 approved changesets -- score normalized to 4",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -3870,11 +3651,7 @@
       "result": "fail",
       "score": 0,
       "reason": "Project has not signed or included provenance with any releases.",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -3986,11 +3763,7 @@
       "result": "fail",
       "score": 2,
       "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -4008,11 +3781,7 @@
       "result": "fail",
       "score": 0,
       "reason": "Project has not signed or included provenance with any releases.",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -4404,7 +4173,6 @@ function scaleMock(factor, worst) {
   let seed = 20261103;
   const rnd = () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   const pick = xs => xs[Math.floor(rnd() * xs.length)];
-  const addDays = (iso, n) => new Date(Date.parse(iso.slice(0, 10)) + n * 864e5).toISOString().slice(0, 10);
   const key = r => r.repo + '|' + r.check;
   const TOOLS = ['lint_repos.json', 'license_scan.json', 'scorecard.json'].filter(f => FILES[f]);
   const templates = [...DATA.scope.active];
@@ -4430,7 +4198,6 @@ function scaleMock(factor, worst) {
 
   const mutate = (r, repo) => {
     const out = { ...r, repo, details: [...r.details] };
-    delete out.tracking;
     if (r.result === 'na') return out;
     const thr = DATA.checks[r.check]?.threshold;
     if (thr != null) {
@@ -4456,18 +4223,9 @@ function scaleMock(factor, worst) {
 
   if (worst) for (const r of all) if (r.check === worst && r.result === 'pass') {
     const thr = DATA.checks[worst]?.threshold;
-    r.result = 'fail'; delete r.tracking;
+    r.result = 'fail';
     if (thr != null) { r.score = Math.floor(rnd() * thr); r.reason = scoreReason(worst, r.score, 'fail'); r.details = []; }
     else { const e = fromPool(worst, 'fail'); r.reason = e?.reason ?? 'Synthetic failure (worst-case mock)'; r.details = e ? [...e.details] : []; }
-  }
-
-  // tracking: one issue per repository and tool; OSPO notification when issues are disabled; ~1% untracked
-  const issuesOff = new Set(all.filter(r => r.check === 'lint/issues-enabled' && r.result === 'fail').map(r => r.repo));
-  const issueNo = {};
-  for (const f of TOOLS) for (const r of FILES[f].results) {
-    if (r.result !== 'fail' || !isMapped(r.check) || r.tracking) continue;
-    if (issuesOff.has(r.repo)) r.tracking = { type: 'ospo-notification', reason: 'issues disabled in repository' };
-    else if (rnd() >= 0.01) r.tracking = { type: 'issue', url: `https://github.com/${ORG}/${r.repo}/issues/${issueNo[r.repo + '|' + f] ??= 1 + Math.floor(rnd() * 120)}` };
   }
 
   // findings: keep the mock's findings, synthesise the rest
@@ -4478,11 +4236,9 @@ function scaleMock(factor, worst) {
     if (r.result !== 'fail' || !isMapped(r.check)) continue;
     const prev = old.get(key(r));
     if (prev) { findings.push(prev); continue; }
-    const age = Math.floor(rnd() ** 3 * 130);
-    findings.push({ repo: r.repo, check: r.check, name: r.name, requirements: [...REQS_OF_CHECK[r.check]], since: addDays(DATA.run_at, -age), age_days: age, target_days: 90, tracking: r.tracking ?? null, reason: r.reason });
+    findings.push({ repo: r.repo, check: r.check, name: r.name, requirements: [...REQS_OF_CHECK[r.check]], reason: r.reason });
   }
   for (const f of DATA.findings) if (!allKeys.has(key(f))) findings.push(f);
-  findings.sort((a, b) => b.age_days - a.age_days);
   DATA.findings = findings;
 
   // recompute part counts and statuses (status logic of draft section 1.7)
@@ -4491,7 +4247,7 @@ function scaleMock(factor, worst) {
   const byCheck = {};
   for (const r of every) (byCheck[r.check] ??= []).push(r);
   for (const f of findings) if (!everyKeys.has(key(f))) (byCheck[f.check] ??= []).push({ repo: f.repo, check: f.check, result: 'fail' });
-  const rank = { 'met': 1, 'met-tracked': 2, 'not-met': 3 };
+  const rank = { 'met': 1, 'met-findings': 2, 'not-met': 3 };
   for (const q of DATA.requirements) {
     for (const p of q.parts) {
       if (!p.repositories) continue;
@@ -4502,10 +4258,8 @@ function scaleMock(factor, worst) {
       const app = repos.filter(x => by[x].some(v => v !== 'na'));
       const fail = app.filter(x => by[x].includes('fail'));
       p.repositories = { applicable: app.length, passing: app.length - fail.length, failing: fail.length, not_applicable: repos.length - app.length };
-      const pf = findings.filter(f => f.requirements.includes(q.id) && rc.includes(f.check));
-      if (pf.length) p.oldest_finding_days = Math.max(...pf.map(f => f.age_days)); else delete p.oldest_finding_days;
       const orgFail = Object.values(p.org_checks ?? {}).includes('fail');
-      p.status = orgFail || pf.some(f => f.age_days > f.target_days || !f.tracking) ? 'not-met' : fail.length ? 'met-tracked' : 'met';
+      p.status = orgFail ? 'not-met' : fail.length ? 'met-findings' : 'met';
     }
     if (!['deviation-accepted', 'optional'].includes(q.status)) {
       const rel = q.level === 'MUST' ? q.parts.filter(p => !['SHOULD', 'MAY'].includes(p.part)) : q.parts.filter(p => p.status !== 'not-verified');
@@ -4519,11 +4273,10 @@ function scaleMock(factor, worst) {
   S.checks_evaluated = counted.length + findings.filter(f => !everyKeys.has(key(f))).length;
   S.checks_passed = counted.filter(r => r.result === 'pass').length;
   S.compliance_pct = Math.round(S.checks_passed / S.checks_evaluated * 1000) / 10;
-  S.must_met = DATA.requirements.filter(q => q.level === 'MUST' && ['met', 'met-tracked'].includes(q.status)).length;
+  S.must_met = DATA.requirements.filter(q => q.level === 'MUST' && ['met', 'met-findings'].includes(q.status)).length;
   S.requirements_by_status = {};
   for (const q of DATA.requirements) S.requirements_by_status[q.status] = (S.requirements_by_status[q.status] ?? 0) + 1;
   S.open_findings = findings.length;
-  S.overdue_findings = findings.filter(f => f.age_days > f.target_days).length;
   const withF = new Set(findings.map(f => f.repo));
   S.repositories_without_findings = DATA.scope.active.filter(x => !withF.has(x)).length;
   const H = DATA.history, last = H.at(-1), ratio = S.open_findings / (last.open_findings || 1), dp = S.compliance_pct - last.compliance_pct;
@@ -4543,7 +4296,7 @@ const FINDINGS = DATA.findings;
 const RESULT_KEY = new Map(REPO_RESULTS.map(r => [r.repo + '|' + r.check, r]));
 /* Findings that compliance_report derived itself (no tool result), e.g. archived outside the process */
 const DERIVED = FINDINGS.filter(f => !RESULT_KEY.has(f.repo + '|' + f.check))
-  .map(f => ({ repo: f.repo, check: f.check, name: f.name, result: 'fail', score: null, reason: f.reason, details: ['Info: derived by compliance_report (no tool result)'], tracking: f.tracking, file: 'data.json', derived: true }));
+  .map(f => ({ repo: f.repo, check: f.check, name: f.name, result: 'fail', score: null, reason: f.reason, details: ['Info: derived by compliance_report (no tool result)'], file: 'data.json', derived: true }));
 for (const d of DERIVED) RESULT_KEY.set(d.repo + '|' + d.check, d);
 const ALL_REPO_RESULTS = [...REPO_RESULTS, ...DERIVED];
 const FINDINGS_BY_REQ = {};
@@ -4559,7 +4312,7 @@ const CHAPTERS = { GV: 'Governance', LE: 'Legal', QA: 'Quality', BR: 'Build and 
 
 const STATUS = {
   'met':                { label: 'Met',                        color: 'var(--good)',     glyph: '✓', ink: '#fff' },
-  'met-tracked':        { label: 'Met, with tracked findings', color: 'repeating-linear-gradient(135deg, var(--good) 0 6px, var(--good-2) 6px 9px)', glyph: '✓', ink: '#fff', ring: 'ring-good' },
+  'met-findings':        { label: 'Met, with findings', color: 'repeating-linear-gradient(135deg, var(--good) 0 6px, var(--good-2) 6px 9px)', glyph: '✓', ink: '#fff', ring: 'ring-good' },
   'not-met':            { label: 'Not met',                    color: 'var(--critical)', glyph: '✕', ink: '#fff' },
   'not-verified':       { label: 'Not verified',               color: 'transparent',     glyph: '?', ink: 'var(--muted)', ring: 'ring' },
   'deviation-accepted': { label: 'Deviation accepted',         color: 'var(--neutral)',  glyph: 'D', ink: '#fff' },
@@ -4603,7 +4356,6 @@ const capText = (xs, n) => xs.length > n ? `${xs.slice(0, n).join(', ')} and ${x
 const countBy = (xs, f) => { const m = new Map(); for (const x of xs) { const k = f(x); m.set(k, (m.get(k) ?? 0) + 1); } return [...m.entries()].sort((a, b) => b[1] - a[1]); };
 const checkName = id => DATA.checks[id]?.name ?? id;
 const joinNodes = (nodes, sep = ' · ') => nodes.flatMap((n, i) => i ? [sep, n] : [n]);
-const isOverdue = f => f.age_days > f.target_days;
 
 const tip = $('tip');
 function showTip(evt, value, label) {
@@ -4623,29 +4375,18 @@ function statusPill(key, label) {
   const ico = h('span', { class: 'ico' + (st.ring ? ' ' + st.ring : ''), style: `background:${st.color};color:${st.ink}`, 'aria-hidden': 'true', text: st.glyph });
   return h('span', { class: 'status' }, ico, label ?? st.label);
 }
-const alertPill = text => h('span', { class: 'status' }, h('span', { class: 'ico', style: 'background:var(--critical);color:#fff', 'aria-hidden': 'true', text: '!' }), text);
 function resultPill(r) {
   const thr = DATA.checks[r.check]?.threshold;
   const score = r.score != null ? ` · score ${r.score}${thr != null ? ` (≥ ${thr})` : ''}` : '';
   return statusPill(r.result, STATUS[r.result].label + score);
 }
-function overdueAge(f) {
-  const txt = `${f.age_days} / ${f.target_days} days`;
-  return isOverdue(f) ? alertPill(txt) : txt;
-}
-function trackingNode(t) {
-  if (!t) return alertPill('Untracked');
-  if (t.type === 'issue') {
-    const m = t.url.match(/github\.com\/[^/]+\/([^/]+)\/issues\/(\d+)/);
-    return h('a', { href: t.url, text: m ? `${m[1]}#${m[2]}` : t.url });
-  }
-  return h('span', { class: 'muted' }, 'OSPO notification: ', t.reason);
-}
 function checkLink(id) {
   const c = DATA.checks[id];
   return h('span', {}, c?.documentation?.url ? h('a', { href: c.documentation.url, text: c.name }) : checkName(id), ' ', h('code', { text: id }));
 }
-const liveIssuesUrl = checks => `https://github.com/search?q=${encodeURIComponent(`org:${ORG} is:issue is:open label:${checks.join(',')}`)}&type=issues`;
+/* Live GitHub search for the scanners' issues, by check label. The report does not read issues; this is only a link. */
+const liveIssuesUrl = (checks, repo) => `https://github.com/search?q=${encodeURIComponent(`${repo ? `repo:${ORG}/${repo}` : `org:${ORG}`} is:issue is:open label:${checks.join(',')}`)}&type=issues`;
+const liveIssuesLink = (checks, repo, text = 'Live issues') => h('a', { href: liveIssuesUrl(checks, repo), text });
 /* Link that opens the findings register with a filter applied */
 const registerLink = (text, filter) => h('a', { href: '#register', 'data-filter': JSON.stringify(filter), text });
 const linksRow = nodes => { nodes = nodes.filter(Boolean); return nodes.length ? h('div', { class: 'links' }, '→ ', joinNodes(nodes)) : null; };
@@ -4877,8 +4618,6 @@ document.title = `BSI TR-03185 Compliance Report · ${ORG} · ${fmtDate(DATA.run
 
 /* ═══════════════════════════ 1 Summary ═══════════════════════════ */
 const notMet = DATA.requirements.filter(q => q.status === 'not-met');
-const overdue = FINDINGS.filter(isOverdue).sort((a, b) => b.age_days - a.age_days);
-const untracked = FINDINGS.filter(f => !f.tracking);
 const snap = FILES['org_snapshot.json'];
 const drift = FILES['drift.json'];
 const adv = snap.snapshot.advisories;
@@ -4888,7 +4627,7 @@ const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
   $('summary-lead').textContent =
     `${S.must_met} of ${S.must_total} MUST requirements are met. ` +
     (notMet.length ? `Not met: ${notMet.length > 3 ? notMet.map(q => q.id).join(', ') : notMet.map(q => `${q.id} (${q.title})`).join(', ')}. ` : '') +
-    `${plural(S.open_findings, 'finding is', 'findings are')} open, ${S.overdue_findings} of them older than ${S.overdue_findings === 1 ? 'its' : 'their'} target.`;
+    `${plural(S.open_findings, 'finding is', 'findings are')} open.`;
 
   const deltaNode = (cur, prev, { unit = '', goodWhenUp = true } = {}) => {
     if (prev == null) return null;
@@ -4908,13 +4647,14 @@ const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
     tile('Active repositories without findings', S.repositories_without_findings, `of ${ACTIVE.length} · ${Math.round(S.repositories_without_findings / ACTIVE.length * 100)}%`,
       h('div', { class: 'sub', text: capText(ACTIVE.filter(r => !withF.has(r)), 3) })),
     tile('Open findings', S.open_findings, null, deltaNode(S.open_findings, PREV?.open_findings, { goodWhenUp: false })),
-    tile('Findings older than target', S.overdue_findings, null, h('div', { class: 'sub', text: capText(overdue.map(f => `${f.repo} · ${f.name}`), 2) || 'None' })),
+    tile('Org-level checks passing', ORG_RESULTS.filter(r => r.result === 'pass').length, `of ${ORG_RESULTS.length}`,
+      h('div', { class: 'sub', text: capText(ORG_RESULTS.filter(r => r.result === 'fail').map(r => r.name), 2) || 'All pass' })),
   );
 
   const sb = $('status-bars');
   for (const lvl of ['MUST', 'SHOULD']) {
     const reqs = DATA.requirements.filter(q => q.level === lvl);
-    segBar(sb, ['met', 'met-tracked', 'not-met', 'deviation-accepted', 'optional'].map(st => {
+    segBar(sb, ['met', 'met-findings', 'not-met', 'deviation-accepted', 'optional'].map(st => {
       const qs = reqs.filter(q => q.status === st);
       return { label: STATUS[st].label, color: STATUS[st].color, ink: STATUS[st].ink, border: STATUS[st].ring === 'ring', value: qs.length, names: qs.map(q => q.id) };
     }), { title: `${lvl} requirements`, unit: 'requirements', table: false });
@@ -4929,39 +4669,25 @@ const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
   for (const q of byFailing.slice(0, KM_CAP)) {
     const p = q.parts.find(x => x.status === 'not-met');
     const qf = findingsOf(q.id), r = p.repositories;
-    const why = [qf.filter(isOverdue).length ? plural(qf.filter(isOverdue).length, 'finding is', 'findings are') + ' older than the target' : null, qf.filter(f => !f.tracking).length ? plural(qf.filter(f => !f.tracking).length, 'finding is', 'findings are') + ' untracked' : null].filter(Boolean);
+    const orgF = Object.entries(p.org_checks ?? {}).filter(([, v]) => v === 'fail').map(([c]) => checkName(c));
     km.append(h('li', {}, h('b', { text: `${q.id} ${q.title}: not met. ` }),
-      r ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.name)).join(', ')}). ` : '',
-      why.length ? `${why.join('; ')}. ` : '',
-      p.oldest_finding_days != null ? `Oldest: ${p.oldest_finding_days} days.` : ''));
+      orgF.length ? `Failing org-level ${orgF.length === 1 ? 'check' : 'checks'}: ${orgF.join(', ')}. ` : '',
+      r?.failing ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.name)).join(', ')}).` : ''));
   }
   if (byFailing.length > KM_CAP) km.append(h('li', {}, h('b', { text: `${byFailing.length - KM_CAP} more not met: ` }), byFailing.slice(KM_CAP).map(q => `${q.id} (${plural(findingsOf(q.id).length, 'finding')})`).join(', ') + '. Details in section 2.'));
   const orgFail = ORG_RESULTS.filter(r => r.result === 'fail');
   km.append(h('li', {}, h('b', { text: orgFail.length ? `${orgFail.length} of ${ORG_RESULTS.length} org-level checks fail. ` : `All ${ORG_RESULTS.length} org-level checks pass. ` }), ORG_RESULTS.map(r => r.name).join(', ') + '.'));
   km.append(h('li', {}, h('b', { text: snap.changes_since_previous.length ? `${plural(snap.changes_since_previous.length, 'org configuration change')} since ${fmtDate(snap.previous_snapshot_date)}. ` : `No org configuration change since ${fmtDate(snap.previous_snapshot_date)}. ` }),
     plannedN ? `Access drift: ${plural(plannedN, 'planned change')}.` : `No access drift: ${drift.results[0].reason}.`));
-  const issueN = FINDINGS.filter(f => f.tracking?.type === 'issue').length;
-  const ospoF = FINDINGS.filter(f => f.tracking?.type === 'ospo-notification');
-  km.append(h('li', {}, h('b', { text: `${issueN} of ${FINDINGS.length} open findings have a public issue. ` }),
-    ospoF.length ? `${ospoF.length} are tracked by OSPO notification (${countBy(ospoF, f => f.tracking.reason).map(([k, n]) => `${k}: ${n}`).join('; ')}). ` : '',
-    untracked.length ? `${untracked.length} are untracked.` : 'None is untracked.'));
+  const findingChecks = uniq(FINDINGS.map(f => f.check));
+  if (findingChecks.length) km.append(h('li', {}, h('b', { text: 'Issues: ' }), 'the scanners open issues in the affected repositories; their current state is on GitHub, not in this report. ',
+    liveIssuesLink(findingChecks, null, 'Live issues for all failing checks'), '.'));
   const advRes = ORG_RESULTS.find(r => r.check === 'advisories/published-in-time');
   if (advRes) km.append(h('li', {}, h('b', { text: 'Vulnerability handling: ' }), `${advRes.reason}. `,
     adv.unpublished.length ? `${plural(adv.unpublished.length, 'advisory is', 'advisories are')} not yet published (${adv.unpublished.map(u => `${u.state}, ${u.age_days} days`).join('; ')}; details withheld).` : ''));
 
   // Needs attention (generated, capped)
   const at = $('attention');
-  const item = f => [`${f.repo} · ${f.name} (${f.requirements.join(', ')}): ${f.age_days} / ${f.target_days} days · `, trackingNode(f.tracking)];
-  const group = (title, fs, filter, cap = 5) => {
-    if (!fs.length) return;
-    at.append(h('li', {}, h('b', { text: title }),
-      h('ul', { class: 'sub' }, fs.slice(0, cap).map(f => h('li', {}, item(f)))),
-      fs.length > cap ? (filter ? linksRow([registerLink(`all ${fs.length} in the findings register`, filter)]) : h('div', { class: 'links', text: `… and ${fs.length - cap} more` })) : null));
-  };
-  group(`${plural(untracked.length, 'finding is', 'findings are')} untracked`, untracked, { track: 'none' });
-  group(`${plural(overdue.length, 'finding is', 'findings are')} older than ${overdue.length === 1 ? 'its' : 'their'} target`, overdue, { overdue: true });
-  const soon = FINDINGS.filter(f => !isOverdue(f) && f.age_days >= f.target_days - 30).sort((a, b) => b.age_days - a.age_days);
-  group(`${plural(soon.length, 'finding reaches', 'findings reach')} ${soon.length === 1 ? 'its' : 'their'} target within 30 days`, soon, null, 3);
   const expiredDev = DATA.deviations.filter(d => d.expired), overdueAct = DATA.actions.filter(a => a.overdue);
   at.append(h('li', {}, h('b', { text: 'Deviations and actions: ' }),
     expiredDev.length ? `${plural(expiredDev.length, 'deviation has', 'deviations have')} expired (${expiredDev.map(d => d.id).join(', ')}). ` : `None of the ${DATA.deviations.length} deviations has expired. `,
@@ -4970,7 +4696,6 @@ const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
 }
 
 /* ═══════════════════════════ 2 Requirements ═══════════════════════════ */
-const targetOf = fs => fs.length ? Math.max(...fs.map(f => f.target_days)) : null;
 const partFindings = (q, p) => findingsOf(q.id).filter(f => (p.checks ?? []).includes(f.check));
 
 function coverageNode(q) {
@@ -5037,22 +4762,14 @@ function reasonGroups(qf) {
     if (scored) g.scores.push(r.score);
     g.reasons.set(f.reason, (g.reasons.get(f.reason) ?? 0) + 1);
   }
-  const oldest = g => Math.max(...g.items.map(f => f.age_days));
-  return [...groups.values()].sort((a, b) => b.items.length - a.items.length || oldest(b) - oldest(a));
-}
-function trackingSummary(fs) {
-  const n = pred => fs.filter(pred).length;
-  return [[n(f => f.tracking?.type === 'issue'), 'issue', 'issues'], [n(f => f.tracking?.type === 'ospo-notification'), 'OSPO notification', 'OSPO notifications'], [n(f => !f.tracking), 'untracked', 'untracked']]
-    .filter(p => p[0]).map(([k, one, many]) => `${k} ${k === 1 ? one : many}`).join(' · ');
+  return [...groups.values()].sort((a, b) => b.items.length - a.items.length);
 }
 function groupsTable(groups, cap = 8) {
   const shown = groups.slice(0, cap), rest = groups.slice(cap);
   return h('table', {},
-    h('thead', {}, h('tr', {}, ['Check', 'Reason', 'Repositories', 'Oldest / target', 'Older than target', 'Tracking'].map((x, i) => h('th', { class: [2, 3, 4].includes(i) ? 'num' : '', text: x })))),
+    h('thead', {}, h('tr', {}, ['Check', 'Reason', 'Repositories', 'Issues'].map((x, i) => h('th', { class: i === 2 ? 'num' : '', text: x })))),
     h('tbody', {}, shown.map(g => {
       const top = [...g.reasons.entries()].sort((a, b) => b[1] - a[1])[0][0];
-      const oldest = g.items.reduce((a, f) => f.age_days > a.age_days ? f : a);
-      const od = g.items.filter(isOverdue).length;
       return h('tr', {},
         h('td', { class: 'nowrap', text: checkName(g.check) }),
         h('td', {},
@@ -5060,25 +4777,9 @@ function groupsTable(groups, cap = 8) {
           h('div', { class: g.scored ? 'small muted' : null }, g.scored ? `e.g. ${top}` : top),
           g.reasons.size > 1 && !g.scored ? h('div', { class: 'small muted', text: `${g.reasons.size} variants of this text; the most frequent is shown` }) : null),
         h('td', { class: 'num', text: g.items.length }),
-        h('td', { class: 'num nowrap' }, overdueAge(oldest)),
-        h('td', { class: 'num', text: od || '–' }),
-        h('td', { class: 'small', text: trackingSummary(g.items) }));
+        h('td', { class: 'small nowrap' }, liveIssuesLink([g.check])));
     })),
-    rest.length ? h('tfoot', {}, h('tr', {}, h('td', { colspan: 6, class: 'chart-sub', text: `… and ${plural(rest.length, 'more group')} with ${plural(rest.reduce((a, g) => a + g.items.length, 0), 'finding')}.` }))) : null);
-}
-/* The findings that drive the status: untracked, older than target, or close to it */
-function priorityTable(qf, cap = 10) {
-  const why = f => !f.tracking ? [0, 'Untracked'] : isOverdue(f) ? [1, `Older than target by ${f.age_days - f.target_days} days`] : f.age_days >= f.target_days - 30 ? [2, `Reaches target in ${f.target_days - f.age_days} days`] : null;
-  const pr = qf.map(f => ({ f, w: why(f) })).filter(x => x.w).sort((a, b) => a.w[0] - b.w[0] || b.f.age_days - a.f.age_days);
-  if (!pr.length) return h('p', { class: 'muted', text: 'No finding is untracked, older than its target, or within 30 days of its target.' });
-  return h('table', {},
-    h('thead', {}, h('tr', {}, ['Repository', 'Check', 'Why', 'Age / target', 'Tracking'].map((x, i) => h('th', { class: i === 3 ? 'num' : '', text: x })))),
-    h('tbody', {}, pr.slice(0, cap).map(({ f, w }) => h('tr', {},
-      h('td', { class: 'id', text: f.repo }), h('td', { class: 'nowrap', text: f.name }),
-      h('td', { class: 'why' }, w[0] < 2 ? alertPill(w[1]) : w[1]),
-      h('td', { class: 'num nowrap' }, overdueAge(f)),
-      h('td', { class: 'nowrap' }, trackingNode(f.tracking))))),
-    pr.length > cap ? h('tfoot', {}, h('tr', {}, h('td', { colspan: 5, class: 'chart-sub', text: `… and ${pr.length - cap} more (${trackingSummary(pr.slice(cap).map(x => x.f))}).` }))) : null);
+    rest.length ? h('tfoot', {}, h('tr', {}, h('td', { colspan: 4, class: 'chart-sub', text: `… and ${plural(rest.length, 'more group')} with ${plural(rest.reduce((a, g) => a + g.items.length, 0), 'finding')}.` }))) : null);
 }
 
 function renderCard(q) {
@@ -5096,10 +4797,6 @@ function renderCard(q) {
         (r.not_applicable ? ` ${plural(r.not_applicable, 'repository is', 'repositories are')} not applicable.` : ''));
     }
     if (p.org_checks) lines.push('Org-level: ' + Object.entries(p.org_checks).map(([c, v]) => `${checkName(c)} ${v}`).join(' · ') + '.');
-    if (p.oldest_finding_days != null) lines.push(`Oldest finding: ${p.oldest_finding_days} days (target: ${targetOf(pf)} days).` +
-      (pf.filter(isOverdue).length ? ` ${plural(pf.filter(isOverdue).length, 'finding is', 'findings are')} older than the target.` : ''));
-    const ospo = pf.filter(f => f.tracking?.type === 'ospo-notification').length, untr = pf.filter(f => !f.tracking).length;
-    if (ospo || untr) lines.push([ospo ? `${ospo} of ${pf.length} findings are tracked by OSPO notification instead of a public issue.` : '', untr ? `${untr} ${untr === 1 ? 'is' : 'are'} untracked.` : ''].filter(Boolean).join(' '));
     if (p.basis) lines.push(`Basis: ${p.basis}.`);
     if (p.deviation) {
       const d = DEV[p.deviation];
@@ -5110,7 +4807,7 @@ function renderCard(q) {
       lines.push(`Attestation ${a.id} (${a.file}): ${(a.covers ?? []).join(', ')}. Approved by ${a.approved_by} on ${fmtDate(a.date)}, valid until ${fmtDate(a.valid_until)}.`);
     }
     if (p.status === 'optional' && !p.checks?.length) lines.push('No check is mapped to this part. Reported for information.');
-    const issueChecks = uniq(pf.filter(f => f.tracking?.type === 'issue').map(f => f.check));
+    const issueChecks = uniq(pf.map(f => f.check));
     return h('div', { class: 'part' },
       h('span', { class: 'level', style: 'justify-self:start;align-self:start', text: p.part }),
       h('div', {},
@@ -5118,7 +4815,7 @@ function renderCard(q) {
         lines.map(t => h('p', { text: t })),
         linksRow([
           pf.length ? registerLink(`${plural(pf.length, 'finding')} in the register`, { req: q.id, check: uniq(pf.map(f => f.check)).length === 1 ? pf[0].check : '' }) : null,
-          issueChecks.length ? h('a', { href: liveIssuesUrl(issueChecks), text: 'Live issues on GitHub' }) : null,
+          issueChecks.length ? liveIssuesLink(issueChecks, null, 'Live issues on GitHub') : null,
           p.deviation ? h('a', { href: '#deviations', text: `Deviation ${p.deviation}` }) : null,
         ])));
   });
@@ -5142,9 +4839,8 @@ function renderCard(q) {
     h('div', { class: 'hist-grid' }, scoredChecks.map(c => scoreHistogram(c, ALL_REPO_RESULTS.filter(r => r.check === c && ACTIVE.includes(r.repo)))))) : null;
 
   const failSec = repoChecks.length ? sec(`Why repositories fail${qf.length ? ` · ${plural(qf.length, 'open finding')}` : ''}`,
-    qf.length ? groupsTable(reasonGroups(qf)) : h('p', { class: 'muted', text: 'No repository fails.' })) : null;
-  const prioSec = qf.length ? sec('Act first', priorityTable(qf),
-    linksRow([registerLink(`All ${plural(qf.length, 'open finding')} of ${q.id} in the findings register`, { req: q.id }), h('a', { href: '#results', text: 'Results per repository (Appendix E)' })])) : null;
+    qf.length ? groupsTable(reasonGroups(qf)) : h('p', { class: 'muted', text: 'No repository fails.' }),
+    qf.length ? linksRow([registerLink(`All ${plural(qf.length, 'open finding')} of ${q.id} in the findings register`, { req: q.id }), h('a', { href: '#results', text: 'Results per repository (Appendix E)' })]) : null) : null;
 
   const archSec = allChecks.includes('archive/notice-before-archival') && DATA.archivals.length ? sec('Archivals recorded',
     h('table', {}, h('thead', {}, h('tr', {}, ['Repository', 'Archived', 'By', 'Notice', 'Days of notice'].map((x, i) => h('th', { class: i === 4 ? 'num' : '', text: x })))),
@@ -5162,7 +4858,7 @@ function renderCard(q) {
     ...atts.map(f => h('span', {}, h('a', { href: '#evidence', text: f }), h('span', { class: 'muted', text: ' (attestation)' }))),
   ]))) : null;
 
-  return h('div', { class: 'rcard' }, sec('Result', partNodes), sec('How it is verified', verified), histSec, failSec, prioSec, archSec, actSec, evSec);
+  return h('div', { class: 'rcard' }, sec('Result', partNodes), sec('How it is verified', verified), histSec, failSec, archSec, actSec, evSec);
 }
 
 {
@@ -5170,20 +4866,18 @@ function renderCard(q) {
   let lastCh = null;
   for (const q of DATA.requirements) {
     const ch = q.id.slice(0, 2);
-    if (ch !== lastCh) { tbody.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 6, text: `${ch} · ${CHAPTERS[ch] ?? ''}` }))); lastCh = ch; }
+    if (ch !== lastCh) { tbody.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 5, text: `${ch} · ${CHAPTERS[ch] ?? ''}` }))); lastCh = ch; }
     const det = h('details', { class: 'req' }, h('summary', { text: q.title }));
     const levels = uniq([q.level, ...q.parts.map(p => p.part).filter(x => ['MUST', 'SHOULD', 'MAY'].includes(x))]);
     const qf = findingsOf(q.id);
-    const oldest = Math.max(-1, ...q.parts.map(p => p.oldest_finding_days ?? -1));
     tbody.append(h('tr', {},
       h('td', { class: 'id', text: q.id }),
       h('td', {}, det, qf.length ? h('div', { class: 'small muted', style: 'margin-left:14px', text: plural(qf.length, 'open finding') }) : null),
       h('td', {}, joinNodes(levels.map(l => h('span', { class: 'level', text: l })), ' ')),
       h('td', {}, statusPill(q.status)),
-      h('td', {}, coverageNode(q)),
-      h('td', { class: 'num' }, oldest < 0 ? h('span', { class: 'muted', text: '–' }) : qf.some(isOverdue) ? alertPill(`${oldest} days`) : `${oldest} days`)));
+      h('td', {}, coverageNode(q))));
     // cards are built on first open, so large scopes stay fast
-    const cell = h('td', { colspan: 6 });
+    const cell = h('td', { colspan: 5 });
     const row = h('tr', { class: 'card-row', hidden: '' }, cell);
     det.addEventListener('toggle', () => { if (det.open && !cell.firstChild) cell.append(renderCard(q)); row.hidden = !det.open; });
     tbody.append(row);
@@ -5220,29 +4914,20 @@ function renderCard(q) {
     { label: '4 or more', names: bucket(4, Infinity), color: 'var(--critical)', ink: '#fff' },
   ].map(p => ({ ...p, value: p.names.length })), { unit: 'repositories' });
 
-  $('aging-sub').textContent = `Target: resolved within ${uniq(FINDINGS.map(f => f.target_days)).join(' or ')} days`;
-  segBar($('seg-aging'), [
-    { label: 'Under 30 days', value: FINDINGS.filter(f => f.age_days < 30).length, color: 'var(--ord-1)', ink: 'var(--ord-1-ink)' },
-    { label: '30 days to target', value: FINDINGS.filter(f => f.age_days >= 30 && !isOverdue(f)).length, color: 'var(--ord-2)', ink: 'var(--ord-2-ink)' },
-    { label: 'Older than target (overdue)', value: overdue.length, color: 'var(--ord-3)', ink: 'var(--ord-3-ink)' },
-  ], { unit: 'findings' });
-
   const CAP = 15;
   const rt = document.querySelector('#repo-table tbody');
   const repos = [...nBy.keys()].map(repo => {
     const fs = FINDINGS.filter(f => f.repo === repo);
-    return { repo, fs, n: fs.length, oldest: fs.reduce((a, f) => f.age_days > a.age_days ? f : a) };
-  }).sort((a, b) => b.n - a.n || b.oldest.age_days - a.oldest.age_days);
+    return { repo, fs, n: fs.length };
+  }).sort((a, b) => b.n - a.n || a.repo.localeCompare(b.repo));
   for (const r of repos.slice(0, CAP)) {
-    const tracks = uniq(r.fs.map(f => JSON.stringify(f.tracking ?? null))).map(t => JSON.parse(t));
     rt.append(h('tr', {},
       h('td', { class: 'id' }, r.repo, ARCHIVED.includes(r.repo) ? h('span', { class: 'small muted', style: 'font-weight:400', text: ' (archived)' }) : null),
       h('td', { class: 'num', text: r.n }),
       h('td', {}, uniq(r.fs.flatMap(f => f.requirements)).sort().map(x => registerLinkTag(x, { req: x, repo: r.repo }))),
-      h('td', { class: 'num' }, overdueAge(r.oldest)),
-      h('td', {}, joinNodes(tracks.map(trackingNode), h('br')))));
+      h('td', { class: 'nowrap' }, liveIssuesLink(uniq(r.fs.map(f => f.check)), r.repo))));
   }
-  if (repos.length > CAP) rt.append(h('tr', {}, h('td', { colspan: 6, class: 'chart-sub' }, `Top ${CAP} of ${repos.length} repositories with open findings. `, registerLink('All findings in the register (Appendix D)', {}))));
+  if (repos.length > CAP) rt.append(h('tr', {}, h('td', { colspan: 4, class: 'chart-sub' }, `Top ${CAP} of ${repos.length} repositories with open findings. `, registerLink('All findings in the register (Appendix D)', {}))));
 }
 function registerLinkTag(text, filter) { const a = registerLink(text, filter); a.className = 'tag'; return a; }
 
@@ -5279,8 +4964,6 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
   const row = (e, n, d) => ct.append(h('tr', {}, h('td', { text: e }), h('td', { class: 'num nowrap', text: n }), h('td', {}, d)));
   row('Overall compliance', `${fmtPct(PREV.compliance_pct)} → ${fmtPct(S.compliance_pct)}`, `${(S.compliance_pct - PREV.compliance_pct).toFixed(1)} pts. Now ${S.checks_passed} of ${S.checks_evaluated} evaluated checks pass.`);
   row('Open findings', `${PREV.open_findings} → ${S.open_findings}`, `Net change ${S.open_findings - PREV.open_findings}.`);
-  const newF = FINDINGS.filter(f => f.since > prevDate);
-  row('New findings', newF.length, newF.length ? `In ${plural(uniq(newF.map(f => f.repo)).length, 'repository', 'repositories')}. By check: ${capText(countBy(newF, f => f.name).map(([k, n]) => `${k} ${n}`), 6)}.` : 'None');
   const arch = DATA.archivals.filter(a => a.archived_date > prevDate);
   row('Repositories archived', arch.length, arch.length ? arch.map(a => `${a.repo} on ${fmtDate(a.archived_date)} by ${a.by}` + (a.days_notice != null ? `, after ${a.days_notice} days of notice` : '')).join('; ') : 'None');
   row('Org configuration changes', snap.changes_since_previous.length, snap.changes_since_previous.length ? flatten(snap.changes_since_previous).map(x => x.join(': ')).join('; ') : `Org settings, ruleset, security configuration and org security policy unchanged since the snapshot of ${fmtDate(snap.previous_snapshot_date)}.`);
@@ -5304,8 +4987,8 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
 
   const DEFS = [ // fixed template text (status logic of compliance_report)
     ['met', 'All applicable repositories pass, and all org-level checks pass.'],
-    ['met-tracked', 'Some repositories fail, but every failure has an open issue or an OSPO notification, and none is older than its target.'],
-    ['not-met', 'At least one failure is older than its target or untracked, or an org-level check fails.'],
+    ['met-findings', 'Every org-level check passes, but some applicable repositories fail.'],
+    ['not-met', 'An org-level check fails, or no check covers a MUST part.'],
     ['not-verified', 'No check covers this part. For a SHOULD it links to a deviation; for a MUST it counts as Not met.'],
     ['deviation-accepted', 'SHOULD requirement that is not verified, with an approved deviation (section 6).'],
     ['optional', 'MAY requirement. Reported for information only.'],
@@ -5369,34 +5052,30 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
 }
 
 /* ═══════════════════════════ D Findings register (filterable) ═══════════════════════════ */
-const REG = { req: '', check: '', repo: '', track: '', overdue: false, sort: 'age', dir: -1, limit: 200 };
-const SORTERS = { req: f => f.requirements[0], check: f => checkName(f.check), repo: f => f.repo, since: f => f.since, age: f => f.age_days };
+const REG = { req: '', check: '', repo: '', sort: 'req', dir: 1, limit: 200 };
+const SORTERS = { req: f => f.requirements[0], check: f => checkName(f.check), repo: f => f.repo };
 function readRegisterControls() {
   REG.req = $('f-req').value; REG.check = $('f-check').value; REG.repo = $('f-repo').value.trim().toLowerCase();
-  REG.track = $('f-track').value; REG.overdue = $('f-overdue').checked; REG.limit = 200;
+  REG.limit = 200;
   renderRegister();
 }
 function applyRegisterFilter(f) {
   $('f-req').value = f.req ?? ''; $('f-check').value = f.check ?? ''; $('f-repo').value = f.repo ?? '';
-  $('f-track').value = f.track ?? ''; $('f-overdue').checked = !!f.overdue;
   readRegisterControls();
 }
 function renderRegister() {
   const rows = FINDINGS.filter(f => (!REG.req || f.requirements.includes(REG.req)) && (!REG.check || f.check === REG.check)
-    && (!REG.repo || f.repo.toLowerCase().includes(REG.repo))
-    && (!REG.track || (REG.track === 'none' ? !f.tracking : f.tracking?.type === REG.track))
-    && (!REG.overdue || isOverdue(f)));
+    && (!REG.repo || f.repo.toLowerCase().includes(REG.repo)));
   const key = SORTERS[REG.sort];
-  rows.sort((a, b) => { const x = key(a), y = key(b); return (x < y ? -1 : x > y ? 1 : 0) * REG.dir || b.age_days - a.age_days; });
+  const cmp = (x, y) => x < y ? -1 : x > y ? 1 : 0;
+  rows.sort((a, b) => cmp(key(a), key(b)) * REG.dir || cmp(a.repo, b.repo) || cmp(a.check, b.check));
   document.querySelector('#reg-table tbody').replaceChildren(...rows.slice(0, REG.limit).map(f => h('tr', {},
     h('td', {}, f.requirements.map(x => h('span', { class: 'tag', text: x }))),
     h('td', {}, checkLink(f.check)),
     h('td', { class: 'id' }, f.repo, ARCHIVED.includes(f.repo) ? h('div', { class: 'small muted', style: 'font-weight:400', text: 'archived' }) : null),
     h('td', { text: f.reason }),
-    h('td', { class: 'nowrap', text: fmtDate(f.since) }),
-    h('td', { class: 'num nowrap' }, overdueAge(f)),
-    h('td', { class: 'nowrap' }, trackingNode(f.tracking)))));
-  const active = REG.req || REG.check || REG.repo || REG.track || REG.overdue;
+    h('td', { class: 'nowrap' }, liveIssuesLink([f.check], f.repo)))));
+  const active = REG.req || REG.check || REG.repo;
   $('reg-count').textContent = `${active ? `${rows.length} of ${FINDINGS.length} open findings match the filter` : `${FINDINGS.length} open findings`}` + (rows.length > REG.limit ? `; showing the first ${REG.limit}` : '') + '.';
   const more = $('reg-more');
   more.replaceChildren();
@@ -5412,11 +5091,11 @@ function renderRegister() {
     ...DATA.requirements.filter(q => findingsOf(q.id).length).map(q => h('option', { value: q.id, text: `${q.id} ${q.title} (${findingsOf(q.id).length})` })));
   $('f-check').append(h('option', { value: '', text: 'All checks' }),
     ...countBy(FINDINGS, f => f.check).map(([c, n]) => h('option', { value: c, text: `${checkName(c)} (${n})` })));
-  for (const id of ['f-req', 'f-check', 'f-track', 'f-overdue']) $(id).addEventListener('change', readRegisterControls);
+  for (const id of ['f-req', 'f-check']) $(id).addEventListener('change', readRegisterControls);
   $('f-repo').addEventListener('input', readRegisterControls);
   $('f-reset').addEventListener('click', () => applyRegisterFilter({}));
   document.querySelectorAll('#reg-table th[data-sort]').forEach(th => th.addEventListener('click', () => {
-    const k = th.dataset.sort; REG.dir = REG.sort === k ? -REG.dir : (k === 'age' || k === 'since' ? -1 : 1); REG.sort = k; renderRegister();
+    const k = th.dataset.sort; REG.dir = REG.sort === k ? -REG.dir : 1; REG.sort = k; renderRegister();
   }));
   const m = location.hash.match(/^#register:(.+)$/);
   if (m) { applyRegisterFilter({ req: decodeURIComponent(m[1]) }); requestAnimationFrame(() => $('register').scrollIntoView()); }
@@ -5456,7 +5135,7 @@ function renderMatrix() {
   const tipFor = (evt, k) => {
     const r = RESULT_KEY.get(k), thr = DATA.checks[r.check]?.threshold;
     showTip(evt, `${r.name}: ${STATUS[r.result].label}${r.score != null ? ` · score ${r.score}${thr != null ? ` (≥ ${thr})` : ''}` : ''}`,
-      `${r.repo}\n${r.reason}${r.details.length ? '\n' + r.details.join('\n') : ''}${r.tracking ? '\nTracking: ' + (r.tracking.url ?? 'OSPO notification, ' + r.tracking.reason) : ''}${isMapped(r.check) ? '' : '\nNot mapped to a requirement (information only)'}`);
+      `${r.repo}\n${r.reason}${r.details.length ? '\n' + r.details.join('\n') : ''}${isMapped(r.check) ? '' : '\nNot mapped to a requirement (information only)'}`);
   };
   m.addEventListener('pointermove', e => { const c = e.target.closest('.mcell[data-k]'); c ? tipFor(e, c.dataset.k) : hideTip(); });
   m.addEventListener('pointerleave', hideTip);
@@ -5493,7 +5172,7 @@ function renderMatrix() {
 let saved = null;
 addEventListener('beforeprint', () => {
   saved = { reg: { ...REG }, mx: { ...MX } };
-  Object.assign(REG, { req: '', check: '', repo: '', track: '', overdue: false, limit: Infinity }); renderRegister();
+  Object.assign(REG, { req: '', check: '', repo: '', limit: Infinity }); renderRegister();
   Object.assign(MX, { repo: '', failing: true, limit: Infinity }); renderMatrix();
   document.querySelectorAll('details.req').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; d.dispatchEvent(new Event('toggle')); });
 });

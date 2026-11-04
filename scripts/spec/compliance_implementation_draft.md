@@ -60,16 +60,16 @@ scorecard_check ─┘
 ```
 
 - Each job uploads its JSON as an artifact. The report job runs `if: always()`, and a missing input means "no data", never "pass".
-- The report job downloads the previous release's `data.json`, which carries trend history and "failing since" dates.
+- The report job downloads the previous release's `data.json`, which carries the trend history.
 
 ### 1.5 Check IDs, issues and labels
 
 - **Check IDs** have the form `<tool>/<check>`, e.g. `lint/contributing`, `scorecard/ci-tests`.
 - **Requirement mapping** exists in one place only: `config/compliance_report.yaml`. The scripts know nothing about BSI IDs.
-- **Issues:** each tool keeps one issue per repository, as `lint_repos` does today. That issue lists all failing checks of that tool.
+- **Issues:** each tool keeps one issue per repository, as `lint_repos` does today. That issue lists all failing checks of that tool. Issues are a convenience for the project teams. The report does not read them, and they do not affect any status: a team may close an issue without fixing the finding, and the tool opens it again on the next run. The report only links to the live issues on GitHub.
 - **Labels:** the issue carries one label per failing check, e.g. `lint/contributing`. Labels are added and removed as checks change. The report's "Live issues" link searches by label, e.g. `org:allianz is:issue is:open label:lint/contributing`.
-- **Security-sensitive results never become public issues.** For example: an unpublished advisory, or a repository with secret scanning switched off. The OSPO is notified privately, and the public report shows counts only.
-- **Issues disabled:** a check cannot open an issue in a repository whose issues are switched off (QA.03). Such findings go to the OSPO instead.
+- **Security-sensitive results never become public issues.** For example: an unpublished advisory, or a repository with secret scanning switched off. The tool opens no issue, and the public report shows counts only.
+- **Issues disabled or archived:** a tool cannot open an issue in a repository whose issues are switched off (QA.03) or that is archived. It logs a warning in its workflow run. This is a tool problem, not a report concern; the finding is in the report either way.
 
 ### 1.6 Common JSON format
 
@@ -107,7 +107,6 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 | `score` | 0–10 where the tool measures a score (Scorecard), otherwise `null`. Scorecard's `-1` becomes `null`. Compared with the check's `threshold` |
 | `reason` | One sentence for people, always filled (also for `pass` and `na`), e.g. "6 of 412 packages (1.5%) have no license information" |
 | `details` | List of lines for people, Scorecard style (`Warn: …`, `Info: …`), e.g. one line per denied package. Always a list, `[]` if empty. Never parsed |
-| `tracking` | Only on failures: `{ "type": "issue", "url": … }` for the tool's issue in that repository (one issue per repository and tool, so several results share it), or `{ "type": "ospo-notification", "reason": … }` when no public issue is possible. The report uses it to tell tracked from untracked failures (1.7) and to link the issue |
 
 - **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header: `snapshot` (org settings, advisories) in `org_snapshot`, `archivals` in `archive_repos`, `planned_changes` in `create_repos --json`.
 - **`checks` catalogue:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`), the same fields as Scorecard. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `checks`, which the report uses for "How it is verified" and the links in the findings register. Each spec therefore needs one heading per check, named like the check's `name`.
@@ -120,15 +119,14 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 Per requirement part:
 
 - **Met:** all applicable repositories pass.
-- **Met, with tracked findings:** some fail, but every failure has an open issue (or an OSPO notification), and none is older than its target.
-- **Not met:** at least one failure is older than its target, or untracked, or the enforced setting deviates from its expected value.
+- **Met, with findings:** some applicable repositories fail, and every org-level check of the part passes.
+- **Not met:** an org-level check fails, i.e. the enforced setting deviates from its expected value.
 - **Not verified:** no check covers this part. For SHOULD, this must link to a deviation. For MUST, it is a gap and counts as Not met.
 - **Not applicable / Optional:** no applicable repositories, or a MAY requirement.
 
 Overall requirement status = the worst MUST part. SHOULD parts are shown separately.
 
-- **Targets:** 90 days by default, overridable per check in the config.
-- **Failing since:** the date a repository × check pair first failed. It is carried forward from the previous `data.json`, and resets when the check passes.
+- **No finding age:** the report does not compute how long a finding has been open. A "failing since" date would have to be carried forward from run to run, and it would silently reset on a missed run, a renamed repository or check, or a check that flaps. The live issues on GitHub show a finding's history.
 
 ### 1.8 Configuration of the report
 
@@ -137,9 +135,6 @@ Overall requirement status = the worst MUST part. SHOULD parts are shown separat
 excluded_repos:
   - name: ng-aquila
     deviation: D-03
-
-targets:
-  default_days: 90
 
 requirements:
   GV.01:
@@ -249,8 +244,8 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Issues**
 - `lint/no-direct-collaborators` and the Scorecard checks: public issue.
-- `lint/secret-scanning`: OSPO notification only (security-sensitive).
-- Drift and snapshot deviations: OSPO notification. These are central settings, so there is no repository issue.
+- `lint/secret-scanning`: no issue (security-sensitive).
+- Drift and snapshot deviations: no issue. These are central settings, fixed by the OSPO.
 
 **New work:** `org_snapshot`, the two lint checks, the `scorecard_check` thresholds, `create_repos --json`, and the first attestation file.
 
@@ -335,7 +330,7 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Script:** `lint_repos`. The data is already in the repository list, so no extra call is needed.
 
-**Issue:** OSPO notification. A private repository is not readable by the public, so a public issue makes no sense, and making a repository private is a central action anyway.
+**Issue:** none. A private repository is not readable by the public, so a public issue makes no sense, and making a repository private is a central action anyway.
 
 **New work:** one small check.
 
@@ -349,7 +344,7 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Exact check:** `lint/issues-enabled`, i.e. `has_issues == true`.
 
-**Issue:** not possible when issues are disabled → OSPO notification.
+**Issue:** not possible when issues are disabled. The tool logs a warning (see 1.5).
 
 **For information:** whether issue templates exist. No status impact.
 
@@ -491,7 +486,7 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Limits of the check:** packages published to registries (npm, Maven Central) are not covered by Signed-Releases. Registry provenance (e.g. npm provenance) could be a later check.
 
-**Prerequisite:** the release workflow template (R-01). Without it, projects cannot fix the finding, and the status stays Not met.
+**Prerequisite:** the release workflow template (R-01). Without it, projects cannot fix the finding.
 
 **New work:** the template, the Scorecard threshold.
 
@@ -582,11 +577,11 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Script:** `org_snapshot`.
 
-**Issue:** never public, because these are unpublished vulnerabilities. OSPO notification only. The public report shows counts and the median time.
+**Issue:** none, because these are unpublished vulnerabilities. The public report shows counts and the median time.
 
 **Limits of the check:** vulnerabilities reported through other channels (e.g. email to the OSPO) are only visible once an advisory is created. The process statement covers this: every report becomes an advisory.
 
-**New work:** the advisories call, the check, the private notification.
+**New work:** the advisories call, the check.
 
 ---
 

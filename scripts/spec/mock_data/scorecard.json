@@ -171,11 +171,7 @@
       "result": "fail",
       "score": 4,
       "reason": "Found 12/30 approved changesets -- score normalized to 4",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -184,11 +180,7 @@
       "result": "fail",
       "score": 0,
       "reason": "Project has not signed or included provenance with any releases.",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -300,11 +292,7 @@
       "result": "fail",
       "score": 2,
       "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -322,11 +310,7 @@
       "result": "fail",
       "score": 0,
       "reason": "Project has not signed or included provenance with any releases.",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",

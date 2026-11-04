@@ -283,11 +283,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., .github, docs",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -406,11 +402,7 @@
       "result": "fail",
       "score": null,
       "reason": "'WTFPL' is not in the approved list",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
-      }
+      "details": []
     },
     {
       "repo": "quote-calculator-demo",
@@ -599,11 +591,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., docs, .github",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -612,11 +600,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -625,11 +609,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -651,11 +631,7 @@
       "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG",
       "details": [
         "Warn: v1.8.0 has no release notes"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      ]
     },
     {
       "repo": "pdf-render-service",
@@ -900,11 +876,7 @@
       "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
       "details": [
         "Info: releases checked: v3.1.0, v3.0.9, v3.1.1"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
-      }
+      ]
     },
     {
       "repo": "mobile-sdk-ios",
@@ -1003,11 +975,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., docs, .github",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -1016,11 +984,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -1029,11 +993,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -1087,11 +1047,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., .github, docs",
-      "details": [],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
@@ -1109,11 +1065,7 @@
       "result": "fail",
       "score": null,
       "reason": "Issues are disabled",
-      "details": [],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
@@ -1124,11 +1076,7 @@
       "reason": "1 user has direct access",
       "details": [
         "Warn: ext-contractor-42 has direct write access"
-      ],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      ]
     },
     {
       "repo": "claims-event-schemas",

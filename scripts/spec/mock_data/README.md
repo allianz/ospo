@@ -19,13 +19,13 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | Repository | Demonstrates |
 |---|---|
 | `pricing-engine` | Fully compliant, releasing, signed release assets |
-| `insurance-rule-dsl` | Missing CONTRIBUTING (GV.01); low Code-Review (QA.06); unsigned releases for 112 days → **BR.03 Not met** (overdue) |
+| `insurance-rule-dsl` | Missing CONTRIBUTING (GV.01); low Code-Review (QA.06); unsigned releases (BR.03) |
 | `quote-calculator-demo` | Unapproved license WTFPL (LE.01); denied dependency license (internal policy, not in the TR findings) |
 | `pdf-render-service` | `security: custom` + `branch-protection: custom` (custom checks apply); no DEVELOPMENT.md (BR.01, QA.04); CI-Tests 2 (QA.04); release without notes (BR.04) |
 | `design-guidelines` | Topic `docs` → BR.01 and QA.04 not applicable; Scorecard CI-Tests not applicable |
 | `mobile-sdk-ios` | Objective-C 26% → QA.05 applies (passes via the "Memory safety" section; Scorecard fuzzing is not mapped); version going backwards in major line 3 (BR.02) |
 | `pricing-sandbox` | New repository: no SBOM, request returns 404 (QA.01, LE.02); no DEVELOPMENT.md; no pull requests yet → Scorecard inconclusive = `na` |
-| `claims-event-schemas` | Issues disabled (QA.03) → all its findings go to the OSPO instead of an issue; a user with direct access (GV.02) |
+| `claims-event-schemas` | Issues disabled (QA.03); a user with direct access (GV.02) |
 | `kafka-schema-tools` | Inactive with an open notice. Not visible in `archive_repos.json`: open notices are not needed for any check |
 | `legacy-xml-mapper` | Archived by `archive_repos` in this run, 60 days after the notice (DE.01 pass); listed as `skipped` (archived) in `lint_repos.json` and `license_scan.json`, so its missing license is not reported |
 | `old-batch-tools` | Archived manually between the runs of 13 and 20 Oct. Not in any `archive_repos` output, so `compliance_report` derives the DE.01 failure (`tool: compliance_report` in `data.json`) |
@@ -48,6 +48,6 @@ On 4 Nov 2026, yukimi was the only active public allianz repository with results
 - `repo: null` marks org-level checks (`org/*`, `drift/access`, `advisories/*`).
 - Every file has a `checks` catalogue (`name`, `documentation.url`, `documentation.short`); `data.json` → `checks` merges them. The OSPO URLs point to spec headings that do not exist yet; the Scorecard URLs are real.
 - Data the report computes with is in a header block (`archivals`, `snapshot`, `planned_changes`), never in `reason` or `details`.
-- Every `fail` that counts has `tracking`: `{type: issue, url}` or `{type: ospo-notification, reason}`. Each tool keeps one issue per repository, so all failing checks of a repository point to the same issue. Labels on that issue (= the failing check IDs) exist on GitHub only.
+- Results carry no `tracking`. Each tool keeps one issue per repository, but the report does not read issues; it only links to a live GitHub search by check label. Labels on that issue (= the failing check IDs) exist on GitHub only.
 - Unpublished security advisories are redacted: the `unpublished` entries in `org_snapshot.json` carry no repository name.
-- `data.json` → `findings[].since` is carried forward from the previous `data.json`. Age is computed against the run date.
+- `data.json` → `findings[]` carries no age or "failing since" date. Only `history` is carried forward from the previous `data.json`. A finding's history is on GitHub, in the live issues.
