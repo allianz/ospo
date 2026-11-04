@@ -32,6 +32,15 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 
 `ng-aquila` is excluded from scope (deviation D-03) and appears only in `skipped` and `scope.excluded`.
 
+## Real reference output (not mock data)
+
+| File | Produced by | Content |
+|---|---|---|
+| `scorecard_cli_real_yukimi.json` | `scorecard --repo=github.com/allianz/yukimi --format=json --show-details` (CLI v5.6.0, run locally on 4 Nov 2026) | **Real, unmodified** Scorecard output. Reference for the input format that `scorecard_check` has to parse. Not part of the 3 Nov mock run. Identical to the API response below except `date` (local time of the run) and an extra `"metadata": null`. |
+| `scorecard_api_real_yukimi.json` | `GET https://api.scorecard.dev/projects/github.com/allianz/yukimi` (fetched 4 Nov 2026; result dated 3 Nov 2026, published by the Scorecard Action in yukimi's `scorecard.yml`) | **Real** API response, only pretty-printed with `jq .`. Same schema as the CLI output, with `details` filled in. Scores and reasons are identical to a local CLI run on the same commit. |
+
+On 4 Nov 2026, yukimi was the only active public allianz repository with results in the API. `ng-aquila`, `.github`, `geofeed` and `ospo` returned 404 because they do not run the Scorecard Action.
+
 ## Conventions used
 
 - `result` is `pass`, `fail` or `na`. `info_only: true` results never affect a status.
