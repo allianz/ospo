@@ -362,18 +362,6 @@
         "passing": 8,
         "failing": 1,
         "not_applicable": 0
-      },
-      "org_checks": {
-        "drift/access": "pass",
-        "org/settings": "pass",
-        "org/ruleset": "pass",
-        "org/security-configuration": "pass"
-      },
-      "attestation": {
-        "id": "A-identity",
-        "file": "attestations/2026-10-15-identity.md",
-        "date": "2026-10-15",
-        "valid_until": "2027-10-15"
       }
     },
     {
@@ -421,9 +409,6 @@
         "passing": 8,
         "failing": 1,
         "not_applicable": 0
-      },
-      "org_checks": {
-        "org/security-configuration": "pass"
       }
     },
     {
@@ -440,9 +425,6 @@
         "passing": 9,
         "failing": 0,
         "not_applicable": 0
-      },
-      "org_checks": {
-        "org/settings": "pass"
       }
     },
     {
@@ -505,9 +487,6 @@
         "passing": 7,
         "failing": 1,
         "not_applicable": 1
-      },
-      "org_checks": {
-        "org/ruleset": "pass"
       }
     },
     {
@@ -592,10 +571,7 @@
       "status": "met",
       "checks": [
         "org/security-policy"
-      ],
-      "org_checks": {
-        "org/security-policy": "pass"
-      }
+      ]
     },
     {
       "id": "VM.02",
@@ -604,10 +580,7 @@
       "status": "met",
       "checks": [
         "advisories/published-in-time"
-      ],
-      "org_checks": {
-        "advisories/published-in-time": "pass"
-      }
+      ]
     },
     {
       "id": "DE.01",
@@ -847,19 +820,6 @@
       "owner": "OSPO",
       "due": "2027-03-31",
       "overdue": false
-    }
-  ],
-  "attestations": [
-    {
-      "id": "A-identity",
-      "file": "attestations/2026-10-15-identity.md",
-      "approved_by": "ISO",
-      "date": "2026-10-15",
-      "covers": [
-        "SSO",
-        "MFA",
-        "Entra ID team sync"
-      ]
     }
   ],
   "history": [

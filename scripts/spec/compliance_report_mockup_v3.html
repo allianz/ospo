@@ -180,9 +180,6 @@
   .tag { display: inline-block; font-size: 12px; border: 1px solid var(--grid); border-radius: 4px; padding: 0 5px; margin: 0 4px 2px 0; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
   a.tag:hover { border-color: var(--accent); text-decoration: none; }
   pre.det { margin: 4px 0 0; font: 11.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); white-space: pre-wrap; }
-  dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px; margin: 4px 0 0; font-size: 12.5px; }
-  dl.kv dt { color: var(--muted); }
-  dl.kv dd { margin: 0; font-variant-numeric: tabular-nums; }
 
   /* charts */
   svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
@@ -275,7 +272,6 @@
   .showall { margin: 8px 10px; font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
   ul.sub { margin: 4px 0 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-2); }
   ul.sub li { margin-bottom: 2px; }
-  .hist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 520px)); gap: 12px 32px; }
   .rcard tfoot td { border-bottom: none; padding-top: 8px; }
   .why { white-space: nowrap; }
   @media print {
@@ -467,12 +463,6 @@
     <div class="card" style="padding:6px 8px;margin-bottom:16px">
       <table id="ev-table">
         <thead><tr><th>Evidence</th><th>Tool</th><th>Data as of</th><th class="num">Age at report</th><th>SHA-256</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="card" style="padding:6px 8px">
-      <table id="att-table">
-        <thead><tr><th>Attestation</th><th>File</th><th>Covers</th><th>Approved by</th><th>Date</th><th>Valid until</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -895,18 +885,6 @@
         "passing": 8,
         "failing": 1,
         "not_applicable": 0
-      },
-      "org_checks": {
-        "drift/access": "pass",
-        "org/settings": "pass",
-        "org/ruleset": "pass",
-        "org/security-configuration": "pass"
-      },
-      "attestation": {
-        "id": "A-identity",
-        "file": "attestations/2026-10-15-identity.md",
-        "date": "2026-10-15",
-        "valid_until": "2027-10-15"
       }
     },
     {
@@ -954,9 +932,6 @@
         "passing": 8,
         "failing": 1,
         "not_applicable": 0
-      },
-      "org_checks": {
-        "org/security-configuration": "pass"
       }
     },
     {
@@ -973,9 +948,6 @@
         "passing": 9,
         "failing": 0,
         "not_applicable": 0
-      },
-      "org_checks": {
-        "org/settings": "pass"
       }
     },
     {
@@ -1038,9 +1010,6 @@
         "passing": 7,
         "failing": 1,
         "not_applicable": 1
-      },
-      "org_checks": {
-        "org/ruleset": "pass"
       }
     },
     {
@@ -1125,10 +1094,7 @@
       "status": "met",
       "checks": [
         "org/security-policy"
-      ],
-      "org_checks": {
-        "org/security-policy": "pass"
-      }
+      ]
     },
     {
       "id": "VM.02",
@@ -1137,10 +1103,7 @@
       "status": "met",
       "checks": [
         "advisories/published-in-time"
-      ],
-      "org_checks": {
-        "advisories/published-in-time": "pass"
-      }
+      ]
     },
     {
       "id": "DE.01",
@@ -1380,19 +1343,6 @@
       "owner": "OSPO",
       "due": "2027-03-31",
       "overdue": false
-    }
-  ],
-  "attestations": [
-    {
-      "id": "A-identity",
-      "file": "attestations/2026-10-15-identity.md",
-      "approved_by": "ISO",
-      "date": "2026-10-15",
-      "covers": [
-        "SSO",
-        "MFA",
-        "Entra ID team sync"
-      ]
     }
   ],
   "history": [
@@ -4165,6 +4115,7 @@ function scaleMock(factor, worst) {
   const byCheck = {};
   for (const r of every) (byCheck[r.check] ??= []).push(r);
   for (const f of findings) if (!everyKeys.has(key(f))) (byCheck[f.check] ??= []).push({ repo: f.repo, check: f.check, result: 'fail' });
+  const orgFailed = new Set(Object.values(FILES).flatMap(t => t.results.filter(r => !r.repo && r.result === 'fail').map(r => r.check)));
   for (const q of DATA.requirements) {
     if (!q.repositories) continue;
     const rc = q.checks.filter(c => !ORG_CHECKS.has(c));
@@ -4174,7 +4125,7 @@ function scaleMock(factor, worst) {
     const app = repos.filter(x => by[x].some(v => v !== 'na'));
     const fail = app.filter(x => by[x].includes('fail'));
     q.repositories = { applicable: app.length, passing: app.length - fail.length, failing: fail.length, not_applicable: repos.length - app.length };
-    const orgFail = Object.values(q.org_checks ?? {}).includes('fail');
+    const orgFail = q.checks.some(c => orgFailed.has(c));
     q.status = orgFail ? 'not-met' : fail.length ? 'met-findings' : 'met';
   }
 
@@ -4219,7 +4170,6 @@ function sourceNode(check) {
     sv ? h('div', { class: 'small muted', text: `Scorecard ${sv}` }) : null);
 }
 const DEV = Object.fromEntries(DATA.deviations.map(d => [d.id, d]));
-const ATT = Object.fromEntries(DATA.attestations.map(a => [a.id, a]));
 const FINDINGS = DATA.findings;
 const RESULT_KEY = new Map(REPO_RESULTS.map(r => [r.repo + '|' + r.check, r]));
 /* Findings that compliance_report derived itself (no tool result), e.g. archived outside the process */
@@ -4503,43 +4453,6 @@ function niceTicks(lo, hi, count = 4) {
   return ticks;
 }
 
-/* Score distribution of one Scorecard check: columns 0–10, coloured by pass/fail against the threshold */
-function scoreHistogram(check, rows) {
-  const def = DATA.checks[check], thr = def.threshold;
-  const scored = rows.filter(r => r.result !== 'na' && r.score != null);
-  const na = rows.length - scored.length;
-  const counts = Array.from({ length: 11 }, (_, sc) => scored.filter(r => r.score === sc).length);
-  const W = 520, H = 150, m = { t: 20, r: 10, b: 26, l: 34 };
-  const ticks = niceTicks(0, Math.max(1, ...counts), 3), yMax = ticks.at(-1);
-  const band = (W - m.l - m.r) / 11, bw = Math.min(26, band * 0.68);
-  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / yMax;
-  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${def.name} score distribution: ` + counts.map((n, i) => `score ${i}: ${n}`).join(', ') });
-  for (const t of ticks) {
-    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
-    s('text', { class: 'tick', x: m.l - 6, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = t;
-  }
-  counts.forEach((n, sc) => {
-    const cx = m.l + band * sc + band / 2, pass = sc >= thr;
-    const bar = n ? s('path', { d: roundedTop(cx - bw / 2, y(n), bw, H - m.b, 3), fill: pass ? 'var(--good)' : 'var(--critical)' }, svg) : null;
-    s('text', { class: 'tick', x: cx, y: H - m.b + 15, 'text-anchor': 'middle' }, svg).textContent = sc;
-    const hit = s('rect', { x: m.l + band * sc, y: m.t, width: band, height: H - m.t - m.b, fill: 'transparent', tabindex: 0, 'aria-label': `score ${sc}: ${n}` }, svg);
-    const on = evt => { bar?.setAttribute('opacity', 0.8); showTip(evt, plural(n, 'repository', 'repositories'), `${def.name} score ${sc} · ${pass ? 'pass' : 'fail'} (threshold ≥ ${thr})`); };
-    const off = () => { bar?.removeAttribute('opacity'); hideTip(); };
-    hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
-    hit.addEventListener('focus', on); hit.addEventListener('blur', off);
-  });
-  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
-  const tx = m.l + band * thr;
-  s('line', { x1: tx, x2: tx, y1: m.t - 8, y2: H - m.b, stroke: 'var(--ink-2)', 'stroke-width': 1, 'stroke-dasharray': '3 3' }, svg);
-  s('text', { class: 'clabel', x: thr >= 7 ? tx - 4 : tx + 4, y: m.t - 10, 'text-anchor': thr >= 7 ? 'end' : 'start' }, svg).textContent = `threshold ≥ ${thr}`;
-  const failN = scored.filter(r => r.score < thr).length;
-  return h('div', {},
-    h('div', { class: 'small', style: 'margin:0 0 4px' }, h('b', { text: def.name }), ` · ${failN} of ${scored.length} repositories below the threshold` + (na ? ` · ${na} not applicable` : '')),
-    svg,
-    h('div', { class: 'legend', style: 'margin-top:2px' }, h('span', {}, h('span', { class: 'sw', style: 'background:var(--good)' }), 'Pass'), h('span', {}, h('span', { class: 'sw', style: 'background:var(--critical)' }), 'Fail')),
-    dataTable(['Score', 'Repositories', 'Result'], counts.map((n, i) => [i, n, i >= thr ? 'pass' : 'fail']), [0, 1]));
-}
-
 /* ═══════════════════════════ Mock controls ═══════════════════════════ */
 {
   const sc = $('ctl-scale'), wc = $('ctl-worst');
@@ -4621,7 +4534,7 @@ const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
   const byFailing = [...notMet].sort((a, b) => findingsOf(b.id).length - findingsOf(a.id).length);
   for (const q of byFailing.slice(0, KM_CAP)) {
     const qf = findingsOf(q.id), r = q.repositories;
-    const orgF = Object.entries(q.org_checks ?? {}).filter(([, v]) => v === 'fail').map(([c]) => checkName(c));
+    const orgF = ORG_RESULTS.filter(r => q.checks?.includes(r.check) && r.result === 'fail').map(r => r.name);
     km.append(h('li', {}, h('b', { text: `${q.id} ${q.title}: not met. ` }),
       orgF.length ? `Failing org-level ${orgF.length === 1 ? 'check' : 'checks'}: ${orgF.join(', ')}. ` : '',
       r?.failing ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.name)).join(', ')}).` : ''));
@@ -4657,7 +4570,8 @@ function coverageNode(q) {
       h('span', { class: 'txt' }, h('b', { text: fmtPct(pct) }), ` · ${ps}/${a} repositories`));
   }
   let txt;
-  if (q.org_checks) { const v = Object.values(q.org_checks); txt = `Org level · ${v.filter(x => x === 'pass').length}/${v.length} checks pass`; }
+  const org = ORG_RESULTS.filter(r => q.checks?.includes(r.check));
+  if (org.length) txt = `Org level · ${org.filter(r => r.result === 'pass').length}/${org.length} checks pass`;
   else if (q.deviation) txt = `Not assessed (${q.deviation})`;
   else if (q.basis) txt = 'By construction';
   else txt = 'Not assessed';
@@ -4681,26 +4595,6 @@ function flatten(obj, prefix = '') {
   }
   return Object.entries(obj).flatMap(([k, v]) => flatten(v, prefix ? `${prefix}.${k}` : k));
 }
-const SNAPSHOT_OF = {
-  'org/settings': () => snap.snapshot.org_settings,
-  'org/ruleset': () => snap.snapshot.rulesets,
-  'org/security-configuration': () => snap.snapshot.code_security_configurations,
-  'org/security-policy': () => snap.snapshot.org_security_policy,
-  'drift/access': () => drift.planned_changes,
-};
-function snapshotNode(check) {
-  if (check === 'advisories/published-in-time') {
-    return h('details', { class: 'more' }, h('summary', { text: `Advisories (${adv.published_in_period.length} published, ${adv.unpublished.length} unpublished)` }),
-      h('table', {}, h('thead', {}, h('tr', {}, ['Advisory', 'Repository', 'Severity', 'Created', 'Published', 'Days', 'CVE'].map((x, i) => h('th', { class: i === 5 ? 'num' : '', text: x })))),
-        h('tbody', {}, adv.published_in_period.map(a => h('tr', {}, h('td', { class: 'id', text: a.ghsa }), h('td', { text: a.repo }), h('td', { text: a.severity }), h('td', { class: 'nowrap', text: fmtDate(a.created_at) }), h('td', { class: 'nowrap', text: fmtDate(a.published_at) }), h('td', { class: 'num', text: a.days_to_publish }), h('td', { class: 'nowrap', text: a.cve }))),
-          adv.unpublished.map(u => h('tr', {}, h('td', { class: 'muted', text: `unpublished (${u.state})` }), h('td', { colspan: 4, class: 'muted', text: u.redacted }), h('td', { class: 'num', text: u.age_days }), h('td', { text: '–' }))))));
-  }
-  const get = SNAPSHOT_OF[check];
-  if (!get) return null;
-  const src = check === 'drift/access' ? 'drift.json → planned_changes' : 'org_snapshot.json → snapshot';
-  return h('details', { class: 'more' }, h('summary', { text: `Recorded values (${src})` }),
-    h('dl', { class: 'kv' }, flatten(get()).flatMap(([k, v]) => [h('dt', { text: k }), h('dd', { text: v })])));
-}
 
 /* Group failing findings by check and reason. Scorecard checks form one group per check (the histogram shows the scores); numbers in other reasons are masked so "1 user…" and "3 users…" group together. */
 
@@ -4715,35 +4609,26 @@ function renderCard(q) {
     h('span', { class: 'level', text: lvl }),
     h('span', {}, txt, lvl === q.level ? null : h('span', { class: 'small', text: ' Not assessed in this version.' })))));
 
-  // What the check table does not show: basis, deviation, attestation
+  // What the check table does not show: basis, deviation
   const notes = [];
   if (q.basis) notes.push(`Basis: ${q.basis}.`);
   if (q.deviation) {
     const d = DEV[q.deviation];
     notes.push(d ? `No check covers this requirement. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this requirement. Deviation ${q.deviation}.`);
   }
-  if (q.attestation) {
-    const a = { ...ATT[q.attestation.id], ...q.attestation };
-    notes.push(`Attestation ${a.id} (${a.file}): ${(a.covers ?? []).join(', ')}. Approved by ${a.approved_by} on ${fmtDate(a.date)}, valid until ${fmtDate(a.valid_until)}.`);
-  }
 
   const verified = allChecks.length ? h('table', {},
     h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Source'].map(x => h('th', { text: x })))),
     h('tbody', {}, allChecks.map(c => {
       const def = DATA.checks[c];
-      const orgR = ORG_RESULTS.find(r => r.check === c);
       return h('tr', {},
         h('td', {}, checkLink(c), def?.threshold != null ? h('div', { class: 'small muted', text: `threshold: score ≥ ${def.threshold}` }) : null),
         h('td', {}, def?.documentation?.short ?? '–',
-          orgR ? h('div', { style: 'margin-top:4px' }, resultPill(orgR), ' ', h('span', { class: 'small', text: orgR.reason })) : null,
-          snapshotNode(c)),
+        ),
         h('td', { class: 'nowrap' }, sourceNode(c)));
     }))) : h('p', { class: 'muted', text: 'No check is mapped to this requirement.' });
   const verifiedSec = sec('How it is verified', verified, notes.map(t => h('p', { style: 'margin-top:8px', text: t })));
 
-  const scoredChecks = repoChecks.filter(c => DATA.checks[c]?.threshold != null);
-  const histSec = scoredChecks.length ? sec('Score distribution',
-    h('div', { class: 'hist-grid' }, scoredChecks.map(c => scoreHistogram(c, ALL_REPO_RESULTS.filter(r => r.check === c && ACTIVE.includes(r.repo)))))) : null;
 
 
   const archSec = allChecks.includes('archive/notice-before-archival') && DATA.archivals.length ? sec('Archivals recorded',
@@ -4760,7 +4645,7 @@ function renderCard(q) {
     h('a', { href: '#results', text: 'Results per repository (Appendix E)' }),
   ])) : null;
 
-  return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, histSec, archSec, actSec, infoSec);
+  return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, archSec, actSec, infoSec);
 }
 
 {
@@ -4935,21 +4820,13 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
 
 /* ═══════════════════════════ C Evidence ═══════════════════════════ */
 {
-  $('evidence-lead').textContent = `The input files of run ${DATA.run_url.split('/').pop()}, identified by SHA-256, plus the attestations the report relies on. Report configuration: ${DATA.report_config}.` + (SCALED ? ' (Scaled mock: the hashes are those of the unscaled files.)' : '');
+  $('evidence-lead').textContent = `The input files of run ${DATA.run_url.split('/').pop()}, identified by SHA-256. Report configuration: ${DATA.report_config}.` + (SCALED ? ' (Scaled mock: the hashes are those of the unscaled files.)' : '');
   const et = document.querySelector('#ev-table tbody');
   for (const i of DATA.inputs) et.append(h('tr', {},
     h('td', {}, h('code', { text: i.file })), h('td', { text: i.tool }),
     h('td', { class: 'nowrap', text: fmtDateTime(i.run_at) }),
     h('td', { class: 'num nowrap', text: plural(daysBetween(i.run_at, DATA.run_at), 'day') }),
     h('td', { class: 'nowrap' }, h('code', { title: i.sha256, text: shortSha(i.sha256) }))));
-  const tt = document.querySelector('#att-table tbody');
-  for (const a of DATA.attestations) {
-    const q = DATA.requirements.find(x => x.attestation?.id === a.id);
-    tt.append(h('tr', {},
-      h('td', { class: 'id' }, a.id, q ? h('div', { class: 'small muted', style: 'font-weight:400', text: `used by ${q.id}` }) : null),
-      h('td', {}, h('code', { text: a.file })), h('td', { text: a.covers.join(', ') }), h('td', { text: a.approved_by }),
-      h('td', { class: 'nowrap', text: fmtDate(a.date) }), h('td', { class: 'nowrap', text: q ? fmtDate(q.attestation.valid_until) : '–' })));
-  }
 }
 
 /* ═══════════════════════════ D Findings register (filterable) ═══════════════════════════ */

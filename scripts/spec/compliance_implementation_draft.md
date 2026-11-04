@@ -18,7 +18,6 @@ Every check has exactly one type:
 | **Exact check** | Can change per repository, and the condition can be tested precisely | A per-repository check with a clear pass/fail |
 | **Structural check** | Can change per repository, but only the form can be tested, not the content | A per-repository check, plus a "Limits of the check" note on the card |
 | **By construction** | GitHub guarantees it; there is nothing to check | A statement in the implementation text |
-| **Attestation** | Cannot be read through any API | A signed statement, renewed on change and at least yearly |
 | **Not verifiable** | No practical way to verify (SHOULD only) | An approved deviation with an expiry date |
 
 Rule: a MUST can never rely on **Not verifiable**. Deviations are only allowed for SHOULD.
@@ -42,7 +41,7 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `license_scan.js` | exists, extend | SBOM retrieval and dependency licenses |
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
 | `org_snapshot.js` | **new** | Saves org settings, ruleset, security configurations, org security policy and security advisories. Compares them with expected values. No issues. |
-| `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds, opens and closes issues (see 1.10) |
+| `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds, opens and closes issues (see 1.9) |
 | `compliance_report.js` | **new** | Merges all JSON results, maps checks to requirements, computes statuses, renders HTML, Markdown and `data.json` |
 
 ### 1.4 Weekly workflow
@@ -164,11 +163,7 @@ actions:
 - Deviations and remediation actions are data, so the report can flag expired deviations and overdue actions.
 - Every change to this file goes through a PR, which gives the audit trail.
 
-### 1.9 Attestations
-
-A manual attestation is a Markdown file added by pull request, e.g. `attestations/2026-10-15-identity.md`. The ISO or the Head of OSPO approves the PR, and that approval is the signature. The report reads the date of the latest attestation and flags it when it is older than 12 months.
-
-### 1.10 Scorecard conversion (`scorecard_check`)
+### 1.9 Scorecard conversion (`scorecard_check`)
 
 **Source:** the Scorecard CLI, `scorecard --repo=github.com/<org>/<repo> --format=json --show-details`, run for every in-scope repository in the weekly workflow, with a pinned version. The public API (`api.scorecard.dev`) only has results for repositories that run the Scorecard Action with `publish_results`; on 4 Nov 2026 that was 1 of 5 active allianz repositories. The CLI output is identical to the API response except `date` (local time) and an extra `metadata: null` (see `mock_data/scorecard_*_real_yukimi.json`).
 
@@ -230,7 +225,7 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 - `scorecard/dangerous-workflow` = 10 and `scorecard/token-permissions` ≥ 8, for all repositories.
 - `drift/access`: `create_repos --dry-run --json` plans no changes.
 
-**Attestation:** SSO enforcement, MFA and Entra ID team sync (`attestations/*-identity.md`), at least yearly.
+**Not assessed in this version:** SSO enforcement, MFA and Entra ID team sync. No API shows them, so the report does not cover them.
 
 **Websites:** no check. The scope statement "GitHub Pages only" is in the implementation text.
 
@@ -239,7 +234,7 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 - `lint/secret-scanning`: no issue (security-sensitive).
 - Drift and snapshot deviations: no issue. These are central settings, fixed by the OSPO.
 
-**New work:** `org_snapshot`, the two lint checks, the `scorecard_check` thresholds, `create_repos --json`, and the first attestation file.
+**New work:** `org_snapshot`, the two lint checks, the `scorecard_check` thresholds, and `create_repos --json`.
 
 ---
 
@@ -352,7 +347,7 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Checks** (one coverage figure: a repository passes only if both applicable checks pass)
 - **Implemented, structural check:** `lint/development-test`. `DEVELOPMENT.md` has a "Test" heading. This is a separate check from BR.01's `lint/development-build`, so a missing "Build" heading does not fail QA.04.
-- **Utilised, exact check:** `scorecard/ci-tests` ≥ 8. Scorecard "inconclusive" → `na`, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is `fail` (see 1.10).
+- **Utilised, exact check:** `scorecard/ci-tests` ≥ 8. Scorecard "inconclusive" → `na`, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is `fail` (see 1.9).
 
 **Not applicable:** topics `docs` or `template`.
 
