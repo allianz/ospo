@@ -165,17 +165,14 @@
   .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: grid; gap: 16px; min-width: 0; }
   .rcard h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
   .rcard p { margin: 0; max-width: 820px; }
-  .rcard .part { display: grid; grid-template-columns: 100px 1fr; gap: 4px 14px; padding: 10px 0; border-top: 1px solid var(--grid); }
-  .rcard .part:first-of-type { border-top: none; padding-top: 2px; }
+  .rcard .part { padding-top: 2px; }
   .rcard .part p + p { margin-top: 4px; }
   .links { color: var(--muted); font-size: 13px; margin-top: 4px; }
   .links a { margin-right: 4px; }
   .rcard .part .head { display: flex; gap: 10px; align-items: center; margin-bottom: 2px; }
   .rcard table { font-size: 12.5px; }
   .rcard td, .rcard th { padding: 6px 8px; }
-  .cov-list { display: grid; gap: 4px; }
   .cov { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
-  .cov .plabel { grid-column: 1 / -1; font-size: 11px; color: var(--muted); margin-bottom: -6px; }
   .meter { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
   .meter > div { height: 100%; background: var(--accent); border-radius: 3px; }
   .cov .txt, .cov-txt { font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; }
@@ -345,10 +342,10 @@
   <!-- ─────────────────────────── 2 Requirements ─────────────────────────── -->
   <section id="requirements" class="break">
     <h2><span class="num">2</span>Requirement status</h2>
-    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, and the share of applicable repositories that pass. Expand a row to see why repositories fail, which findings to act on first, and the evidence. The full list of failing repositories is in the findings register (Appendix D).</p>
+    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see why repositories fail and the evidence. The full list of failing repositories is in the findings register (Appendix D).</p>
     <div class="card" style="padding:6px 8px">
       <table id="req-table">
-        <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th></tr></thead>
+        <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th id="req-trend-h">Trend</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -840,9 +837,9 @@
     ]
   },
   "summary": {
-    "checks_evaluated": 143,
-    "checks_passed": 124,
-    "compliance_pct": 86.7,
+    "checks_evaluated": 142,
+    "checks_passed": 123,
+    "compliance_pct": 86.6,
     "requirements_by_status": {
       "met": 5,
       "met-findings": 13,
@@ -861,458 +858,304 @@
       "level": "MUST",
       "title": "How to contribute is documented",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/contributing"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 7,
-            "failing": 2,
-            "not_applicable": 0
-          }
-        },
-        {
-          "part": "SHOULD",
-          "status": "not-verified",
-          "deviation": "D-04"
-        }
-      ]
+      "checks": [
+        "lint/contributing"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 7,
+        "failing": 2,
+        "not_applicable": 0
+      }
     },
     {
       "id": "GV.02",
       "level": "MUST",
       "title": "Protected against unauthorised actions",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "org/settings",
-            "org/ruleset",
-            "org/security-configuration",
-            "drift/access",
-            "lint/no-direct-collaborators",
-            "lint/secret-scanning",
-            "scorecard/branch-protection",
-            "scorecard/dangerous-workflow",
-            "scorecard/token-permissions"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "drift/access": "pass",
-            "org/settings": "pass",
-            "org/ruleset": "pass",
-            "org/security-configuration": "pass"
-          },
-          "attestation": {
-            "id": "A-identity",
-            "file": "attestations/2026-10-15-identity.md",
-            "date": "2026-10-15",
-            "valid_until": "2027-10-15"
-          }
-        }
-      ]
+      "checks": [
+        "org/settings",
+        "org/ruleset",
+        "org/security-configuration",
+        "drift/access",
+        "lint/no-direct-collaborators",
+        "lint/secret-scanning",
+        "scorecard/branch-protection",
+        "scorecard/dangerous-workflow",
+        "scorecard/token-permissions"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      },
+      "org_checks": {
+        "drift/access": "pass",
+        "org/settings": "pass",
+        "org/ruleset": "pass",
+        "org/security-configuration": "pass"
+      },
+      "attestation": {
+        "id": "A-identity",
+        "file": "attestations/2026-10-15-identity.md",
+        "date": "2026-10-15",
+        "valid_until": "2027-10-15"
+      }
     },
     {
       "id": "LE.01",
       "level": "MUST",
       "title": "License stated for all content",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/license-file",
-            "lint/license-type"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          }
-        }
-      ]
+      "checks": [
+        "lint/license-file",
+        "lint/license-type"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "LE.02",
       "level": "MUST",
       "title": "Licenses of all components referenced",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "sbom/available"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          }
-        }
-      ]
+      "checks": [
+        "sbom/available"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "QA.01",
       "level": "MUST",
       "title": "List of third-party components available",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "org/security-configuration",
-            "sbom/available"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "org/security-configuration": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/security-configuration",
+        "sbom/available"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      },
+      "org_checks": {
+        "org/security-configuration": "pass"
+      }
     },
     {
       "id": "QA.02",
       "level": "MUST",
       "title": "Source code publicly readable",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "org/settings",
-            "lint/public"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 9,
-            "failing": 0,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "org/settings": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/settings",
+        "lint/public"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 9,
+        "failing": 0,
+        "not_applicable": 0
+      },
+      "org_checks": {
+        "org/settings": "pass"
+      }
     },
     {
       "id": "QA.03",
       "level": "MUST",
       "title": "How to report defects is communicated",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/issues-enabled"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          }
-        }
-      ]
+      "checks": [
+        "lint/issues-enabled"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "QA.04",
       "level": "MUST",
       "title": "Testing procedures implemented and used",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "Implemented",
-          "status": "met-findings",
-          "checks": [
-            "lint/development-test"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 6,
-            "failing": 2,
-            "not_applicable": 1
-          }
-        },
-        {
-          "part": "Utilised",
-          "status": "met-findings",
-          "checks": [
-            "scorecard/ci-tests"
-          ],
-          "repositories": {
-            "applicable": 6,
-            "passing": 5,
-            "failing": 1,
-            "not_applicable": 3
-          }
-        }
-      ]
+      "checks": [
+        "lint/development-test",
+        "scorecard/ci-tests"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 6,
+        "failing": 2,
+        "not_applicable": 1
+      }
     },
     {
       "id": "QA.05",
       "level": "SHOULD",
       "title": "Memory safety issues reduced",
       "status": "met",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met",
-          "checks": [
-            "lint/memory-safety-section"
-          ],
-          "repositories": {
-            "applicable": 1,
-            "passing": 1,
-            "failing": 0,
-            "not_applicable": 8
-          }
-        }
-      ]
+      "checks": [
+        "lint/memory-safety-section"
+      ],
+      "repositories": {
+        "applicable": 1,
+        "passing": 1,
+        "failing": 0,
+        "not_applicable": 8
+      }
     },
     {
       "id": "QA.06",
       "level": "SHOULD",
       "title": "Changes peer-reviewed",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met-findings",
-          "checks": [
-            "org/ruleset",
-            "scorecard/code-review"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 7,
-            "failing": 1,
-            "not_applicable": 1
-          },
-          "org_checks": {
-            "org/ruleset": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/ruleset",
+        "scorecard/code-review"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 7,
+        "failing": 1,
+        "not_applicable": 1
+      },
+      "org_checks": {
+        "org/ruleset": "pass"
+      }
     },
     {
       "id": "BR.01",
       "level": "MUST",
       "title": "Build information public",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/development-file",
-            "lint/development-build"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 6,
-            "failing": 2,
-            "not_applicable": 1
-          }
-        }
-      ]
+      "checks": [
+        "lint/development-file",
+        "lint/development-build"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 6,
+        "failing": 2,
+        "not_applicable": 1
+      }
     },
     {
       "id": "BR.02",
       "level": "MUST",
       "title": "Unique, increasing version identifiers",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/versioning"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 3,
-            "failing": 1,
-            "not_applicable": 5
-          }
-        }
-      ]
+      "checks": [
+        "lint/versioning"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 3,
+        "failing": 1,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.03",
       "level": "MUST",
       "title": "Integrity of distributed assets verifiable",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "scorecard/signed-releases"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 2,
-            "failing": 2,
-            "not_applicable": 5
-          }
-        }
-      ]
+      "checks": [
+        "scorecard/signed-releases"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 2,
+        "failing": 2,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.04",
       "level": "MUST",
       "title": "Change log per release",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/release-notes"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 3,
-            "failing": 1,
-            "not_applicable": 5
-          }
-        }
-      ]
+      "checks": [
+        "lint/release-notes"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 3,
+        "failing": 1,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.05",
       "level": "MUST",
       "title": "Source packages match the repository",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
-        }
-      ]
+      "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
     },
     {
       "id": "BR.06",
       "level": "SHOULD",
       "title": "Builds reproducible",
       "status": "deviation-accepted",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "not-verified",
-          "deviation": "D-01"
-        }
-      ]
+      "deviation": "D-01"
     },
     {
       "id": "VM.01",
       "level": "MUST",
       "title": "Security contact and private reporting",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "org/security-policy"
-          ],
-          "org_checks": {
-            "org/security-policy": "pass"
-          }
-        },
-        {
-          "part": "SHOULD",
-          "status": "met",
-          "checks": [
-            "org/security-configuration",
-            "lint/private-reporting"
-          ],
-          "repositories": {
-            "applicable": 1,
-            "passing": 1,
-            "failing": 0,
-            "not_applicable": 8
-          },
-          "org_checks": {
-            "org/security-configuration": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/security-policy"
+      ],
+      "org_checks": {
+        "org/security-policy": "pass"
+      }
     },
     {
       "id": "VM.02",
       "level": "MUST",
       "title": "Vulnerabilities published in reasonable time",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "advisories/published-in-time"
-          ],
-          "org_checks": {
-            "advisories/published-in-time": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "advisories/published-in-time"
+      ],
+      "org_checks": {
+        "advisories/published-in-time": "pass"
+      }
     },
     {
       "id": "DE.01",
       "level": "SHOULD",
       "title": "Discontinuation communicated",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met-findings",
-          "checks": [
-            "archive/notice-before-archival"
-          ],
-          "repositories": {
-            "applicable": 2,
-            "passing": 1,
-            "failing": 1,
-            "not_applicable": 0
-          }
-        }
-      ]
+      "checks": [
+        "archive/notice-before-archival"
+      ],
+      "repositories": {
+        "applicable": 2,
+        "passing": 1,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "DE.02",
       "level": "MAY",
       "title": "Migration paths outlined",
-      "status": "optional",
-      "parts": [
-        {
-          "part": "MAY",
-          "status": "optional"
-        }
-      ]
+      "status": "optional"
     }
   ],
   "findings": [
@@ -1521,14 +1364,6 @@
       "approved_by": "Legal, Head of OSPO",
       "valid_until": "2026-12-31",
       "expired": false
-    },
-    {
-      "id": "D-04",
-      "requirement": "GV.01 (SHOULD)",
-      "scope": "all repositories",
-      "approved_by": "Head of OSPO",
-      "valid_until": "2027-03-31",
-      "expired": false
     }
   ],
   "actions": [
@@ -1536,14 +1371,6 @@
       "id": "R-01",
       "requirement": "BR.03",
       "action": "Release workflow template with checksums and artifact attestations",
-      "owner": "OSPO",
-      "due": "2027-03-31",
-      "overdue": false
-    },
-    {
-      "id": "R-07",
-      "requirement": "GV.01",
-      "action": "Heading check for quality expectations in CONTRIBUTING",
       "owner": "OSPO",
       "due": "2027-03-31",
       "overdue": false
@@ -1566,27 +1393,112 @@
     {
       "date": "2026-10-06",
       "compliance_pct": 89.1,
-      "open_findings": 24
+      "open_findings": 24,
+      "coverage": {
+        "GV.01": 62.5,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 87.5,
+        "QA.01": 87.5,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 57.1,
+        "QA.05": 100.0,
+        "QA.06": 75.0,
+        "BR.01": 71.4,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 50.0,
+        "DE.01": null
+      }
     },
     {
       "date": "2026-10-13",
       "compliance_pct": 89.6,
-      "open_findings": 23
+      "open_findings": 23,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 71.4,
+        "QA.05": 100.0,
+        "QA.06": 75.0,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 50.0,
+        "DE.01": null
+      }
     },
     {
       "date": "2026-10-20",
       "compliance_pct": 90.3,
-      "open_findings": 22
+      "open_findings": 22,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 100.0,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 71.4,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 0.0
+      }
     },
     {
       "date": "2026-10-27",
       "compliance_pct": 90.8,
-      "open_findings": 21
+      "open_findings": 21,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 85.7,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 0.0
+      }
     },
     {
       "date": "2026-11-03",
-      "compliance_pct": 86.7,
-      "open_findings": 19
+      "compliance_pct": 86.6,
+      "open_findings": 19,
+      "coverage": {
+        "GV.01": 77.8,
+        "GV.02": 88.9,
+        "LE.01": 88.9,
+        "LE.02": 88.9,
+        "QA.01": 88.9,
+        "QA.02": 100.0,
+        "QA.03": 88.9,
+        "QA.04": 75.0,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 75.0,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 50.0
+      }
     }
   ]
 }</script>
@@ -4157,7 +4069,7 @@ const DATA = readJson('data.json');
 const FILES = Object.fromEntries(DATA.inputs.map(i => [i.file, readJson(i.file)]));
 const ORG = DATA.org;
 const REQS_OF_CHECK = {};
-for (const q of DATA.requirements) for (const p of q.parts) for (const c of p.checks ?? []) (REQS_OF_CHECK[c] ??= new Set()).add(q.id);
+for (const q of DATA.requirements) for (const c of q.checks ?? []) (REQS_OF_CHECK[c] ??= new Set()).add(q.id);
 const isMapped = id => !!REQS_OF_CHECK[id];
 const ORG_CHECKS = new Set(Object.values(FILES).flatMap(t => t.results.filter(r => !r.repo).map(r => r.check)));
 
@@ -4241,30 +4153,23 @@ function scaleMock(factor, worst) {
   for (const f of DATA.findings) if (!allKeys.has(key(f))) findings.push(f);
   DATA.findings = findings;
 
-  // recompute part counts and statuses (status logic of draft section 1.7)
+  // recompute repository counts and statuses (status logic of draft section 1.7)
   const every = Object.values(FILES).flatMap(t => t.results).filter(r => r.repo);
   const everyKeys = new Set(every.map(key));
   const byCheck = {};
   for (const r of every) (byCheck[r.check] ??= []).push(r);
   for (const f of findings) if (!everyKeys.has(key(f))) (byCheck[f.check] ??= []).push({ repo: f.repo, check: f.check, result: 'fail' });
-  const rank = { 'met': 1, 'met-findings': 2, 'not-met': 3 };
   for (const q of DATA.requirements) {
-    for (const p of q.parts) {
-      if (!p.repositories) continue;
-      const rc = p.checks.filter(c => !ORG_CHECKS.has(c));
-      const by = {};
-      for (const c of rc) for (const r of byCheck[c] ?? []) (by[r.repo] ??= []).push(r.result);
-      const repos = Object.keys(by);
-      const app = repos.filter(x => by[x].some(v => v !== 'na'));
-      const fail = app.filter(x => by[x].includes('fail'));
-      p.repositories = { applicable: app.length, passing: app.length - fail.length, failing: fail.length, not_applicable: repos.length - app.length };
-      const orgFail = Object.values(p.org_checks ?? {}).includes('fail');
-      p.status = orgFail ? 'not-met' : fail.length ? 'met-findings' : 'met';
-    }
-    if (!['deviation-accepted', 'optional'].includes(q.status)) {
-      const rel = q.level === 'MUST' ? q.parts.filter(p => !['SHOULD', 'MAY'].includes(p.part)) : q.parts.filter(p => p.status !== 'not-verified');
-      q.status = rel.reduce((a, p) => (rank[p.status] ?? 0) > rank[a] ? p.status : a, 'met');
-    }
+    if (!q.repositories) continue;
+    const rc = q.checks.filter(c => !ORG_CHECKS.has(c));
+    const by = {};
+    for (const c of rc) for (const r of byCheck[c] ?? []) (by[r.repo] ??= []).push(r.result);
+    const repos = Object.keys(by);
+    const app = repos.filter(x => by[x].some(v => v !== 'na'));
+    const fail = app.filter(x => by[x].includes('fail'));
+    q.repositories = { applicable: app.length, passing: app.length - fail.length, failing: fail.length, not_applicable: repos.length - app.length };
+    const orgFail = Object.values(q.org_checks ?? {}).includes('fail');
+    q.status = orgFail ? 'not-met' : fail.length ? 'met-findings' : 'met';
   }
 
   // summary and history
@@ -4282,6 +4187,15 @@ function scaleMock(factor, worst) {
   const H = DATA.history, last = H.at(-1), ratio = S.open_findings / (last.open_findings || 1), dp = S.compliance_pct - last.compliance_pct;
   for (const x of H.slice(0, -1)) { x.open_findings = Math.round(x.open_findings * ratio); x.compliance_pct = Math.round(Math.max(0, Math.min(100, x.compliance_pct + dp)) * 10) / 10; }
   last.open_findings = S.open_findings; last.compliance_pct = S.compliance_pct;
+  // per-requirement coverage: shift the mock history so that it ends at the scaled value
+  const clamp = v => Math.round(Math.max(0, Math.min(100, v)) * 10) / 10;
+  for (const q of DATA.requirements) {
+    const r = q.repositories, old = last.coverage?.[q.id];
+    if (!r || old == null) continue;
+    const now = r.applicable ? r.passing / r.applicable * 100 : 100;
+    for (const x of H.slice(0, -1)) if (x.coverage?.[q.id] != null) x.coverage[q.id] = clamp(x.coverage[q.id] + now - old);
+    last.coverage[q.id] = clamp(now);
+  }
 }
 
 /* ── Derived lookups ── */
@@ -4314,7 +4228,6 @@ const STATUS = {
   'met':                { label: 'Met',                        color: 'var(--good)',     glyph: '✓', ink: '#fff' },
   'met-findings':        { label: 'Met, with findings', color: 'repeating-linear-gradient(135deg, var(--good) 0 6px, var(--good-2) 6px 9px)', glyph: '✓', ink: '#fff', ring: 'ring-good' },
   'not-met':            { label: 'Not met',                    color: 'var(--critical)', glyph: '✕', ink: '#fff' },
-  'not-verified':       { label: 'Not verified',               color: 'transparent',     glyph: '?', ink: 'var(--muted)', ring: 'ring' },
   'deviation-accepted': { label: 'Deviation accepted',         color: 'var(--neutral)',  glyph: 'D', ink: '#fff' },
   'optional':           { label: 'Optional',                   color: 'transparent',     glyph: '–', ink: 'var(--muted)', ring: 'ring' },
   'pass':               { label: 'Pass',                       color: 'var(--good)',     glyph: '✓', ink: '#fff' },
@@ -4405,15 +4318,18 @@ function dataTable(headers, rows, numericCols = []) {
   return h('details', { class: 'datatable' }, h('summary', { text: 'Show data table' }), t);
 }
 
+/* null values (no data in that run) are skipped */
 function sparkline(values, { w = 96, hgt = 24, min, max } = {}) {
-  const lo = min ?? Math.min(...values), hi = max ?? Math.max(...values);
+  const pts = values.map((v, i) => [i, v]).filter(([, v]) => v != null);
+  const vs = pts.map(([, v]) => v);
+  const lo = min ?? Math.min(...vs), hi = max ?? Math.max(...vs);
   const span = hi - lo || 1;
   const x = i => 2 + i * (w - 6) / Math.max(1, values.length - 1);
   const y = v => hgt - 4 - (v - lo) * (hgt - 8) / span;
   const svg = s('svg', { width: w, height: hgt, viewBox: `0 0 ${w} ${hgt}`, 'aria-hidden': 'true' });
-  s('polyline', { points: values.map((v, i) => `${x(i)},${y(v)}`).join(' '), fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
-  const last = values.length - 1;
-  s('circle', { cx: x(last), cy: y(values[last]), r: 3, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
+  s('polyline', { points: pts.map(([i, v]) => `${x(i)},${y(v)}`).join(' '), fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  const [li, lv] = pts.at(-1);
+  s('circle', { cx: x(li), cy: y(lv), r: 3, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
   return svg;
 }
 
@@ -4667,9 +4583,8 @@ const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
   const KM_CAP = 3;
   const byFailing = [...notMet].sort((a, b) => findingsOf(b.id).length - findingsOf(a.id).length);
   for (const q of byFailing.slice(0, KM_CAP)) {
-    const p = q.parts.find(x => x.status === 'not-met');
-    const qf = findingsOf(q.id), r = p.repositories;
-    const orgF = Object.entries(p.org_checks ?? {}).filter(([, v]) => v === 'fail').map(([c]) => checkName(c));
+    const qf = findingsOf(q.id), r = q.repositories;
+    const orgF = Object.entries(q.org_checks ?? {}).filter(([, v]) => v === 'fail').map(([c]) => checkName(c));
     km.append(h('li', {}, h('b', { text: `${q.id} ${q.title}: not met. ` }),
       orgF.length ? `Failing org-level ${orgF.length === 1 ? 'check' : 'checks'}: ${orgF.join(', ')}. ` : '',
       r?.failing ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.name)).join(', ')}).` : ''));
@@ -4696,26 +4611,28 @@ const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
 }
 
 /* ═══════════════════════════ 2 Requirements ═══════════════════════════ */
-const partFindings = (q, p) => findingsOf(q.id).filter(f => (p.checks ?? []).includes(f.check));
-
 function coverageNode(q) {
-  const multi = q.parts.length > 1;
-  return h('div', { class: 'cov-list' }, q.parts.map(p => {
-    const lbl = multi ? h('span', { class: 'plabel', text: p.part }) : null;
-    if (p.repositories) {
-      const { applicable: a, passing: ps } = p.repositories;
-      const pct = a ? ps / a * 100 : 0;
-      return h('div', { class: 'cov' }, lbl,
-        h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct.toFixed(1), 'aria-label': `${q.id} ${p.part} coverage` }, h('div', { style: `width:${pct}%` })),
-        h('span', { class: 'txt' }, h('b', { text: fmtPct(pct) }), ` · ${ps}/${a} repositories`));
-    }
-    let txt;
-    if (p.org_checks) { const v = Object.values(p.org_checks); txt = `Org level · ${v.filter(x => x === 'pass').length}/${v.length} checks pass`; }
-    else if (p.deviation) txt = `Not verified · ${p.deviation}`;
-    else if (p.basis) txt = 'By construction';
-    else txt = 'Not assessed';
-    return h('div', {}, multi ? h('div', { class: 'small muted', text: p.part }) : null, h('span', { class: 'cov-txt', text: txt }));
-  }));
+  if (q.repositories) {
+    const { applicable: a, passing: ps } = q.repositories;
+    const pct = a ? ps / a * 100 : 0;
+    return h('div', { class: 'cov' },
+      h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct.toFixed(1), 'aria-label': `${q.id} coverage` }, h('div', { style: `width:${pct}%` })),
+      h('span', { class: 'txt' }, h('b', { text: fmtPct(pct) }), ` · ${ps}/${a} repositories`));
+  }
+  let txt;
+  if (q.org_checks) { const v = Object.values(q.org_checks); txt = `Org level · ${v.filter(x => x === 'pass').length}/${v.length} checks pass`; }
+  else if (q.deviation) txt = `Not assessed (${q.deviation})`;
+  else if (q.basis) txt = 'By construction';
+  else txt = 'Not assessed';
+  return h('span', { class: 'cov-txt', text: txt });
+}
+/* Mini trend: share of applicable repositories that pass, per weekly run (data.json → history[].coverage) */
+function trendNode(q) {
+  const vs = HISTORY.map(x => x.coverage?.[q.id] ?? null);
+  if (!q.repositories || vs.filter(v => v != null).length < 2) return h('span', { class: 'cov-txt muted', text: '–' });
+  const lo = Math.min(...vs.filter(v => v != null));
+  const node = sparkline(vs, { min: Math.max(0, lo - 5), max: 100.5 });
+  return h('span', { title: vs.map((v, i) => `${fmtDay(HISTORY[i].date)}: ${v == null ? 'no data' : fmtPct(v)}`).join('\n') }, node);
 }
 
 function flatten(obj, prefix = '') {
@@ -4785,12 +4702,12 @@ function groupsTable(groups, cap = 8) {
 function renderCard(q) {
   const sec = (title, ...kids) => h('div', { style: 'min-width:0' }, h('h4', { text: title }), ...kids);
   const qf = findingsOf(q.id);
-  const allChecks = uniq(q.parts.flatMap(p => p.checks ?? []));
+  const allChecks = q.checks ?? [];
   const repoChecks = allChecks.filter(c => !ORG_CHECKS.has(c));
 
-  const partNodes = q.parts.map(p => {
-    const pf = partFindings(q, p);
-    const lines = [];
+  const lines = [];
+  {
+    const p = q;
     if (p.repositories) {
       const r = p.repositories;
       lines.push(`${r.passing} of ${r.applicable} applicable repositories pass` + (r.failing ? `, ${r.failing} fail` : '') + '.' +
@@ -4800,28 +4717,26 @@ function renderCard(q) {
     if (p.basis) lines.push(`Basis: ${p.basis}.`);
     if (p.deviation) {
       const d = DEV[p.deviation];
-      lines.push(d ? `No check covers this part. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this part. Deviation ${p.deviation}.`);
+      lines.push(d ? `No check covers this requirement. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this requirement. Deviation ${p.deviation}.`);
     }
     if (p.attestation) {
       const a = { ...ATT[p.attestation.id], ...p.attestation };
       lines.push(`Attestation ${a.id} (${a.file}): ${(a.covers ?? []).join(', ')}. Approved by ${a.approved_by} on ${fmtDate(a.date)}, valid until ${fmtDate(a.valid_until)}.`);
     }
-    if (p.status === 'optional' && !p.checks?.length) lines.push('No check is mapped to this part. Reported for information.');
-    const issueChecks = uniq(pf.map(f => f.check));
-    return h('div', { class: 'part' },
-      h('span', { class: 'level', style: 'justify-self:start;align-self:start', text: p.part }),
-      h('div', {},
-        h('div', { class: 'head' }, statusPill(p.status)),
-        lines.map(t => h('p', { text: t })),
-        linksRow([
-          pf.length ? registerLink(`${plural(pf.length, 'finding')} in the register`, { req: q.id, check: uniq(pf.map(f => f.check)).length === 1 ? pf[0].check : '' }) : null,
-          issueChecks.length ? liveIssuesLink(issueChecks, null, 'Live issues on GitHub') : null,
-          p.deviation ? h('a', { href: '#deviations', text: `Deviation ${p.deviation}` }) : null,
-        ])));
-  });
+    if (p.status === 'optional' && !p.checks?.length) lines.push('No check is mapped to this requirement. Reported for information.');
+  }
+  const issueChecks = uniq(qf.map(f => f.check));
+  const resultNode = h('div', { class: 'part' },
+    h('div', { class: 'head' }, statusPill(q.status)),
+    lines.map(t => h('p', { text: t })),
+    linksRow([
+      qf.length ? registerLink(`${plural(qf.length, 'finding')} in the register`, { req: q.id, check: issueChecks.length === 1 ? issueChecks[0] : '' }) : null,
+      issueChecks.length ? liveIssuesLink(issueChecks, null, 'Live issues on GitHub') : null,
+      q.deviation ? h('a', { href: '#deviations', text: `Deviation ${q.deviation}` }) : null,
+    ]));
 
   const verified = allChecks.length ? h('table', {},
-    h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Part', 'Source'].map(x => h('th', { text: x })))),
+    h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Source'].map(x => h('th', { text: x })))),
     h('tbody', {}, allChecks.map(c => {
       const def = DATA.checks[c];
       const orgR = ORG_RESULTS.find(r => r.check === c);
@@ -4830,7 +4745,6 @@ function renderCard(q) {
         h('td', {}, def?.documentation?.short ?? '–',
           orgR ? h('div', { style: 'margin-top:4px' }, resultPill(orgR), ' ', h('span', { class: 'small', text: orgR.reason })) : null,
           snapshotNode(c)),
-        h('td', { class: 'nowrap', text: q.parts.filter(p => p.checks?.includes(c)).map(p => p.part).join(', ') }),
         h('td', {}, h('code', { text: CHECK_FILE[c] ?? 'data.json' })));
     }))) : h('p', { class: 'muted', text: 'No check is mapped to this requirement.' });
 
@@ -4852,32 +4766,32 @@ function renderCard(q) {
   const actSec = acts.length ? sec('Remediation actions', acts.map(a => h('p', {}, h('a', { href: '#plan', class: 'id', text: a.id }), ` ${a.action}. Owner: ${a.owner}, due ${fmtDate(a.due)}${a.overdue ? ' (overdue)' : ''}.`))) : null;
 
   const evFiles = uniq([...allChecks.map(c => CHECK_FILE[c]).filter(Boolean), ...(qf.some(f => RESULT_KEY.get(f.repo + '|' + f.check)?.derived) ? ['data.json'] : [])]);
-  const atts = q.parts.filter(p => p.attestation).map(p => p.attestation.file);
+  const atts = q.attestation ? [q.attestation.file] : [];
   const evSec = evFiles.length || atts.length ? sec('Evidence', h('p', {}, joinNodes([
     ...evFiles.map(f => { const i = DATA.inputs.find(x => x.file === f); return h('span', {}, h('a', { href: '#evidence', text: f }), i ? h('span', { class: 'muted', text: ` (SHA-256 ${shortSha(i.sha256)})` }) : null); }),
     ...atts.map(f => h('span', {}, h('a', { href: '#evidence', text: f }), h('span', { class: 'muted', text: ' (attestation)' }))),
   ]))) : null;
 
-  return h('div', { class: 'rcard' }, sec('Result', partNodes), sec('How it is verified', verified), histSec, failSec, archSec, actSec, evSec);
+  return h('div', { class: 'rcard' }, sec('Result', resultNode), sec('How it is verified', verified), histSec, failSec, archSec, actSec, evSec);
 }
 
 {
   const tbody = document.querySelector('#req-table tbody');
+  $('req-trend-h').textContent = `${HISTORY.length}-week trend`;
   let lastCh = null;
   for (const q of DATA.requirements) {
     const ch = q.id.slice(0, 2);
-    if (ch !== lastCh) { tbody.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 5, text: `${ch} · ${CHAPTERS[ch] ?? ''}` }))); lastCh = ch; }
+    if (ch !== lastCh) { tbody.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 6, text: `${ch} · ${CHAPTERS[ch] ?? ''}` }))); lastCh = ch; }
     const det = h('details', { class: 'req' }, h('summary', { text: q.title }));
-    const levels = uniq([q.level, ...q.parts.map(p => p.part).filter(x => ['MUST', 'SHOULD', 'MAY'].includes(x))]);
-    const qf = findingsOf(q.id);
     tbody.append(h('tr', {},
       h('td', { class: 'id', text: q.id }),
-      h('td', {}, det, qf.length ? h('div', { class: 'small muted', style: 'margin-left:14px', text: plural(qf.length, 'open finding') }) : null),
-      h('td', {}, joinNodes(levels.map(l => h('span', { class: 'level', text: l })), ' ')),
+      h('td', {}, det),
+      h('td', {}, h('span', { class: 'level', text: q.level })),
       h('td', {}, statusPill(q.status)),
-      h('td', {}, coverageNode(q))));
+      h('td', {}, coverageNode(q)),
+      h('td', {}, trendNode(q))));
     // cards are built on first open, so large scopes stay fast
-    const cell = h('td', { colspan: 5 });
+    const cell = h('td', { colspan: 6 });
     const row = h('tr', { class: 'card-row', hidden: '' }, cell);
     det.addEventListener('toggle', () => { if (det.open && !cell.firstChild) cell.append(renderCard(q)); row.hidden = !det.open; });
     tbody.append(row);
@@ -4945,7 +4859,7 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
   const dt = document.querySelector('#dev-table tbody');
   for (const d of DATA.deviations) {
     const users = [
-      ...DATA.requirements.flatMap(q => q.parts.filter(p => p.deviation === d.id).map(p => `${q.id} ${p.part}`)),
+      ...DATA.requirements.filter(q => q.deviation === d.id).map(q => q.id),
       ...DATA.scope.excluded.filter(x => x.deviation === d.id).map(x => `excludes ${x.repo}`),
     ];
     dt.append(h('tr', {},
@@ -4988,9 +4902,8 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
   const DEFS = [ // fixed template text (status logic of compliance_report)
     ['met', 'All applicable repositories pass, and all org-level checks pass.'],
     ['met-findings', 'Every org-level check passes, but some applicable repositories fail.'],
-    ['not-met', 'An org-level check fails, or no check covers a MUST part.'],
-    ['not-verified', 'No check covers this part. For a SHOULD it links to a deviation; for a MUST it counts as Not met.'],
-    ['deviation-accepted', 'SHOULD requirement that is not verified, with an approved deviation (section 6).'],
+    ['not-met', 'An org-level check fails, or no check covers a MUST requirement.'],
+    ['deviation-accepted', 'SHOULD requirement that no check covers, with an approved deviation (section 6).'],
     ['optional', 'MAY requirement. Reported for information only.'],
   ];
   const df = document.querySelector('#def-table tbody');
@@ -5043,11 +4956,11 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
     h('td', { class: 'nowrap' }, h('code', { title: i.sha256, text: shortSha(i.sha256) }))));
   const tt = document.querySelector('#att-table tbody');
   for (const a of DATA.attestations) {
-    const part = DATA.requirements.flatMap(q => q.parts.filter(p => p.attestation?.id === a.id).map(p => ({ q, p })))[0];
+    const q = DATA.requirements.find(x => x.attestation?.id === a.id);
     tt.append(h('tr', {},
-      h('td', { class: 'id' }, a.id, part ? h('div', { class: 'small muted', style: 'font-weight:400', text: `used by ${part.q.id}` }) : null),
+      h('td', { class: 'id' }, a.id, q ? h('div', { class: 'small muted', style: 'font-weight:400', text: `used by ${q.id}` }) : null),
       h('td', {}, h('code', { text: a.file })), h('td', { text: a.covers.join(', ') }), h('td', { text: a.approved_by }),
-      h('td', { class: 'nowrap', text: fmtDate(a.date) }), h('td', { class: 'nowrap', text: part ? fmtDate(part.p.attestation.valid_until) : '–' })));
+      h('td', { class: 'nowrap', text: fmtDate(a.date) }), h('td', { class: 'nowrap', text: q ? fmtDate(q.attestation.valid_until) : '–' })));
   }
 }
 

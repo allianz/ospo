@@ -304,9 +304,9 @@
     ]
   },
   "summary": {
-    "checks_evaluated": 143,
-    "checks_passed": 124,
-    "compliance_pct": 86.7,
+    "checks_evaluated": 142,
+    "checks_passed": 123,
+    "compliance_pct": 86.6,
     "requirements_by_status": {
       "met": 5,
       "met-findings": 13,
@@ -325,458 +325,304 @@
       "level": "MUST",
       "title": "How to contribute is documented",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/contributing"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 7,
-            "failing": 2,
-            "not_applicable": 0
-          }
-        },
-        {
-          "part": "SHOULD",
-          "status": "not-verified",
-          "deviation": "D-04"
-        }
-      ]
+      "checks": [
+        "lint/contributing"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 7,
+        "failing": 2,
+        "not_applicable": 0
+      }
     },
     {
       "id": "GV.02",
       "level": "MUST",
       "title": "Protected against unauthorised actions",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "org/settings",
-            "org/ruleset",
-            "org/security-configuration",
-            "drift/access",
-            "lint/no-direct-collaborators",
-            "lint/secret-scanning",
-            "scorecard/branch-protection",
-            "scorecard/dangerous-workflow",
-            "scorecard/token-permissions"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "drift/access": "pass",
-            "org/settings": "pass",
-            "org/ruleset": "pass",
-            "org/security-configuration": "pass"
-          },
-          "attestation": {
-            "id": "A-identity",
-            "file": "attestations/2026-10-15-identity.md",
-            "date": "2026-10-15",
-            "valid_until": "2027-10-15"
-          }
-        }
-      ]
+      "checks": [
+        "org/settings",
+        "org/ruleset",
+        "org/security-configuration",
+        "drift/access",
+        "lint/no-direct-collaborators",
+        "lint/secret-scanning",
+        "scorecard/branch-protection",
+        "scorecard/dangerous-workflow",
+        "scorecard/token-permissions"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      },
+      "org_checks": {
+        "drift/access": "pass",
+        "org/settings": "pass",
+        "org/ruleset": "pass",
+        "org/security-configuration": "pass"
+      },
+      "attestation": {
+        "id": "A-identity",
+        "file": "attestations/2026-10-15-identity.md",
+        "date": "2026-10-15",
+        "valid_until": "2027-10-15"
+      }
     },
     {
       "id": "LE.01",
       "level": "MUST",
       "title": "License stated for all content",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/license-file",
-            "lint/license-type"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          }
-        }
-      ]
+      "checks": [
+        "lint/license-file",
+        "lint/license-type"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "LE.02",
       "level": "MUST",
       "title": "Licenses of all components referenced",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "sbom/available"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          }
-        }
-      ]
+      "checks": [
+        "sbom/available"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "QA.01",
       "level": "MUST",
       "title": "List of third-party components available",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "org/security-configuration",
-            "sbom/available"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "org/security-configuration": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/security-configuration",
+        "sbom/available"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      },
+      "org_checks": {
+        "org/security-configuration": "pass"
+      }
     },
     {
       "id": "QA.02",
       "level": "MUST",
       "title": "Source code publicly readable",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "org/settings",
-            "lint/public"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 9,
-            "failing": 0,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "org/settings": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/settings",
+        "lint/public"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 9,
+        "failing": 0,
+        "not_applicable": 0
+      },
+      "org_checks": {
+        "org/settings": "pass"
+      }
     },
     {
       "id": "QA.03",
       "level": "MUST",
       "title": "How to report defects is communicated",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/issues-enabled"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          }
-        }
-      ]
+      "checks": [
+        "lint/issues-enabled"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "QA.04",
       "level": "MUST",
       "title": "Testing procedures implemented and used",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "Implemented",
-          "status": "met-findings",
-          "checks": [
-            "lint/development-test"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 6,
-            "failing": 2,
-            "not_applicable": 1
-          }
-        },
-        {
-          "part": "Utilised",
-          "status": "met-findings",
-          "checks": [
-            "scorecard/ci-tests"
-          ],
-          "repositories": {
-            "applicable": 6,
-            "passing": 5,
-            "failing": 1,
-            "not_applicable": 3
-          }
-        }
-      ]
+      "checks": [
+        "lint/development-test",
+        "scorecard/ci-tests"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 6,
+        "failing": 2,
+        "not_applicable": 1
+      }
     },
     {
       "id": "QA.05",
       "level": "SHOULD",
       "title": "Memory safety issues reduced",
       "status": "met",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met",
-          "checks": [
-            "lint/memory-safety-section"
-          ],
-          "repositories": {
-            "applicable": 1,
-            "passing": 1,
-            "failing": 0,
-            "not_applicable": 8
-          }
-        }
-      ]
+      "checks": [
+        "lint/memory-safety-section"
+      ],
+      "repositories": {
+        "applicable": 1,
+        "passing": 1,
+        "failing": 0,
+        "not_applicable": 8
+      }
     },
     {
       "id": "QA.06",
       "level": "SHOULD",
       "title": "Changes peer-reviewed",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met-findings",
-          "checks": [
-            "org/ruleset",
-            "scorecard/code-review"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 7,
-            "failing": 1,
-            "not_applicable": 1
-          },
-          "org_checks": {
-            "org/ruleset": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/ruleset",
+        "scorecard/code-review"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 7,
+        "failing": 1,
+        "not_applicable": 1
+      },
+      "org_checks": {
+        "org/ruleset": "pass"
+      }
     },
     {
       "id": "BR.01",
       "level": "MUST",
       "title": "Build information public",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/development-file",
-            "lint/development-build"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 6,
-            "failing": 2,
-            "not_applicable": 1
-          }
-        }
-      ]
+      "checks": [
+        "lint/development-file",
+        "lint/development-build"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 6,
+        "failing": 2,
+        "not_applicable": 1
+      }
     },
     {
       "id": "BR.02",
       "level": "MUST",
       "title": "Unique, increasing version identifiers",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/versioning"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 3,
-            "failing": 1,
-            "not_applicable": 5
-          }
-        }
-      ]
+      "checks": [
+        "lint/versioning"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 3,
+        "failing": 1,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.03",
       "level": "MUST",
       "title": "Integrity of distributed assets verifiable",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "scorecard/signed-releases"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 2,
-            "failing": 2,
-            "not_applicable": 5
-          }
-        }
-      ]
+      "checks": [
+        "scorecard/signed-releases"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 2,
+        "failing": 2,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.04",
       "level": "MUST",
       "title": "Change log per release",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-findings",
-          "checks": [
-            "lint/release-notes"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 3,
-            "failing": 1,
-            "not_applicable": 5
-          }
-        }
-      ]
+      "checks": [
+        "lint/release-notes"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 3,
+        "failing": 1,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.05",
       "level": "MUST",
       "title": "Source packages match the repository",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
-        }
-      ]
+      "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
     },
     {
       "id": "BR.06",
       "level": "SHOULD",
       "title": "Builds reproducible",
       "status": "deviation-accepted",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "not-verified",
-          "deviation": "D-01"
-        }
-      ]
+      "deviation": "D-01"
     },
     {
       "id": "VM.01",
       "level": "MUST",
       "title": "Security contact and private reporting",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "org/security-policy"
-          ],
-          "org_checks": {
-            "org/security-policy": "pass"
-          }
-        },
-        {
-          "part": "SHOULD",
-          "status": "met",
-          "checks": [
-            "org/security-configuration",
-            "lint/private-reporting"
-          ],
-          "repositories": {
-            "applicable": 1,
-            "passing": 1,
-            "failing": 0,
-            "not_applicable": 8
-          },
-          "org_checks": {
-            "org/security-configuration": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/security-policy"
+      ],
+      "org_checks": {
+        "org/security-policy": "pass"
+      }
     },
     {
       "id": "VM.02",
       "level": "MUST",
       "title": "Vulnerabilities published in reasonable time",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "advisories/published-in-time"
-          ],
-          "org_checks": {
-            "advisories/published-in-time": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "advisories/published-in-time"
+      ],
+      "org_checks": {
+        "advisories/published-in-time": "pass"
+      }
     },
     {
       "id": "DE.01",
       "level": "SHOULD",
       "title": "Discontinuation communicated",
       "status": "met-findings",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met-findings",
-          "checks": [
-            "archive/notice-before-archival"
-          ],
-          "repositories": {
-            "applicable": 2,
-            "passing": 1,
-            "failing": 1,
-            "not_applicable": 0
-          }
-        }
-      ]
+      "checks": [
+        "archive/notice-before-archival"
+      ],
+      "repositories": {
+        "applicable": 2,
+        "passing": 1,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "DE.02",
       "level": "MAY",
       "title": "Migration paths outlined",
-      "status": "optional",
-      "parts": [
-        {
-          "part": "MAY",
-          "status": "optional"
-        }
-      ]
+      "status": "optional"
     }
   ],
   "findings": [
@@ -985,14 +831,6 @@
       "approved_by": "Legal, Head of OSPO",
       "valid_until": "2026-12-31",
       "expired": false
-    },
-    {
-      "id": "D-04",
-      "requirement": "GV.01 (SHOULD)",
-      "scope": "all repositories",
-      "approved_by": "Head of OSPO",
-      "valid_until": "2027-03-31",
-      "expired": false
     }
   ],
   "actions": [
@@ -1000,14 +838,6 @@
       "id": "R-01",
       "requirement": "BR.03",
       "action": "Release workflow template with checksums and artifact attestations",
-      "owner": "OSPO",
-      "due": "2027-03-31",
-      "overdue": false
-    },
-    {
-      "id": "R-07",
-      "requirement": "GV.01",
-      "action": "Heading check for quality expectations in CONTRIBUTING",
       "owner": "OSPO",
       "due": "2027-03-31",
       "overdue": false
@@ -1030,27 +860,112 @@
     {
       "date": "2026-10-06",
       "compliance_pct": 89.1,
-      "open_findings": 24
+      "open_findings": 24,
+      "coverage": {
+        "GV.01": 62.5,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 87.5,
+        "QA.01": 87.5,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 57.1,
+        "QA.05": 100.0,
+        "QA.06": 75.0,
+        "BR.01": 71.4,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 50.0,
+        "DE.01": null
+      }
     },
     {
       "date": "2026-10-13",
       "compliance_pct": 89.6,
-      "open_findings": 23
+      "open_findings": 23,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 71.4,
+        "QA.05": 100.0,
+        "QA.06": 75.0,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 50.0,
+        "DE.01": null
+      }
     },
     {
       "date": "2026-10-20",
       "compliance_pct": 90.3,
-      "open_findings": 22
+      "open_findings": 22,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 100.0,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 71.4,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 0.0
+      }
     },
     {
       "date": "2026-10-27",
       "compliance_pct": 90.8,
-      "open_findings": 21
+      "open_findings": 21,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 85.7,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 0.0
+      }
     },
     {
       "date": "2026-11-03",
-      "compliance_pct": 86.7,
-      "open_findings": 19
+      "compliance_pct": 86.6,
+      "open_findings": 19,
+      "coverage": {
+        "GV.01": 77.8,
+        "GV.02": 88.9,
+        "LE.01": 88.9,
+        "LE.02": 88.9,
+        "QA.01": 88.9,
+        "QA.02": 100.0,
+        "QA.03": 88.9,
+        "QA.04": 75.0,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 75.0,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 50.0
+      }
     }
   ]
 }

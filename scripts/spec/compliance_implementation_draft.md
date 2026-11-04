@@ -116,15 +116,15 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 
 ### 1.7 Status logic (computed by the report)
 
-Per requirement part:
+Each requirement is assessed once, at its own level: a MUST requirement on its MUST clause, a SHOULD requirement on its SHOULD clause. Weaker clauses inside a requirement (the SHOULD in GV.01 and VM.01, the MAY in BR.03) are not assessed in this version. A requirement has one list of checks and one coverage figure: a repository passes only if it passes every applicable check of the requirement.
 
-- **Met:** all applicable repositories pass.
-- **Met, with findings:** some applicable repositories fail, and every org-level check of the part passes.
-- **Not met:** an org-level check fails, i.e. the enforced setting deviates from its expected value.
-- **Not verified:** no check covers this part. For SHOULD, this must link to a deviation. For MUST, it is a gap and counts as Not met.
-- **Not applicable / Optional:** no applicable repositories, or a MAY requirement.
+- **Met:** all applicable repositories pass, and every org-level check passes.
+- **Met, with findings:** some applicable repositories fail, and every org-level check passes.
+- **Not met:** an org-level check fails (the enforced setting deviates from its expected value), or no check covers a MUST requirement.
+- **Deviation accepted:** no check covers a SHOULD requirement, and an approved deviation explains why.
+- **Optional:** a MAY requirement, reported for information.
 
-Overall requirement status = the worst MUST part. SHOULD parts are shown separately.
+- **Trend:** each run appends to `data.json` → `history` the overall compliance, the open findings and, per requirement, the share of applicable repositories that pass (`coverage`). Each value is computed from that run's own results; a missed run is a gap, not a wrong value.
 
 - **No finding age:** the report does not compute how long a finding has been open. A "failing since" date would have to be carried forward from run to run, and it would silently reset on a missed run, a renamed repository or check, or a check that flaps. The live issues on GitHub show a finding's history.
 
@@ -140,27 +140,22 @@ requirements:
   GV.01:
     implementation: >
       Every repository must contain a contribution guide …
-    parts:
-      - level: MUST
-        checks: [lint/contributing]
-      - level: SHOULD
-        checks: []
-        gap: >
-          The check confirms that the file exists, not whether it describes the
-          expected quality of contributions.
-        deviation: D-04
+    checks: [lint/contributing]
+  BR.06:
+    checks: []
+    deviation: D-01
 
 deviations:
-  - id: D-04
-    requirement: GV.01
-    scope: SHOULD part, all repositories
+  - id: D-01
+    requirement: BR.06
+    scope: all repositories
     justification: …
-    approved_by: Head of OSPO
-    valid_until: 2027-03-31
+    approved_by: Head of OSPO, ISO
+    valid_until: 2027-09-30
 
 actions:
-  - id: R-07
-    requirement: GV.01
+  - id: R-01
+    requirement: BR.03
     action: …
     owner: OSPO
     due: 2027-03-31
@@ -203,15 +198,12 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Implementation:** Every repository must contain a contribution guide (`CONTRIBUTING` file in the root, `.github` or `docs`). An automated check runs every week and opens an issue in any repository that lacks one, until it is fixed.
 
-**MUST part**
 - **Check:** `lint/contributing`, a structural check. A file `CONTRIBUTING*` exists in `.`, `.github` or `docs`.
 - **Script:** `lint_repos` (exists).
 - **Issue:** lint issue, label `lint/contributing`.
 - **Evidence:** the file path found.
 
-**SHOULD part**
-- **Not verified for now** → deviation D-04.
-- **Later (R-07):** a structural check `lint/contributing-sections`, requiring headings for coding standards, tests and review. It uses the same heading-check mechanism as BR.01.
+**SHOULD clause (quality of contributions):** not assessed in this version (see 1.7). A later version could add a structural check `lint/contributing-sections`, requiring headings for coding standards, tests and review, with the same heading-check mechanism as BR.01.
 
 **New work:** labels and `--json` only. The check itself already exists.
 
@@ -358,11 +350,9 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Implementation:** Every repository with code tests its changes automatically in CI. `DEVELOPMENT.md` describes how to run the tests locally. A weekly check opens an issue when CI did not run on recently merged pull requests.
 
-**Implemented**
-- **Structural check:** `lint/development-test`. `DEVELOPMENT.md` has a "Test" heading. This is a separate check from BR.01's `lint/development-build`, so a missing "Build" heading does not fail QA.04.
-
-**Utilised**
-- **Exact check:** `scorecard/ci-tests` ≥ 8. Scorecard "inconclusive" → `na`, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is `fail` (see 1.10).
+**Checks** (one coverage figure: a repository passes only if both applicable checks pass)
+- **Implemented, structural check:** `lint/development-test`. `DEVELOPMENT.md` has a "Test" heading. This is a separate check from BR.01's `lint/development-build`, so a missing "Build" heading does not fail QA.04.
+- **Utilised, exact check:** `scorecard/ci-tests` ≥ 8. Scorecard "inconclusive" → `na`, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is `fail` (see 1.10).
 
 **Not applicable:** topics `docs` or `template`.
 
@@ -552,16 +542,11 @@ A manual attestation is a Markdown file added by pull request, e.g. `attestation
 
 **Implementation:** An organisation-wide `SECURITY.md` in `allianz/.github` applies to every repository without its own. It names the OSPO as contact and asks for private vulnerability reporting, which is enabled on every repository.
 
-**MUST part**
 - **Enforced:** `org_snapshot` confirms that `allianz/.github/SECURITY.md` exists and contains a contact. Repositories with their own `SECURITY.md` are recorded for information.
 
-**SHOULD part**
-- **Enforced:** private vulnerability reporting is enabled in the `ospo-managed` security configuration (`org_snapshot`). **(verify** that it is part of the configuration.)
-- **Exact check:** `lint/private-reporting`, for repositories with `security: custom` (`GET /repos/{o}/{r}/private-vulnerability-reporting`).
+**SHOULD clause (private reporting):** not assessed in this version (see 1.7). Private vulnerability reporting is still enabled through the `ospo-managed` security configuration. `lint/private-reporting` (repositories with `security: custom`) runs for information and is not mapped to a requirement.
 
-**Issue:** lint issue for custom repositories.
-
-**New work:** the snapshot items, plus one lint check.
+**New work:** the snapshot items.
 
 ---
 
