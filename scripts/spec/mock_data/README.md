@@ -12,7 +12,7 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | `drift.json` | `create_repos.js --dry-run --json` | Planned changes (none) = no drift |
 | `org_snapshot.json` | `org_snapshot.js` | Org settings, ruleset, security configurations, org SECURITY.md, advisories (raw data in the `snapshot` block) |
 | `scorecard.json` | `scorecard_check.js` | Scorecard CLI results per repository, converted to the common format with thresholds applied |
-| `data.json` | `compliance_report.js` | Merged result: requirement statuses, findings register, summary, history. Input for the HTML report |
+| `data.json` | `compliance_report.js` | Merged result: requirement statuses, findings, summary, history. Input for the HTML report |
 
 ## The 11 repositories and what each one demonstrates
 

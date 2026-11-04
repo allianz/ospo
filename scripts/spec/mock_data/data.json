@@ -812,16 +812,6 @@
       "expired": false
     }
   ],
-  "actions": [
-    {
-      "id": "R-01",
-      "requirement": "BR.03",
-      "action": "Release workflow template with checksums and artifact attestations",
-      "owner": "OSPO",
-      "due": "2027-03-31",
-      "overdue": false
-    }
-  ],
   "history": [
     {
       "date": "2026-10-06",

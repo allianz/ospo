@@ -108,7 +108,7 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 | `details` | List of lines for people, Scorecard style (`Warn: …`, `Info: …`), e.g. one line per denied package. Always a list, `[]` if empty. Never parsed |
 
 - **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header: `snapshot` (org settings, advisories) in `org_snapshot`, `archivals` in `archive_repos`, `planned_changes` in `create_repos --json`.
-- **`checks` catalogue:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`), the same fields as Scorecard. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `checks`, which the report uses for "How it is verified" and the links in the findings register. Each spec therefore needs one heading per check, named like the check's `name`.
+- **`checks` catalogue:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`), the same fields as Scorecard. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `checks`, which the report uses for "How it is verified". Each spec therefore needs one heading per check, named like the check's `name`.
 - **Thresholds come from the tool's configuration** and are written once per check into the catalogue, never into the results. `config_sha256` pins the configuration of each run.
 - **Whether a check counts** is decided only by the mapping in `config/compliance_report.yaml`. Unmapped checks (e.g. `sbom/license-coverage`, `scorecard/fuzzing`) are written like any other result and do not affect a status.
 - `skipped` lists repositories without results (excluded, archived). `errors` lists repository × check pairs the tool could not evaluate. Both are always present, `[]` if empty, so every file has the same shape.
@@ -151,16 +151,9 @@ deviations:
     justification: …
     approved_by: Head of OSPO, ISO
     valid_until: 2027-09-30
-
-actions:
-  - id: R-01
-    requirement: BR.03
-    action: …
-    owner: OSPO
-    due: 2027-03-31
 ```
 
-- Deviations and remediation actions are data, so the report can flag expired deviations and overdue actions.
+- Deviations are data, so the report can flag expired deviations.
 - Every change to this file goes through a PR, which gives the audit trail.
 
 ### 1.9 Scorecard conversion (`scorecard_check`)
@@ -299,7 +292,7 @@ actions:
 
 **Limits of the check:**
 - Components that are not declared through a package manager are not listed.
-- There is no SBOM per release. That is optional: the release template (R-01, see BR.03) could attach one.
+- There is no SBOM per release. That is optional: the OSPO release workflow template (see BR.03) could attach one.
 
 **New work:** a failure path in `license_scan`, plus labels.
 
@@ -459,7 +452,7 @@ actions:
 
 **Implementation**
 - **Source archives:** GitHub generates them from the tag and serves them over HTTPS. That is integrity by construction.
-- **Release assets:** built by the OSPO release workflow template (R-01), which adds SHA-256 checksums and a GitHub artifact attestation. The attestation is signed, so it also covers the MAY part (authenticity).
+- **Release assets:** built by the OSPO release workflow template, which adds SHA-256 checksums and a GitHub artifact attestation. The attestation is signed, so it also covers the MAY part (authenticity).
 
 **Exact check:** `scorecard/signed-releases` ≥ 8 (provenance gives 10). **(verify** how Scorecard scores releases without uploaded assets: these should count as `na`, because only source archives exist.)
 
@@ -471,7 +464,7 @@ actions:
 
 **Limits of the check:** packages published to registries (npm, Maven Central) are not covered by Signed-Releases. Registry provenance (e.g. npm provenance) could be a later check.
 
-**Prerequisite:** the release workflow template (R-01). Without it, projects cannot fix the finding.
+**Prerequisite:** the OSPO release workflow template. Without it, projects cannot fix the finding.
 
 **New work:** the template, the Scorecard threshold.
 

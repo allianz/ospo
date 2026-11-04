@@ -283,7 +283,7 @@
 <div id="tip" hidden></div>
 <div class="page">
 
-  <div class="draft"><strong>MOCK-UP v3 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix C. Only headings, column labels, chapter names, a short summary of each TR-03185 requirement and the status definitions are fixed template text.
+  <div class="draft"><strong>MOCK-UP v3 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix A. Only headings, column labels, chapter names, a short summary of each TR-03185 requirement and the status definitions are fixed template text.
     <div class="mockctl"><label>Scale <select id="ctl-scale"></select></label><label>Worst case <select id="ctl-worst"></select></label><span id="ctl-note"></span></div>
   </div>
 
@@ -301,14 +301,10 @@
     <a href="#requirements">2 Requirements</a>
     <a href="#trends">3 Trends</a>
     <a href="#findings">4 Findings</a>
-    <a href="#plan">5 Remediation actions</a>
+    <a href="#repositories">5 Repositories</a>
     <a href="#deviations">6 Deviations</a>
-    <a href="#changes">7 Changes</a>
     <a href="#method">A Scope &amp; method</a>
-    <a href="#catalogue">B Checks</a>
-    <a href="#evidence">C Evidence</a>
-    <a href="#register">D Findings register</a>
-    <a href="#results">E Results per repository</a>
+    <a href="#results">B Results per repository</a>
   </nav>
 
   <!-- ─────────────────────────── 1 Summary ─────────────────────────── -->
@@ -338,7 +334,7 @@
   <!-- ─────────────────────────── 2 Requirements ─────────────────────────── -->
   <section id="requirements" class="break">
     <h2><span class="num">2</span>Requirement status</h2>
-    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. The full list of failing repositories is in the findings register (Appendix D).</p>
+    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. Every repository with its open findings is listed in section 5.</p>
     <div class="card" style="padding:6px 8px">
       <table id="req-table">
         <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th id="req-trend-h">Trend</th></tr></thead>
@@ -381,23 +377,32 @@
         <div id="seg-repos"></div>
       </div>
     </div>
-    <div class="card" style="padding:6px 8px">
-      <table id="repo-table">
-        <thead><tr><th>Repositories with the most open findings</th><th class="num">Open findings</th><th>Requirements affected</th><th>Issues</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
   </section>
 
-  <!-- ─────────────────────────── 5 Plan ─────────────────────────── -->
-  <section id="plan">
-    <h2><span class="num">5</span>Remediation actions</h2>
-    <p class="lead">Planned actions recorded in the report configuration.</p>
-    <div class="card" style="padding:6px 8px">
-      <table id="plan-table">
-        <thead><tr><th>ID</th><th>Req.</th><th>Action</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead>
+  <!-- ─────────────────────────── 5 Repositories ─────────────────────────── -->
+  <section id="repositories">
+    <h2><span class="num">5</span>Repositories</h2>
+    <p class="lead">Every repository in scope with its open findings. Sort and filter on screen; the printed report always contains every repository.</p>
+    <div class="card" style="padding:10px 8px 6px">
+      <div class="filters">
+        <label>Sort by <select id="r-sort">
+          <option value="findings">Most open findings</option>
+          <option value="passed">Lowest share of checks passed</option>
+          <option value="repo">Repository name (A–Z)</option>
+        </select></label>
+        <label>Repository <input id="r-repo" type="search" placeholder="name contains…"></label>
+        <label>Requirement <select id="r-req"></select></label>
+        <label class="chk"><input type="checkbox" id="r-failing"> Only repositories with open findings</label>
+        <button type="button" id="r-reset">Reset</button>
+      </div>
+      <div class="filter-count" id="r-count"></div>
+      <table id="repos-table">
+        <thead><tr>
+          <th>Repository</th><th class="num">Open findings</th><th>Failing checks</th><th>Requirements affected</th><th class="num">Checks passed</th><th>Issues</th>
+        </tr></thead>
         <tbody></tbody>
       </table>
+      <div id="r-more"></div>
     </div>
   </section>
 
@@ -408,18 +413,6 @@
     <div class="card" style="padding:6px 8px">
       <table id="dev-table">
         <thead><tr><th>ID</th><th>Req.</th><th>Scope</th><th>Approved by</th><th>Valid until</th><th>Status</th><th>Used by</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── 7 Changes ─────────────────────────── -->
-  <section id="changes">
-    <h2><span class="num">7</span>Changes since the previous report</h2>
-    <p class="lead" id="changes-lead"></p>
-    <div class="card" style="padding:6px 8px">
-      <table id="change-table">
-        <thead><tr><th>Event</th><th class="num">Value</th><th>Details</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -444,56 +437,9 @@
     </div>
   </section>
 
-  <!-- ─────────────────────────── B Checks ─────────────────────────── -->
-  <section id="catalogue">
-    <h2><span class="num">B</span>Check catalogue</h2>
-    <p class="lead">Every check that ran, with its rule and the requirements it is mapped to. Unmapped checks are reported for information and never affect a status.</p>
-    <div class="card" style="padding:6px 8px">
-      <table id="check-table">
-        <thead><tr><th>Check</th><th>Rule</th><th>Threshold</th><th>Requirements</th><th class="num">Pass / fail / n.a.</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── C Evidence ─────────────────────────── -->
-  <section id="evidence">
-    <h2><span class="num">C</span>Evidence index and data freshness</h2>
-    <p class="lead" id="evidence-lead"></p>
-    <div class="card" style="padding:6px 8px;margin-bottom:16px">
-      <table id="ev-table">
-        <thead><tr><th>Evidence</th><th>Tool</th><th>Data as of</th><th class="num">Age at report</th><th>SHA-256</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── D Register ─────────────────────────── -->
-  <section id="register" class="break">
-    <h2><span class="num">D</span>Findings register</h2>
-    <p class="lead">Every open finding at the time of this report. This is the frozen record; the current state is on GitHub. Filter and sort on screen; the printed report always contains every finding.</p>
-    <div class="card" style="padding:10px 8px 6px">
-      <div class="filters">
-        <label>Requirement <select id="f-req"></select></label>
-        <label>Check <select id="f-check"></select></label>
-        <label>Repository <input id="f-repo" type="search" placeholder="name contains…"></label>
-        <button type="button" id="f-reset">Reset</button>
-      </div>
-      <div class="filter-count" id="reg-count"></div>
-      <table id="reg-table">
-        <thead><tr>
-          <th class="sortable" data-sort="req">Req.</th><th class="sortable" data-sort="check">Check</th><th class="sortable" data-sort="repo">Repository</th>
-          <th>Reason</th><th>Issues</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table>
-      <div id="reg-more"></div>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── E Results ─────────────────────────── -->
+  <!-- ─────────────────────────── B Results ─────────────────────────── -->
   <section id="results">
-    <h2><span class="num">E</span>Results per repository</h2>
+    <h2><span class="num">B</span>Results per repository</h2>
     <p class="lead">Every result of the repository-level checks for the active repositories. Hover or focus a cell for the reason. Numbers are Scorecard scores (0–10). The printed report shows only repositories with open findings.</p>
     <div class="card" style="padding:10px 8px;margin-bottom:16px">
       <div class="filters">
@@ -505,16 +451,6 @@
       <div class="scroll-x"><table class="matrix" id="matrix"></table></div>
       <div id="m-more"></div>
       <div class="legend" style="margin:10px 6px 0" id="matrix-legend"></div>
-    </div>
-    <div class="grid-2">
-      <div class="card" style="padding:14px 8px 6px">
-        <h3 style="padding:0 10px">Org-level checks</h3>
-        <table id="org-table"><thead><tr><th>Check</th><th>Result</th><th>Reason</th></tr></thead><tbody></tbody></table>
-      </div>
-      <div class="card" style="padding:14px 8px 6px">
-        <h3 style="padding:0 10px">Archived repositories</h3>
-        <table id="arch-table"><thead><tr><th>Repository</th><th>Check</th><th>Result</th><th>Reason</th></tr></thead><tbody></tbody></table>
-      </div>
     </div>
     <div class="integrity" id="integrity"></div>
   </section>
@@ -1333,16 +1269,6 @@
       "approved_by": "Legal, Head of OSPO",
       "valid_until": "2026-12-31",
       "expired": false
-    }
-  ],
-  "actions": [
-    {
-      "id": "R-01",
-      "requirement": "BR.03",
-      "action": "Release workflow template with checksums and artifact attestations",
-      "owner": "OSPO",
-      "due": "2027-03-31",
-      "overdue": false
     }
   ],
   "history": [
@@ -4176,7 +4102,6 @@ const RESULT_KEY = new Map(REPO_RESULTS.map(r => [r.repo + '|' + r.check, r]));
 const DERIVED = FINDINGS.filter(f => !RESULT_KEY.has(f.repo + '|' + f.check))
   .map(f => ({ repo: f.repo, check: f.check, name: f.name, result: 'fail', score: null, reason: f.reason, details: ['Info: derived by compliance_report (no tool result)'], file: 'data.json', derived: true }));
 for (const d of DERIVED) RESULT_KEY.set(d.repo + '|' + d.check, d);
-const ALL_REPO_RESULTS = [...REPO_RESULTS, ...DERIVED];
 const FINDINGS_BY_REQ = {};
 for (const f of FINDINGS) for (const q of f.requirements) (FINDINGS_BY_REQ[q] ??= []).push(f);
 const findingsOf = reqId => FINDINGS_BY_REQ[reqId] ?? [];
@@ -4275,11 +4200,6 @@ function statusPill(key, label) {
   const ico = h('span', { class: 'ico' + (st.ring ? ' ' + st.ring : ''), style: `background:${st.color};color:${st.ink}`, 'aria-hidden': 'true', text: st.glyph });
   return h('span', { class: 'status' }, ico, label ?? st.label);
 }
-function resultPill(r) {
-  const thr = DATA.checks[r.check]?.threshold;
-  const score = r.score != null ? ` · score ${r.score}${thr != null ? ` (≥ ${thr})` : ''}` : '';
-  return statusPill(r.result, STATUS[r.result].label + score);
-}
 function checkLink(id) {
   const c = DATA.checks[id];
   return h('span', {}, c?.documentation?.url ? h('a', { href: c.documentation.url, text: c.name }) : checkName(id), ' ', h('code', { text: id }));
@@ -4287,15 +4207,15 @@ function checkLink(id) {
 /* Live GitHub search for the scanners' issues, by check label. The report does not read issues; this is only a link. */
 const liveIssuesUrl = (checks, repo) => `https://github.com/search?q=${encodeURIComponent(`${repo ? `repo:${ORG}/${repo}` : `org:${ORG}`} is:issue is:open label:${checks.join(',')}`)}&type=issues`;
 const liveIssuesLink = (checks, repo, text = 'Live issues') => h('a', { href: liveIssuesUrl(checks, repo), text });
-/* Link that opens the findings register with a filter applied */
-const registerLink = (text, filter) => h('a', { href: '#register', 'data-filter': JSON.stringify(filter), text });
+/* Link that applies a filter to the repository table in section 5 */
+const repoListLink = (text, filter) => h('a', { href: '#repositories', 'data-filter': JSON.stringify(filter), text });
 const linksRow = nodes => { nodes = nodes.filter(Boolean); return nodes.length ? h('div', { class: 'links' }, '→ ', joinNodes(nodes)) : null; };
 document.addEventListener('click', e => {
   const a = e.target.closest('a[data-filter]');
   if (!a) return;
   e.preventDefault();
-  applyRegisterFilter(JSON.parse(a.dataset.filter));
-  $('register').scrollIntoView({ behavior: 'smooth' });
+  applyRepoFilter(JSON.parse(a.dataset.filter));
+  $('repositories').scrollIntoView({ behavior: 'smooth' });
 });
 
 function dataTable(headers, rows, numericCols = []) {
@@ -4553,10 +4473,9 @@ const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
 
   // Needs attention (generated, capped)
   const at = $('attention');
-  const expiredDev = DATA.deviations.filter(d => d.expired), overdueAct = DATA.actions.filter(a => a.overdue);
-  at.append(h('li', {}, h('b', { text: 'Deviations and actions: ' }),
-    expiredDev.length ? `${plural(expiredDev.length, 'deviation has', 'deviations have')} expired (${expiredDev.map(d => d.id).join(', ')}). ` : `None of the ${DATA.deviations.length} deviations has expired. `,
-    overdueAct.length ? `${plural(overdueAct.length, 'action is', 'actions are')} overdue (${overdueAct.map(a => a.id).join(', ')}).` : `None of the ${DATA.actions.length} remediation actions is overdue.`));
+  const expiredDev = DATA.deviations.filter(d => d.expired);
+  at.append(h('li', {}, h('b', { text: 'Deviations: ' }),
+    expiredDev.length ? `${plural(expiredDev.length, 'deviation has', 'deviations have')} expired (${expiredDev.map(d => d.id).join(', ')}).` : `None of the ${DATA.deviations.length} deviations has expired.`));
   at.append(h('li', {}, h('b', { text: 'Data: ' }), errN ? `${plural(errN, 'check')} could not be evaluated (tool errors, treated as no data).` : `All ${Object.keys(FILES).length} tool outputs are present, with no tool errors.`));
 }
 
@@ -4584,16 +4503,6 @@ function trendNode(q) {
   const lo = Math.min(...vs.filter(v => v != null));
   const node = sparkline(vs, { min: Math.max(0, lo - 5), max: 100.5 });
   return h('span', { title: vs.map((v, i) => `${fmtDay(HISTORY[i].date)}: ${v == null ? 'no data' : fmtPct(v)}`).join('\n') }, node);
-}
-
-function flatten(obj, prefix = '') {
-  if (obj == null || typeof obj !== 'object') return [[prefix, String(obj)]];
-  if (Array.isArray(obj)) {
-    if (!obj.length) return [[prefix, 'none']];
-    if (obj.every(x => typeof x !== 'object')) return [[prefix, obj.join(', ')]];
-    return obj.flatMap((x, i) => flatten(x, `${prefix}[${i}]`));
-  }
-  return Object.entries(obj).flatMap(([k, v]) => flatten(v, prefix ? `${prefix}.${k}` : k));
 }
 
 /* Group failing findings by check and reason. Scorecard checks form one group per check (the histogram shows the scores); numbers in other reasons are masked so "1 user…" and "3 users…" group together. */
@@ -4637,15 +4546,13 @@ function renderCard(q) {
         h('td', { class: 'nowrap' }, fmtDate(a.archived_date), a.date_accuracy ? h('div', { class: 'small muted', text: a.date_accuracy }) : null),
         h('td', { text: a.by }), h('td', { class: 'nowrap', text: a.notice_date ? fmtDate(a.notice_date) : 'none' }), h('td', { class: 'num', text: a.days_notice ?? '–' })))))) : null;
 
-  const acts = DATA.actions.filter(a => a.requirement === q.id);
-  const actSec = acts.length ? sec('Remediation actions', acts.map(a => h('p', {}, h('a', { href: '#plan', class: 'id', text: a.id }), ` ${a.action}. Owner: ${a.owner}, due ${fmtDate(a.due)}${a.overdue ? ' (overdue)' : ''}.`))) : null;
 
   const infoSec = repoChecks.length ? sec('Additional information', linksRow([
     liveIssuesLink(repoChecks, null, 'Live issues on GitHub'),
-    h('a', { href: '#results', text: 'Results per repository (Appendix E)' }),
+    h('a', { href: '#results', text: 'Results per repository (Appendix B)' }),
   ])) : null;
 
-  return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, archSec, actSec, infoSec);
+  return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, archSec, infoSec);
 }
 
 {
@@ -4700,32 +4607,8 @@ function renderCard(q) {
     { label: '2–3 findings', names: bucket(2, 3), color: 'var(--serious)', ink: '#fff' },
     { label: '4 or more', names: bucket(4, Infinity), color: 'var(--critical)', ink: '#fff' },
   ].map(p => ({ ...p, value: p.names.length })), { unit: 'repositories' });
-
-  const CAP = 15;
-  const rt = document.querySelector('#repo-table tbody');
-  const repos = [...nBy.keys()].map(repo => {
-    const fs = FINDINGS.filter(f => f.repo === repo);
-    return { repo, fs, n: fs.length };
-  }).sort((a, b) => b.n - a.n || a.repo.localeCompare(b.repo));
-  for (const r of repos.slice(0, CAP)) {
-    rt.append(h('tr', {},
-      h('td', { class: 'id' }, r.repo, ARCHIVED.includes(r.repo) ? h('span', { class: 'small muted', style: 'font-weight:400', text: ' (archived)' }) : null),
-      h('td', { class: 'num', text: r.n }),
-      h('td', {}, uniq(r.fs.flatMap(f => f.requirements)).sort().map(x => registerLinkTag(x, { req: x, repo: r.repo }))),
-      h('td', { class: 'nowrap' }, liveIssuesLink(uniq(r.fs.map(f => f.check)), r.repo))));
-  }
-  if (repos.length > CAP) rt.append(h('tr', {}, h('td', { colspan: 4, class: 'chart-sub' }, `Top ${CAP} of ${repos.length} repositories with open findings. `, registerLink('All findings in the register (Appendix D)', {}))));
 }
-function registerLinkTag(text, filter) { const a = registerLink(text, filter); a.className = 'tag'; return a; }
-
-/* ═══════════════════════════ 5 Actions ═══════════════════════════ */
-{
-  const pt = document.querySelector('#plan-table tbody');
-  for (const a of DATA.actions) pt.append(h('tr', {},
-    h('td', { class: 'id', text: a.id }), h('td', { class: 'id', text: a.requirement }), h('td', { text: a.action }), h('td', { text: a.owner }),
-    h('td', { class: 'nowrap', text: fmtDate(a.due) }),
-    h('td', {}, a.overdue ? statusPill('not-met', 'Overdue') : h('span', { class: 'cov-txt', text: `Open · due in ${daysBetween(DATA.run_at, a.due)} days` }))));
-}
+function repoListTag(text, filter) { const a = repoListLink(text, filter); a.className = 'tag'; return a; }
 
 /* ═══════════════════════════ 6 Deviations ═══════════════════════════ */
 {
@@ -4741,23 +4624,6 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
       h('td', {}, d.expired ? statusPill('not-met', 'Expired') : h('span', { class: 'cov-txt', text: `Valid · ${daysBetween(DATA.run_at, d.valid_until)} days left` })),
       h('td', {}, users.map(u => h('span', { class: 'tag', text: u })))));
   }
-}
-
-/* ═══════════════════════════ 7 Changes ═══════════════════════════ */
-{
-  const prevDate = PREV?.date;
-  $('changes-lead').textContent = `Compared with ${DATA.previous_report.report_id} (run of ${fmtDate(prevDate)}).`;
-  const ct = document.querySelector('#change-table tbody');
-  const row = (e, n, d) => ct.append(h('tr', {}, h('td', { text: e }), h('td', { class: 'num nowrap', text: n }), h('td', {}, d)));
-  row('Overall compliance', `${fmtPct(PREV.compliance_pct)} → ${fmtPct(S.compliance_pct)}`, `${(S.compliance_pct - PREV.compliance_pct).toFixed(1)} pts. Now ${S.checks_passed} of ${S.checks_evaluated} evaluated checks pass.`);
-  row('Open findings', `${PREV.open_findings} → ${S.open_findings}`, `Net change ${S.open_findings - PREV.open_findings}.`);
-  const arch = DATA.archivals.filter(a => a.archived_date > prevDate);
-  row('Repositories archived', arch.length, arch.length ? arch.map(a => `${a.repo} on ${fmtDate(a.archived_date)} by ${a.by}` + (a.days_notice != null ? `, after ${a.days_notice} days of notice` : '')).join('; ') : 'None');
-  row('Org configuration changes', snap.changes_since_previous.length, snap.changes_since_previous.length ? flatten(snap.changes_since_previous).map(x => x.join(': ')).join('; ') : `Org settings, ruleset, security configuration and org security policy unchanged since the snapshot of ${fmtDate(snap.previous_snapshot_date)}.`);
-  row('Access drift (planned changes)', plannedN, drift.results[0].reason);
-  const advNew = adv.published_in_period.filter(a => a.published_at > prevDate);
-  row('Security advisories published', advNew.length, `${adv.published_in_period.length} published in the snapshot period, the latest on ${fmtDate(adv.published_in_period.map(a => a.published_at).sort().at(-1))}.`);
-  row('Tool errors', errN, errN ? 'See Appendix A.' : 'No repository × check pair failed to evaluate.');
 }
 
 /* ═══════════════════════════ A Scope & method ═══════════════════════════ */
@@ -4797,90 +4663,59 @@ function registerLinkTag(text, filter) { const a = registerLink(text, filter); a
   }
 }
 
-/* ═══════════════════════════ B Check catalogue ═══════════════════════════ */
-{
-  const ct = document.querySelector('#check-table tbody');
-  const byCheck = {};
-  for (const r of [...RESULTS, ...DERIVED]) (byCheck[r.check] ??= []).push(r.result);
-  for (const i of DATA.inputs) {
-    ct.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 5, text: `${FILES[i.file].tool} · ${i.file}` })));
-    for (const id of Object.keys(FILES[i.file].checks)) {
-      const c = DATA.checks[id] ?? FILES[i.file].checks[id];
-      const rs = byCheck[id] ?? [];
-      const n = k => rs.filter(r => r === k).length;
-      ct.append(h('tr', {},
-        h('td', {}, checkLink(id)),
-        h('td', { text: c.documentation?.short ?? '–' }),
-        h('td', { class: 'nowrap', text: c.threshold != null ? `score ≥ ${c.threshold}` : '–' }),
-        h('td', {}, isMapped(id) ? [...REQS_OF_CHECK[id]].map(x => h('span', { class: 'tag', text: x })) : h('span', { class: 'muted small', text: 'Not mapped (information only)' })),
-        h('td', { class: 'num nowrap', text: `${n('pass')} / ${n('fail')} / ${n('na')}` })));
-    }
-  }
+/* ═══════════════════════════ 5 Repositories (sortable, filterable) ═══════════════════════════ */
+const RL = { sort: 'findings', repo: '', req: '', failing: false, limit: 200 };
+const REPO_ROWS = uniq([...ACTIVE, ...FINDINGS.map(f => f.repo)]).map(repo => {
+  const fs = FINDINGS.filter(f => f.repo === repo);
+  const counted = REPO_RESULTS.filter(r => r.repo === repo && isMapped(r.check) && r.result !== 'na');
+  const passed = counted.filter(r => r.result === 'pass').length;
+  return { repo, fs, n: fs.length, checks: uniq(fs.map(f => f.check)), reqs: uniq(fs.flatMap(f => f.requirements)).sort(),
+    passed, total: counted.length, share: counted.length ? passed / counted.length : 1 };
+});
+const RL_SORT = {
+  findings: (a, b) => b.n - a.n || a.share - b.share || a.repo.localeCompare(b.repo),
+  passed: (a, b) => a.share - b.share || b.n - a.n || a.repo.localeCompare(b.repo),
+  repo: (a, b) => a.repo.localeCompare(b.repo),
+};
+function readRepoControls() {
+  RL.sort = $('r-sort').value; RL.repo = $('r-repo').value.trim().toLowerCase(); RL.req = $('r-req').value; RL.failing = $('r-failing').checked; RL.limit = 200;
+  renderRepos();
 }
-
-/* ═══════════════════════════ C Evidence ═══════════════════════════ */
-{
-  $('evidence-lead').textContent = `The input files of run ${DATA.run_url.split('/').pop()}, identified by SHA-256. Report configuration: ${DATA.report_config}.` + (SCALED ? ' (Scaled mock: the hashes are those of the unscaled files.)' : '');
-  const et = document.querySelector('#ev-table tbody');
-  for (const i of DATA.inputs) et.append(h('tr', {},
-    h('td', {}, h('code', { text: i.file })), h('td', { text: i.tool }),
-    h('td', { class: 'nowrap', text: fmtDateTime(i.run_at) }),
-    h('td', { class: 'num nowrap', text: plural(daysBetween(i.run_at, DATA.run_at), 'day') }),
-    h('td', { class: 'nowrap' }, h('code', { title: i.sha256, text: shortSha(i.sha256) }))));
+function applyRepoFilter(f) {
+  $('r-sort').value = f.sort ?? 'findings'; $('r-repo').value = f.repo ?? ''; $('r-req').value = f.req ?? ''; $('r-failing').checked = !!f.failing;
+  readRepoControls();
 }
-
-/* ═══════════════════════════ D Findings register (filterable) ═══════════════════════════ */
-const REG = { req: '', check: '', repo: '', sort: 'req', dir: 1, limit: 200 };
-const SORTERS = { req: f => f.requirements[0], check: f => checkName(f.check), repo: f => f.repo };
-function readRegisterControls() {
-  REG.req = $('f-req').value; REG.check = $('f-check').value; REG.repo = $('f-repo').value.trim().toLowerCase();
-  REG.limit = 200;
-  renderRegister();
-}
-function applyRegisterFilter(f) {
-  $('f-req').value = f.req ?? ''; $('f-check').value = f.check ?? ''; $('f-repo').value = f.repo ?? '';
-  readRegisterControls();
-}
-function renderRegister() {
-  const rows = FINDINGS.filter(f => (!REG.req || f.requirements.includes(REG.req)) && (!REG.check || f.check === REG.check)
-    && (!REG.repo || f.repo.toLowerCase().includes(REG.repo)));
-  const key = SORTERS[REG.sort];
-  const cmp = (x, y) => x < y ? -1 : x > y ? 1 : 0;
-  rows.sort((a, b) => cmp(key(a), key(b)) * REG.dir || cmp(a.repo, b.repo) || cmp(a.check, b.check));
-  document.querySelector('#reg-table tbody').replaceChildren(...rows.slice(0, REG.limit).map(f => h('tr', {},
-    h('td', {}, f.requirements.map(x => h('span', { class: 'tag', text: x }))),
-    h('td', {}, checkLink(f.check)),
-    h('td', { class: 'id' }, f.repo, ARCHIVED.includes(f.repo) ? h('div', { class: 'small muted', style: 'font-weight:400', text: 'archived' }) : null),
-    h('td', { text: f.reason }),
-    h('td', { class: 'nowrap' }, liveIssuesLink([f.check], f.repo)))));
-  const active = REG.req || REG.check || REG.repo;
-  $('reg-count').textContent = `${active ? `${rows.length} of ${FINDINGS.length} open findings match the filter` : `${FINDINGS.length} open findings`}` + (rows.length > REG.limit ? `; showing the first ${REG.limit}` : '') + '.';
-  const more = $('reg-more');
+function renderRepos() {
+  const rows = REPO_ROWS.filter(r => (!RL.repo || r.repo.toLowerCase().includes(RL.repo)) && (!RL.req || r.reqs.includes(RL.req)) && (!RL.failing || r.n))
+    .sort(RL_SORT[RL.sort]);
+  document.querySelector('#repos-table tbody').replaceChildren(...rows.slice(0, RL.limit).map(r => h('tr', {},
+    h('td', { class: 'id' }, r.repo, ARCHIVED.includes(r.repo) ? h('div', { class: 'small muted', style: 'font-weight:400', text: 'archived' }) : null),
+    h('td', { class: 'num', text: r.n || '–' }),
+    h('td', { class: 'small' }, joinNodes(r.checks.map(c => checkName(c)), ', ')),
+    h('td', {}, r.reqs.map(x => repoListTag(x, { ...RL, req: x }))),
+    h('td', { class: 'num nowrap', text: r.total ? `${r.passed}/${r.total}` : '–' }),
+    h('td', { class: 'nowrap' }, r.n ? liveIssuesLink(r.checks, r.repo) : null))));
+  const active = RL.repo || RL.req || RL.failing;
+  $('r-count').textContent = (active ? `${rows.length} of ${REPO_ROWS.length} repositories match the filter` : `${REPO_ROWS.length} repositories`) +
+    (rows.length > RL.limit ? `; showing the first ${RL.limit}` : '') + '. Checks passed counts the mapped checks that apply to the repository.';
+  const more = $('r-more');
   more.replaceChildren();
-  if (rows.length > REG.limit) {
+  if (rows.length > RL.limit) {
     const b = h('button', { class: 'showall', type: 'button', text: `Show all ${rows.length}` });
-    b.addEventListener('click', () => { REG.limit = Infinity; renderRegister(); });
+    b.addEventListener('click', () => { RL.limit = Infinity; renderRepos(); });
     more.append(b);
   }
-  document.querySelectorAll('#reg-table th[data-sort]').forEach(th => { th.querySelector('.arrow')?.remove(); if (th.dataset.sort === REG.sort) th.append(h('span', { class: 'arrow', text: REG.dir > 0 ? '▲' : '▼' })); });
 }
 {
-  $('f-req').append(h('option', { value: '', text: 'All requirements' }),
-    ...DATA.requirements.filter(q => findingsOf(q.id).length).map(q => h('option', { value: q.id, text: `${q.id} ${q.title} (${findingsOf(q.id).length})` })));
-  $('f-check').append(h('option', { value: '', text: 'All checks' }),
-    ...countBy(FINDINGS, f => f.check).map(([c, n]) => h('option', { value: c, text: `${checkName(c)} (${n})` })));
-  for (const id of ['f-req', 'f-check']) $(id).addEventListener('change', readRegisterControls);
-  $('f-repo').addEventListener('input', readRegisterControls);
-  $('f-reset').addEventListener('click', () => applyRegisterFilter({}));
-  document.querySelectorAll('#reg-table th[data-sort]').forEach(th => th.addEventListener('click', () => {
-    const k = th.dataset.sort; REG.dir = REG.sort === k ? -REG.dir : 1; REG.sort = k; renderRegister();
-  }));
-  const m = location.hash.match(/^#register:(.+)$/);
-  if (m) { applyRegisterFilter({ req: decodeURIComponent(m[1]) }); requestAnimationFrame(() => $('register').scrollIntoView()); }
-  else renderRegister();
+  $('r-req').append(h('option', { value: '', text: 'All requirements' }),
+    ...DATA.requirements.filter(q => findingsOf(q.id).length).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
+  for (const id of ['r-sort', 'r-req', 'r-failing']) $(id).addEventListener('change', readRepoControls);
+  $('r-repo').addEventListener('input', readRepoControls);
+  $('r-reset').addEventListener('click', () => applyRepoFilter({}));
+  renderRepos();
 }
 
-/* ═══════════════════════════ E Results per repository (filterable) ═══════════════════════════ */
+/* ═══════════════════════════ B Results per repository (filterable) ═══════════════════════════ */
 const WITH_FINDINGS = new Set(FINDINGS.map(f => f.repo));
 const MX = { repo: '', failing: ACTIVE.length > 30, mappedOnly: false, limit: 150 };
 function renderMatrix() {
@@ -4930,15 +4765,6 @@ function renderMatrix() {
     h('span', { text: 'Number: Scorecard score, coloured by pass or fail against the threshold' }),
     h('span', { text: '† not mapped to a requirement, never affects a status' }));
 
-  const ot = document.querySelector('#org-table tbody');
-  for (const r of ORG_RESULTS) ot.append(h('tr', {}, h('td', {}, checkLink(r.check), h('div', { class: 'small muted' }, h('code', { text: r.file }))), h('td', {}, resultPill(r)), h('td', { text: r.reason })));
-
-  const at2 = document.querySelector('#arch-table tbody');
-  for (const r of ALL_REPO_RESULTS.filter(r => ARCHIVED.includes(r.repo))) at2.append(h('tr', {},
-    h('td', { class: 'id', text: r.repo }),
-    h('td', {}, checkName(r.check), isMapped(r.check) ? null : h('div', { class: 'small muted', text: 'not mapped (information only)' }), r.derived ? h('div', { class: 'small muted', text: 'derived by compliance_report' }) : null),
-    h('td', {}, resultPill(r)), h('td', { text: r.reason })));
-
   $('integrity').append('Generated from ', h('code', { text: `${ORG}/ospo@${DATA.ospo_sha}` }), ' · ', h('a', { href: DATA.run_url, text: `workflow run ${DATA.run_url.split('/').pop()}` }),
     ' · report configuration ', h('code', { text: DATA.report_config }), ' · inputs: ',
     h('span', {}, joinNodes(DATA.inputs.map(i => h('span', {}, h('code', { text: i.file }), ' ', h('code', { title: i.sha256, text: shortSha(i.sha256) }))), ', ')),
@@ -4946,16 +4772,16 @@ function renderMatrix() {
 }
 
 /* ═══════════════════════════ Print ═══════════════════════════ */
-// The printed report is the frozen record: every finding in the register, failing repositories in the matrix, all cards expanded.
+// The printed report is the frozen record: every repository in section 5, failing repositories in the matrix, all cards expanded.
 let saved = null;
 addEventListener('beforeprint', () => {
-  saved = { reg: { ...REG }, mx: { ...MX } };
-  Object.assign(REG, { req: '', check: '', repo: '', limit: Infinity }); renderRegister();
+  saved = { rl: { ...RL }, mx: { ...MX } };
+  Object.assign(RL, { repo: '', req: '', failing: false, limit: Infinity }); renderRepos();
   Object.assign(MX, { repo: '', failing: true, limit: Infinity }); renderMatrix();
   document.querySelectorAll('details.req').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; d.dispatchEvent(new Event('toggle')); });
 });
 addEventListener('afterprint', () => {
-  if (saved) { Object.assign(REG, saved.reg); renderRegister(); Object.assign(MX, saved.mx); renderMatrix(); }
+  if (saved) { Object.assign(RL, saved.rl); renderRepos(); Object.assign(MX, saved.mx); renderMatrix(); }
   document.querySelectorAll('details.req').forEach(d => { d.open = d.dataset.wasOpen === 'true'; });
 });
 </script>
