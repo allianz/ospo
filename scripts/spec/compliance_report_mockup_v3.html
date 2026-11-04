@@ -209,22 +209,7 @@
   details.datatable > summary, details.more > summary { color: var(--accent); cursor: pointer; font-size: 12.5px; }
   details.datatable table, details.more table { margin-top: 6px; }
 
-  /* results matrix */
   .scroll-x { overflow-x: auto; }
-  table.matrix { width: auto; }
-  table.matrix th, table.matrix td { padding: 4px 3px; text-align: center; border-bottom: 1px solid var(--grid); }
-  table.matrix th.rowh, table.matrix td.rowh { text-align: left; padding-right: 12px; }
-  table.matrix th.vh { vertical-align: bottom; height: 190px; font-weight: 500; }
-  table.matrix th.vh > span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; display: inline-block; }
-  table.matrix th.vh.unmapped { color: var(--muted); font-style: italic; }
-  table.matrix th.grp { text-align: center; font-size: 12px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--grid); }
-  table.matrix td.sep, table.matrix th.sep { border-left: 1px solid var(--axis); }
-  .mcell { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; cursor: default; font-variant-numeric: tabular-nums; }
-  .mcell:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
-  .mcell.pass { background: var(--good); color: #fff; }
-  .mcell.fail { background: var(--critical); color: #fff; }
-  .mcell.na { border: 1.5px solid var(--axis); color: var(--muted); }
-  .mcell.none { color: var(--grid); }
 
   #tip {
     position: fixed; z-index: 10; pointer-events: none;
@@ -304,7 +289,6 @@
     <a href="#repositories">5 Repositories</a>
     <a href="#deviations">6 Deviations</a>
     <a href="#method">A Scope &amp; method</a>
-    <a href="#results">B Results per repository</a>
   </nav>
 
   <!-- ─────────────────────────── 1 Summary ─────────────────────────── -->
@@ -437,23 +421,7 @@
     </div>
   </section>
 
-  <!-- ─────────────────────────── B Results ─────────────────────────── -->
-  <section id="results">
-    <h2><span class="num">B</span>Results per repository</h2>
-    <p class="lead">Every result of the repository-level checks for the active repositories. Hover or focus a cell for the reason. Numbers are Scorecard scores (0–10). The printed report shows only repositories with open findings.</p>
-    <div class="card" style="padding:10px 8px;margin-bottom:16px">
-      <div class="filters">
-        <label>Repository <input id="m-repo" type="search" placeholder="name contains…"></label>
-        <label class="chk"><input type="checkbox" id="m-failing"> Only repositories with open findings</label>
-        <label class="chk"><input type="checkbox" id="m-mapped"> Hide unmapped checks</label>
-      </div>
-      <div class="filter-count" id="m-count"></div>
-      <div class="scroll-x"><table class="matrix" id="matrix"></table></div>
-      <div id="m-more"></div>
-      <div class="legend" style="margin:10px 6px 0" id="matrix-legend"></div>
-    </div>
-    <div class="integrity" id="integrity"></div>
-  </section>
+  <div class="integrity" id="integrity"></div>
 </div>
 
 <!-- ═══════════════ Embedded input data (verbatim copies of mock_data/*.json) ═══════════════ -->
@@ -4549,7 +4517,6 @@ function renderCard(q) {
 
   const infoSec = repoChecks.length ? sec('Additional information', linksRow([
     liveIssuesLink(repoChecks, null, 'Live issues on GitHub'),
-    h('a', { href: '#results', text: 'Results per repository (Appendix B)' }),
   ])) : null;
 
   return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, archSec, infoSec);
@@ -4715,56 +4682,8 @@ function renderRepos() {
   renderRepos();
 }
 
-/* ═══════════════════════════ B Results per repository (filterable) ═══════════════════════════ */
-const WITH_FINDINGS = new Set(FINDINGS.map(f => f.repo));
-const MX = { repo: '', failing: ACTIVE.length > 30, mappedOnly: false, limit: 150 };
-function renderMatrix() {
-  const groups = DATA.inputs.map(i => ({ tool: FILES[i.file].tool, checks: Object.keys(FILES[i.file].checks)
-    .filter(c => (!MX.mappedOnly || isMapped(c)) && REPO_RESULTS.some(r => r.check === c && ACTIVE.includes(r.repo))) })).filter(g => g.checks.length);
-  const repos = ACTIVE.filter(r => (!MX.repo || r.toLowerCase().includes(MX.repo)) && (!MX.failing || WITH_FINDINGS.has(r)));
-  const m = $('matrix');
-  m.replaceChildren(h('thead', {},
-    h('tr', {}, h('th', { class: 'rowh' }), groups.map(g => h('th', { class: 'grp sep', colspan: g.checks.length, text: g.tool }))),
-    h('tr', {}, h('th', { class: 'rowh', style: 'vertical-align:bottom', text: 'Repository' }),
-      groups.map(g => g.checks.map((c, i) => h('th', { class: 'vh' + (isMapped(c) ? '' : ' unmapped') + (i === 0 ? ' sep' : ''), title: c }, h('span', { text: checkName(c) + (isMapped(c) ? '' : ' †') })))))));
-  m.append(h('tbody', {}, repos.slice(0, MX.limit).map(repo => h('tr', {}, h('td', { class: 'rowh id', text: repo }),
-    groups.map(g => g.checks.map((c, i) => {
-      const r = RESULT_KEY.get(repo + '|' + c);
-      return h('td', { class: i === 0 ? 'sep' : '' }, !r ? h('span', { class: 'mcell none', text: '·' })
-        : h('span', { class: `mcell ${r.result}`, tabindex: 0, 'data-k': repo + '|' + c, 'aria-label': `${repo}, ${r.name}: ${STATUS[r.result].label}${r.score != null ? `, score ${r.score}` : ''}. ${r.reason}`,
-            text: r.score != null && r.result !== 'na' ? r.score : STATUS[r.result].glyph }));
-    }))))));
-  $('m-count').textContent = `${repos.length} of ${ACTIVE.length} active repositories` + (repos.length > MX.limit ? `; showing the first ${MX.limit}` : '') + '.';
-  const more = $('m-more');
-  more.replaceChildren();
-  if (repos.length > MX.limit) {
-    const b = h('button', { class: 'showall', type: 'button', text: `Show all ${repos.length}` });
-    b.addEventListener('click', () => { MX.limit = Infinity; renderMatrix(); });
-    more.append(b);
-  }
-}
+/* ═══════════════════════════ Footer ═══════════════════════════ */
 {
-  const m = $('matrix');
-  const tipFor = (evt, k) => {
-    const r = RESULT_KEY.get(k), thr = DATA.checks[r.check]?.threshold;
-    showTip(evt, `${r.name}: ${STATUS[r.result].label}${r.score != null ? ` · score ${r.score}${thr != null ? ` (≥ ${thr})` : ''}` : ''}`,
-      `${r.repo}\n${r.reason}${r.details.length ? '\n' + r.details.join('\n') : ''}${isMapped(r.check) ? '' : '\nNot mapped to a requirement (information only)'}`);
-  };
-  m.addEventListener('pointermove', e => { const c = e.target.closest('.mcell[data-k]'); c ? tipFor(e, c.dataset.k) : hideTip(); });
-  m.addEventListener('pointerleave', hideTip);
-  m.addEventListener('focusin', e => { const c = e.target.closest('.mcell[data-k]'); if (c) tipFor({ target: c, type: 'focus' }, c.dataset.k); });
-  m.addEventListener('focusout', hideTip);
-  $('m-failing').checked = MX.failing;
-  $('m-repo').addEventListener('input', e => { MX.repo = e.target.value.trim().toLowerCase(); MX.limit = 150; renderMatrix(); });
-  $('m-failing').addEventListener('change', e => { MX.failing = e.target.checked; MX.limit = 150; renderMatrix(); });
-  $('m-mapped').addEventListener('change', e => { MX.mappedOnly = e.target.checked; renderMatrix(); });
-  renderMatrix();
-  const mini = (cls, t) => h('span', { class: `mcell ${cls}`, style: 'width:16px;height:16px;font-size:9px;margin-right:6px', text: t });
-  $('matrix-legend').append(
-    h('span', {}, mini('pass', '✓'), 'Pass'), h('span', {}, mini('fail', '✕'), 'Fail'), h('span', {}, mini('na', '–'), 'Not applicable'),
-    h('span', { text: 'Number: Scorecard score, coloured by pass or fail against the threshold' }),
-    h('span', { text: '† not mapped to a requirement, never affects a status' }));
-
   $('integrity').append('Generated from ', h('code', { text: `${ORG}/ospo@${DATA.ospo_sha}` }), ' · ', h('a', { href: DATA.run_url, text: `workflow run ${DATA.run_url.split('/').pop()}` }),
     ' · report configuration ', h('code', { text: DATA.report_config }), ' · inputs: ',
     h('span', {}, joinNodes(DATA.inputs.map(i => h('span', {}, h('code', { text: i.file }), ' ', h('code', { title: i.sha256, text: shortSha(i.sha256) }))), ', ')),
@@ -4772,16 +4691,15 @@ function renderMatrix() {
 }
 
 /* ═══════════════════════════ Print ═══════════════════════════ */
-// The printed report is the frozen record: every repository in section 5, failing repositories in the matrix, all cards expanded.
+// The printed report is the frozen record: every repository in section 5, all cards expanded.
 let saved = null;
 addEventListener('beforeprint', () => {
-  saved = { rl: { ...RL }, mx: { ...MX } };
+  saved = { rl: { ...RL } };
   Object.assign(RL, { repo: '', req: '', failing: false, limit: Infinity }); renderRepos();
-  Object.assign(MX, { repo: '', failing: true, limit: Infinity }); renderMatrix();
   document.querySelectorAll('details.req').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; d.dispatchEvent(new Event('toggle')); });
 });
 addEventListener('afterprint', () => {
-  if (saved) { Object.assign(RL, saved.rl); renderRepos(); Object.assign(MX, saved.mx); renderMatrix(); }
+  if (saved) { Object.assign(RL, saved.rl); renderRepos(); }
   document.querySelectorAll('details.req').forEach(d => { d.open = d.dataset.wasOpen === 'true'; });
 });
 </script>
