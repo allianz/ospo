@@ -17,7 +17,8 @@
       "name": "Access Drift",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/create_repos_spec.md#access-drift",
-        "short": "create_repos --dry-run plans no changes: actual access on GitHub matches the approved configuration."
+        "short": "create_repos --dry-run plans no changes: actual access on GitHub matches the approved configuration.",
+        "fix": "OSPO: either run the create_repos workflow to revert the manual change on GitHub, or approve the change by updating config/create_repos.yaml through a pull request."
       }
     }
   },

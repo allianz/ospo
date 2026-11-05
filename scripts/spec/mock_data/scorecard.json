@@ -143,7 +143,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
       ]
     },
     {
@@ -208,7 +208,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
       ]
     },
     {
@@ -273,7 +273,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
       ]
     },
     {
@@ -403,7 +403,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
       ]
     },
     {
@@ -468,7 +468,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
       ]
     },
     {
@@ -533,7 +533,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
       ]
     },
     {
@@ -598,7 +598,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
       ]
     },
     {
@@ -663,7 +663,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
       ]
     },
     {

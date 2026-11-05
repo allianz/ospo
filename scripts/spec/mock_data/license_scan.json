@@ -11,21 +11,24 @@
       "name": "SBOM Available",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
-        "short": "The dependency graph SBOM can be retrieved for the default branch."
+        "short": "The dependency graph SBOM can be retrieved for the default branch.",
+        "fix": "Make sure the dependency graph is enabled (Settings > Code security, or switch to the managed security configuration) and dependencies are declared in a supported manifest or lock file."
       }
     },
     "sbom/license-coverage": {
       "name": "License Coverage",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#license-coverage",
-        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION)."
+        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION).",
+        "fix": "Where possible, upgrade or replace packages without license information; ask the OSPO if the package is needed and its license is known."
       }
     },
     "license/denied": {
       "name": "Denied Licenses",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#denied-licenses",
-        "short": "No dependency in the SBOM uses a license on the deny list."
+        "short": "No dependency in the SBOM uses a license on the deny list.",
+        "fix": "Replace the listed dependencies with alternatives under an allowed license, or ask the OSPO for an exception."
       }
     }
   },

@@ -204,7 +204,7 @@
       "name": "Secret Scanning",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/secret-scanning)",
       "details": []
     },
     {
@@ -213,7 +213,7 @@
       "name": "Private Vulnerability Reporting",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -332,7 +332,7 @@
       "name": "Secret Scanning",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/secret-scanning)",
       "details": []
     },
     {
@@ -341,7 +341,7 @@
       "name": "Private Vulnerability Reporting",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -460,7 +460,7 @@
       "name": "Secret Scanning",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/secret-scanning)",
       "details": []
     },
     {
@@ -469,7 +469,7 @@
       "name": "Private Vulnerability Reporting",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -716,7 +716,7 @@
       "name": "Secret Scanning",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/secret-scanning)",
       "details": []
     },
     {
@@ -725,7 +725,7 @@
       "name": "Private Vulnerability Reporting",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -842,7 +842,7 @@
       "name": "Secret Scanning",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/secret-scanning)",
       "details": []
     },
     {
@@ -851,7 +851,7 @@
       "name": "Private Vulnerability Reporting",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -970,7 +970,7 @@
       "name": "Secret Scanning",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/secret-scanning)",
       "details": []
     },
     {
@@ -979,7 +979,7 @@
       "name": "Private Vulnerability Reporting",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -1098,7 +1098,7 @@
       "name": "Secret Scanning",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/secret-scanning)",
       "details": []
     },
     {
@@ -1107,7 +1107,7 @@
       "name": "Private Vulnerability Reporting",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -1224,7 +1224,7 @@
       "name": "Secret Scanning",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/secret-scanning)",
       "details": []
     },
     {
@@ -1233,7 +1233,7 @@
       "name": "Private Vulnerability Reporting",
       "result": "na",
       "score": null,
-      "reason": "security: managed (covered by org/security-configuration)",
+      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {

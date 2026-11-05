@@ -22,14 +22,16 @@
       "name": "Notice Before Archival",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
-        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days)."
+        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days).",
+        "fix": "Ask the OSPO to unarchive the repository and let it go through the notice process, or to record an accepted exception in config/compliance_report.yaml."
       }
     },
     "archive/migration-path": {
       "name": "Migration Path",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#migration-path",
-        "short": "The README of the archived repository names a successor or an alternative."
+        "short": "The README of the archived repository names a successor or an alternative.",
+        "fix": "While the notice issue is open, add a successor or alternative to the README. Once archived, the repository is read-only, so ask the OSPO to unarchive it briefly."
       }
     }
   },

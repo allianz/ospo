@@ -5,287 +5,140 @@
   "ospo_sha": "869f4bb",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
   "report_config": "config/compliance_report.yaml",
-  "inputs": [
-    {
-      "file": "lint_repos.json",
-      "tool": "lint_repos",
-      "script": "scripts/lint_repos.js",
-      "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "421d2ae091968d4d228edc673b0f5a547bb33c642a9cfa84e36ae8c6b1608637"
-    },
-    {
-      "file": "license_scan.json",
-      "tool": "license_scan",
-      "script": "scripts/license_scan.js",
-      "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "737c949d230a659385e4cf9feceabb3386f3541667c5440dfd79937ff2619c0e"
-    },
-    {
-      "file": "archive_repos.json",
-      "tool": "archive_repos",
-      "script": "scripts/archive_repos.js",
-      "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "7c5788f75b31fb82a4537a6741472fbf74d319e090e83125c51aa7dc799c3439"
-    },
-    {
-      "file": "drift.json",
-      "tool": "create_repos --dry-run",
-      "script": "scripts/create_repos.js",
-      "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "2170948306646ded5017ceef2ad291710c3b4ad561d079848ff871e68de847ce"
-    },
-    {
-      "file": "org_snapshot.json",
-      "tool": "org_snapshot",
-      "script": "scripts/org_snapshot.js",
-      "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "8d8b4621b88f1a47c5693f0aec8009714f74070fff6532e58b1420ceacaaf0e9"
-    },
-    {
-      "file": "scorecard.json",
-      "tool": "scorecard_check",
-      "script": "scripts/scorecard_check.js",
-      "run_at": "2026-11-03T02:00:00Z",
-      "sha256": "3c300a6e86c6f916a290ce54f1400237723536b2e289411a32face3062ddca73"
-    }
-  ],
-  "catalogue": {
-    "advisories/published-in-time": {
-      "name": "Advisories Published in Time",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#advisories-published-in-time",
-        "short": "Every confirmed vulnerability is published as a security advisory within 90 days. Unpublished advisories older than 90 days fail."
-      }
-    },
-    "archive/migration-path": {
-      "name": "Migration Path",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#migration-path",
-        "short": "The README of the archived repository names a successor or an alternative."
-      }
-    },
-    "archive/notice-before-archival": {
-      "name": "Notice Before Archival",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
-        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days)."
-      }
-    },
-    "drift/access": {
-      "name": "Access Drift",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/create_repos_spec.md#access-drift",
-        "short": "create_repos --dry-run plans no changes: actual access on GitHub matches the approved configuration."
-      }
-    },
-    "license/denied": {
-      "name": "Denied Licenses",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#denied-licenses",
-        "short": "No dependency in the SBOM uses a license on the deny list."
-      }
-    },
-    "lint/contributing": {
-      "name": "Contributing File",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#contributing-file",
-        "short": "A file CONTRIBUTING* exists in ., .github or docs."
-      }
-    },
-    "lint/development-build": {
-      "name": "Development Guide: Build Section",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-build-section",
-        "short": "The development guide has a \"Build\" heading. Not applicable to repositories tagged docs or template."
-      }
-    },
-    "lint/development-file": {
-      "name": "Development Guide",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide",
-        "short": "A file DEVELOPMENT* exists in ., docs or .github, with at least 300 characters. Not applicable to repositories tagged docs or template."
-      }
-    },
-    "lint/development-test": {
-      "name": "Development Guide: Test Section",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-test-section",
-        "short": "The development guide has a \"Test\" heading. Not applicable to repositories tagged docs or template."
-      }
-    },
-    "lint/issues-enabled": {
-      "name": "Issues Enabled",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#issues-enabled",
-        "short": "Issues are enabled, so defects can be reported."
-      }
-    },
-    "lint/license-file": {
-      "name": "License File",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-file",
-        "short": "A file LICENSE* exists in the repository root."
-      }
-    },
-    "lint/license-type": {
-      "name": "License Type",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-type",
-        "short": "The license GitHub detects is on the approved list. A missing or unidentified license (NOASSERTION) fails."
-      }
-    },
-    "lint/memory-safety-section": {
-      "name": "Memory Safety Section",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#memory-safety-section",
-        "short": "Repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly) have a \"Memory safety\" heading in the development guide."
-      }
-    },
-    "lint/no-direct-collaborators": {
-      "name": "No Direct Collaborators",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#no-direct-collaborators",
-        "short": "No user has direct access to the repository; access is granted to teams only."
-      }
-    },
-    "lint/private-reporting": {
-      "name": "Private Vulnerability Reporting",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#private-vulnerability-reporting",
-        "short": "For repositories with security: custom, private vulnerability reporting is enabled. Other repositories are covered by the org security configuration."
-      }
-    },
-    "lint/public": {
-      "name": "Public Visibility",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#public-visibility",
-        "short": "The repository is public."
-      }
-    },
-    "lint/release-notes": {
-      "name": "Release Notes",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#release-notes",
-        "short": "Every release of the last 12 months has release notes of at least 50 characters, or the CHANGELOG mentions the version."
-      }
-    },
-    "lint/secret-scanning": {
-      "name": "Secret Scanning",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#secret-scanning",
-        "short": "For repositories with security: custom, secret scanning and push protection are enabled. Other repositories are covered by the org security configuration."
-      }
-    },
-    "lint/versioning": {
-      "name": "Versioning",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#versioning",
-        "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line."
-      }
-    },
-    "org/ruleset": {
-      "name": "Org Ruleset",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-ruleset",
-        "short": "The ospo-managed ruleset is active on default branches: pull request with at least 1 approval, no force push, no deletion."
-      }
-    },
-    "org/security-configuration": {
-      "name": "Security Configuration",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#security-configuration",
-        "short": "The ospo-managed security configuration is enforced: dependency graph, secret scanning, push protection, code scanning and private vulnerability reporting."
-      }
-    },
-    "org/security-policy": {
-      "name": "Org Security Policy",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-security-policy",
-        "short": "The org default allianz/.github/SECURITY.md exists and names a security contact."
-      }
-    },
-    "org/settings": {
-      "name": "Org Settings",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_snapshot_spec.md#org-settings",
-        "short": "Org settings match the expected values: 2FA required, base permission none, members cannot create repositories."
-      }
-    },
-    "sbom/available": {
-      "name": "SBOM Available",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
-        "short": "The dependency graph SBOM can be retrieved for the default branch."
-      }
-    },
-    "sbom/license-coverage": {
-      "name": "License Coverage",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#license-coverage",
-        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION)."
-      }
-    },
-    "scorecard/branch-protection": {
-      "name": "Branch-Protection",
-      "threshold": 6,
-      "documentation": {
-        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#branch-protection",
-        "short": "Determines if the default and release branches are protected with GitHub's branch protection settings."
-      }
-    },
-    "scorecard/ci-tests": {
-      "name": "CI-Tests",
-      "threshold": 8,
-      "documentation": {
-        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#ci-tests",
-        "short": "Determines if the project runs tests before pull requests are merged."
-      }
-    },
-    "scorecard/code-review": {
-      "name": "Code-Review",
-      "threshold": 7,
-      "documentation": {
-        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#code-review",
-        "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged."
-      }
-    },
-    "scorecard/dangerous-workflow": {
-      "name": "Dangerous-Workflow",
-      "threshold": 10,
-      "documentation": {
-        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#dangerous-workflow",
-        "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns."
-      }
-    },
-    "scorecard/fuzzing": {
-      "name": "Fuzzing",
-      "threshold": 10,
-      "documentation": {
-        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#fuzzing",
-        "short": "Determines if the project uses fuzzing."
-      }
-    },
-    "scorecard/signed-releases": {
-      "name": "Signed-Releases",
-      "threshold": 8,
-      "documentation": {
-        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#signed-releases",
-        "short": "Determines if the project cryptographically signs release artifacts."
-      }
-    },
-    "scorecard/token-permissions": {
-      "name": "Token-Permissions",
-      "threshold": 8,
-      "documentation": {
-        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#token-permissions",
-        "short": "Determines if the project's workflows follow the principle of least privilege."
-      }
-    }
-  },
+  "config_sha256": "4b60a4ad83c79f35904689dee3b38ecf0774086ab7936bcc41bd00ccc83a25b4",
   "previous_report": {
     "report_id": "OSPO-CR-2026-10-27",
     "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10-27/data.json"
   },
+  "inputs": [
+    {
+      "file": "lint_repos.json",
+      "script": "scripts/lint_repos.js",
+      "status": "ok",
+      "sha256": "55d6f2af6c9d25d4c97cfe1c6e4e469722b63e4568b07efb6ed426e9246243da",
+      "tool": "lint_repos",
+      "run_at": "2026-11-03T02:00:00Z",
+      "org": "allianz",
+      "ospo_sha": "869f4bb",
+      "config_file": "config/lint_repos.yaml",
+      "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
+      "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "counts": {
+        "results": 126,
+        "skipped": 5,
+        "errors": 0
+      }
+    },
+    {
+      "file": "license_scan.json",
+      "script": "scripts/license_scan.js",
+      "status": "ok",
+      "sha256": "58af1bec08e26a9da78c3ff0c55bf08558eec596f9171c67c11208847bcef603",
+      "tool": "license_scan",
+      "run_at": "2026-11-03T02:00:00Z",
+      "org": "allianz",
+      "ospo_sha": "869f4bb",
+      "config_file": "config/license_scan.yaml",
+      "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
+      "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "counts": {
+        "results": 27,
+        "skipped": 5,
+        "errors": 0
+      }
+    },
+    {
+      "file": "archive_repos.json",
+      "script": "scripts/archive_repos.js",
+      "status": "ok",
+      "sha256": "cb9be004794fe5b7a64c56e6b41c633d8544229e2b0da5abb204a4f48449d0b8",
+      "tool": "archive_repos",
+      "run_at": "2026-11-03T02:00:00Z",
+      "org": "allianz",
+      "ospo_sha": "869f4bb",
+      "config_file": "config/archive_repos.yaml",
+      "config_sha256": "c0fc81434204a00b7702804ee9846f6496635045949c082f4af8ccaadac0ee9f",
+      "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "warn_after": "1 years",
+      "grace_period": "60 days",
+      "archivals": [
+        {
+          "repo": "legacy-xml-mapper",
+          "notice_issue": "https://github.com/allianz/legacy-xml-mapper/issues/3",
+          "notice_date": "2026-09-04",
+          "archived_date": "2026-11-03",
+          "days_notice": 60
+        }
+      ],
+      "counts": {
+        "results": 2,
+        "skipped": 2,
+        "errors": 0
+      }
+    },
+    {
+      "file": "drift.json",
+      "script": "scripts/create_repos.js",
+      "status": "ok",
+      "sha256": "559256ff5723b26f42f5af237bae062dcef27b0fdc59a2daee99e26c8fc5c776",
+      "tool": "create_repos --dry-run",
+      "run_at": "2026-11-03T02:00:00Z",
+      "org": "allianz",
+      "ospo_sha": "869f4bb",
+      "config_file": "config/create_repos.yaml",
+      "config_sha256": "fa6e76d54796952731a514dcc1f60c9b265a835f36a658705f2bad8cb2634799",
+      "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "planned_changes": {
+        "repositories": [],
+        "teams": [],
+        "security": [],
+        "branch_protection": []
+      },
+      "counts": {
+        "results": 1,
+        "skipped": 0,
+        "errors": 0
+      }
+    },
+    {
+      "file": "org_check.json",
+      "script": "scripts/org_check.js",
+      "status": "ok",
+      "sha256": "c04f6d9c966dc5b9e59782a2482c0c57d0e5554e65a4603feb24aec6d9a6a8b4",
+      "tool": "org_check",
+      "run_at": "2026-11-03T02:00:00Z",
+      "org": "allianz",
+      "ospo_sha": "869f4bb",
+      "config_file": "config/org_check.yaml",
+      "config_sha256": "cae59b3b176c28941ae773f81c6d20f6148f3d0ff8ce1eb9bbfef8b1f94ff70b",
+      "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "counts": {
+        "results": 11,
+        "skipped": 0,
+        "errors": 0
+      }
+    },
+    {
+      "file": "scorecard.json",
+      "script": "scripts/scorecard_check.js",
+      "status": "ok",
+      "sha256": "9337958c9285a887ac772c107c5f0b82e2568be64e6d5b5358946ae9505bc04c",
+      "tool": "scorecard_check",
+      "run_at": "2026-11-03T02:00:00Z",
+      "org": "allianz",
+      "ospo_sha": "869f4bb",
+      "config_file": "config/scorecard_check.yaml",
+      "config_sha256": "670210fd6b478339b7f953cc4943faadfe1a2a3372b5e336a5c29638522b5d9f",
+      "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "source": "scorecard CLI (--format=json --show-details), run per repository in this workflow",
+      "scorecard_version": "v5.6.0",
+      "counts": {
+        "results": 63,
+        "skipped": 5,
+        "errors": 0
+      }
+    }
+  ],
   "scope": {
     "active": [
       "pricing-engine",
@@ -310,9 +163,9 @@
     ]
   },
   "summary": {
-    "checks_evaluated": 142,
-    "checks_passed": 123,
-    "compliance_pct": 86.6,
+    "checks_evaluated": 146,
+    "checks_passed": 127,
+    "compliance_pct": 87.0,
     "requirements_by_status": {
       "met": 5,
       "met-findings": 13,
@@ -347,9 +200,11 @@
       "title": "Protected against unauthorised actions",
       "status": "met-findings",
       "checks": [
-        "org/settings",
-        "org/ruleset",
-        "org/security-configuration",
+        "org/two-factor",
+        "org/base-permission",
+        "org/repo-creation",
+        "org/ruleset-protection",
+        "org/secret-scanning",
         "drift/access",
         "lint/no-direct-collaborators",
         "lint/secret-scanning",
@@ -401,7 +256,7 @@
       "title": "List of third-party components available",
       "status": "met-findings",
       "checks": [
-        "org/security-configuration",
+        "org/dependency-graph",
         "sbom/available"
       ],
       "repositories": {
@@ -417,7 +272,7 @@
       "title": "Source code publicly readable",
       "status": "met",
       "checks": [
-        "org/settings",
+        "org/repo-creation",
         "lint/public"
       ],
       "repositories": {
@@ -479,7 +334,7 @@
       "title": "Changes peer-reviewed",
       "status": "met-findings",
       "checks": [
-        "org/ruleset",
+        "org/ruleset-approvals",
         "scorecard/code-review"
       ],
       "repositories": {
@@ -778,22 +633,6 @@
       "reason": "No SBOM available (request returned 404)"
     }
   ],
-  "archivals": [
-    {
-      "repo": "legacy-xml-mapper",
-      "archived_date": "2026-11-03",
-      "by": "archive_repos",
-      "notice_date": "2026-09-04",
-      "days_notice": 60
-    },
-    {
-      "repo": "old-batch-tools",
-      "archived_date": "2026-10-20",
-      "date_accuracy": "detected in weekly run",
-      "by": "outside the process",
-      "notice_date": null
-    }
-  ],
   "deviations": [
     {
       "id": "D-01",
@@ -810,6 +649,22 @@
       "approved_by": "Legal, Head of OSPO",
       "valid_until": "2026-12-31",
       "expired": false
+    }
+  ],
+  "archivals": [
+    {
+      "repo": "legacy-xml-mapper",
+      "archived_date": "2026-11-03",
+      "by": "archive_repos",
+      "notice_date": "2026-09-04",
+      "days_notice": 60
+    },
+    {
+      "repo": "old-batch-tools",
+      "archived_date": "2026-10-20",
+      "date_accuracy": "detected in weekly run",
+      "by": "outside the process",
+      "notice_date": null
     }
   ],
   "history": [
@@ -903,7 +758,7 @@
     },
     {
       "date": "2026-11-03",
-      "compliance_pct": 86.6,
+      "compliance_pct": 87.0,
       "open_findings": 19,
       "coverage": {
         "GV.01": 77.8,
@@ -923,5 +778,2817 @@
         "DE.01": 50.0
       }
     }
-  ]
+  ],
+  "catalogue": {
+    "advisories/published-in-time": {
+      "tool": "org_check",
+      "name": "Advisories Published in Time",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#advisories-published-in-time",
+        "short": "No security advisory stays in triage or draft for more than 90 days. Published advisories record their days to publication.",
+        "fix": "Project team with the OSPO: finish the triage and publish the advisory with a CVE, or close it as not a vulnerability."
+      }
+    },
+    "archive/migration-path": {
+      "tool": "archive_repos",
+      "name": "Migration Path",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#migration-path",
+        "short": "The README of the archived repository names a successor or an alternative.",
+        "fix": "While the notice issue is open, add a successor or alternative to the README. Once archived, the repository is read-only, so ask the OSPO to unarchive it briefly."
+      }
+    },
+    "archive/notice-before-archival": {
+      "tool": "archive_repos",
+      "name": "Notice Before Archival",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
+        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days).",
+        "fix": "Ask the OSPO to unarchive the repository and let it go through the notice process, or to record an accepted exception in config/compliance_report.yaml."
+      }
+    },
+    "drift/access": {
+      "tool": "create_repos --dry-run",
+      "name": "Access Drift",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/create_repos_spec.md#access-drift",
+        "short": "create_repos --dry-run plans no changes: actual access on GitHub matches the approved configuration.",
+        "fix": "OSPO: either run the create_repos workflow to revert the manual change on GitHub, or approve the change by updating config/create_repos.yaml through a pull request."
+      }
+    },
+    "license/denied": {
+      "tool": "license_scan",
+      "name": "Denied Licenses",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#denied-licenses",
+        "short": "No dependency in the SBOM uses a license on the deny list.",
+        "fix": "Replace the listed dependencies with alternatives under an allowed license, or ask the OSPO for an exception."
+      }
+    },
+    "lint/contributing": {
+      "tool": "lint_repos",
+      "name": "Contributing File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#contributing-file",
+        "short": "A file CONTRIBUTING* exists in ., .github or docs.",
+        "fix": "Add CONTRIBUTING.md to .github/ describing how to propose changes and what is expected of a contribution."
+      }
+    },
+    "lint/development-build": {
+      "tool": "lint_repos",
+      "name": "Development Guide: Build Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-build-section",
+        "short": "The development guide has a \"Build\" heading. Not applicable to repositories tagged docs or template.",
+        "fix": "Add a \"Build\" heading to DEVELOPMENT.md that explains how to build the project."
+      }
+    },
+    "lint/development-file": {
+      "tool": "lint_repos",
+      "name": "Development Guide",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide",
+        "short": "A file DEVELOPMENT* exists in ., docs or .github, with at least 300 characters. Not applicable to repositories tagged docs or template.",
+        "fix": "Add DEVELOPMENT.md (root, docs or .github) with at least 300 characters on how to build and test the project."
+      }
+    },
+    "lint/development-test": {
+      "tool": "lint_repos",
+      "name": "Development Guide: Test Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#development-guide-test-section",
+        "short": "The development guide has a \"Test\" heading. Not applicable to repositories tagged docs or template.",
+        "fix": "Add a \"Test\" heading to DEVELOPMENT.md that explains how to run the tests."
+      }
+    },
+    "lint/issues-enabled": {
+      "tool": "lint_repos",
+      "name": "Issues Enabled",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#issues-enabled",
+        "short": "Issues are enabled, so defects can be reported.",
+        "fix": "Enable Issues under Settings > General > Features."
+      }
+    },
+    "lint/license-file": {
+      "tool": "lint_repos",
+      "name": "License File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-file",
+        "short": "A file LICENSE* exists in the repository root.",
+        "fix": "Add a LICENSE file with the approved license text to the repository root."
+      }
+    },
+    "lint/license-type": {
+      "tool": "lint_repos",
+      "name": "License Type",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#license-type",
+        "short": "The license GitHub detects is on the approved list. A missing or unidentified license (NOASSERTION) fails.",
+        "fix": "Use an approved license (Apache-2.0, MIT, CC-BY-4.0, CC0-1.0) and make sure the LICENSE text is unmodified so GitHub can detect it."
+      }
+    },
+    "lint/memory-safety-section": {
+      "tool": "lint_repos",
+      "name": "Memory Safety Section",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#memory-safety-section",
+        "short": "Repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly) have a \"Memory safety\" heading in the development guide.",
+        "fix": "Add a \"Memory safety\" heading to DEVELOPMENT.md describing fuzzing, sanitizers or other measures."
+      }
+    },
+    "lint/no-direct-collaborators": {
+      "tool": "lint_repos",
+      "name": "No Direct Collaborators",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#no-direct-collaborators",
+        "short": "No user has direct access to the repository; access is granted to teams only.",
+        "fix": "Remove the direct collaborators and grant access through a team in config/create_repos.yaml via pull request."
+      }
+    },
+    "lint/private-reporting": {
+      "tool": "lint_repos",
+      "name": "Private Vulnerability Reporting",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#private-vulnerability-reporting",
+        "short": "For repositories with security: custom, private vulnerability reporting is enabled. Other repositories are covered by the org security configuration.",
+        "fix": "Enable private vulnerability reporting under Settings > Code security, or switch the repository to the managed security configuration."
+      }
+    },
+    "lint/public": {
+      "tool": "lint_repos",
+      "name": "Public Visibility",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#public-visibility",
+        "short": "The repository is public.",
+        "fix": "Ask the OSPO to review the repository; visibility is changed centrally, not by the project team."
+      }
+    },
+    "lint/release-notes": {
+      "tool": "lint_repos",
+      "name": "Release Notes",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#release-notes",
+        "short": "Every release of the last 12 months has release notes of at least 50 characters, or the CHANGELOG mentions the version.",
+        "fix": "Add release notes (at least 50 characters) to each GitHub release, or mention the version in CHANGELOG.md."
+      }
+    },
+    "lint/secret-scanning": {
+      "tool": "lint_repos",
+      "name": "Secret Scanning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#secret-scanning",
+        "short": "For repositories with security: custom, secret scanning and push protection are enabled. Other repositories are covered by the org security configuration.",
+        "fix": "Enable secret scanning and push protection under Settings > Code security, or switch the repository to the managed security configuration."
+      }
+    },
+    "lint/versioning": {
+      "tool": "lint_repos",
+      "name": "Versioning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#versioning",
+        "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line.",
+        "fix": "Tag releases with SemVer or CalVer and make sure versions increase with release date within each major line."
+      }
+    },
+    "org/base-permission": {
+      "tool": "org_check",
+      "name": "Org Base Permission",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-base-permission",
+        "short": "The base permission for members is none, so access is granted through teams only.",
+        "fix": "OSPO: set the base permission back to none in the organisation settings, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "org/code-scanning": {
+      "tool": "org_check",
+      "name": "Org Code Scanning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-code-scanning",
+        "short": "The ospo-managed security configuration is enforced and enables code scanning (CodeQL default setup).",
+        "fix": "OSPO: restore code scanning in the ospo-managed security configuration, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "org/dependency-graph": {
+      "tool": "org_check",
+      "name": "Org Dependency Graph",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-dependency-graph",
+        "short": "The ospo-managed security configuration is enforced and enables the dependency graph.",
+        "fix": "OSPO: restore the dependency graph in the ospo-managed security configuration, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "org/private-reporting": {
+      "tool": "org_check",
+      "name": "Org Private Reporting",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-private-reporting",
+        "short": "The ospo-managed security configuration is enforced and enables private vulnerability reporting.",
+        "fix": "OSPO: restore private vulnerability reporting in the ospo-managed security configuration, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "org/repo-creation": {
+      "tool": "org_check",
+      "name": "Org Repository Creation",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-repository-creation",
+        "short": "Members cannot create repositories; repositories are created only by the provisioning pipeline.",
+        "fix": "OSPO: switch off repository creation for members in the organisation settings, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "org/ruleset-approvals": {
+      "tool": "org_check",
+      "name": "Org Ruleset Approvals",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-ruleset-approvals",
+        "short": "The ospo-managed ruleset requires at least 1 approving review before merging.",
+        "fix": "OSPO: restore the required approvals in the ospo-managed ruleset, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "org/ruleset-protection": {
+      "tool": "org_check",
+      "name": "Org Ruleset Protection",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-ruleset-protection",
+        "short": "The ospo-managed ruleset is active on default branches: pull request required, no force push, no deletion.",
+        "fix": "OSPO: restore the ospo-managed ruleset, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "org/secret-scanning": {
+      "tool": "org_check",
+      "name": "Org Secret Scanning",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-secret-scanning",
+        "short": "The ospo-managed security configuration is enforced and enables secret scanning and push protection.",
+        "fix": "OSPO: restore secret scanning and push protection in the ospo-managed security configuration, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "org/security-policy": {
+      "tool": "org_check",
+      "name": "Org Security Policy",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-security-policy",
+        "short": "The org default allianz/.github/SECURITY.md exists and names a security contact.",
+        "fix": "OSPO: restore allianz/.github/SECURITY.md with a security contact."
+      }
+    },
+    "org/two-factor": {
+      "tool": "org_check",
+      "name": "Org Two-Factor Required",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-two-factor-required",
+        "short": "Two-factor authentication is required for all members of the organisation.",
+        "fix": "OSPO: require two-factor authentication again in the organisation settings, or change the expected value in config/org_check.yaml through a pull request."
+      }
+    },
+    "sbom/available": {
+      "tool": "license_scan",
+      "name": "SBOM Available",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
+        "short": "The dependency graph SBOM can be retrieved for the default branch.",
+        "fix": "Make sure the dependency graph is enabled (Settings > Code security, or switch to the managed security configuration) and dependencies are declared in a supported manifest or lock file."
+      }
+    },
+    "sbom/license-coverage": {
+      "tool": "license_scan",
+      "name": "License Coverage",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#license-coverage",
+        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION).",
+        "fix": "Where possible, upgrade or replace packages without license information; ask the OSPO if the package is needed and its license is known."
+      }
+    },
+    "scorecard/branch-protection": {
+      "tool": "scorecard_check",
+      "name": "Branch-Protection",
+      "threshold": 6,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#branch-protection",
+        "short": "Determines if the default and release branches are protected with GitHub's branch protection settings."
+      }
+    },
+    "scorecard/ci-tests": {
+      "tool": "scorecard_check",
+      "name": "CI-Tests",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#ci-tests",
+        "short": "Determines if the project runs tests before pull requests are merged."
+      }
+    },
+    "scorecard/code-review": {
+      "tool": "scorecard_check",
+      "name": "Code-Review",
+      "threshold": 7,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#code-review",
+        "short": "Determines if the project requires human code review before pull requests (aka merge requests) are merged."
+      }
+    },
+    "scorecard/dangerous-workflow": {
+      "tool": "scorecard_check",
+      "name": "Dangerous-Workflow",
+      "threshold": 10,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#dangerous-workflow",
+        "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns."
+      }
+    },
+    "scorecard/fuzzing": {
+      "tool": "scorecard_check",
+      "name": "Fuzzing",
+      "threshold": 10,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#fuzzing",
+        "short": "Determines if the project uses fuzzing."
+      }
+    },
+    "scorecard/signed-releases": {
+      "tool": "scorecard_check",
+      "name": "Signed-Releases",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#signed-releases",
+        "short": "Determines if the project cryptographically signs release artifacts."
+      }
+    },
+    "scorecard/token-permissions": {
+      "tool": "scorecard_check",
+      "name": "Token-Permissions",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#token-permissions",
+        "short": "Determines if the project's workflows follow the principle of least privilege."
+      }
+    }
+  },
+  "results": [
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": "CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/secret-scanning)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/private-reporting)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "pass",
+      "score": null,
+      "reason": "3 releases follow semver and increase",
+      "details": [
+        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
+      ]
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "pass",
+      "score": null,
+      "reason": "All 3 releases have notes (release body)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-engine",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in ., .github, docs",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/secret-scanning)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/private-reporting)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "pass",
+      "score": null,
+      "reason": "3 releases follow semver and increase",
+      "details": [
+        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
+      ]
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "pass",
+      "score": null,
+      "reason": "All 3 releases have notes (release body)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "insurance-rule-dsl",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "fail",
+      "score": null,
+      "reason": "'WTFPL' is not in the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/secret-scanning)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/private-reporting)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "quote-calculator-demo",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "pass",
+      "score": null,
+      "reason": "Secret scanning and push protection are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "pass",
+      "score": null,
+      "reason": "Private vulnerability reporting is enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in ., docs, .github",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "fail",
+      "score": null,
+      "reason": "No DEVELOPMENT file",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "fail",
+      "score": null,
+      "reason": "No DEVELOPMENT file",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "pass",
+      "score": null,
+      "reason": "3 releases follow semver and increase",
+      "details": [
+        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
+      ]
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "fail",
+      "score": null,
+      "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG",
+      "details": [
+        "Warn: v1.8.0 has no release notes"
+      ]
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pdf-render-service",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "MIT is on the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/secret-scanning)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/private-reporting)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "na",
+      "score": null,
+      "reason": "topic 'docs' or 'template': nothing to build",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "na",
+      "score": null,
+      "reason": "topic 'docs' or 'template': nothing to build",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "na",
+      "score": null,
+      "reason": "topic 'docs' or 'template': nothing to build",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "design-guidelines",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "MIT is on the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/secret-scanning)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/private-reporting)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "fail",
+      "score": null,
+      "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
+      "details": [
+        "Info: releases checked: v3.1.0, v3.0.9, v3.1.1"
+      ]
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "pass",
+      "score": null,
+      "reason": "All 3 releases have notes (release body)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "mobile-sdk-ios",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Objective-C 26%, C 3% → heading '## Memory safety' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/secret-scanning)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/private-reporting)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in ., docs, .github",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "fail",
+      "score": null,
+      "reason": "No DEVELOPMENT file",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "fail",
+      "score": null,
+      "reason": "No DEVELOPMENT file",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "pricing-sandbox",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in ., .github, docs",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "fail",
+      "score": null,
+      "reason": "Issues are disabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "fail",
+      "score": null,
+      "reason": "1 user has direct access",
+      "details": [
+        "Warn: ext-contractor-42 has direct write access"
+      ]
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/secret-scanning)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/private-reporting)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "claims-event-schemas",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/license-file",
+      "name": "License File",
+      "result": "pass",
+      "score": null,
+      "reason": "LICENSE found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "Apache-2.0 is on the approved list",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/contributing",
+      "name": "Contributing File",
+      "result": "pass",
+      "score": null,
+      "reason": ".github/CONTRIBUTING.md found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/public",
+      "name": "Public Visibility",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/no-direct-collaborators",
+      "name": "No Direct Collaborators",
+      "result": "pass",
+      "score": null,
+      "reason": "Access through teams only, no direct collaborators",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/secret-scanning",
+      "name": "Secret Scanning",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/secret-scanning)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/private-reporting",
+      "name": "Private Vulnerability Reporting",
+      "result": "na",
+      "score": null,
+      "reason": "security: managed (covered by org/private-reporting)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-file",
+      "name": "Development Guide",
+      "result": "pass",
+      "score": null,
+      "reason": "DEVELOPMENT.md found (2140 characters)",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-build",
+      "name": "Development Guide: Build Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Build' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/development-test",
+      "name": "Development Guide: Test Section",
+      "result": "pass",
+      "score": null,
+      "reason": "Heading '## Test' found",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/versioning",
+      "name": "Versioning",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/release-notes",
+      "name": "Release Notes",
+      "result": "na",
+      "score": null,
+      "reason": "no releases in the last 12 months",
+      "details": []
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "kafka-schema-tools",
+      "check": "lint/memory-safety-section",
+      "name": "Memory Safety Section",
+      "result": "na",
+      "score": null,
+      "reason": "no non-memory-safe language above 5%",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pricing-engine",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 412 packages",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pricing-engine",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "6 of 412 packages (1.5%) have no license information",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pricing-engine",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "insurance-rule-dsl",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 188 packages",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "insurance-rule-dsl",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "2 of 188 packages (1.1%) have no license information",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "insurance-rule-dsl",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "quote-calculator-demo",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 903 packages",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "quote-calculator-demo",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "41 of 903 packages (4.5%) have no license information",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "quote-calculator-demo",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "fail",
+      "score": null,
+      "reason": "1 dependency uses a denied license",
+      "details": [
+        "Warn: npm:left-pad-gpl@1.0.2 is licensed GPL-3.0-only"
+      ]
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pdf-render-service",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 356 packages",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pdf-render-service",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "11 of 356 packages (3.1%) have no license information",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pdf-render-service",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "design-guidelines",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 1210 packages",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "design-guidelines",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "fail",
+      "score": null,
+      "reason": "97 of 1210 packages (8.0%) have no license information",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "design-guidelines",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "mobile-sdk-ios",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 57 packages",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "mobile-sdk-ios",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "fail",
+      "score": null,
+      "reason": "10 of 57 packages (17.5%) have no license information",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "mobile-sdk-ios",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pricing-sandbox",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "fail",
+      "score": null,
+      "reason": "No SBOM available (request returned 404)",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pricing-sandbox",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "na",
+      "score": null,
+      "reason": "no SBOM available",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "pricing-sandbox",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "na",
+      "score": null,
+      "reason": "no SBOM available",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "claims-event-schemas",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 0 packages",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "claims-event-schemas",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "na",
+      "score": null,
+      "reason": "no dependencies in SBOM",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "claims-event-schemas",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "kafka-schema-tools",
+      "check": "sbom/available",
+      "name": "SBOM Available",
+      "result": "pass",
+      "score": null,
+      "reason": "SPDX-2.3 SBOM with 143 packages",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "kafka-schema-tools",
+      "check": "sbom/license-coverage",
+      "name": "License Coverage",
+      "result": "pass",
+      "score": null,
+      "reason": "3 of 143 packages (2.1%) have no license information",
+      "details": []
+    },
+    {
+      "tool": "license_scan",
+      "repo": "kafka-schema-tools",
+      "check": "license/denied",
+      "name": "Denied Licenses",
+      "result": "pass",
+      "score": null,
+      "reason": "No dependency uses a denied license",
+      "details": []
+    },
+    {
+      "tool": "archive_repos",
+      "repo": "legacy-xml-mapper",
+      "check": "archive/notice-before-archival",
+      "name": "Notice Before Archival",
+      "result": "pass",
+      "score": null,
+      "reason": "Archived 60 days after the notice of 2026-09-04 (https://github.com/allianz/legacy-xml-mapper/issues/3)",
+      "details": []
+    },
+    {
+      "tool": "archive_repos",
+      "repo": "legacy-xml-mapper",
+      "check": "archive/migration-path",
+      "name": "Migration Path",
+      "result": "fail",
+      "score": null,
+      "reason": "README names no successor or alternative",
+      "details": []
+    },
+    {
+      "tool": "create_repos --dry-run",
+      "repo": null,
+      "check": "drift/access",
+      "name": "Access Drift",
+      "result": "pass",
+      "score": null,
+      "reason": "No planned changes (10 repositories, 14 teams in config)",
+      "details": []
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/two-factor",
+      "name": "Org Two-Factor Required",
+      "result": "pass",
+      "score": null,
+      "reason": "Two-factor authentication is required for all members",
+      "details": [
+        "Info: two_factor_requirement_enabled: true (expected true)"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/base-permission",
+      "name": "Org Base Permission",
+      "result": "pass",
+      "score": null,
+      "reason": "Base permission is none: access only through teams",
+      "details": [
+        "Info: default_repository_permission: none (expected none)"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/repo-creation",
+      "name": "Org Repository Creation",
+      "result": "pass",
+      "score": null,
+      "reason": "Members cannot create repositories",
+      "details": [
+        "Info: members_can_create_repositories: false (expected false)",
+        "Info: members_can_create_public_repositories: false (expected false)"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/ruleset-protection",
+      "name": "Org Ruleset Protection",
+      "result": "pass",
+      "score": null,
+      "reason": "Ruleset ospo-managed is active on the default branch of 8 repositories: pull request required, no force push, no deletion",
+      "details": [
+        "Info: enforcement: active (expected active)",
+        "Info: ref_name.include: ~DEFAULT_BRANCH (expected ~DEFAULT_BRANCH)",
+        "Info: rules: deletion, non_fast_forward, pull_request (expected all three)",
+        "Info: bypass: OrganizationAdmin, pull_request mode"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/ruleset-approvals",
+      "name": "Org Ruleset Approvals",
+      "result": "pass",
+      "score": null,
+      "reason": "Ruleset ospo-managed requires 1 approving review",
+      "details": [
+        "Info: required_approving_review_count: 1 (expected at least 1)"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/secret-scanning",
+      "name": "Org Secret Scanning",
+      "result": "pass",
+      "score": null,
+      "reason": "Secret scanning and push protection are enabled and enforced for 8 repositories",
+      "details": [
+        "Info: enforcement: enforced (expected enforced)",
+        "Info: secret_scanning: enabled (expected enabled)",
+        "Info: secret_scanning_push_protection: enabled (expected enabled)"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/dependency-graph",
+      "name": "Org Dependency Graph",
+      "result": "pass",
+      "score": null,
+      "reason": "Dependency graph is enabled and enforced for 8 repositories",
+      "details": [
+        "Info: enforcement: enforced (expected enforced)",
+        "Info: dependency_graph: enabled (expected enabled)"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/code-scanning",
+      "name": "Org Code Scanning",
+      "result": "pass",
+      "score": null,
+      "reason": "Code scanning default setup is enabled and enforced for 8 repositories",
+      "details": [
+        "Info: enforcement: enforced (expected enforced)",
+        "Info: code_scanning_default_setup: enabled (expected enabled)"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/private-reporting",
+      "name": "Org Private Reporting",
+      "result": "pass",
+      "score": null,
+      "reason": "Private vulnerability reporting is enabled and enforced for 8 repositories",
+      "details": [
+        "Info: enforcement: enforced (expected enforced)",
+        "Info: private_vulnerability_reporting: enabled (expected enabled)"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "org/security-policy",
+      "name": "Org Security Policy",
+      "result": "pass",
+      "score": null,
+      "reason": "allianz/.github/SECURITY.md names ospo@allianz.com as security contact",
+      "details": [
+        "Info: allianz/.github/SECURITY.md at a3f19c2"
+      ]
+    },
+    {
+      "tool": "org_check",
+      "repo": null,
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "No unpublished advisory is older than 90 days; 3 published in the period (median 18 days, maximum 41 days), 1 unpublished (12 days)",
+      "details": [
+        "Info: GHSA-7q4x-2m9c-h3vf (pricing-engine) published after 18 days",
+        "Info: GHSA-p2w8-xr6j-9cq4 (pdf-render-service) published after 41 days",
+        "Info: GHSA-m5hv-6f3k-q8tz (mobile-sdk-ios) published after 9 days",
+        "Info: 1 advisory in triage for 12 days, details withheld"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-engine",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 10,
+      "reason": "24 out of 24 merged PRs checked by a CI test -- score normalized to 10",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-engine",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 10,
+      "reason": "all changesets reviewed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-engine",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "pass",
+      "score": 10,
+      "reason": "5 out of the last 5 releases have a total of 5 signed artifacts.",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-engine",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-engine",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-engine",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-engine",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 10,
+      "reason": "11 out of 11 merged PRs checked by a CI test -- score normalized to 10",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "fail",
+      "score": 4,
+      "reason": "Found 12/30 approved changesets -- score normalized to 4",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "fail",
+      "score": 0,
+      "reason": "Project has not signed or included provenance with any releases.",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 9,
+      "reason": "detected GitHub workflow tokens with excessive permissions",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 9,
+      "reason": "19 out of 21 merged PRs checked by a CI test -- score normalized to 9",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 8,
+      "reason": "Found 24/30 approved changesets -- score normalized to 8",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pdf-render-service",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "fail",
+      "score": 2,
+      "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pdf-render-service",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 7,
+      "reason": "Found 21/30 approved changesets -- score normalized to 7",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pdf-render-service",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "fail",
+      "score": 0,
+      "reason": "Project has not signed or included provenance with any releases.",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pdf-render-service",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pdf-render-service",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 8,
+      "reason": "detected GitHub workflow tokens with excessive permissions",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pdf-render-service",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "pass",
+      "score": 6,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pdf-render-service",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "design-guidelines",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "na",
+      "score": null,
+      "reason": "no pull request found",
+      "details": [
+        "Info: scorecard_check: not applicable, topic 'docs' or 'template'"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "design-guidelines",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 10,
+      "reason": "all changesets reviewed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "design-guidelines",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "design-guidelines",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "design-guidelines",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "design-guidelines",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "design-guidelines",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 10,
+      "reason": "14 out of 14 merged PRs checked by a CI test -- score normalized to 10",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 9,
+      "reason": "Found 27/30 approved changesets -- score normalized to 9",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "pass",
+      "score": 10,
+      "reason": "5 out of the last 5 releases have a total of 5 signed artifacts.",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-sandbox",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "na",
+      "score": null,
+      "reason": "no pull request found",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-sandbox",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "na",
+      "score": null,
+      "reason": "no commits found",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-sandbox",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-sandbox",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-sandbox",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-sandbox",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "pricing-sandbox",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "claims-event-schemas",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "pass",
+      "score": 8,
+      "reason": "8 out of 10 merged PRs checked by a CI test -- score normalized to 8",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "claims-event-schemas",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 8,
+      "reason": "Found 24/30 approved changesets -- score normalized to 8",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "claims-event-schemas",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "claims-event-schemas",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "claims-event-schemas",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "claims-event-schemas",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "claims-event-schemas",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/ci-tests",
+      "name": "CI-Tests",
+      "result": "na",
+      "score": null,
+      "reason": "no pull request found",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/code-review",
+      "name": "Code-Review",
+      "result": "pass",
+      "score": 10,
+      "reason": "all changesets reviewed",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/signed-releases",
+      "name": "Signed-Releases",
+      "result": "na",
+      "score": null,
+      "reason": "no releases found",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/dangerous-workflow",
+      "name": "Dangerous-Workflow",
+      "result": "pass",
+      "score": 10,
+      "reason": "no dangerous workflow patterns detected",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/token-permissions",
+      "name": "Token-Permissions",
+      "result": "pass",
+      "score": 10,
+      "reason": "GitHub workflow tokens follow principle of least privilege",
+      "details": []
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/branch-protection",
+      "name": "Branch-Protection",
+      "result": "na",
+      "score": 8,
+      "reason": "branch protection is not maximal on development and all release branches",
+      "details": [
+        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+      ]
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/fuzzing",
+      "name": "Fuzzing",
+      "result": "fail",
+      "score": 0,
+      "reason": "project is not fuzzed",
+      "details": []
+    },
+    {
+      "tool": "compliance_report",
+      "repo": "old-batch-tools",
+      "check": "archive/notice-before-archival",
+      "name": "Notice Before Archival",
+      "result": "fail",
+      "score": null,
+      "reason": "Archived outside the process (no notice issue)",
+      "details": [
+        "Info: compliance_report: active in the run of 13 Oct 2026, archived in the run of 20 Oct 2026, not archived by archive_repos"
+      ]
+    }
+  ],
+  "skipped": [
+    {
+      "tool": "lint_repos",
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    },
+    {
+      "tool": "license_scan",
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    },
+    {
+      "tool": "archive_repos",
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "tool": "archive_repos",
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    }
+  ],
+  "errors": []
 }

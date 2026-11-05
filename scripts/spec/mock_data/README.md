@@ -10,9 +10,9 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | `license_scan.json` | `license_scan.js --json` | SBOM availability, license coverage (not mapped), deny list (internal policy, not mapped) |
 | `archive_repos.json` | `archive_repos.js --json` | Only the archivals performed in this run; notice and archival dates in the `archivals` block |
 | `drift.json` | `create_repos.js --dry-run --json` | Planned changes (none) = no drift |
-| `org_snapshot.json` | `org_snapshot.js` | Org settings, ruleset, security configurations, org SECURITY.md, advisories (raw data in the `snapshot` block) |
+| `org_check.json` | `org_check.js` | Org-level checks, one per expected value: org settings, ruleset, security configuration, org SECURITY.md, advisories. Actual values are in `details`; no raw API data |
 | `scorecard.json` | `scorecard_check.js` | Scorecard CLI results per repository, converted to the common format with thresholds applied |
-| `data.json` | `compliance_report.js` | Merged result: requirement statuses, findings, summary, history. Input for the HTML report |
+| `data.json` | `compliance_report.js` | Aggregation of all files above (draft 1.10): their headers in `inputs`, merged `catalogue`, `results`, `skipped` and `errors` (each row with `tool`), plus requirement statuses, findings, summary, history. The only input for the HTML report. Created by hand from the files above |
 
 ## The 11 repositories and what each one demonstrates
 
@@ -28,7 +28,7 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | `claims-event-schemas` | Issues disabled (QA.03); a user with direct access (GV.02) |
 | `kafka-schema-tools` | Inactive with an open notice. Not visible in `archive_repos.json`: open notices are not needed for any check |
 | `legacy-xml-mapper` | Archived by `archive_repos` in this run, 60 days after the notice (DE.01 pass); listed as `skipped` (archived) in `lint_repos.json` and `license_scan.json`, so its missing license is not reported |
-| `old-batch-tools` | Archived manually between the runs of 13 and 20 Oct. Not in any `archive_repos` output, so `compliance_report` derives the DE.01 failure (`tool: compliance_report` in `data.json`) |
+| `old-batch-tools` | Archived manually between the runs of 13 and 20 Oct. Not in any `archive_repos` output, so `compliance_report` derives the DE.01 failure (a result with `tool: compliance_report` in `data.json` → `results`) |
 
 `ng-aquila` is excluded from scope (deviation D-03) and appears only in `skipped` and `scope.excluded`.
 
@@ -46,9 +46,9 @@ On 4 Nov 2026, yukimi was the only active public allianz repository with results
 - Every result has `repo`, `check`, `name`, `result` (`pass`, `fail`, `na`), `score` (Scorecard 0–10, otherwise `null`), `reason` (always filled) and `details` (list, Scorecard style). See section 1.6 of the draft.
 - Checks that are not mapped in `data.json` → `requirements` (license coverage, fuzzing, migration path, deny list) never affect a status.
 - `repo: null` marks org-level checks (`org/*`, `drift/access`, `advisories/*`).
-- Every file has a `checks` catalogue (`name`, `documentation.url`, `documentation.short`); `data.json` → `checks` merges them. The OSPO URLs point to spec headings that do not exist yet; the Scorecard URLs are real.
-- Data the report computes with is in a header block (`archivals`, `snapshot`, `planned_changes`), never in `reason` or `details`.
+- Every file has a `catalogue` (`name`, `documentation.url`, `documentation.short`, `documentation.fix`); `data.json` → `catalogue` merges them and adds the defining `tool`. Scorecard checks have no `fix`. The OSPO URLs point to spec headings that do not exist yet; the Scorecard URLs are real.
+- Data the report computes with is in a header block (`archivals`, `planned_changes`), never in `reason` or `details`.
 - Results carry no `tracking`. Each tool keeps one issue per repository, but the report does not read issues; it only links to a live GitHub search by check label. Labels on that issue (= the failing check IDs) exist on GitHub only.
-- Unpublished security advisories are redacted: the `unpublished` entries in `org_snapshot.json` carry no repository name.
+- Unpublished security advisories are redacted: their `details` lines in `org_check.json` carry no repository name.
 - `data.json` → `findings[]` carries no age or "failing since" date. Only `history` is carried forward from the previous `data.json`: overall compliance, open findings and, per requirement, `coverage` (share of applicable repositories that pass) for each weekly run. `pricing-sandbox` is new in the run of 3 Nov, so earlier runs have one applicable repository less where it applies; DE.01 has no value before the first archival. A finding's history is on GitHub, in the live issues.
 - `data.json` → `requirements[]` has one assessment per requirement, at the requirement's own level (no `parts`). Weaker clauses (SHOULD in GV.01 and VM.01, MAY in BR.03) are not assessed in this version.

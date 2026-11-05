@@ -14,7 +14,7 @@ Every check has exactly one type:
 
 | Type | When to use | What proves it |
 |---|---|---|
-| **Enforced** | Set centrally; project teams cannot change it | `org_snapshot` saves the setting every run and compares it with the expected value and with the previous run |
+| **Enforced** | Set centrally; project teams cannot change it | `org_check` compares the setting with the expected value every run; the actual value is in the result's `details` |
 | **Exact check** | Can change per repository, and the condition can be tested precisely | A per-repository check with a clear pass/fail |
 | **Structural check** | Can change per repository, but only the form can be tested, not the content | A per-repository check, plus a "Limits of the check" note on the card |
 | **By construction** | GitHub guarantees it; there is nothing to check | A statement in the implementation text |
@@ -40,26 +40,29 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `lint_repos.js` | exists, extend | Per-repository checks on repository data and the cloned content |
 | `license_scan.js` | exists, extend | SBOM retrieval and dependency licenses |
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
-| `org_snapshot.js` | **new** | Saves org settings, ruleset, security configurations, org security policy and security advisories. Compares them with expected values. No issues. |
+| `org_check.js` | **new** | Reads org settings, ruleset, security configurations, org security policy and security advisories, and compares them with expected values. Writes results only, no copy of the settings. No issues. |
 | `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds, opens and closes issues (see 1.9) |
-| `compliance_report.js` | **new** | Merges all JSON results, maps checks to requirements, computes statuses, renders HTML, Markdown and `data.json` |
+| `compliance_report.js` | **new** | Aggregates all tool files into one self-contained `data.json` (see 1.10): merges results, maps checks to requirements, computes statuses, compares with the previous run (archivals). Renders HTML and Markdown from `data.json` only |
 
 ### 1.4 Weekly workflow
 
-One workflow, `compliance.yaml`, runs every week and replaces the separate schedules of `lint_repos`, `license_scan` and `archive_repos`:
+One workflow, `compliance.yaml`, runs every week and replaces the separate schedules of `lint_repos`, `license_scan` and `archive_repos`. It runs all tools one after another in one job. Each tool writes its JSON file into a local directory `out/`; then `compliance_report` aggregates them:
 
 ```
-lint_repos      ─┐
-license_scan    ─┤
-archive_repos   ─┤
-create_repos    ─┼─▶ compliance_report ─▶ release compliance-YYYY-MM-DD
-  (--dry-run)    │                         (report.html, data.json, all JSON inputs)
-org_snapshot    ─┤
-scorecard_check ─┘
+lint_repos --json               → out/lint_repos.json
+license_scan --json             → out/license_scan.json
+archive_repos --json            → out/archive_repos.json
+create_repos --dry-run --json   → out/drift.json
+org_check                       → out/org_check.json
+scorecard_check                 → out/scorecard.json
+compliance_report               ← out/*.json + previous data.json
+                                → out/data.json, out/report.html, out/report.md
+release compliance-YYYY-MM-DD   ← report.html, report.md, data.json, all tool files
 ```
 
-- Each job uploads its JSON as an artifact. The report job runs `if: always()`, and a missing input means "no data", never "pass".
-- The report job downloads the previous release's `data.json`, which carries the trend history.
+- Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10).
+- `compliance_report` downloads the previous release's `data.json`, which carries the trend history and the archivals. The checking scripts never read a previous run.
+- The tool files are published in the release as evidence. The report itself is rendered from `data.json` only.
 
 ### 1.5 Check IDs, issues and labels
 
@@ -108,8 +111,9 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 | `reason` | One sentence for people, always filled (also for `pass` and `na`), e.g. "6 of 412 packages (1.5%) have no license information" |
 | `details` | List of lines for people, Scorecard style (`Warn: …`, `Info: …`), e.g. one line per denied package. Always a list, `[]` if empty. Never parsed |
 
-- **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header: `snapshot` (org settings, advisories) in `org_snapshot`, `archivals` in `archive_repos`, `planned_changes` in `create_repos --json`.
-- **`catalogue`:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`, optional `fix`), the same fields as Scorecard plus `fix`. `fix` is one sentence telling a project team what to do when the check fails, e.g. "Add CONTRIBUTING.md to .github/ …". It is written once per check, never per result, and is shown in the report next to "How it is verified" and in the tool's issue body. Checks the project team cannot fix (central settings, e.g. `lint/public`) say who acts. `scorecard_check` leaves `fix` out; the Scorecard `url` already explains remediation. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `catalogue`, which the report uses for "How it is verified". Each spec therefore needs one heading per check, named like the check's `name`, with the rule and a "How to fix" line that is the source of `fix`.
+- **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header: `archivals` in `archive_repos`, `planned_changes` in `create_repos --json`. A tool writes such a block only if the report computes with it; raw API data that only serves as evidence goes into `details`, not into a block.
+- **`catalogue`:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`, optional `fix`), the same fields as Scorecard plus `fix`. `fix` is one sentence telling a project team what to do when the check fails, e.g. "Add CONTRIBUTING.md to .github/ …". It is written once per check, never per result, and is shown in the report next to "How it is verified" and in the tool's issue body. Checks the project team cannot fix (central settings, e.g. `lint/public`) say who acts. `scorecard_check` leaves `fix` out; the Scorecard `url` already explains remediation. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `catalogue`, adding the defining `tool` to each entry (see 1.10); the report uses it for "How it is verified". Each spec therefore needs one heading per check, named like the check's `name`, with the rule and a "How to fix" line that is the source of `fix`.
+- **Enforced checks: one check per expected value.** An org-level check that fails makes every requirement it is mapped to "Not met" (1.7), so a check must only test what all of its requirements depend on. `org_check` therefore has one check per setting, e.g. `org/repo-creation` (GV.02, QA.02) and `org/ruleset-approvals` (QA.06), not one check per API object. Its `reason` states the values, and `details` has one line per compared field: `Info: <field>: <actual> (expected <expected>)`, or `Warn: …` when it deviates.
 - **Thresholds come from the tool's configuration** and are written once per check into the catalogue, never into the results. `config_sha256` pins the configuration of each run.
 - **Whether a check counts** is decided only by the mapping in `config/compliance_report.yaml`. Unmapped checks (e.g. `sbom/license-coverage`, `scorecard/fuzzing`) are written like any other result and do not affect a status.
 - `skipped` lists repositories without results (excluded, archived). `errors` lists repository × check pairs the tool could not evaluate. Both are always present, `[]` if empty, so every file has the same shape.
@@ -132,6 +136,14 @@ Each requirement is assessed once, at its own level: a MUST requirement on its M
 
 ```yaml
 # config/compliance_report.yaml
+inputs:                      # tool files expected in out/ (see 1.10)
+  - { file: lint_repos.json,    script: scripts/lint_repos.js }
+  - { file: license_scan.json,  script: scripts/license_scan.js }
+  - { file: archive_repos.json, script: scripts/archive_repos.js }
+  - { file: drift.json,         script: scripts/create_repos.js }
+  - { file: org_check.json,     script: scripts/org_check.js }
+  - { file: scorecard.json,     script: scripts/scorecard_check.js }
+
 excluded_repos:
   - name: ng-aquila
     deviation: D-03
@@ -173,9 +185,43 @@ deviations:
 | Branch-Protection on a `branch-protection: managed` repository | `na` (covered by the org ruleset) |
 
 - `name`, `score`, `reason` and `details` are copied unchanged from Scorecard. `-1` becomes `score: null`, `details: null` becomes `[]`, `date` is converted to UTC.
-- When `scorecard_check` decides the result itself (managed branch protection, topic `docs`/`template`, changes without pull requests), `reason` stays Scorecard's text and the first `details` line explains the decision, e.g. `Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset)` or `Warn: scorecard_check: 30 changesets reached the default branch without pull requests`.
+- When `scorecard_check` decides the result itself (managed branch protection, topic `docs`/`template`, changes without pull requests), `reason` stays Scorecard's text and the first `details` line explains the decision, e.g. `Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)` or `Warn: scorecard_check: 30 changesets reached the default branch without pull requests`.
 - **Reason text is parsed** only for the changeset count. A reason the parser does not recognise goes to `errors`, so a new Scorecard wording cannot silently turn a `fail` into `na`. The real outputs in `mock_data/` serve as test fixtures.
 - **Observed on real data:** ng-aquila had CI-Tests `-1` ("no pull request found") but 30 changesets in Code-Review, i.e. direct pushes to `main`. yukimi's Branch-Protection is 5 with the current ruleset (no status checks, 1 approval, no code-owner review), so a threshold of 6 needs a stricter ruleset. **(verify)**
+
+### 1.10 Aggregation (`compliance_report`)
+
+`compliance_report` turns the tool files in `out/` into one self-contained `data.json`. The HTML and Markdown reports are rendered from `data.json` only and never read a tool file, so every number in the report can be traced to `data.json`. The tool files stay in the release as evidence, pinned by their `sha256` in `inputs`.
+
+**Steps**
+
+1. **Read and validate.** Read every tool file listed in `config/compliance_report.yaml` → `inputs`. Validate it against 1.6: all header fields present; `catalogue`, `results`, `skipped` and `errors` present; every `check` in `results` is in the file's catalogue; `result` is `pass`, `fail` or `na`. A missing or invalid file gets `status: missing` or `status: invalid` in `inputs` and contributes nothing else: its checks have no results, which the report shows as "no data".
+2. **Record inputs.** One `inputs` entry per file: `file`, `script`, `status`, the `sha256` of the file as read, the file's header copied verbatim (every field except `catalogue`, `results`, `skipped` and `errors`, so tool-specific fields such as `scorecard_version` or `planned_changes` are kept), and `counts` (`results`, `skipped`, `errors`).
+3. **Merge.** `catalogue` is the union of all catalogues; each entry gets the defining `tool`. A check ID defined in two files is a bug and stops the run. `results`, `skipped` and `errors` are concatenated in input order. Each row gets `tool` and is otherwise copied unchanged.
+4. **Add own results.** Checks that need two runs are computed here and written as results with `tool: compliance_report`, using a check ID from an existing catalogue. Today this is only `archive/notice-before-archival` for repositories archived outside the process (DE.01).
+5. **Compute** from the merged results and `config/compliance_report.yaml` only:
+   - `scope`: active, archived and excluded repositories;
+   - `requirements`: the mapped checks, status and coverage per requirement (1.7);
+   - `findings`: every failing result of a mapped check, with the requirement IDs it affects;
+   - `summary`: checks evaluated and passed, compliance %, requirements by status, open findings;
+   - `deviations`: copied from the configuration, with `expired` computed from `valid_until`.
+6. **Carry forward** from the previous release's `data.json`: `history` (this run is appended) and `archivals` (12 months are kept). Nothing else is read from the previous run.
+7. **Write** `data.json`, then render `report.html` and `report.md` from it.
+
+**`data.json` keys**
+
+| Key | Content | Step |
+|---|---|---|
+| `report_id`, `run_at`, `org`, `ospo_sha`, `run_url` | This run | – |
+| `report_config`, `config_sha256` | Path and hash of `config/compliance_report.yaml`, which pin the mapping that produced the statuses | – |
+| `previous_report` | The `data.json` that `history` and `archivals` were read from | 6 |
+| `inputs` | One entry per tool file: status, hash, header, counts | 2 |
+| `scope`, `requirements`, `findings`, `summary`, `deviations` | Computed | 5 |
+| `archivals`, `history` | Carried forward | 6 |
+| `catalogue`, `results`, `skipped`, `errors` | Merged from the tool files, plus own results | 3, 4 |
+
+- **Reproducible.** `findings` and `summary` can be recomputed from `results` and the mapping in `requirements`. A test recomputes them from `data.json` alone and compares.
+- **Size.** `data.json` holds every result of the run (about 100 KB for the mock data). The next run reads only `history` and `archivals` from it.
 
 ---
 
@@ -207,10 +253,10 @@ deviations:
 - **Websites:** published with GitHub Pages only, so the repository's access rules apply.
 - **Sensitive data:** secret scanning and push protection are on for every repository.
 
-**Enforced**, via `org_snapshot`, compared with expected values:
-- **Org settings** (`GET /orgs/{org}`): 2FA required, base permission, members cannot create repositories.
-- **Ruleset `ospo-managed`** (`GET /orgs/{org}/rulesets/{id}`): pull request required, no force-push, no deletion.
-- **Security configuration `ospo-managed`** (`GET /orgs/{org}/code-security/configurations`): secret scanning and push protection enabled, enforced.
+**Enforced**, via `org_check`, compared with expected values (one check per expected value, see 1.6):
+- **Org settings** (`GET /orgs/{org}`): `org/two-factor` (2FA required), `org/base-permission` (base permission `none`), `org/repo-creation` (members cannot create repositories).
+- **Ruleset `ospo-managed`** (`GET /orgs/{org}/rulesets/{id}`): `org/ruleset-protection` (active on default branches, pull request required, no force-push, no deletion).
+- **Security configuration `ospo-managed`** (`GET /orgs/{org}/code-security/configurations`): `org/secret-scanning` (secret scanning and push protection enabled, configuration enforced).
 
 **Exact checks**
 - `lint/no-direct-collaborators`: no user has direct access, only teams (`GET /repos/{o}/{r}/collaborators?affiliation=direct`). **(verify** that org owners are not listed.)
@@ -226,9 +272,9 @@ deviations:
 **Issues**
 - `lint/no-direct-collaborators` and the Scorecard checks: public issue.
 - `lint/secret-scanning`: no issue (security-sensitive).
-- Drift and snapshot deviations: no issue. These are central settings, fixed by the OSPO.
+- Drift and failing `org/*` checks: no issue. These are central settings, fixed by the OSPO.
 
-**New work:** `org_snapshot`, the two lint checks, the `scorecard_check` thresholds, and `create_repos --json`.
+**New work:** `org_check`, the two lint checks, the `scorecard_check` thresholds, and `create_repos --json`.
 
 ---
 
@@ -285,7 +331,7 @@ deviations:
 
 **Implementation:** The dependency graph is enabled for every repository through the security configuration. Its SPDX SBOM is the public list of third-party components.
 
-**Enforced:** dependency graph enabled in the `ospo-managed` security configuration (`org_snapshot`).
+**Enforced:** `org/dependency-graph`, dependency graph enabled in the `ospo-managed` security configuration, configuration enforced (`org_check`).
 
 **Exact check:** `sbom/available` (shared with LE.02).
 
@@ -305,7 +351,7 @@ deviations:
 
 **Implementation:** All repositories are created by the provisioning pipeline as public. Members cannot create repositories.
 
-**Enforced:** "members cannot create repositories" (`org_snapshot`).
+**Enforced:** `org/repo-creation`, members cannot create repositories (`org_check`, shared with GV.02).
 
 **Exact check:** `lint/public`. The visibility of every in-scope repository is `public`.
 
@@ -367,7 +413,7 @@ deviations:
 
 **For information:** `scorecard/fuzzing`. It is reported without issues, because one check per requirement owns the issue; otherwise two tools would open issues for the same gap.
 
-**Enforced:** code scanning enabled in the security configuration (`org_snapshot`). **(verify** that code scanning is part of `ospo-managed`.)
+**For information:** `org/code-scanning`, code scanning enabled in the security configuration (`org_check`). Not mapped: QA.05 is assessed on `lint/memory-safety-section` only, so a code scanning deviation does not make QA.05 "Not met". **(verify** that code scanning is part of `ospo-managed`.)
 
 **Scripts:** `lint_repos` (languages, heading); `scorecard_check` for information only.
 
@@ -383,7 +429,7 @@ deviations:
 
 **Implementation:** The org ruleset requires a pull request with at least one approval before merging into the default branch.
 
-**Enforced:** the ruleset requires approvals ≥ 1 (`org_snapshot`). **(verify** whether `ospo-managed` requires approvals today.)
+**Enforced:** `org/ruleset-approvals`, the ruleset requires approvals ≥ 1 (`org_check`). **(verify** whether `ospo-managed` requires approvals today.)
 
 **Exact check:** `scorecard/code-review` ≥ 7, for all repositories. It confirms the effect, including repositories with custom branch protection and admin bypasses.
 
@@ -531,11 +577,11 @@ deviations:
 
 **Implementation:** An organisation-wide `SECURITY.md` in `allianz/.github` applies to every repository without its own. It names the OSPO as contact and asks for private vulnerability reporting, which is enabled on every repository.
 
-- **Enforced:** `org_snapshot` confirms that `allianz/.github/SECURITY.md` exists and contains a contact. Repositories with their own `SECURITY.md` are recorded for information.
+- **Enforced:** `org/security-policy`. `org_check` confirms that `allianz/.github/SECURITY.md` exists and contains a contact. Repositories with their own `SECURITY.md` are listed in its `details` for information.
 
-**SHOULD clause (private reporting):** not assessed in this version (see 1.7). Private vulnerability reporting is still enabled through the `ospo-managed` security configuration. `lint/private-reporting` (repositories with `security: custom`) runs for information and is not mapped to a requirement.
+**SHOULD clause (private reporting):** not assessed in this version (see 1.7). Private vulnerability reporting is still enabled through the `ospo-managed` security configuration. `org/private-reporting` (the configuration) and `lint/private-reporting` (repositories with `security: custom`) run for information and are not mapped to a requirement.
 
-**New work:** the snapshot items.
+**New work:** the `org/security-policy` check in `org_check`.
 
 ---
 
@@ -547,9 +593,10 @@ deviations:
 
 **Exact check:** `advisories/published-in-time`, using the repository advisories of the org (`GET /orgs/{org}/security-advisories`):
 - Every advisory in `triage` or `draft` that is older than 90 days fails.
-- Published advisories record their days to publication.
+- Published advisories record their days to publication. A late publication does not fail the check; it shows in the median and maximum.
+- `reason` states both counts, e.g. "3 published in the period (median 18 days, maximum 41 days), 1 unpublished (12 days)". `details` has one line per advisory; unpublished ones without repository or details. The 90-day limit is part of the rule in `documentation.short`.
 
-**Script:** `org_snapshot`.
+**Script:** `org_check`.
 
 **Issue:** none, because these are unpublished vulnerabilities. The public report shows counts and the median time.
 
@@ -575,7 +622,7 @@ deviations:
 
 **Scripts**
 - `archive_repos`: adds `--json` with the archivals it performed in this run (notice issue, notice date, archival date). It needs no history and no new API calls: it already reads the warning issue's `created_at` before archiving.
-- `compliance_report`: does the comparison with the previous run, and carries an `archivals` list forward for 12 months (it feeds the DE.01 card: "N of M archived in the period had a notice").
+- `compliance_report`: does the comparison with the previous run, writes the failure as its own result (`tool: compliance_report`, see 1.10 step 4), and carries an `archivals` list forward for 12 months (it feeds the DE.01 card: "N of M archived in the period had a notice").
 
 **Issue:** none, because the repository is archived. A finding is listed for the OSPO (the existing `Stale Repository Summary` issue in the `ospo` repository is the natural place). It stays open until the OSPO resolves it: either unarchive and go through the process, or accept it with an entry in `config/compliance_report.yaml`.
 
