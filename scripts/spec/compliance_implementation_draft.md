@@ -105,7 +105,7 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 |---|---|
 | `repo` | Repository name; `null` for org-level checks |
 | `check` | Stable ID `<tool>/<check>`. Key for history, labels and the requirement mapping |
-| `name` | Readable name, e.g. "Contributing File" or Scorecard's "CI-Tests". Display only; renaming it breaks nothing |
+| `name` | Readable name, e.g. "Contributing File" or Scorecard's "CI-Tests". For tool output and issues only; renaming it breaks nothing. `data.json` and the report use the check ID |
 | `result` | `pass`, `fail` or `na` |
 | `score` | 0–10 where the tool measures a score (Scorecard), otherwise `null`. Scorecard's `-1` becomes `null`. Compared with the check's `threshold` |
 | `reason` | One sentence for people, always filled (also for `pass` and `na`), e.g. "6 of 412 packages (1.5%) have no license information" |
@@ -193,19 +193,23 @@ deviations:
 
 `compliance_report` turns the tool files in `out/` into one self-contained `data.json`. The HTML and Markdown reports are rendered from `data.json` only and never read a tool file, so every number in the report can be traced to `data.json`. The tool files stay in the release as evidence, pinned by their `sha256` in `inputs`.
 
+**Rule: `data.json` contains only what the report shows or the next run needs.** Everything else (e.g. `reason` and `details` of repository checks, `fix` for checks that have an issue) stays in the tool files and in the issues, which are written from them. If the report starts to show a field, it is added to `data.json` at the same time.
+
 **Steps**
 
 1. **Read and validate.** Read every tool file listed in `config/compliance_report.yaml` → `inputs`. Validate it against 1.6: all header fields present; `catalogue`, `results`, `skipped` and `errors` present; every `check` in `results` is in the file's catalogue; `result` is `pass`, `fail` or `na`. A missing or invalid file gets `status: missing` or `status: invalid` in `inputs` and contributes nothing else: its checks have no results, which the report shows as "no data".
-2. **Record inputs.** One `inputs` entry per file: `file`, `script`, `status`, the `sha256` of the file as read, the file's header copied verbatim (every field except `catalogue`, `results`, `skipped` and `errors`, so tool-specific fields such as `scorecard_version` or `planned_changes` are kept), and `counts` (`results`, `skipped`, `errors`).
-3. **Merge.** `catalogue` is the union of all catalogues; each entry gets the defining `tool`. A check ID defined in two files is a bug and stops the run. `results`, `skipped` and `errors` are concatenated in input order. Each row gets `tool` and is otherwise copied unchanged.
-4. **Add own results.** Checks that need two runs are computed here and written as results with `tool: compliance_report`, using a check ID from an existing catalogue. Today this is only `archive/notice-before-archival` for repositories archived outside the process (DE.01).
+2. **Record inputs.** One `inputs` entry per file: `file`, `script`, `status`, the `sha256` of the file as read, the header fields the report shows (`tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, and where present `source`, `scorecard_version`, `planned_changes`), and `counts` (`results`, `skipped`, `errors`).
+3. **Merge.** A check ID defined in two files is a bug and stops the run.
+   - `catalogue`: the union of all catalogues. Each entry gets the defining `tool` and keeps `threshold` and `documentation` (`url`, `short`). `name` is dropped: the report shows the check ID. `fix` is kept only for checks the OSPO fixes and no issue carries: org-level checks and `compliance_report`'s own checks.
+   - `results`, concatenated in input order. Each row keeps `repo`, `check` and `result`; `score` only for scored checks (the catalogue entry has a `threshold`); `reason` only for org-level results (`repo: null`), where it states the checked values. `name`, `details` and the rest of `reason` are not copied; the tool is found through `catalogue[check].tool`.
+   - `skipped` and `errors`, concatenated, each row with `tool`.
+4. **Add own results.** Checks that need two runs are computed here, with their own check IDs (`report/…`) and catalogue entries (`tool: compliance_report`). Today this is only `report/archived-outside-process` (DE.01). They open no issues.
 5. **Compute** from the merged results and `config/compliance_report.yaml` only:
    - `scope`: active, archived and excluded repositories;
    - `requirements`: the mapped checks, status and coverage per requirement (1.7);
-   - `findings`: every failing result of a mapped check, with the requirement IDs it affects;
    - `summary`: checks evaluated and passed, compliance %, requirements by status, open findings;
    - `deviations`: copied from the configuration, with `expired` computed from `valid_until`.
-6. **Carry forward** from the previous release's `data.json`: `history` (this run is appended) and `archivals` (12 months are kept). Nothing else is read from the previous run.
+6. **Carry forward** from the previous release's `data.json`: `history` (this run is appended) and `archivals` (12 months are kept). `scope.active` of the previous run is read for `report/archived-outside-process` (step 4). Nothing else is read from the previous run.
 7. **Write** `data.json`, then render `report.html` and `report.md` from it.
 
 **`data.json` keys**
@@ -216,12 +220,13 @@ deviations:
 | `report_config`, `config_sha256` | Path and hash of `config/compliance_report.yaml`, which pin the mapping that produced the statuses | – |
 | `previous_report` | The `data.json` that `history` and `archivals` were read from | 6 |
 | `inputs` | One entry per tool file: status, hash, header, counts | 2 |
-| `scope`, `requirements`, `findings`, `summary`, `deviations` | Computed | 5 |
+| `scope`, `requirements`, `summary`, `deviations` | Computed | 5 |
 | `archivals`, `history` | Carried forward | 6 |
-| `catalogue`, `results`, `skipped`, `errors` | Merged from the tool files, plus own results | 3, 4 |
+| `catalogue`, `results`, `skipped`, `errors` | Merged from the tool files, reduced to what the report shows, plus own results | 3, 4 |
 
-- **Reproducible.** `findings` and `summary` can be recomputed from `results` and the mapping in `requirements`. A test recomputes them from `data.json` alone and compares.
-- **Size.** `data.json` holds every result of the run (about 100 KB for the mock data). The next run reads only `history` and `archivals` from it.
+- **Findings are not stored.** A finding is a failing result of a mapped check; its requirements are the ones whose `checks` contain it. The renderer derives the list from `results` and `requirements`. `data.json` stores no derived lists: if one is ever needed for performance, it goes into a block named `cache`, so it is obvious that it duplicates data.
+- **Reproducible.** `summary` and the per-requirement counts can be recomputed from `results` and the mapping in `requirements`. A test recomputes them from `data.json` alone and compares.
+- **Size.** `data.json` holds one short row per result (about 60 KB for the mock data, against about 110 KB for the tool files). The next run reads only `scope`, `history` and `archivals` from it.
 
 ---
 
@@ -614,7 +619,9 @@ deviations:
 
 **By construction:** `archive_repos` only archives after the grace period. Every archival it performs therefore had a notice of at least 60 days. Its JSON records each archival as the evidence.
 
-**Exact check:** `archive/notice-before-archival` for repositories archived *outside* the process. This needs two runs to compare, so `compliance_report` does it, not `archive_repos`:
+**Exact checks**
+- `archive/notice-before-archival` (`archive_repos`): one `pass` per archival it performed, as evidence of the notice.
+- `report/archived-outside-process` (`compliance_report`) for repositories archived *outside* the process. This needs two runs to compare, so `compliance_report` does it, not `archive_repos`:
 - a repository that was active in the previous `data.json`,
 - is archived now,
 - and was not archived by `archive_repos`
@@ -622,7 +629,7 @@ deviations:
 
 **Scripts**
 - `archive_repos`: adds `--json` with the archivals it performed in this run (notice issue, notice date, archival date). It needs no history and no new API calls: it already reads the warning issue's `created_at` before archiving.
-- `compliance_report`: does the comparison with the previous run, writes the failure as its own result (`tool: compliance_report`, see 1.10 step 4), and carries an `archivals` list forward for 12 months (it feeds the DE.01 card: "N of M archived in the period had a notice").
+- `compliance_report`: does the comparison with the previous run, writes the failure as its own result `report/archived-outside-process` (see 1.10 step 4), and carries an `archivals` list forward for 12 months (it feeds the DE.01 card: "N of M archived in the period had a notice").
 
 **Issue:** none, because the repository is archived. A finding is listed for the OSPO (the existing `Stale Repository Summary` issue in the `ospo` repository is the natural place). It stays open until the OSPO resolves it: either unarchive and go through the process, or accept it with an entry in `config/compliance_report.yaml`.
 
