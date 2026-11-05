@@ -124,11 +124,13 @@ Each requirement is assessed once, at its own level: a MUST requirement on its M
 
 - **Met:** all applicable repositories pass, and every org-level check passes.
 - **Met, with findings:** some applicable repositories fail, and every org-level check passes.
+
+- **Findings count repositories.** A repository has a finding for a requirement if it fails at least one applicable check of that requirement. Every number in the report counts repositories (per requirement, or active repositories with at least one finding), never failing checks: which checks implement a requirement is an implementation detail, and one missing file can fail several checks. Failing checks are shown only as the explanation next to a repository.
 - **Not met:** an org-level check fails (the enforced setting deviates from its expected value), or no check covers a MUST requirement.
 - **Deviation accepted:** no check covers a SHOULD requirement, and an approved deviation explains why.
 - **Optional:** a MAY requirement, reported for information.
 
-- **Trend:** each run appends to `data.json` → `history` the overall compliance, the open findings and, per requirement, the share of applicable repositories that pass (`coverage`). Each value is computed from that run's own results; a missed run is a gap, not a wrong value.
+- **Trend:** each run appends to `data.json` → `history` the overall compliance, the number of active repositories with findings (`failing_repositories`) and, per requirement, the share of applicable repositories that pass (`coverage`). Each value is computed from that run's own results; a missed run is a gap, not a wrong value.
 
 - **No finding age:** the report does not compute how long a finding has been open. A "failing since" date would have to be carried forward from run to run, and it would silently reset on a missed run, a renamed repository or check, or a check that flaps. The live issues on GitHub show a finding's history.
 
@@ -207,7 +209,7 @@ deviations:
 5. **Compute** from the merged results and `config/compliance_report.yaml` only:
    - `scope`: active, archived and excluded repositories;
    - `requirements`: the mapped checks, status and coverage per requirement (1.7);
-   - `summary`: checks evaluated and passed, compliance %, requirements by status, open findings;
+   - `summary`: checks evaluated and passed, compliance %, requirements by status, active repositories with findings (`failing_repositories`);
    - `deviations`: copied from the configuration, with `expired` computed from `valid_until`.
 6. **Carry forward** from the previous release's `data.json`: `history` (this run is appended) and `archivals` (12 months are kept). `scope.active` of the previous run is read for `report/archived-outside-process` (step 4). Nothing else is read from the previous run.
 7. **Write** `data.json`, then render `report.html` and `report.md` from it.
@@ -224,7 +226,7 @@ deviations:
 | `archivals`, `history` | Carried forward | 6 |
 | `catalogue`, `results`, `skipped`, `errors` | Merged from the tool files, reduced to what the report shows, plus own results | 3, 4 |
 
-- **Findings are not stored.** A finding is a failing result of a mapped check; its requirements are the ones whose `checks` contain it. The renderer derives the list from `results` and `requirements`. `data.json` stores no derived lists: if one is ever needed for performance, it goes into a block named `cache`, so it is obvious that it duplicates data.
+- **Findings are not stored.** Which repository fails which requirement, and through which checks, is derived from `results` and `requirements` by the renderer. `data.json` stores no derived lists: if one is ever needed for performance, it goes into a block named `cache`, so it is obvious that it duplicates data.
 - **Reproducible.** `summary` and the per-requirement counts can be recomputed from `results` and the mapping in `requirements`. A test recomputes them from `data.json` alone and compares.
 - **Size.** `data.json` holds one short row per result (about 60 KB for the mock data, against about 110 KB for the tool files). The next run reads only `scope`, `history` and `archivals` from it.
 

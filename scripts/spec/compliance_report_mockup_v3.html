@@ -327,7 +327,7 @@
   <!-- ─────────────────────────── 2 Requirements ─────────────────────────── -->
   <section id="requirements" class="break">
     <h2><span class="num">2</span>Requirement status</h2>
-    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. Every repository with its open findings is listed in section 5.</p>
+    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. Every repository with the requirements it fails is listed in section 5.</p>
     <div class="card" style="padding:6px 8px">
       <table id="req-table">
         <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th id="req-trend-h">Trend</th></tr></thead>
@@ -347,8 +347,8 @@
         <div id="chart-compliance"></div>
       </div>
       <div class="card">
-        <h3 class="chart-title">Open findings</h3>
-        <p class="chart-sub">Failing repository checks at each weekly run</p>
+        <h3 class="chart-title">Active repositories with findings</h3>
+        <p class="chart-sub">Active repositories that fail at least one requirement, per weekly run</p>
         <div id="chart-findings"></div>
       </div>
     </div>
@@ -357,15 +357,15 @@
   <!-- ─────────────────────────── 4 Findings ─────────────────────────── -->
   <section id="findings" class="break">
     <h2><span class="num">4</span>Findings</h2>
-    <p class="lead">A finding is one repository failing one check that is mapped to a requirement. The tools also open issues in the affected repositories; the report does not read them and only links to the live issues on GitHub.</p>
+    <p class="lead">A repository has a finding for a requirement if it fails at least one applicable check of that requirement. All numbers in this section count repositories, not checks. The tools also open issues in the affected repositories; the report does not read them and only links to the live issues on GitHub.</p>
     <div class="grid-2" style="margin-bottom:16px">
       <div class="card">
-        <h3 class="chart-title">Open findings by requirement</h3>
+        <h3 class="chart-title">Failing repositories by requirement</h3>
         <p class="chart-sub" id="byreq-sub"></p>
         <div id="chart-byreq"></div>
       </div>
       <div class="card">
-        <h3 class="chart-title">Active repositories by number of open findings</h3>
+        <h3 class="chart-title">Active repositories by number of failed requirements</h3>
         <p class="chart-sub" id="repos-sub"></p>
         <div id="seg-repos"></div>
       </div>
@@ -375,23 +375,23 @@
   <!-- ─────────────────────────── 5 Repositories ─────────────────────────── -->
   <section id="repositories">
     <h2><span class="num">5</span>Repositories</h2>
-    <p class="lead">Every repository in scope with its open findings. Sort and filter on screen; the printed report always contains every repository.</p>
+    <p class="lead">Every repository in scope with the requirements it fails and the checks that cause it. Sort and filter on screen; the printed report always contains every repository.</p>
     <div class="card" style="padding:10px 8px 6px">
       <div class="filters">
         <label>Sort by <select id="r-sort">
-          <option value="findings">Most open findings</option>
+          <option value="findings">Most failed requirements</option>
           <option value="passed">Lowest share of checks passed</option>
           <option value="repo">Repository name (A–Z)</option>
         </select></label>
         <label>Repository <input id="r-repo" type="search" placeholder="name contains…"></label>
         <label>Requirement <select id="r-req"></select></label>
-        <label class="chk"><input type="checkbox" id="r-failing"> Only repositories with open findings</label>
+        <label class="chk"><input type="checkbox" id="r-failing"> Only repositories that fail a requirement</label>
         <button type="button" id="r-reset">Reset</button>
       </div>
       <div class="filter-count" id="r-count"></div>
       <table id="repos-table">
         <thead><tr>
-          <th>Repository</th><th class="num">Open findings</th><th>Failing checks</th><th>Requirements affected</th><th class="num">Checks passed</th><th>Issues</th>
+          <th>Repository</th><th class="num">Failed requirements</th><th>Requirements</th><th>Failing checks</th><th class="num">Checks passed</th><th>Issues</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -597,8 +597,7 @@
     },
     "must_met": 15,
     "must_total": 15,
-    "open_findings": 19,
-    "repositories_without_findings": 3
+    "failing_repositories": 6
   },
   "requirements": [
     {
@@ -920,7 +919,7 @@
     {
       "date": "2026-10-06",
       "compliance_pct": 89.1,
-      "open_findings": 24,
+      "failing_repositories": 7,
       "coverage": {
         "GV.01": 62.5,
         "GV.02": 87.5,
@@ -942,7 +941,7 @@
     {
       "date": "2026-10-13",
       "compliance_pct": 89.6,
-      "open_findings": 23,
+      "failing_repositories": 7,
       "coverage": {
         "GV.01": 75.0,
         "GV.02": 87.5,
@@ -964,7 +963,7 @@
     {
       "date": "2026-10-20",
       "compliance_pct": 90.3,
-      "open_findings": 22,
+      "failing_repositories": 6,
       "coverage": {
         "GV.01": 75.0,
         "GV.02": 100.0,
@@ -986,7 +985,7 @@
     {
       "date": "2026-10-27",
       "compliance_pct": 90.8,
-      "open_findings": 21,
+      "failing_repositories": 6,
       "coverage": {
         "GV.01": 75.0,
         "GV.02": 87.5,
@@ -1008,7 +1007,7 @@
     {
       "date": "2026-11-03",
       "compliance_pct": 87.0,
-      "open_findings": 19,
+      "failing_repositories": 6,
       "coverage": {
         "GV.01": 77.8,
         "GV.02": 88.9,
@@ -2736,12 +2735,11 @@ function scaleMock(factor, worst) {
   S.must_met = DATA.requirements.filter(q => q.level === 'MUST' && ['met', 'met-findings'].includes(q.status)).length;
   S.requirements_by_status = {};
   for (const q of DATA.requirements) S.requirements_by_status[q.status] = (S.requirements_by_status[q.status] ?? 0) + 1;
-  S.open_findings = findings.length;
   const withF = new Set(findings.map(f => f.repo));
-  S.repositories_without_findings = DATA.scope.active.filter(x => !withF.has(x)).length;
-  const H = DATA.history, last = H.at(-1), ratio = S.open_findings / (last.open_findings || 1), dp = S.compliance_pct - last.compliance_pct;
-  for (const x of H.slice(0, -1)) { x.open_findings = Math.round(x.open_findings * ratio); x.compliance_pct = Math.round(Math.max(0, Math.min(100, x.compliance_pct + dp)) * 10) / 10; }
-  last.open_findings = S.open_findings; last.compliance_pct = S.compliance_pct;
+  S.failing_repositories = DATA.scope.active.filter(x => withF.has(x)).length;
+  const H = DATA.history, last = H.at(-1), ratio = S.failing_repositories / (last.failing_repositories || 1), dp = S.compliance_pct - last.compliance_pct;
+  for (const x of H.slice(0, -1)) { x.failing_repositories = Math.round(x.failing_repositories * ratio); x.compliance_pct = Math.round(Math.max(0, Math.min(100, x.compliance_pct + dp)) * 10) / 10; }
+  last.failing_repositories = S.failing_repositories; last.compliance_pct = S.compliance_pct;
   // per-requirement coverage: shift the mock history so that it ends at the scaled value
   const clamp = v => Math.round(Math.max(0, Math.min(100, v)) * 10) / 10;
   for (const q of DATA.requirements) {
@@ -2895,7 +2893,7 @@ document.addEventListener('click', e => {
 function dataTable(headers, rows, numericCols = []) {
   const t = h('table');
   t.append(h('thead', {}, h('tr', {}, ...headers.map((x, i) => h('th', { class: numericCols.includes(i) ? 'num' : '', text: x })))));
-  t.append(h('tbody', {}, ...rows.map(r => h('tr', {}, ...r.map((c, i) => h('td', { class: numericCols.includes(i) ? 'num' : '', text: c }))))));
+  t.append(h('tbody', {}, ...rows.map(r => h('tr', {}, ...r.map((c, i) => h('td', { class: numericCols.includes(i) ? 'num' : '', text: c instanceof Node ? null : c }, c instanceof Node ? c : null))))));
   return h('details', { class: 'datatable' }, h('summary', { text: 'Show data table' }), t);
 }
 
@@ -2996,7 +2994,7 @@ function columnChart(el, { labels, values, yMax, yTicks, name }) {
   el.append(svg, dataTable(['Run', name], labels.map((l, i) => [l, values[i]]), [1]));
 }
 
-function hbarChart(el, items, name) {
+function hbarChart(el, items, name, { filter } = {}) {   // filter(d): repository-table filter; makes each bar a link to section 5
   const W = 600, row = 26, m = { t: 4, r: 44, l: 290 };
   const H = m.t + row * items.length + 4;
   const max = Math.max(1, ...items.map(d => d.value));
@@ -3008,13 +3006,17 @@ function hbarChart(el, items, name) {
     s('text', { class: 'clabel', x: m.l - 10, y: y0 + row / 2 + 4, 'text-anchor': 'end' }, svg).textContent = `${d.id} ${d.label}`;
     const bar = s('path', { d: roundedRight(m.l, y0 + 6, Math.max(2, xw(d.value)), row - 12, 4), fill: 'var(--accent)' }, svg);
     s('text', { class: 'vlabel', x: m.l + xw(d.value) + 6, y: y0 + row / 2 + 4 }, svg).textContent = d.value;
-    const hit = s('rect', { x: 0, y: y0, width: W, height: row, fill: 'transparent', tabindex: 0, 'aria-label': `${d.id}: ${d.value} open findings` }, svg);
-    const on = evt => { bar.setAttribute('opacity', 0.8); showTip(evt, plural(d.value, 'open finding'), `${d.id} ${d.label}`); };
+    const label = `${d.id}: ${plural(d.value, 'failing repository', 'failing repositories')}`;
+    const wrap = filter ? s('a', { href: '#repositories', 'data-filter': JSON.stringify(filter(d)), 'aria-label': `${label}. Show them in section 5`, style: 'cursor:pointer' }, svg) : svg;
+    const hit = s('rect', { x: 0, y: y0, width: W, height: row, fill: 'transparent', ...(filter ? {} : { tabindex: 0, 'aria-label': label }) }, wrap);
+    const target = filter ? wrap : hit;
+    const on = evt => { bar.setAttribute('opacity', 0.8); showTip(evt, plural(d.value, 'failing repository', 'failing repositories'), `${d.id} ${d.label}${filter ? ' · select to show them in section 5' : ''}`); };
     const off = () => { bar.removeAttribute('opacity'); hideTip(); };
-    hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
-    hit.addEventListener('focus', on); hit.addEventListener('blur', off);
+    target.addEventListener('pointermove', on); target.addEventListener('pointerleave', off);
+    target.addEventListener('focus', on); target.addEventListener('blur', off);
   });
-  el.append(svg, dataTable(['Requirement', 'Open findings'], items.map(d => [`${d.id} ${d.label}`, d.value]), [1]));
+  el.append(svg, dataTable(['Requirement', 'Failing repositories'],
+    items.map(d => [filter ? repoListLink(`${d.id} ${d.label}`, filter(d)) : `${d.id} ${d.label}`, d.value]), [1]));
 }
 
 function segBar(el, parts, { title, unit, table = true } = {}) {
@@ -3085,7 +3087,7 @@ const errN = DATA.errors.length;
   $('summary-lead').textContent =
     `${S.must_met} of ${S.must_total} MUST requirements are met. ` +
     (notMet.length ? `Not met: ${notMet.length > 3 ? notMet.map(q => q.id).join(', ') : notMet.map(q => `${q.id} (${q.title})`).join(', ')}. ` : '') +
-    `${plural(S.open_findings, 'finding is', 'findings are')} open.`;
+    `${S.failing_repositories} of ${ACTIVE.length} active repositories have findings.`;
 
   const deltaNode = (cur, prev, { unit = '', goodWhenUp = true } = {}) => {
     if (prev == null) return null;
@@ -3099,12 +3101,18 @@ const errN = DATA.errors.length;
   $('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results and unmapped checks are not counted.`;
 
   const withF = new Set(FINDINGS.map(f => f.repo));
+  const reqsWithF = reqs => reqs.filter(q => q.repositories?.failing).map(q => q.id);
+  const assessed = DATA.requirements.filter(q => q.repositories);
+  const covWithF = x => Object.values(x.coverage ?? {}).filter(v => v != null && v < 100).length;   // previous runs: from history coverage
   const tile = (label, value, small, extra) => h('div', { class: 'card tile' }, h('div', { class: 'label', text: label }), h('div', { class: 'value' }, String(value), small ? h('small', { text: ' ' + small }) : null), extra);
   $('tiles').append(
     tile('MUST requirements met', S.must_met, `of ${S.must_total}`, h('div', { class: 'sub', text: notMet.length ? `Not met: ${notMet.map(q => q.id).join(', ')}` : 'All MUST requirements met' })),
-    tile('Active repositories without findings', S.repositories_without_findings, `of ${ACTIVE.length} · ${Math.round(S.repositories_without_findings / ACTIVE.length * 100)}%`,
-      h('div', { class: 'sub', text: capText(ACTIVE.filter(r => !withF.has(r)), 3) })),
-    tile('Open findings', S.open_findings, null, deltaNode(S.open_findings, PREV?.open_findings, { goodWhenUp: false })),
+    tile('Active repositories with findings', S.failing_repositories, `of ${ACTIVE.length}`,
+      deltaNode(S.failing_repositories, PREV?.failing_repositories, { goodWhenUp: false }),
+      h('div', { class: 'sub', text: `Without findings: ${capText(ACTIVE.filter(r => !withF.has(r)), 3) || 'none'}` })),
+    tile('Requirements with findings', reqsWithF(assessed).length, `of ${assessed.length}`,
+      deltaNode(reqsWithF(assessed).length, PREV ? covWithF(PREV) : null, { goodWhenUp: false }),
+      h('div', { class: 'sub', text: capText(reqsWithF(assessed), 6) || 'none' })),
     tile('Org-level checks passing', ORG_RESULTS.filter(r => r.result === 'pass').length, `of ${ORG_RESULTS.length}`,
       h('div', { class: 'sub', text: capText(ORG_RESULTS.filter(r => r.result === 'fail').map(r => r.check), 2) || 'All pass' })),
   );
@@ -3123,7 +3131,7 @@ const errN = DATA.errors.length;
   // Key messages (generated)
   const km = $('key-messages');
   const KM_CAP = 3;
-  const byFailing = [...notMet].sort((a, b) => findingsOf(b.id).length - findingsOf(a.id).length);
+  const byFailing = [...notMet].sort((a, b) => (b.repositories?.failing ?? 0) - (a.repositories?.failing ?? 0));
   for (const q of byFailing.slice(0, KM_CAP)) {
     const qf = findingsOf(q.id), r = q.repositories;
     const orgF = ORG_RESULTS.filter(r => q.checks?.includes(r.check) && r.result === 'fail').map(r => r.check);
@@ -3131,7 +3139,7 @@ const errN = DATA.errors.length;
       orgF.length ? `Failing org-level ${orgF.length === 1 ? 'check' : 'checks'}: ${orgF.join(', ')}. ` : '',
       r?.failing ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.check)).join(', ')}).` : ''));
   }
-  if (byFailing.length > KM_CAP) km.append(h('li', {}, h('b', { text: `${byFailing.length - KM_CAP} more not met: ` }), byFailing.slice(KM_CAP).map(q => `${q.id} (${plural(findingsOf(q.id).length, 'finding')})`).join(', ') + '. Details in section 2.'));
+  if (byFailing.length > KM_CAP) km.append(h('li', {}, h('b', { text: `${byFailing.length - KM_CAP} more not met: ` }), byFailing.slice(KM_CAP).map(q => `${q.id} (${plural(q.repositories?.failing ?? 0, 'failing repository', 'failing repositories')})`).join(', ') + '. Details in section 2.'));
   const orgFail = ORG_RESULTS.filter(r => r.result === 'fail');
   km.append(h('li', {}, h('b', { text: orgFail.length ? `${orgFail.length} of ${ORG_RESULTS.length} org-level checks fail. ` : `All ${ORG_RESULTS.length} org-level checks pass. ` }), ORG_RESULTS.map(r => r.check).join(', ') + '.'));
   km.append(h('li', {}, h('b', { text: 'Access drift: ' }),
@@ -3224,7 +3232,7 @@ function renderCard(q) {
 
   const infoSec = repoChecks.length ? sec('Additional information', linksRow([
     liveIssuesLink(repoChecks, null, 'Live issues on GitHub'),
-    qf.length ? repoListLink(`Repositories failing ${q.id} (section 5)`, { req: q.id }) : null,
+    q.repositories?.failing ? repoListLink(`Repositories failing ${q.id} (section 5)`, { req: q.id }) : null,
   ])) : null;
 
   return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, archSec, infoSec);
@@ -3260,26 +3268,27 @@ function renderCard(q) {
   const cv = HISTORY.map(x => x.compliance_pct);
   const ct = niceTicks(Math.floor(Math.min(...cv)) - 1, Math.min(100, Math.ceil(Math.max(...cv)) + 1));
   lineChart($('chart-compliance'), { labels, values: cv, yMin: ct[0], yMax: ct.at(-1), yTicks: ct, fmt: v => fmtPct(v), name: 'Overall compliance' });
-  const fv = HISTORY.map(x => x.open_findings);
+  const fv = HISTORY.map(x => x.failing_repositories);
   const ft = niceTicks(0, Math.max(...fv) * 1.15, 3);
-  columnChart($('chart-findings'), { labels, values: fv, yMax: ft.at(-1), yTicks: ft, name: 'Open findings' });
+  columnChart($('chart-findings'), { labels, values: fv, yMax: ft.at(-1), yTicks: ft, name: 'Active repositories with findings' });
 }
 
 /* ═══════════════════════════ 4 Findings ═══════════════════════════ */
 {
-  const multi = FINDINGS.filter(f => f.requirements.length > 1);
-  $('byreq-sub').textContent = `${FINDINGS.length} open findings` + (multi.length ? `; ${plural(multi.length, 'finding counts', 'findings count')} for more than one requirement (${uniq(multi.map(f => f.check)).join(', ')})` : '');
+  $('byreq-sub').textContent = 'Repositories that fail at least one applicable check of the requirement. A repository that fails several requirements is counted in each. Select a bar to list them in section 5.';
   hbarChart($('chart-byreq'),
-    DATA.requirements.map(q => ({ id: q.id, label: q.title, value: findingsOf(q.id).length })).filter(d => d.value).sort((a, b) => b.value - a.value),
-    'Open findings by requirement');
+    DATA.requirements.map(q => ({ id: q.id, label: q.title, value: q.repositories?.failing ?? 0 })).filter(d => d.value).sort((a, b) => b.value - a.value),
+    'Failing repositories by requirement', { filter: d => ({ req: d.id, failing: true }) });
 
-  const nBy = new Map(countBy(FINDINGS, f => f.repo));
+  const reqsBy = {};
+  for (const f of FINDINGS) for (const q of f.requirements) (reqsBy[f.repo] ??= new Set()).add(q);
+  const nBy = new Map(Object.entries(reqsBy).map(([repo, s]) => [repo, s.size]));
   const bucket = (lo, hi) => ACTIVE.filter(r => (nBy.get(r) ?? 0) >= lo && (nBy.get(r) ?? 0) <= hi);
   $('repos-sub').textContent = `${ACTIVE.length} active repositories in scope`;
   segBar($('seg-repos'), [
-    { label: 'No findings', names: bucket(0, 0), color: 'var(--good)', ink: '#fff' },
-    { label: '1 finding', names: bucket(1, 1), color: 'var(--warning)', ink: '#0b0b0b' },
-    { label: '2–3 findings', names: bucket(2, 3), color: 'var(--serious)', ink: '#fff' },
+    { label: 'No failed requirement', names: bucket(0, 0), color: 'var(--good)', ink: '#fff' },
+    { label: '1 requirement', names: bucket(1, 1), color: 'var(--warning)', ink: '#0b0b0b' },
+    { label: '2–3 requirements', names: bucket(2, 3), color: 'var(--serious)', ink: '#fff' },
     { label: '4 or more', names: bucket(4, Infinity), color: 'var(--critical)', ink: '#fff' },
   ].map(p => ({ ...p, value: p.names.length })), { unit: 'repositories' });
 }
@@ -3344,7 +3353,8 @@ const REPO_ROWS = uniq([...ACTIVE, ...FINDINGS.map(f => f.repo)]).map(repo => {
   const fs = FINDINGS.filter(f => f.repo === repo);
   const counted = REPO_RESULTS.filter(r => r.repo === repo && isMapped(r.check) && r.result !== 'na');
   const passed = counted.filter(r => r.result === 'pass').length;
-  return { repo, fs, n: fs.length, checks: uniq(fs.map(f => f.check)), reqs: uniq(fs.flatMap(f => f.requirements)).sort(),
+  const reqs = uniq(fs.flatMap(f => f.requirements)).sort();
+  return { repo, fs, n: reqs.length, checks: uniq(fs.map(f => f.check)), reqs,
     passed, total: counted.length, share: counted.length ? passed / counted.length : 1 };
 });
 const RL_SORT = {
@@ -3370,8 +3380,8 @@ function renderRepos() {
   document.querySelector('#repos-table tbody').replaceChildren(...shown.map(r => h('tr', {},
     h('td', { class: 'id' }, r.repo, ARCHIVED.includes(r.repo) ? h('div', { class: 'small muted', style: 'font-weight:400', text: 'archived' }) : null),
     h('td', { class: 'num', text: r.n || '–' }),
-    h('td', { class: 'small' }, joinNodes(r.checks.map(c => checkWithScore(c, r.repo)), ', ')),
     h('td', {}, r.reqs.map(x => repoListTag(x, { ...RL, req: x }))),
+    h('td', { class: 'small' }, joinNodes(r.checks.map(c => checkWithScore(c, r.repo)), ', ')),
     h('td', { class: 'num nowrap', text: r.total ? `${r.passed}/${r.total}` : '–' }),
     h('td', { class: 'nowrap' }, issueChecks(r.checks).length ? liveIssuesLink(issueChecks(r.checks), r.repo) : null))));
   const active = RL.repo || RL.req || RL.failing;
@@ -3400,7 +3410,7 @@ function renderPager(el, page, pages, go) {
 }
 {
   $('r-req').append(h('option', { value: '', text: 'All requirements' }),
-    ...DATA.requirements.filter(q => findingsOf(q.id).length).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
+    ...DATA.requirements.filter(q => q.repositories?.failing).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
   for (const id of ['r-sort', 'r-req', 'r-failing', 'r-size']) $(id).addEventListener('change', readRepoControls);
   $('r-repo').addEventListener('input', readRepoControls);
   $('r-reset').addEventListener('click', () => applyRepoFilter({}));
