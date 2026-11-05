@@ -193,12 +193,13 @@
   .chart-sub { color: var(--ink-2); font-size: 13px; margin: 0 0 10px; }
 
   .segbar { display: flex; gap: 2px; height: 28px; margin: 8px 0 8px; }
-  .segbar > div {
+  .segbar > * {
     border-radius: 4px; display: flex; align-items: center; padding: 0 8px;
     font-size: 12px; font-weight: 600; white-space: nowrap; overflow: visible; min-width: 0; cursor: default;
   }
-  .segbar > div:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
-  .segbar > div:hover { filter: brightness(1.07); }
+  .segbar > a { cursor: pointer; text-decoration: none; }
+  .segbar > *:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .segbar > *:hover { filter: brightness(1.07); }
   .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); }
   .legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
   .seg-row { margin-bottom: 14px; }
@@ -385,7 +386,7 @@
         </select></label>
         <label>Repository <input id="r-repo" type="search" placeholder="name contains…"></label>
         <label>Requirement <select id="r-req"></select></label>
-        <label class="chk"><input type="checkbox" id="r-failing"> Only repositories that fail a requirement</label>
+        <label>Failed requirements <select id="r-failed"></select></label>
         <button type="button" id="r-reset">Reset</button>
       </div>
       <div class="filter-count" id="r-count"></div>
@@ -2767,6 +2768,13 @@ function sourceNode(check) {
 const DEV = Object.fromEntries(DATA.deviations.map(d => [d.id, d]));
 const FINDINGS = deriveFindings();
 const RESULT_KEY = new Map(REPO_RESULTS.map(r => [r.repo + '|' + r.check, r]));
+/* Ranges for "number of failed requirements": one definition for the chart in section 4 and the filter in section 5 */
+const FAILED_RANGES = [
+  { key: '0', label: 'None', lo: 0, hi: 0, color: 'var(--good)', ink: '#fff' },
+  { key: '1', label: '1', lo: 1, hi: 1, color: 'var(--warning)', ink: '#0b0b0b' },
+  { key: '2-3', label: '2–3', lo: 2, hi: 3, color: 'var(--serious)', ink: '#fff' },
+  { key: '4+', label: '4 or more', lo: 4, hi: Infinity, color: 'var(--critical)', ink: '#fff' },
+];
 const ORG_RESULT_OF = Object.fromEntries(ORG_RESULTS.map(r => [r.check, r]));
 /* Check ID, plus score and threshold for scored checks (Scorecard), e.g. "scorecard/ci-tests 2 (≥ 8)" */
 /* compliance_report's own checks open no issues, so they get no live-issue link */
@@ -3027,16 +3035,19 @@ function segBar(el, parts, { title, unit, table = true } = {}) {
   const bar = h('div', { class: 'segbar', role: 'img', 'aria-label': `${title || ''}: ` + parts.map(p => `${p.label} ${p.value}`).join(', ') });
   for (const p of parts) {
     const share = Math.round(p.value / total * 100);
-    const seg = h('div', { style: `flex:${p.value} 1 0;background:${p.color};color:${p.ink};${p.border ? 'border:1.5px solid var(--axis);' : ''}`, tabindex: 0 }, h('span', { text: String(p.value) }));
-    const on = evt => showTip(evt, `${p.value} ${unit} · ${share}%`, p.label + (p.names ? '\n' + capText(p.names, 12) : ''));
+    const style = `flex:${p.value} 1 0;background:${p.color};color:${p.ink};${p.border ? 'border:1.5px solid var(--axis);' : ''}`;
+    const seg = p.filter
+      ? h('a', { href: '#repositories', 'data-filter': JSON.stringify(p.filter), style, 'aria-label': `${p.label}: ${p.value} ${unit}. Show them in section 5` }, h('span', { text: String(p.value) }))
+      : h('div', { style, tabindex: 0 }, h('span', { text: String(p.value) }));
+    const on = evt => showTip(evt, `${p.value} ${unit} · ${share}%`, p.label + (p.names ? '\n' + capText(p.names, 12) : '') + (p.filter ? '\nSelect to show them in section 5' : ''));
     seg.addEventListener('pointermove', on); seg.addEventListener('pointerleave', hideTip);
     seg.addEventListener('focus', on); seg.addEventListener('blur', hideTip);
     bar.append(seg);
   }
-  wrap.append(bar, h('div', { class: 'legend' }, ...parts.map(p => h('span', {}, h('span', { class: 'sw', style: `background:${p.color};${p.border ? 'border:1px solid var(--axis);' : ''}` }), p.label))));
-  if (table) wrap.append(dataTable(['Category', unit[0].toUpperCase() + unit.slice(1), 'Share'], parts.map(p => [p.label, p.value, Math.round(p.value / total * 100) + '%']), [1, 2]));
+  wrap.append(bar, h('div', { class: 'legend' }, ...parts.map(p => h('span', {}, h('span', { class: 'sw', style: `background:${p.color};${p.border ? 'border:1px solid var(--axis);' : ''}` }), p.filter ? repoListLink(p.label, p.filter) : p.label))));
+  if (table) wrap.append(dataTable(['Category', unit[0].toUpperCase() + unit.slice(1), 'Share'], parts.map(p => [p.filter ? repoListLink(p.label, p.filter) : p.label, p.value, Math.round(p.value / total * 100) + '%']), [1, 2]));
   el.append(wrap);
-  requestAnimationFrame(() => bar.querySelectorAll('div').forEach(d => { const sp = d.firstChild; if (sp.offsetWidth + 16 > d.clientWidth) sp.style.visibility = 'hidden'; }));
+  requestAnimationFrame(() => bar.querySelectorAll(':scope > *').forEach(d => { const sp = d.firstChild; if (sp.offsetWidth + 16 > d.clientWidth) sp.style.visibility = 'hidden'; }));
 }
 
 function niceTicks(lo, hi, count = 4) {
@@ -3278,19 +3289,17 @@ function renderCard(q) {
   $('byreq-sub').textContent = 'Repositories that fail at least one applicable check of the requirement. A repository that fails several requirements is counted in each. Select a bar to list them in section 5.';
   hbarChart($('chart-byreq'),
     DATA.requirements.map(q => ({ id: q.id, label: q.title, value: q.repositories?.failing ?? 0 })).filter(d => d.value).sort((a, b) => b.value - a.value),
-    'Failing repositories by requirement', { filter: d => ({ req: d.id, failing: true }) });
+    'Failing repositories by requirement', { filter: d => ({ req: d.id, failed: 'any' }) });
 
   const reqsBy = {};
   for (const f of FINDINGS) for (const q of f.requirements) (reqsBy[f.repo] ??= new Set()).add(q);
   const nBy = new Map(Object.entries(reqsBy).map(([repo, s]) => [repo, s.size]));
   const bucket = (lo, hi) => ACTIVE.filter(r => (nBy.get(r) ?? 0) >= lo && (nBy.get(r) ?? 0) <= hi);
-  $('repos-sub').textContent = `${ACTIVE.length} active repositories in scope`;
-  segBar($('seg-repos'), [
-    { label: 'No failed requirement', names: bucket(0, 0), color: 'var(--good)', ink: '#fff' },
-    { label: '1 requirement', names: bucket(1, 1), color: 'var(--warning)', ink: '#0b0b0b' },
-    { label: '2–3 requirements', names: bucket(2, 3), color: 'var(--serious)', ink: '#fff' },
-    { label: '4 or more', names: bucket(4, Infinity), color: 'var(--critical)', ink: '#fff' },
-  ].map(p => ({ ...p, value: p.names.length })), { unit: 'repositories' });
+  $('repos-sub').textContent = `${ACTIVE.length} active repositories in scope. Select a segment to list them in section 5.`;
+  segBar($('seg-repos'), FAILED_RANGES.map(b => {
+    const names = bucket(b.lo, b.hi);
+    return { label: b.label, names, value: names.length, color: b.color, ink: b.ink, filter: { failed: b.key } };
+  }), { unit: 'repositories' });
 }
 function repoListTag(text, filter) { const a = repoListLink(text, filter); a.className = 'tag'; return a; }
 
@@ -3348,7 +3357,9 @@ function repoListTag(text, filter) { const a = repoListLink(text, filter); a.cla
 }
 
 /* ═══════════════════════════ 5 Repositories (sortable, filterable) ═══════════════════════════ */
-const RL = { sort: 'findings', repo: '', req: '', failing: false, page: 1, size: 25 };
+const RL = { sort: 'findings', repo: '', req: '', failed: '', page: 1, size: 25 };
+/* failed: '' all repositories, 'any' at least one failed requirement, or a range key of FAILED_RANGES (active repositories only, like the chart in section 4) */
+const matchesFailed = (r, key) => !key || (key === 'any' ? r.n > 0 : (b => !!b && ACTIVE.includes(r.repo) && r.n >= b.lo && r.n <= b.hi)(FAILED_RANGES.find(x => x.key === key)));
 const REPO_ROWS = uniq([...ACTIVE, ...FINDINGS.map(f => f.repo)]).map(repo => {
   const fs = FINDINGS.filter(f => f.repo === repo);
   const counted = REPO_RESULTS.filter(r => r.repo === repo && isMapped(r.check) && r.result !== 'na');
@@ -3363,16 +3374,16 @@ const RL_SORT = {
   repo: (a, b) => a.repo.localeCompare(b.repo),
 };
 function readRepoControls() {
-  RL.sort = $('r-sort').value; RL.repo = $('r-repo').value.trim().toLowerCase(); RL.req = $('r-req').value; RL.failing = $('r-failing').checked;
+  RL.sort = $('r-sort').value; RL.repo = $('r-repo').value.trim().toLowerCase(); RL.req = $('r-req').value; RL.failed = $('r-failed').value;
   RL.size = +$('r-size').value; RL.page = 1;
   renderRepos();
 }
 function applyRepoFilter(f) {
-  $('r-sort').value = f.sort ?? 'findings'; $('r-repo').value = f.repo ?? ''; $('r-req').value = f.req ?? ''; $('r-failing').checked = !!f.failing;
+  $('r-sort').value = f.sort ?? 'findings'; $('r-repo').value = f.repo ?? ''; $('r-req').value = f.req ?? ''; $('r-failed').value = f.failed ?? '';
   readRepoControls();
 }
 function renderRepos() {
-  const rows = REPO_ROWS.filter(r => (!RL.repo || r.repo.toLowerCase().includes(RL.repo)) && (!RL.req || r.reqs.includes(RL.req)) && (!RL.failing || r.n))
+  const rows = REPO_ROWS.filter(r => (!RL.repo || r.repo.toLowerCase().includes(RL.repo)) && (!RL.req || r.reqs.includes(RL.req)) && matchesFailed(r, RL.failed))
     .sort(RL_SORT[RL.sort]);
   const pages = Math.max(1, Math.ceil(rows.length / RL.size));
   RL.page = Math.min(Math.max(1, RL.page), pages);
@@ -3384,7 +3395,7 @@ function renderRepos() {
     h('td', { class: 'small' }, joinNodes(r.checks.map(c => checkWithScore(c, r.repo)), ', ')),
     h('td', { class: 'num nowrap', text: r.total ? `${r.passed}/${r.total}` : '–' }),
     h('td', { class: 'nowrap' }, issueChecks(r.checks).length ? liveIssuesLink(issueChecks(r.checks), r.repo) : null))));
-  const active = RL.repo || RL.req || RL.failing;
+  const active = RL.repo || RL.req || RL.failed;
   $('r-count').textContent = (active ? `${rows.length} of ${REPO_ROWS.length} repositories match the filter` : `${REPO_ROWS.length} repositories`) +
     (rows.length > shown.length ? `; showing ${from + 1}–${from + shown.length}` : '') + '. Checks passed counts the mapped checks that apply to the repository.';
   renderPager($('r-pager'), RL.page, pages, p => { RL.page = p; renderRepos(); });
@@ -3411,7 +3422,9 @@ function renderPager(el, page, pages, go) {
 {
   $('r-req').append(h('option', { value: '', text: 'All requirements' }),
     ...DATA.requirements.filter(q => q.repositories?.failing).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
-  for (const id of ['r-sort', 'r-req', 'r-failing', 'r-size']) $(id).addEventListener('change', readRepoControls);
+  $('r-failed').append(h('option', { value: '', text: 'All repositories' }), h('option', { value: 'any', text: 'At least 1' }),
+    h('optgroup', { label: 'Active repositories' }, ...FAILED_RANGES.map(b => h('option', { value: b.key, text: b.label }))));
+  for (const id of ['r-sort', 'r-req', 'r-failed', 'r-size']) $(id).addEventListener('change', readRepoControls);
   $('r-repo').addEventListener('input', readRepoControls);
   $('r-reset').addEventListener('click', () => applyRepoFilter({}));
   renderRepos();
@@ -3430,7 +3443,7 @@ function renderPager(el, page, pages, go) {
 let saved = null;
 addEventListener('beforeprint', () => {
   saved = { rl: { ...RL } };
-  Object.assign(RL, { repo: '', req: '', failing: false, page: 1, size: Infinity }); renderRepos();
+  Object.assign(RL, { repo: '', req: '', failed: '', page: 1, size: Infinity }); renderRepos();
   document.querySelectorAll('details.req').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; d.dispatchEvent(new Event('toggle')); });
 });
 addEventListener('afterprint', () => {
