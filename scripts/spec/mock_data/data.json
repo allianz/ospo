@@ -49,7 +49,7 @@
       "sha256": "3c300a6e86c6f916a290ce54f1400237723536b2e289411a32face3062ddca73"
     }
   ],
-  "checks": {
+  "catalogue": {
     "advisories/published-in-time": {
       "name": "Advisories Published in Time",
       "documentation": {

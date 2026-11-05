@@ -104,7 +104,7 @@
   },
   "previous_snapshot_date": "2026-10-27",
   "changes_since_previous": [],
-  "checks": {
+  "catalogue": {
     "org/settings": {
       "name": "Org Settings",
       "documentation": {

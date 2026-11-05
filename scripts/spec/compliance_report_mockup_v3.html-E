@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BSI TR-03185 Compliance Report (MOCK-UP v2)</title>
+<title>BSI TR-03185 Compliance Report (MOCK-UP v3)</title>
 <style>
   :root {
     color-scheme: light;
@@ -165,17 +165,14 @@
   .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: grid; gap: 16px; min-width: 0; }
   .rcard h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
   .rcard p { margin: 0; max-width: 820px; }
-  .rcard .part { display: grid; grid-template-columns: 100px 1fr; gap: 4px 14px; padding: 10px 0; border-top: 1px solid var(--grid); }
-  .rcard .part:first-of-type { border-top: none; padding-top: 2px; }
-  .rcard .part p + p { margin-top: 4px; }
+  .tr-clauses { display: grid; gap: 6px; max-width: 820px; }
+  .tr-clause { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
+  .tr-clause .level { justify-self: start; }
   .links { color: var(--muted); font-size: 13px; margin-top: 4px; }
   .links a { margin-right: 4px; }
-  .rcard .part .head { display: flex; gap: 10px; align-items: center; margin-bottom: 2px; }
   .rcard table { font-size: 12.5px; }
   .rcard td, .rcard th { padding: 6px 8px; }
-  .cov-list { display: grid; gap: 4px; }
   .cov { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
-  .cov .plabel { grid-column: 1 / -1; font-size: 11px; color: var(--muted); margin-bottom: -6px; }
   .meter { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
   .meter > div { height: 100%; background: var(--accent); border-radius: 3px; }
   .cov .txt, .cov-txt { font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; }
@@ -183,9 +180,6 @@
   .tag { display: inline-block; font-size: 12px; border: 1px solid var(--grid); border-radius: 4px; padding: 0 5px; margin: 0 4px 2px 0; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
   a.tag:hover { border-color: var(--accent); text-decoration: none; }
   pre.det { margin: 4px 0 0; font: 11.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); white-space: pre-wrap; }
-  dl.kv { display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px; margin: 4px 0 0; font-size: 12.5px; }
-  dl.kv dt { color: var(--muted); }
-  dl.kv dd { margin: 0; font-variant-numeric: tabular-nums; }
 
   /* charts */
   svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
@@ -215,22 +209,7 @@
   details.datatable > summary, details.more > summary { color: var(--accent); cursor: pointer; font-size: 12.5px; }
   details.datatable table, details.more table { margin-top: 6px; }
 
-  /* results matrix */
   .scroll-x { overflow-x: auto; }
-  table.matrix { width: auto; }
-  table.matrix th, table.matrix td { padding: 4px 3px; text-align: center; border-bottom: 1px solid var(--grid); }
-  table.matrix th.rowh, table.matrix td.rowh { text-align: left; padding-right: 12px; }
-  table.matrix th.vh { vertical-align: bottom; height: 190px; font-weight: 500; }
-  table.matrix th.vh > span { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; display: inline-block; }
-  table.matrix th.vh.unmapped { color: var(--muted); font-style: italic; }
-  table.matrix th.grp { text-align: center; font-size: 12px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--grid); }
-  table.matrix td.sep, table.matrix th.sep { border-left: 1px solid var(--axis); }
-  .mcell { display: inline-flex; width: 22px; height: 22px; border-radius: 50%; align-items: center; justify-content: center; font-size: 10.5px; font-weight: 700; cursor: default; font-variant-numeric: tabular-nums; }
-  .mcell:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
-  .mcell.pass { background: var(--good); color: #fff; }
-  .mcell.fail { background: var(--critical); color: #fff; }
-  .mcell.na { border: 1.5px solid var(--axis); color: var(--muted); }
-  .mcell.none { color: var(--grid); }
 
   #tip {
     position: fixed; z-index: 10; pointer-events: none;
@@ -259,13 +238,48 @@
     tr.card-row { break-inside: auto; }
     a { color: inherit; }
   }
+  /* ── v3 additions ── */
+  .mockctl { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; margin-top: 6px; }
+  .mockctl label { display: inline-flex; gap: 6px; align-items: center; }
+  .mockctl #ctl-note { color: var(--ink-2); }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; padding: 4px 10px 10px; font-size: 12.5px; color: var(--ink-2); }
+  .filters label { display: grid; gap: 2px; }
+  .filters label.chk { display: flex; align-items: center; gap: 6px; padding-bottom: 5px; }
+  .filters select, .filters input[type=search], .filters button, .mockctl select {
+    font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--axis); border-radius: 6px; padding: 4px 8px; max-width: 280px;
+  }
+  .filters button { cursor: pointer; }
+  .filter-count { font-size: 12.5px; color: var(--muted); padding: 0 10px 6px; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--ink); }
+  th .arrow { color: var(--accent); margin-left: 3px; }
+  .pager-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding: 10px 10px 4px; }
+  .pager { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12.5px; color: var(--muted); }
+  .pager-size { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+  .pager-size select { font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 6px; padding: 3px 6px; }
+  .pager button { font: inherit; font-size: 12.5px; min-width: 30px; color: var(--ink-2); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 3px 8px; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .pager button[aria-current="page"] { color: var(--surface); background: var(--accent); border-color: var(--accent); }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
+  .pager button:disabled[aria-current="page"] { color: var(--ink-2); background: none; border-color: var(--axis); }
+  .pager .gap { padding: 0 2px; }
+  .showall { margin: 8px 10px; font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  ul.sub { margin: 4px 0 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-2); }
+  ul.sub li { margin-bottom: 2px; }
+  .rcard tfoot td { border-bottom: none; padding-top: 8px; }
+  .why { white-space: nowrap; }
+  @media print {
+    .filters, .filter-count, .showall, .pager-bar, .mockctl { display: none !important; }
+  }
 </style>
 </head>
 <body>
 <div id="tip" hidden></div>
 <div class="page">
 
-  <div class="draft"><strong>MOCK-UP v2 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix C. Only headings, column labels, chapter names and the status definitions are fixed template text.</div>
+  <div class="draft"><strong>MOCK-UP v3 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix A. Only headings, column labels, chapter names, a short summary of each TR-03185 requirement and the status definitions are fixed template text.
+    <div class="mockctl"><label>Scale <select id="ctl-scale"></select></label><label>Worst case <select id="ctl-worst"></select></label><span id="ctl-note"></span></div>
+  </div>
 
   <header class="report">
     <div>
@@ -281,21 +295,15 @@
     <a href="#requirements">2 Requirements</a>
     <a href="#trends">3 Trends</a>
     <a href="#findings">4 Findings</a>
-    <a href="#plan">5 Remediation actions</a>
+    <a href="#repositories">5 Repositories</a>
     <a href="#deviations">6 Deviations</a>
-    <a href="#changes">7 Changes</a>
     <a href="#method">A Scope &amp; method</a>
-    <a href="#catalogue">B Checks</a>
-    <a href="#evidence">C Evidence</a>
-    <a href="#register">D Findings register</a>
-    <a href="#results">E Results per repository</a>
   </nav>
 
   <!-- ─────────────────────────── 1 Summary ─────────────────────────── -->
   <section id="summary">
     <h2><span class="num">1</span>Management summary</h2>
     <p class="lead" id="summary-lead"></p>
-
     <div class="grid-hero">
       <div class="card hero">
         <div class="label">Overall compliance</div>
@@ -306,33 +314,23 @@
       </div>
       <div class="tiles" id="tiles"></div>
     </div>
-
     <div class="card" style="margin-bottom:16px">
       <h3>Requirement status</h3>
       <div id="status-bars"></div>
     </div>
-
     <div class="grid-2">
-      <div class="card">
-        <h3>Key messages</h3>
-        <ul class="points" id="key-messages"></ul>
-      </div>
-      <div class="card">
-        <h3>Needs attention</h3>
-        <ul class="points" id="attention"></ul>
-      </div>
+      <div class="card"><h3>Key messages</h3><ul class="points" id="key-messages"></ul></div>
+      <div class="card"><h3>Needs attention</h3><ul class="points" id="attention"></ul></div>
     </div>
   </section>
 
   <!-- ─────────────────────────── 2 Requirements ─────────────────────────── -->
   <section id="requirements" class="break">
     <h2><span class="num">2</span>Requirement status</h2>
-    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and the age of its oldest open finding. Expand a row to see the checks, the results per repository and the evidence.</p>
+    <p class="lead">Every requirement of BSI TR-03185 Chapter 2 with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. Every repository with its open findings is listed in section 5.</p>
     <div class="card" style="padding:6px 8px">
       <table id="req-table">
-        <thead><tr>
-          <th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th class="num">Oldest finding</th>
-        </tr></thead>
+        <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th id="req-trend-h">Trend</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -359,7 +357,7 @@
   <!-- ─────────────────────────── 4 Findings ─────────────────────────── -->
   <section id="findings" class="break">
     <h2><span class="num">4</span>Findings</h2>
-    <p class="lead">A finding is one repository failing one check that is mapped to a requirement. Each finding is tracked by the tool's issue in the affected repository, or by an OSPO notification where no public issue is possible.</p>
+    <p class="lead">A finding is one repository failing one check that is mapped to a requirement. The tools also open issues in the affected repositories; the report does not read them and only links to the live issues on GitHub.</p>
     <div class="grid-2" style="margin-bottom:16px">
       <div class="card">
         <h3 class="chart-title">Open findings by requirement</h3>
@@ -370,30 +368,37 @@
         <h3 class="chart-title">Active repositories by number of open findings</h3>
         <p class="chart-sub" id="repos-sub"></p>
         <div id="seg-repos"></div>
-        <h3 class="chart-title" style="margin-top:22px">Age of open findings</h3>
-        <p class="chart-sub" id="aging-sub"></p>
-        <div id="seg-aging"></div>
       </div>
-    </div>
-    <div class="card" style="padding:6px 8px">
-      <table id="repo-table">
-        <thead><tr>
-          <th>Repositories with open findings</th><th class="num">Open findings</th><th>Requirements affected</th><th class="num">Oldest finding</th><th>Tracking</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table>
     </div>
   </section>
 
-  <!-- ─────────────────────────── 5 Plan ─────────────────────────── -->
-  <section id="plan">
-    <h2><span class="num">5</span>Remediation actions</h2>
-    <p class="lead">Planned actions recorded in the report configuration.</p>
-    <div class="card" style="padding:6px 8px">
-      <table id="plan-table">
-        <thead><tr><th>ID</th><th>Req.</th><th>Action</th><th>Owner</th><th>Due</th><th>Status</th></tr></thead>
+  <!-- ─────────────────────────── 5 Repositories ─────────────────────────── -->
+  <section id="repositories">
+    <h2><span class="num">5</span>Repositories</h2>
+    <p class="lead">Every repository in scope with its open findings. Sort and filter on screen; the printed report always contains every repository.</p>
+    <div class="card" style="padding:10px 8px 6px">
+      <div class="filters">
+        <label>Sort by <select id="r-sort">
+          <option value="findings">Most open findings</option>
+          <option value="passed">Lowest share of checks passed</option>
+          <option value="repo">Repository name (A–Z)</option>
+        </select></label>
+        <label>Repository <input id="r-repo" type="search" placeholder="name contains…"></label>
+        <label>Requirement <select id="r-req"></select></label>
+        <label class="chk"><input type="checkbox" id="r-failing"> Only repositories with open findings</label>
+        <button type="button" id="r-reset">Reset</button>
+      </div>
+      <div class="filter-count" id="r-count"></div>
+      <table id="repos-table">
+        <thead><tr>
+          <th>Repository</th><th class="num">Open findings</th><th>Failing checks</th><th>Requirements affected</th><th class="num">Checks passed</th><th>Issues</th>
+        </tr></thead>
         <tbody></tbody>
       </table>
+      <div class="pager-bar">
+        <nav class="pager" id="r-pager" aria-label="Repository table pages"></nav>
+        <label class="pager-size">Rows per page <select id="r-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label>
+      </div>
     </div>
   </section>
 
@@ -409,30 +414,12 @@
     </div>
   </section>
 
-  <!-- ─────────────────────────── 7 Changes ─────────────────────────── -->
-  <section id="changes">
-    <h2><span class="num">7</span>Changes since the previous report</h2>
-    <p class="lead" id="changes-lead"></p>
-    <div class="card" style="padding:6px 8px">
-      <table id="change-table">
-        <thead><tr><th>Event</th><th class="num">Value</th><th>Details</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
   <!-- ─────────────────────────── A Method ─────────────────────────── -->
   <section id="method" class="break">
     <h2><span class="num">A</span>Scope and method</h2>
     <div class="grid-2">
-      <div class="card">
-        <h3>Scope</h3>
-        <table id="scope-table"><tbody></tbody></table>
-      </div>
-      <div class="card">
-        <h3>Status definitions</h3>
-        <table id="def-table"><tbody></tbody></table>
-      </div>
+      <div class="card"><h3>Scope</h3><table id="scope-table"><tbody></tbody></table></div>
+      <div class="card"><h3>Status definitions</h3><table id="def-table"><tbody></tbody></table></div>
     </div>
     <div class="card" style="margin-top:16px;padding:14px 8px 6px">
       <h3 style="padding:0 10px">Tool runs</h3>
@@ -446,68 +433,7 @@
     </div>
   </section>
 
-  <!-- ─────────────────────────── B Checks ─────────────────────────── -->
-  <section id="catalogue">
-    <h2><span class="num">B</span>Check catalogue</h2>
-    <p class="lead">Every check that ran, with its rule and the requirements it is mapped to. Unmapped checks are reported for information and never affect a status.</p>
-    <div class="card" style="padding:6px 8px">
-      <table id="check-table">
-        <thead><tr><th>Check</th><th>Rule</th><th>Threshold</th><th>Requirements</th><th class="num">Pass / fail / n.a.</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── C Evidence ─────────────────────────── -->
-  <section id="evidence">
-    <h2><span class="num">C</span>Evidence index and data freshness</h2>
-    <p class="lead" id="evidence-lead"></p>
-    <div class="card" style="padding:6px 8px;margin-bottom:16px">
-      <table id="ev-table">
-        <thead><tr><th>Evidence</th><th>Tool</th><th>Data as of</th><th class="num">Age at report</th><th>SHA-256</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div class="card" style="padding:6px 8px">
-      <table id="att-table">
-        <thead><tr><th>Attestation</th><th>File</th><th>Covers</th><th>Approved by</th><th>Date</th><th>Valid until</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── D Register ─────────────────────────── -->
-  <section id="register" class="break">
-    <h2><span class="num">D</span>Findings register</h2>
-    <p class="lead">Every open finding at the time of this report, grouped by requirement. This is the frozen record; the current state is on GitHub.</p>
-    <div class="card" style="padding:6px 8px">
-      <table id="reg-table">
-        <thead><tr><th>Check</th><th>Repository</th><th>Reason</th><th>Failing since</th><th class="num">Age / target</th><th>Tracking</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── E Results ─────────────────────────── -->
-  <section id="results">
-    <h2><span class="num">E</span>Results per repository</h2>
-    <p class="lead">Every result of the repository-level checks for the active repositories. Hover or focus a cell for the reason. Numbers are Scorecard scores (0–10).</p>
-    <div class="card" style="padding:10px 8px;margin-bottom:16px">
-      <div class="scroll-x"><table class="matrix" id="matrix"></table></div>
-      <div class="legend" style="margin:10px 6px 0" id="matrix-legend"></div>
-    </div>
-    <div class="grid-2">
-      <div class="card" style="padding:14px 8px 6px">
-        <h3 style="padding:0 10px">Org-level checks</h3>
-        <table id="org-table"><thead><tr><th>Check</th><th>Result</th><th>Reason</th></tr></thead><tbody></tbody></table>
-      </div>
-      <div class="card" style="padding:14px 8px 6px">
-        <h3 style="padding:0 10px">Archived repositories</h3>
-        <table id="arch-table"><thead><tr><th>Repository</th><th>Check</th><th>Result</th><th>Reason</th></tr></thead><tbody></tbody></table>
-      </div>
-    </div>
-    <div class="integrity" id="integrity"></div>
-  </section>
+  <div class="integrity" id="integrity"></div>
 </div>
 
 <!-- ═══════════════ Embedded input data (verbatim copies of mock_data/*.json) ═══════════════ -->
@@ -522,36 +448,42 @@
     {
       "file": "lint_repos.json",
       "tool": "lint_repos",
+      "script": "scripts/lint_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "421d2ae091968d4d228edc673b0f5a547bb33c642a9cfa84e36ae8c6b1608637"
     },
     {
       "file": "license_scan.json",
       "tool": "license_scan",
+      "script": "scripts/license_scan.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "737c949d230a659385e4cf9feceabb3386f3541667c5440dfd79937ff2619c0e"
     },
     {
       "file": "archive_repos.json",
       "tool": "archive_repos",
+      "script": "scripts/archive_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "7c5788f75b31fb82a4537a6741472fbf74d319e090e83125c51aa7dc799c3439"
     },
     {
       "file": "drift.json",
       "tool": "create_repos --dry-run",
+      "script": "scripts/create_repos.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "2170948306646ded5017ceef2ad291710c3b4ad561d079848ff871e68de847ce"
     },
     {
       "file": "org_snapshot.json",
       "tool": "org_snapshot",
+      "script": "scripts/org_snapshot.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "8d8b4621b88f1a47c5693f0aec8009714f74070fff6532e58b1420ceacaaf0e9"
     },
     {
       "file": "scorecard.json",
       "tool": "scorecard_check",
+      "script": "scripts/scorecard_check.js",
       "run_at": "2026-11-03T02:00:00Z",
       "sha256": "3c300a6e86c6f916a290ce54f1400237723536b2e289411a32face3062ddca73"
     }
@@ -817,20 +749,19 @@
     ]
   },
   "summary": {
-    "checks_evaluated": 143,
-    "checks_passed": 124,
-    "compliance_pct": 86.7,
+    "checks_evaluated": 142,
+    "checks_passed": 123,
+    "compliance_pct": 86.6,
     "requirements_by_status": {
       "met": 5,
-      "met-tracked": 12,
-      "not-met": 1,
+      "met-findings": 13,
+      "not-met": 0,
       "deviation-accepted": 1,
       "optional": 1
     },
-    "must_met": 14,
+    "must_met": 15,
     "must_total": 15,
     "open_findings": 19,
-    "overdue_findings": 1,
     "repositories_without_findings": 3
   },
   "requirements": [
@@ -838,420 +769,247 @@
       "id": "GV.01",
       "level": "MUST",
       "title": "How to contribute is documented",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "lint/contributing"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 7,
-            "failing": 2,
-            "not_applicable": 0
-          },
-          "oldest_finding_days": 12
-        },
-        {
-          "part": "SHOULD",
-          "status": "not-verified",
-          "deviation": "D-04"
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "lint/contributing"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 7,
+        "failing": 2,
+        "not_applicable": 0
+      }
     },
     {
       "id": "GV.02",
       "level": "MUST",
       "title": "Protected against unauthorised actions",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "org/settings",
-            "org/ruleset",
-            "org/security-configuration",
-            "drift/access",
-            "lint/no-direct-collaborators",
-            "lint/secret-scanning",
-            "scorecard/branch-protection",
-            "scorecard/dangerous-workflow",
-            "scorecard/token-permissions"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "drift/access": "pass",
-            "org/settings": "pass",
-            "org/ruleset": "pass",
-            "org/security-configuration": "pass"
-          },
-          "oldest_finding_days": 5,
-          "attestation": {
-            "id": "A-identity",
-            "file": "attestations/2026-10-15-identity.md",
-            "date": "2026-10-15",
-            "valid_until": "2027-10-15"
-          }
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "org/settings",
+        "org/ruleset",
+        "org/security-configuration",
+        "drift/access",
+        "lint/no-direct-collaborators",
+        "lint/secret-scanning",
+        "scorecard/branch-protection",
+        "scorecard/dangerous-workflow",
+        "scorecard/token-permissions"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "LE.01",
       "level": "MUST",
       "title": "License stated for all content",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "lint/license-file",
-            "lint/license-type"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "oldest_finding_days": 9
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "lint/license-file",
+        "lint/license-type"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "LE.02",
       "level": "MUST",
       "title": "Licenses of all components referenced",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "sbom/available"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "oldest_finding_days": 0
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "sbom/available"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "QA.01",
       "level": "MUST",
       "title": "List of third-party components available",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "org/security-configuration",
-            "sbom/available"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "org/security-configuration": "pass"
-          },
-          "oldest_finding_days": 0
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "org/security-configuration",
+        "sbom/available"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "QA.02",
       "level": "MUST",
       "title": "Source code publicly readable",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "org/settings",
-            "lint/public"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 9,
-            "failing": 0,
-            "not_applicable": 0
-          },
-          "org_checks": {
-            "org/settings": "pass"
-          }
-        }
-      ]
+      "checks": [
+        "org/settings",
+        "lint/public"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 9,
+        "failing": 0,
+        "not_applicable": 0
+      }
     },
     {
       "id": "QA.03",
       "level": "MUST",
       "title": "How to report defects is communicated",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "lint/issues-enabled"
-          ],
-          "repositories": {
-            "applicable": 9,
-            "passing": 8,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "oldest_finding_days": 5
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "lint/issues-enabled"
+      ],
+      "repositories": {
+        "applicable": 9,
+        "passing": 8,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "QA.04",
       "level": "MUST",
       "title": "Testing procedures implemented and used",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "Implemented",
-          "status": "met-tracked",
-          "checks": [
-            "lint/development-test"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 6,
-            "failing": 2,
-            "not_applicable": 1
-          },
-          "oldest_finding_days": 34
-        },
-        {
-          "part": "Utilised",
-          "status": "met-tracked",
-          "checks": [
-            "scorecard/ci-tests"
-          ],
-          "repositories": {
-            "applicable": 6,
-            "passing": 5,
-            "failing": 1,
-            "not_applicable": 3
-          },
-          "oldest_finding_days": 61
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "lint/development-test",
+        "scorecard/ci-tests"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 6,
+        "failing": 2,
+        "not_applicable": 1
+      }
     },
     {
       "id": "QA.05",
       "level": "SHOULD",
       "title": "Memory safety issues reduced",
       "status": "met",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met",
-          "checks": [
-            "lint/memory-safety-section"
-          ],
-          "repositories": {
-            "applicable": 1,
-            "passing": 1,
-            "failing": 0,
-            "not_applicable": 8
-          }
-        }
-      ]
+      "checks": [
+        "lint/memory-safety-section"
+      ],
+      "repositories": {
+        "applicable": 1,
+        "passing": 1,
+        "failing": 0,
+        "not_applicable": 8
+      }
     },
     {
       "id": "QA.06",
       "level": "SHOULD",
       "title": "Changes peer-reviewed",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met-tracked",
-          "checks": [
-            "org/ruleset",
-            "scorecard/code-review"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 7,
-            "failing": 1,
-            "not_applicable": 1
-          },
-          "org_checks": {
-            "org/ruleset": "pass"
-          },
-          "oldest_finding_days": 74
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "org/ruleset",
+        "scorecard/code-review"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 7,
+        "failing": 1,
+        "not_applicable": 1
+      }
     },
     {
       "id": "BR.01",
       "level": "MUST",
       "title": "Build information public",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "lint/development-file",
-            "lint/development-build"
-          ],
-          "repositories": {
-            "applicable": 8,
-            "passing": 6,
-            "failing": 2,
-            "not_applicable": 1
-          },
-          "oldest_finding_days": 34
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "lint/development-file",
+        "lint/development-build"
+      ],
+      "repositories": {
+        "applicable": 8,
+        "passing": 6,
+        "failing": 2,
+        "not_applicable": 1
+      }
     },
     {
       "id": "BR.02",
       "level": "MUST",
       "title": "Unique, increasing version identifiers",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "lint/versioning"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 3,
-            "failing": 1,
-            "not_applicable": 5
-          },
-          "oldest_finding_days": 52
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "lint/versioning"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 3,
+        "failing": 1,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.03",
       "level": "MUST",
       "title": "Integrity of distributed assets verifiable",
-      "status": "not-met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "not-met",
-          "checks": [
-            "scorecard/signed-releases"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 2,
-            "failing": 2,
-            "not_applicable": 5
-          },
-          "oldest_finding_days": 112
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "scorecard/signed-releases"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 2,
+        "failing": 2,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.04",
       "level": "MUST",
       "title": "Change log per release",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met-tracked",
-          "checks": [
-            "lint/release-notes"
-          ],
-          "repositories": {
-            "applicable": 4,
-            "passing": 3,
-            "failing": 1,
-            "not_applicable": 5
-          },
-          "oldest_finding_days": 28
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "lint/release-notes"
+      ],
+      "repositories": {
+        "applicable": 4,
+        "passing": 3,
+        "failing": 1,
+        "not_applicable": 5
+      }
     },
     {
       "id": "BR.05",
       "level": "MUST",
       "title": "Source packages match the repository",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
-        }
-      ]
+      "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
     },
     {
       "id": "BR.06",
       "level": "SHOULD",
       "title": "Builds reproducible",
       "status": "deviation-accepted",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "not-verified",
-          "deviation": "D-01"
-        }
-      ]
+      "deviation": "D-01"
     },
     {
       "id": "VM.01",
       "level": "MUST",
       "title": "Security contact and private reporting",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "org/security-policy"
-          ],
-          "org_checks": {
-            "org/security-policy": "pass"
-          }
-        },
-        {
-          "part": "SHOULD",
-          "status": "met",
-          "checks": [
-            "org/security-configuration",
-            "lint/private-reporting"
-          ],
-          "repositories": {
-            "applicable": 1,
-            "passing": 1,
-            "failing": 0,
-            "not_applicable": 8
-          },
-          "org_checks": {
-            "org/security-configuration": "pass"
-          }
-        }
+      "checks": [
+        "org/security-policy"
       ]
     },
     {
@@ -1259,52 +1017,30 @@
       "level": "MUST",
       "title": "Vulnerabilities published in reasonable time",
       "status": "met",
-      "parts": [
-        {
-          "part": "MUST",
-          "status": "met",
-          "checks": [
-            "advisories/published-in-time"
-          ],
-          "org_checks": {
-            "advisories/published-in-time": "pass"
-          }
-        }
+      "checks": [
+        "advisories/published-in-time"
       ]
     },
     {
       "id": "DE.01",
       "level": "SHOULD",
       "title": "Discontinuation communicated",
-      "status": "met-tracked",
-      "parts": [
-        {
-          "part": "SHOULD",
-          "status": "met-tracked",
-          "checks": [
-            "archive/notice-before-archival"
-          ],
-          "repositories": {
-            "applicable": 2,
-            "passing": 1,
-            "failing": 1,
-            "not_applicable": 0
-          },
-          "oldest_finding_days": 14
-        }
-      ]
+      "status": "met-findings",
+      "checks": [
+        "archive/notice-before-archival"
+      ],
+      "repositories": {
+        "applicable": 2,
+        "passing": 1,
+        "failing": 1,
+        "not_applicable": 0
+      }
     },
     {
       "id": "DE.02",
       "level": "MAY",
       "title": "Migration paths outlined",
-      "status": "optional",
-      "parts": [
-        {
-          "part": "MAY",
-          "status": "optional"
-        }
-      ]
+      "status": "optional"
     }
   ],
   "findings": [
@@ -1315,13 +1051,6 @@
       "requirements": [
         "BR.03"
       ],
-      "since": "2026-07-14",
-      "age_days": 112,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      },
       "reason": "Project has not signed or included provenance with any releases."
     },
     {
@@ -1331,13 +1060,6 @@
       "requirements": [
         "QA.06"
       ],
-      "since": "2026-08-21",
-      "age_days": 74,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      },
       "reason": "Found 12/30 approved changesets -- score normalized to 4"
     },
     {
@@ -1347,13 +1069,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-09-03",
-      "age_days": 61,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      },
       "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2"
     },
     {
@@ -1363,13 +1078,6 @@
       "requirements": [
         "BR.03"
       ],
-      "since": "2026-09-03",
-      "age_days": 61,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      },
       "reason": "Project has not signed or included provenance with any releases."
     },
     {
@@ -1379,13 +1087,6 @@
       "requirements": [
         "BR.02"
       ],
-      "since": "2026-09-12",
-      "age_days": 52,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
-      },
       "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3"
     },
     {
@@ -1395,13 +1096,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1411,13 +1105,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "File not found in ., docs, .github"
     },
     {
@@ -1427,13 +1114,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-09-30",
-      "age_days": 34,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1443,13 +1123,6 @@
       "requirements": [
         "BR.04"
       ],
-      "since": "2026-10-06",
-      "age_days": 28,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      },
       "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG"
     },
     {
@@ -1459,13 +1132,6 @@
       "requirements": [
         "DE.01"
       ],
-      "since": "2026-10-20",
-      "age_days": 14,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "archived outside the process"
-      },
       "reason": "Archived outside the process (no notice issue)"
     },
     {
@@ -1475,13 +1141,6 @@
       "requirements": [
         "GV.01"
       ],
-      "since": "2026-10-22",
-      "age_days": 12,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
-      },
       "reason": "File not found in ., .github, docs"
     },
     {
@@ -1491,13 +1150,6 @@
       "requirements": [
         "LE.01"
       ],
-      "since": "2026-10-25",
-      "age_days": 9,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
-      },
       "reason": "'WTFPL' is not in the approved list"
     },
     {
@@ -1507,13 +1159,6 @@
       "requirements": [
         "GV.01"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "File not found in ., .github, docs"
     },
     {
@@ -1523,13 +1168,6 @@
       "requirements": [
         "QA.03"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "Issues are disabled"
     },
     {
@@ -1539,13 +1177,6 @@
       "requirements": [
         "GV.02"
       ],
-      "since": "2026-10-29",
-      "age_days": 5,
-      "target_days": 90,
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      },
       "reason": "1 user has direct access"
     },
     {
@@ -1555,13 +1186,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1571,13 +1195,6 @@
       "requirements": [
         "BR.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "File not found in ., docs, .github"
     },
     {
@@ -1587,13 +1204,6 @@
       "requirements": [
         "QA.04"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      },
       "reason": "No DEVELOPMENT file"
     },
     {
@@ -1604,13 +1214,6 @@
         "LE.02",
         "QA.01"
       ],
-      "since": "2026-11-03",
-      "age_days": 0,
-      "target_days": 90,
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
-      },
       "reason": "No SBOM available (request returned 404)"
     }
   ],
@@ -1646,72 +1249,118 @@
       "approved_by": "Legal, Head of OSPO",
       "valid_until": "2026-12-31",
       "expired": false
-    },
-    {
-      "id": "D-04",
-      "requirement": "GV.01 (SHOULD)",
-      "scope": "all repositories",
-      "approved_by": "Head of OSPO",
-      "valid_until": "2027-03-31",
-      "expired": false
-    }
-  ],
-  "actions": [
-    {
-      "id": "R-01",
-      "requirement": "BR.03",
-      "action": "Release workflow template with checksums and artifact attestations",
-      "owner": "OSPO",
-      "due": "2027-03-31",
-      "overdue": false
-    },
-    {
-      "id": "R-07",
-      "requirement": "GV.01",
-      "action": "Heading check for quality expectations in CONTRIBUTING",
-      "owner": "OSPO",
-      "due": "2027-03-31",
-      "overdue": false
-    }
-  ],
-  "attestations": [
-    {
-      "id": "A-identity",
-      "file": "attestations/2026-10-15-identity.md",
-      "approved_by": "ISO",
-      "date": "2026-10-15",
-      "covers": [
-        "SSO",
-        "MFA",
-        "Entra ID team sync"
-      ]
     }
   ],
   "history": [
     {
       "date": "2026-10-06",
       "compliance_pct": 89.1,
-      "open_findings": 24
+      "open_findings": 24,
+      "coverage": {
+        "GV.01": 62.5,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 87.5,
+        "QA.01": 87.5,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 57.1,
+        "QA.05": 100.0,
+        "QA.06": 75.0,
+        "BR.01": 71.4,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 50.0,
+        "DE.01": null
+      }
     },
     {
       "date": "2026-10-13",
       "compliance_pct": 89.6,
-      "open_findings": 23
+      "open_findings": 23,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 71.4,
+        "QA.05": 100.0,
+        "QA.06": 75.0,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 50.0,
+        "DE.01": null
+      }
     },
     {
       "date": "2026-10-20",
       "compliance_pct": 90.3,
-      "open_findings": 22
+      "open_findings": 22,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 100.0,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 71.4,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 0.0
+      }
     },
     {
       "date": "2026-10-27",
       "compliance_pct": 90.8,
-      "open_findings": 21
+      "open_findings": 21,
+      "coverage": {
+        "GV.01": 75.0,
+        "GV.02": 87.5,
+        "LE.01": 87.5,
+        "LE.02": 100.0,
+        "QA.01": 100.0,
+        "QA.02": 100.0,
+        "QA.03": 87.5,
+        "QA.04": 85.7,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 85.7,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 0.0
+      }
     },
     {
       "date": "2026-11-03",
-      "compliance_pct": 86.7,
-      "open_findings": 19
+      "compliance_pct": 86.6,
+      "open_findings": 19,
+      "coverage": {
+        "GV.01": 77.8,
+        "GV.02": 88.9,
+        "LE.01": 88.9,
+        "LE.02": 88.9,
+        "QA.01": 88.9,
+        "QA.02": 100.0,
+        "QA.03": 88.9,
+        "QA.04": 75.0,
+        "QA.05": 100.0,
+        "QA.06": 87.5,
+        "BR.01": 75.0,
+        "BR.02": 75.0,
+        "BR.03": 50.0,
+        "BR.04": 75.0,
+        "DE.01": 50.0
+      }
     }
   ]
 }</script>
@@ -2000,11 +1649,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., .github, docs",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/12"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -2123,11 +1768,7 @@
       "result": "fail",
       "score": null,
       "reason": "'WTFPL' is not in the approved list",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/7"
-      }
+      "details": []
     },
     {
       "repo": "quote-calculator-demo",
@@ -2316,11 +1957,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., docs, .github",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -2329,11 +1966,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -2342,11 +1975,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -2368,11 +1997,7 @@
       "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG",
       "details": [
         "Warn: v1.8.0 has no release notes"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/31"
-      }
+      ]
     },
     {
       "repo": "pdf-render-service",
@@ -2617,11 +2242,7 @@
       "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
       "details": [
         "Info: releases checked: v3.1.0, v3.0.9, v3.1.1"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/mobile-sdk-ios/issues/57"
-      }
+      ]
     },
     {
       "repo": "mobile-sdk-ios",
@@ -2720,11 +2341,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., docs, .github",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -2733,11 +2350,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -2746,11 +2359,7 @@
       "result": "fail",
       "score": null,
       "reason": "No DEVELOPMENT file",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/1"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -2804,11 +2413,7 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., .github, docs",
-      "details": [],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
@@ -2826,11 +2431,7 @@
       "result": "fail",
       "score": null,
       "reason": "Issues are disabled",
-      "details": [],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      "details": []
     },
     {
       "repo": "claims-event-schemas",
@@ -2841,11 +2442,7 @@
       "reason": "1 user has direct access",
       "details": [
         "Warn: ext-contractor-42 has direct write access"
-      ],
-      "tracking": {
-        "type": "ospo-notification",
-        "reason": "issues disabled in repository"
-      }
+      ]
     },
     {
       "repo": "claims-event-schemas",
@@ -3183,11 +2780,7 @@
       "reason": "1 dependency uses a denied license",
       "details": [
         "Warn: npm:left-pad-gpl@1.0.2 is licensed GPL-3.0-only"
-      ],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/quote-calculator-demo/issues/9"
-      }
+      ]
     },
     {
       "repo": "pdf-render-service",
@@ -3277,11 +2870,7 @@
       "result": "fail",
       "score": null,
       "reason": "No SBOM available (request returned 404)",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pricing-sandbox/issues/2"
-      }
+      "details": []
     },
     {
       "repo": "pricing-sandbox",
@@ -3827,11 +3416,7 @@
       "result": "fail",
       "score": 4,
       "reason": "Found 12/30 approved changesets -- score normalized to 4",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -3840,11 +3425,7 @@
       "result": "fail",
       "score": 0,
       "reason": "Project has not signed or included provenance with any releases.",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/insurance-rule-dsl/issues/15"
-      }
+      "details": []
     },
     {
       "repo": "insurance-rule-dsl",
@@ -3956,11 +3537,7 @@
       "result": "fail",
       "score": 2,
       "reason": "4 out of 21 merged PRs checked by a CI test -- score normalized to 2",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -3978,11 +3555,7 @@
       "result": "fail",
       "score": 0,
       "reason": "Project has not signed or included provenance with any releases.",
-      "details": [],
-      "tracking": {
-        "type": "issue",
-        "url": "https://github.com/allianz/pdf-render-service/issues/33"
-      }
+      "details": []
     },
     {
       "repo": "pdf-render-service",
@@ -4357,34 +3930,196 @@ const readJson = id => JSON.parse($(id).textContent);
 const DATA = readJson('data.json');
 const FILES = Object.fromEntries(DATA.inputs.map(i => [i.file, readJson(i.file)]));
 const ORG = DATA.org;
+const REQS_OF_CHECK = {};
+for (const q of DATA.requirements) for (const c of q.checks ?? []) (REQS_OF_CHECK[c] ??= new Set()).add(q.id);
+const isMapped = id => !!REQS_OF_CHECK[id];
+const ORG_CHECKS = new Set(Object.values(FILES).flatMap(t => t.results.filter(r => !r.repo).map(r => r.check)));
+
+/* ── Mock scaling (exploration only): ?scale=N clones the mock repositories, ?worst=<check> makes that check fail everywhere ── */
+const MOCK_REPOS = DATA.scope.active.length;
+const PARAMS = new URLSearchParams(location.search);
+const SCALE = Math.max(1, Math.min(200, parseInt(PARAMS.get('scale'), 10) || 1));
+const WORST = PARAMS.get('worst') || '';
+const SCALED = SCALE > 1 || !!WORST;
+if (SCALED) scaleMock(SCALE, WORST);
+
+function scaleMock(factor, worst) {
+  let seed = 20261103;
+  const rnd = () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const pick = xs => xs[Math.floor(rnd() * xs.length)];
+  const key = r => r.repo + '|' + r.check;
+  const TOOLS = ['lint_repos.json', 'license_scan.json', 'scorecard.json'].filter(f => FILES[f]);
+  const templates = [...DATA.scope.active];
+
+  const pool = {};
+  for (const f of TOOLS) for (const r of FILES[f].results) (pool[r.check] ??= { pass: [], fail: [], na: [] })[r.result].push(r);
+  const fromPool = (check, result) => { const xs = pool[check]?.[result]; return xs?.length ? pick(xs) : null; };
+  const scoreReason = (check, s, result) => {
+    if (check === 'scorecard/ci-tests') { const n = 5 + Math.floor(rnd() * 35); return `${Math.round(s / 10 * n)} out of ${n} merged PRs checked by a CI test -- score normalized to ${s}`; }
+    if (check === 'scorecard/code-review') return s === 10 ? 'all changesets reviewed' : `Found ${s * 3}/30 approved changesets -- score normalized to ${s}`;
+    if (check === 'scorecard/signed-releases') return result === 'pass' ? '5 out of the last 5 releases have a total of 5 signed artifacts.' : 'Project has not signed or included provenance with any releases.';
+    return fromPool(check, result)?.reason ?? `score normalized to ${s}`;
+  };
+
+  const PRE = ['claims', 'policy', 'pricing', 'quote', 'risk', 'fraud', 'payment', 'broker', 'motor', 'travel', 'health', 'life', 'pension', 'fleet', 'geo', 'iot', 'event', 'schema', 'customer', 'partner', 'document', 'billing', 'underwriting', 'reinsurance'];
+  const SUF = ['service', 'sdk', 'connector', 'rules', 'engine', 'toolkit', 'lib', 'api', 'cli', 'ui', 'gateway', 'adapter', 'pipeline', 'models', 'docs', 'templates', 'operator', 'exporter', 'plugin', 'starter'];
+  const used = new Set([...templates, ...DATA.scope.archived, ...DATA.scope.excluded.map(x => x.repo)]);
+  const newName = () => {
+    for (let i = 0; i < 40; i++) { const n = `${pick(PRE)}-${pick(SUF)}`; if (!used.has(n)) { used.add(n); return n; } }
+    for (let k = 2; ; k++) { const n = `${pick(PRE)}-${pick(SUF)}-${k}`; if (!used.has(n)) { used.add(n); return n; } }
+  };
+  const clones = Array.from({ length: templates.length * (factor - 1) }, (_, i) => ({ name: newName(), tpl: templates[i % templates.length] }));
+
+  const mutate = (r, repo) => {
+    const out = { ...r, repo, details: [...r.details] };
+    if (r.result === 'na') return out;
+    const thr = DATA.catalogue[r.check]?.threshold;
+    if (thr != null) {
+      if (rnd() < 0.5) {
+        const sc = Math.max(0, Math.min(10, Math.round((r.score ?? 5) + (rnd() - 0.5) * 8)));
+        out.score = sc; out.result = sc >= thr ? 'pass' : 'fail'; out.reason = scoreReason(r.check, sc, out.result); out.details = [];
+      }
+    } else if (r.result === 'pass' ? rnd() < 0.07 : rnd() < 0.4) {
+      out.result = r.result === 'pass' ? 'fail' : 'pass';
+      const e = fromPool(r.check, out.result);
+      out.reason = e?.reason ?? `Synthetic ${out.result} (scaled mock)`;
+      out.details = e ? [...e.details] : [];
+    }
+    return out;
+  };
+  for (const f of TOOLS) {
+    const byRepo = {};
+    for (const r of FILES[f].results) (byRepo[r.repo] ??= []).push(r);
+    for (const c of clones) for (const r of byRepo[c.tpl] ?? []) FILES[f].results.push(mutate(r, c.name));
+  }
+  DATA.scope.active = [...templates, ...clones.map(c => c.name)];
+  const all = TOOLS.flatMap(f => FILES[f].results);
+
+  if (worst) for (const r of all) if (r.check === worst && r.result === 'pass') {
+    const thr = DATA.catalogue[worst]?.threshold;
+    r.result = 'fail';
+    if (thr != null) { r.score = Math.floor(rnd() * thr); r.reason = scoreReason(worst, r.score, 'fail'); r.details = []; }
+    else { const e = fromPool(worst, 'fail'); r.reason = e?.reason ?? 'Synthetic failure (worst-case mock)'; r.details = e ? [...e.details] : []; }
+  }
+
+  // findings: keep the mock's findings, synthesise the rest
+  const old = new Map(DATA.findings.map(f => [key(f), f]));
+  const allKeys = new Set(all.map(key));
+  const findings = [];
+  for (const r of all) {
+    if (r.result !== 'fail' || !isMapped(r.check)) continue;
+    const prev = old.get(key(r));
+    if (prev) { findings.push(prev); continue; }
+    findings.push({ repo: r.repo, check: r.check, name: r.name, requirements: [...REQS_OF_CHECK[r.check]], reason: r.reason });
+  }
+  for (const f of DATA.findings) if (!allKeys.has(key(f))) findings.push(f);
+  DATA.findings = findings;
+
+  // recompute repository counts and statuses (status logic of draft section 1.7)
+  const every = Object.values(FILES).flatMap(t => t.results).filter(r => r.repo);
+  const everyKeys = new Set(every.map(key));
+  const byCheck = {};
+  for (const r of every) (byCheck[r.check] ??= []).push(r);
+  for (const f of findings) if (!everyKeys.has(key(f))) (byCheck[f.check] ??= []).push({ repo: f.repo, check: f.check, result: 'fail' });
+  const orgFailed = new Set(Object.values(FILES).flatMap(t => t.results.filter(r => !r.repo && r.result === 'fail').map(r => r.check)));
+  for (const q of DATA.requirements) {
+    if (!q.repositories) continue;
+    const rc = q.checks.filter(c => !ORG_CHECKS.has(c));
+    const by = {};
+    for (const c of rc) for (const r of byCheck[c] ?? []) (by[r.repo] ??= []).push(r.result);
+    const repos = Object.keys(by);
+    const app = repos.filter(x => by[x].some(v => v !== 'na'));
+    const fail = app.filter(x => by[x].includes('fail'));
+    q.repositories = { applicable: app.length, passing: app.length - fail.length, failing: fail.length, not_applicable: repos.length - app.length };
+    const orgFail = q.checks.some(c => orgFailed.has(c));
+    q.status = orgFail ? 'not-met' : fail.length ? 'met-findings' : 'met';
+  }
+
+  // summary and history
+  const S = DATA.summary;
+  const counted = Object.values(FILES).flatMap(t => t.results).filter(r => isMapped(r.check) && r.result !== 'na');
+  S.checks_evaluated = counted.length + findings.filter(f => !everyKeys.has(key(f))).length;
+  S.checks_passed = counted.filter(r => r.result === 'pass').length;
+  S.compliance_pct = Math.round(S.checks_passed / S.checks_evaluated * 1000) / 10;
+  S.must_met = DATA.requirements.filter(q => q.level === 'MUST' && ['met', 'met-findings'].includes(q.status)).length;
+  S.requirements_by_status = {};
+  for (const q of DATA.requirements) S.requirements_by_status[q.status] = (S.requirements_by_status[q.status] ?? 0) + 1;
+  S.open_findings = findings.length;
+  const withF = new Set(findings.map(f => f.repo));
+  S.repositories_without_findings = DATA.scope.active.filter(x => !withF.has(x)).length;
+  const H = DATA.history, last = H.at(-1), ratio = S.open_findings / (last.open_findings || 1), dp = S.compliance_pct - last.compliance_pct;
+  for (const x of H.slice(0, -1)) { x.open_findings = Math.round(x.open_findings * ratio); x.compliance_pct = Math.round(Math.max(0, Math.min(100, x.compliance_pct + dp)) * 10) / 10; }
+  last.open_findings = S.open_findings; last.compliance_pct = S.compliance_pct;
+  // per-requirement coverage: shift the mock history so that it ends at the scaled value
+  const clamp = v => Math.round(Math.max(0, Math.min(100, v)) * 10) / 10;
+  for (const q of DATA.requirements) {
+    const r = q.repositories, old = last.coverage?.[q.id];
+    if (!r || old == null) continue;
+    const now = r.applicable ? r.passing / r.applicable * 100 : 100;
+    for (const x of H.slice(0, -1)) if (x.coverage?.[q.id] != null) x.coverage[q.id] = clamp(x.coverage[q.id] + now - old);
+    last.coverage[q.id] = clamp(now);
+  }
+}
+
+/* ── Derived lookups ── */
 const RESULTS = Object.entries(FILES).flatMap(([file, t]) => t.results.map(r => ({ ...r, file })));
 const REPO_RESULTS = RESULTS.filter(r => r.repo);
 const ORG_RESULTS = RESULTS.filter(r => !r.repo);
-
 const CHECK_FILE = {};
-for (const [file, t] of Object.entries(FILES)) for (const id of Object.keys(t.checks)) CHECK_FILE[id] ??= file;
-const REQS_OF_CHECK = {};
-for (const q of DATA.requirements) for (const p of q.parts) for (const c of p.checks ?? []) (REQS_OF_CHECK[c] ??= new Set()).add(q.id);
+for (const [file, t] of Object.entries(FILES)) for (const id of Object.keys(t.catalogue)) CHECK_FILE[id] ??= file;
+/* The tool that produced a check: its script in the ospo repository, pinned to the commit of this run */
+function sourceNode(check) {
+  const file = CHECK_FILE[check], inp = DATA.inputs.find(i => i.file === file);
+  if (!inp?.script) return h('span', { class: 'muted', text: '–' });
+  const sv = FILES[file]?.scorecard_version;
+  return h('span', {}, h('a', { href: `https://github.com/${ORG}/ospo/blob/${DATA.ospo_sha}/${inp.script}` }, h('code', { style: 'color:inherit', text: inp.script.split('/').pop() })),
+    sv ? h('div', { class: 'small muted', text: `Scorecard ${sv}` }) : null);
+}
 const DEV = Object.fromEntries(DATA.deviations.map(d => [d.id, d]));
-const ATT = Object.fromEntries(DATA.attestations.map(a => [a.id, a]));
 const FINDINGS = DATA.findings;
+const RESULT_KEY = new Map(REPO_RESULTS.map(r => [r.repo + '|' + r.check, r]));
 /* Findings that compliance_report derived itself (no tool result), e.g. archived outside the process */
-const DERIVED = FINDINGS.filter(f => !RESULTS.some(r => r.repo === f.repo && r.check === f.check))
-  .map(f => ({ repo: f.repo, check: f.check, name: f.name, result: 'fail', score: null, reason: f.reason, details: ['Info: derived by compliance_report (no tool result)'], tracking: f.tracking, file: 'data.json', derived: true }));
-const findingsOf = reqId => FINDINGS.filter(f => f.requirements.includes(reqId));
+const DERIVED = FINDINGS.filter(f => !RESULT_KEY.has(f.repo + '|' + f.check))
+  .map(f => ({ repo: f.repo, check: f.check, name: f.name, result: 'fail', score: null, reason: f.reason, details: ['Info: derived by compliance_report (no tool result)'], file: 'data.json', derived: true }));
+for (const d of DERIVED) RESULT_KEY.set(d.repo + '|' + d.check, d);
+const FINDINGS_BY_REQ = {};
+for (const f of FINDINGS) for (const q of f.requirements) (FINDINGS_BY_REQ[q] ??= []).push(f);
+const findingsOf = reqId => FINDINGS_BY_REQ[reqId] ?? [];
 const HISTORY = DATA.history;
 const PREV = HISTORY.length > 1 ? HISTORY[HISTORY.length - 2] : null;
 const ACTIVE = DATA.scope.active, ARCHIVED = DATA.scope.archived;
 const S = DATA.summary;
 
+/* Fixed template text: a short summary of each requirement of BSI TR-03185 v1.1.1 Chapter 2, per level (not a quotation) */
+const TR_TEXT = {
+  'GV.01': [['MUST', 'Information on how to contribute to the project MUST be documented.'], ['SHOULD', 'Information about the expected quality of contributions SHOULD be given.']],
+  'GV.02': [['MUST', "The project's repository, websites and sensitive data MUST be protected against unauthorized actions."]],
+  'LE.01': [['MUST', "A license MUST be stated for all content made available by the project, including the project's documentation."]],
+  'LE.02': [['MUST', 'A copy of all licenses in use, or references hereto, MUST be provided.']],
+  'QA.01': [['MUST', 'A list of third-party components used in the software MUST be available.']],
+  'QA.02': [['MUST', "All of the project's source code MUST be publicly readable."]],
+  'QA.03': [['MUST', 'The project MUST inform how to report defects.']],
+  'QA.04': [['MUST', 'Procedures for testing MUST be implemented and utilised.']],
+  'QA.05': [['SHOULD', 'The project SHOULD take measures to reduce or avoid memory safety issues.']],
+  'QA.06': [['SHOULD', 'All changes to the source code SHOULD be peer-reviewed.']],
+  'BR.01': [['MUST', 'Information on how to build all software assets MUST be publicly available.']],
+  'BR.02': [['MUST', 'All releases and released software assets intended for use MUST be assigned unique, monotonically increasing version identifiers.']],
+  'BR.03': [['MUST', 'All assets MUST be distributed in a way that maintains integrity or at least allows its verification.'], ['MAY', 'Means to maintain and verify authenticity MAY be deployed.']],
+  'BR.04': [['MUST', 'All releases MUST provide a descriptive log of functional and security modifications.']],
+  'BR.05': [['MUST', "Released source packages MUST NOT contain any content that is not present in the project's repository or cannot be deterministically generated from it."]],
+  'BR.06': [['SHOULD', 'Builds SHOULD be reproducible.']],
+  'VM.01': [['MUST', 'The project documentation MUST contain security contacts for reporting vulnerabilities.'], ['SHOULD', 'There SHOULD be a way to do so privately.']],
+  'VM.02': [['MUST', 'The project MUST publish information about discovered vulnerabilities within a reasonable period of time.']],
+  'DE.01': [['SHOULD', 'Discontinuation of the project, parts of it, or specific versions or version ranges SHOULD be communicated adequately.']],
+  'DE.02': [['MAY', 'Migration paths MAY be outlined.']],
+};
 /* Fixed template text: chapter names of TR-03185 Chapter 2 */
 const CHAPTERS = { GV: 'Governance', LE: 'Legal', QA: 'Quality', BR: 'Build and release', VM: 'Vulnerability management', DE: 'Decommissioning' };
 
 const STATUS = {
   'met':                { label: 'Met',                        color: 'var(--good)',     glyph: '✓', ink: '#fff' },
-  'met-tracked':        { label: 'Met, with tracked findings', color: 'repeating-linear-gradient(135deg, var(--good) 0 6px, var(--good-2) 6px 9px)', glyph: '✓', ink: '#fff', ring: 'ring-good' },
+  'met-findings':        { label: 'Met, with findings', color: 'repeating-linear-gradient(135deg, var(--good) 0 6px, var(--good-2) 6px 9px)', glyph: '✓', ink: '#fff', ring: 'ring-good' },
   'not-met':            { label: 'Not met',                    color: 'var(--critical)', glyph: '✕', ink: '#fff' },
-  'not-verified':       { label: 'Not verified',               color: 'transparent',     glyph: '?', ink: 'var(--muted)', ring: 'ring' },
   'deviation-accepted': { label: 'Deviation accepted',         color: 'var(--neutral)',  glyph: 'D', ink: '#fff' },
   'optional':           { label: 'Optional',                   color: 'transparent',     glyph: '–', ink: 'var(--muted)', ring: 'ring' },
   'pass':               { label: 'Pass',                       color: 'var(--good)',     glyph: '✓', ink: '#fff' },
@@ -4422,8 +4157,9 @@ const fmtPct = v => v.toFixed(1) + '%';
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 const shortSha = x => x.length > 12 ? `${x.slice(0, 4)}…${x.slice(-4)}` : x;
 const uniq = xs => [...new Set(xs)];
-const checkName = id => DATA.checks[id]?.name ?? id;
-const isMapped = id => !!REQS_OF_CHECK[id];
+const capText = (xs, n) => xs.length > n ? `${xs.slice(0, n).join(', ')} and ${xs.length - n} more` : xs.join(', ');
+const countBy = (xs, f) => { const m = new Map(); for (const x of xs) { const k = f(x); m.set(k, (m.get(k) ?? 0) + 1); } return [...m.entries()].sort((a, b) => b[1] - a[1]); };
+const checkName = id => DATA.catalogue[id]?.name ?? id;
 const joinNodes = (nodes, sep = ' · ') => nodes.flatMap((n, i) => i ? [sep, n] : [n]);
 
 const tip = $('tip');
@@ -4444,36 +4180,23 @@ function statusPill(key, label) {
   const ico = h('span', { class: 'ico' + (st.ring ? ' ' + st.ring : ''), style: `background:${st.color};color:${st.ink}`, 'aria-hidden': 'true', text: st.glyph });
   return h('span', { class: 'status' }, ico, label ?? st.label);
 }
-function resultPill(r) {
-  const thr = DATA.checks[r.check]?.threshold;
-  const score = r.score != null ? ` · score ${r.score}${thr != null ? ` (≥ ${thr})` : ''}` : '';
-  return statusPill(r.result, STATUS[r.result].label + score);
-}
-function overdueAge(f) {
-  const txt = `${f.age_days} / ${f.target_days} days`;
-  return f.age_days > f.target_days
-    ? h('span', { class: 'status' }, h('span', { class: 'ico', style: 'background:var(--critical);color:#fff', 'aria-hidden': 'true', text: '!' }), txt)
-    : txt;
-}
-function trackingNode(t) {
-  if (!t) return h('span', { class: 'muted', text: '–' });
-  if (t.type === 'issue') {
-    const m = t.url.match(/github\.com\/[^/]+\/([^/]+)\/issues\/(\d+)/);
-    return h('a', { href: t.url, text: m ? `${m[1]}#${m[2]}` : t.url });
-  }
-  return h('span', { class: 'muted' }, 'OSPO notification: ', t.reason);
-}
 function checkLink(id) {
-  const c = DATA.checks[id];
+  const c = DATA.catalogue[id];
   return h('span', {}, c?.documentation?.url ? h('a', { href: c.documentation.url, text: c.name }) : checkName(id), ' ', h('code', { text: id }));
 }
-function liveIssuesUrl(checks) {
-  return `https://github.com/search?q=${encodeURIComponent(`org:${ORG} is:issue is:open label:${checks.join(',')}`)}&type=issues`;
-}
-function linksRow(links) {
-  links = links.filter(Boolean);
-  return links.length ? h('div', { class: 'links' }, '→ ', joinNodes(links.map(([t, href]) => h('a', { href, text: t })))) : null;
-}
+/* Live GitHub search for the scanners' issues, by check label. The report does not read issues; this is only a link. */
+const liveIssuesUrl = (checks, repo) => `https://github.com/search?q=${encodeURIComponent(`${repo ? `repo:${ORG}/${repo}` : `org:${ORG}`} is:issue is:open label:${checks.join(',')}`)}&type=issues`;
+const liveIssuesLink = (checks, repo, text = 'Live issues') => h('a', { href: liveIssuesUrl(checks, repo), text });
+/* Link that applies a filter to the repository table in section 5 */
+const repoListLink = (text, filter) => h('a', { href: '#repositories', 'data-filter': JSON.stringify(filter), text });
+const linksRow = nodes => { nodes = nodes.filter(Boolean); return nodes.length ? h('div', { class: 'links' }, '→ ', joinNodes(nodes)) : null; };
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[data-filter]');
+  if (!a) return;
+  e.preventDefault();
+  applyRepoFilter(JSON.parse(a.dataset.filter));
+  $('repositories').scrollIntoView({ behavior: 'smooth' });
+});
 
 function dataTable(headers, rows, numericCols = []) {
   const t = h('table');
@@ -4482,15 +4205,18 @@ function dataTable(headers, rows, numericCols = []) {
   return h('details', { class: 'datatable' }, h('summary', { text: 'Show data table' }), t);
 }
 
+/* null values (no data in that run) are skipped */
 function sparkline(values, { w = 96, hgt = 24, min, max } = {}) {
-  const lo = min ?? Math.min(...values), hi = max ?? Math.max(...values);
+  const pts = values.map((v, i) => [i, v]).filter(([, v]) => v != null);
+  const vs = pts.map(([, v]) => v);
+  const lo = min ?? Math.min(...vs), hi = max ?? Math.max(...vs);
   const span = hi - lo || 1;
   const x = i => 2 + i * (w - 6) / Math.max(1, values.length - 1);
   const y = v => hgt - 4 - (v - lo) * (hgt - 8) / span;
   const svg = s('svg', { width: w, height: hgt, viewBox: `0 0 ${w} ${hgt}`, 'aria-hidden': 'true' });
-  s('polyline', { points: values.map((v, i) => `${x(i)},${y(v)}`).join(' '), fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
-  const last = values.length - 1;
-  s('circle', { cx: x(last), cy: y(values[last]), r: 3, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
+  s('polyline', { points: pts.map(([i, v]) => `${x(i)},${y(v)}`).join(' '), fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  const [li, lv] = pts.at(-1);
+  s('circle', { cx: x(li), cy: y(lv), r: 3, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
   return svg;
 }
 
@@ -4514,7 +4240,6 @@ function lineChart(el, { labels, values, yMin, yMax, yTicks, fmt, name }) {
   const li = values.length - 1;
   s('circle', { cx: x(li), cy: y(values[li]), r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
   s('text', { class: 'vlabel', x: x(li) + 10, y: y(values[li]) + 4 }, svg).textContent = fmt(values[li]);
-
   const cross = s('line', { x1: 0, x2: 0, y1: m.t, y2: H - m.b, stroke: 'var(--axis)', 'stroke-width': 1, visibility: 'hidden' }, svg);
   const dot = s('circle', { r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' }, svg);
   const hit = s('rect', { x: m.l - 10, y: m.t, width: W - m.l - m.r + 20, height: H - m.t - m.b, fill: 'transparent' }, svg);
@@ -4578,7 +4303,7 @@ function columnChart(el, { labels, values, yMax, yTicks, name }) {
 }
 
 function hbarChart(el, items, name) {
-  const W = 600, row = 26, m = { t: 4, r: 36, l: 290 };
+  const W = 600, row = 26, m = { t: 4, r: 44, l: 290 };
   const H = m.t + row * items.length + 4;
   const max = Math.max(1, ...items.map(d => d.value));
   const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': name });
@@ -4607,7 +4332,7 @@ function segBar(el, parts, { title, unit, table = true } = {}) {
   for (const p of parts) {
     const share = Math.round(p.value / total * 100);
     const seg = h('div', { style: `flex:${p.value} 1 0;background:${p.color};color:${p.ink};${p.border ? 'border:1.5px solid var(--axis);' : ''}`, tabindex: 0 }, h('span', { text: String(p.value) }));
-    const on = evt => showTip(evt, `${p.value} ${unit} · ${share}%`, p.label + (p.names ? '\n' + p.names.join(', ') : ''));
+    const on = evt => showTip(evt, `${p.value} ${unit} · ${share}%`, p.label + (p.names ? '\n' + capText(p.names, 12) : ''));
     seg.addEventListener('pointermove', on); seg.addEventListener('pointerleave', hideTip);
     seg.addEventListener('focus', on); seg.addEventListener('blur', hideTip);
     bar.append(seg);
@@ -4619,7 +4344,7 @@ function segBar(el, parts, { title, unit, table = true } = {}) {
 }
 
 function niceTicks(lo, hi, count = 4) {
-  const raw = (hi - lo) / count;
+  const raw = Math.max(1e-9, (hi - lo) / count);
   const mag = 10 ** Math.floor(Math.log10(raw));
   const step = [1, 2, 5, 10].map(k => k * mag).find(st => st >= raw);
   const a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step;
@@ -4628,281 +4353,214 @@ function niceTicks(lo, hi, count = 4) {
   return ticks;
 }
 
+/* ═══════════════════════════ Mock controls ═══════════════════════════ */
+{
+  const sc = $('ctl-scale'), wc = $('ctl-worst');
+  for (const v of [1, 10, 40, 100]) sc.append(h('option', { value: v, selected: v === SCALE ? '' : null, text: v === 1 ? `Mock as is (${MOCK_REPOS} repositories)` : `×${v} (${MOCK_REPOS * v} repositories)` }));
+  if (![1, 10, 40, 100].includes(SCALE)) sc.append(h('option', { value: SCALE, selected: '', text: `×${SCALE}` }));
+  wc.append(h('option', { value: '', text: 'None' }));
+  for (const [id, c] of Object.entries(DATA.catalogue)) if (isMapped(id) && !ORG_CHECKS.has(id) && !id.startsWith('archive/'))
+    wc.append(h('option', { value: id, selected: id === WORST ? '' : null, text: `Every repository fails ${c.name}` }));
+  const go = () => { const p = new URLSearchParams(); if (sc.value !== '1') p.set('scale', sc.value); if (wc.value) p.set('worst', wc.value); location.search = p.toString(); };
+  sc.addEventListener('change', go); wc.addEventListener('change', go);
+  $('ctl-note').textContent = SCALED
+    ? `Now showing ${ACTIVE.length} active repositories: synthetic copies of the mock repositories, generated in the browser with a fixed seed${WORST ? `, and every applicable repository fails ${checkName(WORST)}` : ''}. Findings, statuses and summary are recomputed; history is rescaled.`
+    : '';
+}
+
 /* ═══════════════════════════ Header ═══════════════════════════ */
 $('subtitle').textContent = `Open source projects published under github.com/${ORG}, assessed against BSI TR-03185 Chapter 2`;
-document.title = `BSI TR-03185 Compliance Report · ${ORG} · ${fmtDate(DATA.run_at)} (MOCK-UP v2)`;
-const meta = $('meta');
-const metaRow = (k, v) => meta.append(h('dt', { text: k }), h('dd', {}, v));
-metaRow('Report ID', DATA.report_id);
-metaRow('Status as of', fmtDateTime(DATA.run_at));
-metaRow('Trend period', `${fmtDate(HISTORY[0].date)} – ${fmtDate(HISTORY.at(-1).date)}`);
-metaRow('Previous report', h('a', { href: DATA.previous_report.data_url, text: DATA.previous_report.report_id }));
-metaRow('Scope', `${plural(ACTIVE.length, 'active repository', 'active repositories')}`);
-metaRow('Workflow run', h('a', { href: DATA.run_url, text: DATA.run_url.split('/').pop() }));
+document.title = `BSI TR-03185 Compliance Report · ${ORG} · ${fmtDate(DATA.run_at)} (MOCK-UP v3)`;
+{
+  const meta = $('meta');
+  const metaRow = (k, v) => meta.append(h('dt', { text: k }), h('dd', {}, v));
+  metaRow('Report ID', DATA.report_id);
+  metaRow('Status as of', fmtDateTime(DATA.run_at));
+  metaRow('Trend period', `${fmtDate(HISTORY[0].date)} – ${fmtDate(HISTORY.at(-1).date)}`);
+  metaRow('Previous report', h('a', { href: DATA.previous_report.data_url, text: DATA.previous_report.report_id }));
+  metaRow('Scope', plural(ACTIVE.length, 'active repository', 'active repositories'));
+  metaRow('Workflow run', h('a', { href: DATA.run_url, text: DATA.run_url.split('/').pop() }));
+}
 
 /* ═══════════════════════════ 1 Summary ═══════════════════════════ */
 const notMet = DATA.requirements.filter(q => q.status === 'not-met');
-const overdue = FINDINGS.filter(f => f.age_days > f.target_days);
-$('summary-lead').textContent =
-  `${S.must_met} of ${S.must_total} MUST requirements are met. ` +
-  (notMet.length ? `Not met: ${notMet.map(q => `${q.id} (${q.title})`).join(', ')}. ` : '') +
-  `${plural(S.open_findings, 'finding is', 'findings are')} open, ${S.overdue_findings} of them older than ${S.overdue_findings === 1 ? 'its' : 'their'} target.`;
-
-function deltaNode(cur, prev, { unit = '', goodWhenUp = true, fmt = v => v } = {}) {
-  if (prev == null) return null;
-  const d = +(cur - prev).toFixed(1);
-  const cls = d === 0 ? 'flat' : (d > 0) === goodWhenUp ? 'good' : 'bad';
-  const arrow = d > 0 ? '▲' : d < 0 ? '▼' : '■';
-  return h('div', { class: `delta ${cls}` }, `${arrow} ${fmt(Math.abs(d))}${unit} `, h('span', { text: `vs ${fmtDate(PREV.date)}` }));
-}
-$('hero-value').append(String(S.compliance_pct), h('small', { text: '%' }));
-$('hero-delta').append(deltaNode(S.compliance_pct, PREV?.compliance_pct, { unit: ' pts' }) ?? '');
-$('hero-spark').append(sparkline(HISTORY.map(x => x.compliance_pct), { w: 220, hgt: 36 }));
-$('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results and unmapped checks are not counted.`;
-
-const tile = (label, value, small, extra) => h('div', { class: 'card tile' }, h('div', { class: 'label', text: label }), h('div', { class: 'value' }, String(value), small ? h('small', { text: ' ' + small }) : null), extra);
-$('tiles').append(
-  tile('MUST requirements met', S.must_met, `of ${S.must_total}`, h('div', { class: 'sub', text: notMet.length ? `Not met: ${notMet.map(q => q.id).join(', ')}` : 'All MUST requirements met' })),
-  tile('Active repositories without findings', S.repositories_without_findings, `of ${ACTIVE.length} · ${Math.round(S.repositories_without_findings / ACTIVE.length * 100)}%`,
-    h('div', { class: 'sub', text: ACTIVE.filter(r => !FINDINGS.some(f => f.repo === r)).join(', ') })),
-  tile('Open findings', S.open_findings, null, deltaNode(S.open_findings, PREV?.open_findings, { goodWhenUp: false })),
-  tile('Findings older than target', S.overdue_findings, null, h('div', { class: 'sub', text: overdue.map(f => `${f.repo} · ${f.name}`).join('; ') || 'None' })),
-);
-
-// Requirement status bars
-const sb = $('status-bars');
-const BAR_ORDER = ['met', 'met-tracked', 'not-met', 'deviation-accepted', 'optional'];
-for (const lvl of ['MUST', 'SHOULD']) {
-  const reqs = DATA.requirements.filter(q => q.level === lvl);
-  segBar(sb, BAR_ORDER.map(st => {
-    const qs = reqs.filter(q => q.status === st);
-    return { label: STATUS[st].label, color: STATUS[st].color, ink: STATUS[st].ink, border: STATUS[st].ring === 'ring', value: qs.length, names: qs.map(q => q.id) };
-  }), { title: `${lvl} requirements`, unit: 'requirements', table: false });
-}
-const mayReqs = DATA.requirements.filter(q => q.level === 'MAY');
-if (mayReqs.length) sb.append(h('p', { class: 'chart-sub', style: 'margin:4px 0 0', text: `Plus ${plural(mayReqs.length, 'MAY requirement')} (${mayReqs.map(q => q.id).join(', ')}), reported for information. Details per requirement in section 2.` }));
-
-// Key messages (generated)
-const km = $('key-messages');
-for (const q of notMet) {
-  const p = q.parts.find(x => x.status === 'not-met');
-  const qf = findingsOf(q.id);
-  const r = p.repositories;
-  km.append(h('li', {}, h('b', { text: `${q.id} ${q.title}: not met. ` }),
-    r ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.name)).join(', ')}). ` : '',
-    p.oldest_finding_days != null ? `The oldest finding is ${p.oldest_finding_days} days old (target: ${Math.max(...qf.map(f => f.target_days))} days).` : ''));
-}
-const orgFail = ORG_RESULTS.filter(r => r.result === 'fail');
-km.append(h('li', {}, h('b', { text: orgFail.length ? `${orgFail.length} of ${ORG_RESULTS.length} org-level checks fail. ` : `All ${ORG_RESULTS.length} org-level checks pass. ` }),
-  ORG_RESULTS.map(r => r.name).join(', ') + '.'));
 const snap = FILES['org_snapshot.json'];
 const drift = FILES['drift.json'];
-const plannedN = Object.values(drift.planned_changes).reduce((a, x) => a + x.length, 0);
-km.append(h('li', {}, h('b', { text: snap.changes_since_previous.length ? `${plural(snap.changes_since_previous.length, 'org configuration change')} since ${fmtDate(snap.previous_snapshot_date)}. ` : `No org configuration change since ${fmtDate(snap.previous_snapshot_date)}. ` }),
-  plannedN ? `Access drift: ${plural(plannedN, 'planned change')}.` : `No access drift: ${drift.results[0].reason}.`));
-const issueN = FINDINGS.filter(f => f.tracking?.type === 'issue').length;
-const ospoF = FINDINGS.filter(f => f.tracking?.type === 'ospo-notification');
-const untracked = FINDINGS.filter(f => !f.tracking);
-km.append(h('li', {}, h('b', { text: `${issueN} of ${FINDINGS.length} open findings have a public issue. ` }),
-  ospoF.length ? `${ospoF.length} are tracked by OSPO notification (${uniq(ospoF.map(f => `${f.repo}: ${f.tracking.reason}`)).join('; ')}). ` : '',
-  untracked.length ? `${untracked.length} are untracked.` : 'None is untracked.'));
 const adv = snap.snapshot.advisories;
-const advRes = ORG_RESULTS.find(r => r.check === 'advisories/published-in-time');
-if (advRes) km.append(h('li', {}, h('b', { text: 'Vulnerability handling: ' }), `${advRes.reason}. `,
-  adv.unpublished.length ? `${plural(adv.unpublished.length, 'advisory is', 'advisories are')} not yet published (${adv.unpublished.map(u => `${u.state}, ${u.age_days} days`).join('; ')}; details withheld).` : ''));
-
-// Needs attention (generated)
-const at = $('attention');
-for (const f of overdue) at.append(h('li', {}, h('b', { text: `${f.repo} · ${f.name} (${f.requirements.join(', ')}): ` }), `${f.age_days} days old, target ${f.target_days} days. ${f.reason}. Tracked by `, trackingNode(f.tracking), '.'));
-const soon = FINDINGS.filter(f => f.age_days <= f.target_days && f.age_days >= f.target_days - 30).sort((a, b) => b.age_days - a.age_days);
-for (const f of soon) at.append(h('li', {}, h('b', { text: `${f.repo} · ${f.name} (${f.requirements.join(', ')}): ` }), `${f.age_days} days old, reaches its ${f.target_days}-day target in ${f.target_days - f.age_days} days. Tracked by `, trackingNode(f.tracking), '.'));
-const expiredDev = DATA.deviations.filter(d => d.expired), overdueAct = DATA.actions.filter(a => a.overdue);
-at.append(h('li', {}, h('b', { text: 'Deviations and actions: ' }),
-  expiredDev.length ? `${plural(expiredDev.length, 'deviation has', 'deviations have')} expired (${expiredDev.map(d => d.id).join(', ')}). ` : `None of the ${DATA.deviations.length} deviations has expired. `,
-  overdueAct.length ? `${plural(overdueAct.length, 'action is', 'actions are')} overdue (${overdueAct.map(a => a.id).join(', ')}).` : `None of the ${DATA.actions.length} remediation actions is overdue.`));
+const plannedN = Object.values(drift.planned_changes).reduce((a, x) => a + x.length, 0);
 const errN = Object.values(FILES).reduce((a, t) => a + t.errors.length, 0);
-at.append(h('li', {}, h('b', { text: 'Data: ' }), errN ? `${plural(errN, 'check')} could not be evaluated (tool errors, treated as no data).` : `All ${Object.keys(FILES).length} tool outputs are present, with no tool errors.`));
+{
+  $('summary-lead').textContent =
+    `${S.must_met} of ${S.must_total} MUST requirements are met. ` +
+    (notMet.length ? `Not met: ${notMet.length > 3 ? notMet.map(q => q.id).join(', ') : notMet.map(q => `${q.id} (${q.title})`).join(', ')}. ` : '') +
+    `${plural(S.open_findings, 'finding is', 'findings are')} open.`;
+
+  const deltaNode = (cur, prev, { unit = '', goodWhenUp = true } = {}) => {
+    if (prev == null) return null;
+    const d = +(cur - prev).toFixed(1);
+    const cls = d === 0 ? 'flat' : (d > 0) === goodWhenUp ? 'good' : 'bad';
+    return h('div', { class: `delta ${cls}` }, `${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${Math.abs(d)}${unit} `, h('span', { text: `vs ${fmtDate(PREV.date)}` }));
+  };
+  $('hero-value').append(String(S.compliance_pct), h('small', { text: '%' }));
+  $('hero-delta').append(deltaNode(S.compliance_pct, PREV?.compliance_pct, { unit: ' pts' }) ?? '');
+  $('hero-spark').append(sparkline(HISTORY.map(x => x.compliance_pct), { w: 220, hgt: 36 }));
+  $('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results and unmapped checks are not counted.`;
+
+  const withF = new Set(FINDINGS.map(f => f.repo));
+  const tile = (label, value, small, extra) => h('div', { class: 'card tile' }, h('div', { class: 'label', text: label }), h('div', { class: 'value' }, String(value), small ? h('small', { text: ' ' + small }) : null), extra);
+  $('tiles').append(
+    tile('MUST requirements met', S.must_met, `of ${S.must_total}`, h('div', { class: 'sub', text: notMet.length ? `Not met: ${notMet.map(q => q.id).join(', ')}` : 'All MUST requirements met' })),
+    tile('Active repositories without findings', S.repositories_without_findings, `of ${ACTIVE.length} · ${Math.round(S.repositories_without_findings / ACTIVE.length * 100)}%`,
+      h('div', { class: 'sub', text: capText(ACTIVE.filter(r => !withF.has(r)), 3) })),
+    tile('Open findings', S.open_findings, null, deltaNode(S.open_findings, PREV?.open_findings, { goodWhenUp: false })),
+    tile('Org-level checks passing', ORG_RESULTS.filter(r => r.result === 'pass').length, `of ${ORG_RESULTS.length}`,
+      h('div', { class: 'sub', text: capText(ORG_RESULTS.filter(r => r.result === 'fail').map(r => r.name), 2) || 'All pass' })),
+  );
+
+  const sb = $('status-bars');
+  for (const lvl of ['MUST', 'SHOULD']) {
+    const reqs = DATA.requirements.filter(q => q.level === lvl);
+    segBar(sb, ['met', 'met-findings', 'not-met', 'deviation-accepted', 'optional'].map(st => {
+      const qs = reqs.filter(q => q.status === st);
+      return { label: STATUS[st].label, color: STATUS[st].color, ink: STATUS[st].ink, border: STATUS[st].ring === 'ring', value: qs.length, names: qs.map(q => q.id) };
+    }), { title: `${lvl} requirements`, unit: 'requirements', table: false });
+  }
+  const mayReqs = DATA.requirements.filter(q => q.level === 'MAY');
+  if (mayReqs.length) sb.append(h('p', { class: 'chart-sub', style: 'margin:4px 0 0', text: `Plus ${plural(mayReqs.length, 'MAY requirement')} (${mayReqs.map(q => q.id).join(', ')}), reported for information. Details per requirement in section 2.` }));
+
+  // Key messages (generated)
+  const km = $('key-messages');
+  const KM_CAP = 3;
+  const byFailing = [...notMet].sort((a, b) => findingsOf(b.id).length - findingsOf(a.id).length);
+  for (const q of byFailing.slice(0, KM_CAP)) {
+    const qf = findingsOf(q.id), r = q.repositories;
+    const orgF = ORG_RESULTS.filter(r => q.checks?.includes(r.check) && r.result === 'fail').map(r => r.name);
+    km.append(h('li', {}, h('b', { text: `${q.id} ${q.title}: not met. ` }),
+      orgF.length ? `Failing org-level ${orgF.length === 1 ? 'check' : 'checks'}: ${orgF.join(', ')}. ` : '',
+      r?.failing ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.name)).join(', ')}).` : ''));
+  }
+  if (byFailing.length > KM_CAP) km.append(h('li', {}, h('b', { text: `${byFailing.length - KM_CAP} more not met: ` }), byFailing.slice(KM_CAP).map(q => `${q.id} (${plural(findingsOf(q.id).length, 'finding')})`).join(', ') + '. Details in section 2.'));
+  const orgFail = ORG_RESULTS.filter(r => r.result === 'fail');
+  km.append(h('li', {}, h('b', { text: orgFail.length ? `${orgFail.length} of ${ORG_RESULTS.length} org-level checks fail. ` : `All ${ORG_RESULTS.length} org-level checks pass. ` }), ORG_RESULTS.map(r => r.name).join(', ') + '.'));
+  km.append(h('li', {}, h('b', { text: snap.changes_since_previous.length ? `${plural(snap.changes_since_previous.length, 'org configuration change')} since ${fmtDate(snap.previous_snapshot_date)}. ` : `No org configuration change since ${fmtDate(snap.previous_snapshot_date)}. ` }),
+    plannedN ? `Access drift: ${plural(plannedN, 'planned change')}.` : `No access drift: ${drift.results[0].reason}.`));
+  const findingChecks = uniq(FINDINGS.map(f => f.check));
+  if (findingChecks.length) km.append(h('li', {}, h('b', { text: 'Issues: ' }), 'the scanners open issues in the affected repositories; their current state is on GitHub, not in this report. ',
+    liveIssuesLink(findingChecks, null, 'Live issues for all failing checks'), '.'));
+  const advRes = ORG_RESULTS.find(r => r.check === 'advisories/published-in-time');
+  if (advRes) km.append(h('li', {}, h('b', { text: 'Vulnerability handling: ' }), `${advRes.reason}. `,
+    adv.unpublished.length ? `${plural(adv.unpublished.length, 'advisory is', 'advisories are')} not yet published (${adv.unpublished.map(u => `${u.state}, ${u.age_days} days`).join('; ')}; details withheld).` : ''));
+
+  // Needs attention (generated, capped)
+  const at = $('attention');
+  const expiredDev = DATA.deviations.filter(d => d.expired);
+  at.append(h('li', {}, h('b', { text: 'Deviations: ' }),
+    expiredDev.length ? `${plural(expiredDev.length, 'deviation has', 'deviations have')} expired (${expiredDev.map(d => d.id).join(', ')}).` : `None of the ${DATA.deviations.length} deviations has expired.`));
+  at.append(h('li', {}, h('b', { text: 'Data: ' }), errN ? `${plural(errN, 'check')} could not be evaluated (tool errors, treated as no data).` : `All ${Object.keys(FILES).length} tool outputs are present, with no tool errors.`));
+}
 
 /* ═══════════════════════════ 2 Requirements ═══════════════════════════ */
-const targetOf = fs => fs.length ? Math.max(...fs.map(f => f.target_days)) : null;
-const partFindings = (q, p) => findingsOf(q.id).filter(f => (p.checks ?? []).includes(f.check));
-
 function coverageNode(q) {
-  const multi = q.parts.length > 1;
-  return h('div', { class: 'cov-list' }, q.parts.map(p => {
-    const lbl = multi ? h('span', { class: 'plabel', text: p.part }) : null;
-    if (p.repositories) {
-      const { applicable: a, passing: ps } = p.repositories;
-      const pct = a ? ps / a * 100 : 0;
-      return h('div', { class: 'cov' }, lbl,
-        h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct.toFixed(1), 'aria-label': `${q.id} ${p.part} coverage` }, h('div', { style: `width:${pct}%` })),
-        h('span', { class: 'txt' }, h('b', { text: fmtPct(pct) }), ` · ${ps}/${a} repositories`));
-    }
-    let txt;
-    if (p.org_checks) { const v = Object.values(p.org_checks); txt = `Org level · ${v.filter(x => x === 'pass').length}/${v.length} checks pass`; }
-    else if (p.deviation) txt = `Not verified · ${p.deviation}`;
-    else if (p.basis) txt = 'By construction';
-    else txt = 'Not assessed';
-    return h('div', {}, multi ? h('div', { class: 'small muted', text: p.part }) : null, h('span', { class: 'cov-txt', text: txt }));
-  }));
+  if (q.repositories) {
+    const { applicable: a, passing: ps } = q.repositories;
+    const pct = a ? ps / a * 100 : 0;
+    return h('div', { class: 'cov' },
+      h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct.toFixed(1), 'aria-label': `${q.id} coverage` }, h('div', { style: `width:${pct}%` })),
+      h('span', { class: 'txt' }, h('b', { text: fmtPct(pct) }), ` · ${ps}/${a} repositories`));
+  }
+  let txt;
+  const org = ORG_RESULTS.filter(r => q.checks?.includes(r.check));
+  if (org.length) txt = `Org level · ${org.filter(r => r.result === 'pass').length}/${org.length} checks pass`;
+  else if (q.deviation) txt = `Not assessed (${q.deviation})`;
+  else if (q.basis) txt = 'By construction';
+  else txt = 'Not assessed';
+  return h('span', { class: 'cov-txt', text: txt });
+}
+/* Mini trend: share of applicable repositories that pass, per weekly run (data.json → history[].coverage) */
+function trendNode(q) {
+  const vs = HISTORY.map(x => x.coverage?.[q.id] ?? null);
+  if (!q.repositories || vs.filter(v => v != null).length < 2) return h('span', { class: 'cov-txt muted', text: '–' });
+  const lo = Math.min(...vs.filter(v => v != null));
+  const node = sparkline(vs, { min: Math.max(0, lo - 5), max: 100.5 });
+  return h('span', { title: vs.map((v, i) => `${fmtDay(HISTORY[i].date)}: ${v == null ? 'no data' : fmtPct(v)}`).join('\n') }, node);
 }
 
-function flatten(obj, prefix = '') {
-  if (obj == null || typeof obj !== 'object') return [[prefix, String(obj)]];
-  if (Array.isArray(obj)) {
-    if (!obj.length) return [[prefix, 'none']];
-    if (obj.every(x => typeof x !== 'object')) return [[prefix, obj.join(', ')]];
-    return obj.flatMap((x, i) => flatten(x, `${prefix}[${i}]`));
-  }
-  return Object.entries(obj).flatMap(([k, v]) => flatten(v, prefix ? `${prefix}.${k}` : k));
-}
-const SNAPSHOT_OF = {
-  'org/settings': () => snap.snapshot.org_settings,
-  'org/ruleset': () => snap.snapshot.rulesets,
-  'org/security-configuration': () => snap.snapshot.code_security_configurations,
-  'org/security-policy': () => snap.snapshot.org_security_policy,
-  'drift/access': () => drift.planned_changes,
-};
-function snapshotNode(check) {
-  if (check === 'advisories/published-in-time') {
-    return h('details', { class: 'more' }, h('summary', { text: `Advisories (${adv.published_in_period.length} published, ${adv.unpublished.length} unpublished)` }),
-      h('table', {}, h('thead', {}, h('tr', {}, ['Advisory', 'Repository', 'Severity', 'Created', 'Published', 'Days', 'CVE'].map((x, i) => h('th', { class: i === 5 ? 'num' : '', text: x })))),
-        h('tbody', {}, adv.published_in_period.map(a => h('tr', {}, h('td', { class: 'id', text: a.ghsa }), h('td', { text: a.repo }), h('td', { text: a.severity }), h('td', { class: 'nowrap', text: fmtDate(a.created_at) }), h('td', { class: 'nowrap', text: fmtDate(a.published_at) }), h('td', { class: 'num', text: a.days_to_publish }), h('td', { class: 'nowrap', text: a.cve }))),
-          adv.unpublished.map(u => h('tr', {}, h('td', { class: 'muted', text: `unpublished (${u.state})` }), h('td', { colspan: 4, class: 'muted', text: u.redacted }), h('td', { class: 'num', text: u.age_days }), h('td', { text: '–' }))))));
-  }
-  const get = SNAPSHOT_OF[check];
-  if (!get) return null;
-  const src = check === 'drift/access' ? 'drift.json → planned_changes' : 'org_snapshot.json → snapshot';
-  return h('details', { class: 'more' }, h('summary', { text: `Recorded values (${src})` }),
-    h('dl', { class: 'kv' }, flatten(get()).flatMap(([k, v]) => [h('dt', { text: k }), h('dd', { text: v })])));
-}
-
-function resultsTable(rows, withResult = true) {
-  return h('table', {},
-    h('thead', {}, h('tr', {}, h('th', { text: 'Repository' }), h('th', { text: 'Check' }), withResult ? h('th', { text: 'Result' }) : null, h('th', { text: 'Reason' }), h('th', { text: 'Tracking' }))),
-    h('tbody', {}, rows.map(r => h('tr', {},
-      h('td', { class: 'id', text: r.repo }), h('td', { class: 'nowrap', text: r.name }),
-      withResult ? h('td', {}, resultPill(r)) : null,
-      h('td', {}, r.reason, r.details?.length ? h('pre', { class: 'det', text: r.details.join('\n') }) : null),
-      h('td', { class: 'nowrap' }, r.result === 'fail' ? trackingNode(r.tracking) : h('span', { class: 'muted', text: '–' }))))));
-}
+/* Group failing findings by check and reason. Scorecard checks form one group per check (the histogram shows the scores); numbers in other reasons are masked so "1 user…" and "3 users…" group together. */
 
 function renderCard(q) {
   const sec = (title, ...kids) => h('div', { style: 'min-width:0' }, h('h4', { text: title }), ...kids);
   const qf = findingsOf(q.id);
-  const allChecks = uniq(q.parts.flatMap(p => p.checks ?? []));
+  const allChecks = q.checks ?? [];
+  const repoChecks = allChecks.filter(c => !ORG_CHECKS.has(c));
 
-  // Result per part
-  const partNodes = q.parts.map(p => {
-    const pf = partFindings(q, p);
-    const lines = [];
-    if (p.repositories) {
-      const r = p.repositories;
-      lines.push(`${r.passing} of ${r.applicable} applicable repositories pass` + (r.failing ? `, ${r.failing} fail` : '') + '.' +
-        (r.not_applicable ? ` ${plural(r.not_applicable, 'repository is', 'repositories are')} not applicable.` : ''));
-    }
-    if (p.org_checks) lines.push('Org-level: ' + Object.entries(p.org_checks).map(([c, v]) => `${checkName(c)} ${v}`).join(' · ') + '.');
-    if (p.oldest_finding_days != null) lines.push(`Oldest finding: ${p.oldest_finding_days} days (target: ${targetOf(pf)} days).`);
-    if (pf.some(f => f.tracking?.type === 'ospo-notification')) lines.push(`${pf.filter(f => f.tracking?.type === 'ospo-notification').length} of ${pf.length} findings are tracked by OSPO notification instead of a public issue.`);
-    if (p.basis) lines.push(`Basis: ${p.basis}.`);
-    if (p.deviation) {
-      const d = DEV[p.deviation];
-      lines.push(d ? `No check covers this part. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this part. Deviation ${p.deviation}.`);
-    }
-    if (p.attestation) {
-      const a = { ...ATT[p.attestation.id], ...p.attestation };
-      lines.push(`Attestation ${a.id} (${a.file}): ${(a.covers ?? []).join(', ')}. Approved by ${a.approved_by} on ${fmtDate(a.date)}, valid until ${fmtDate(a.valid_until)}.`);
-    }
-    if (p.status === 'optional' && !p.checks?.length) lines.push('No check is mapped to this part. Reported for information.');
-    const issueChecks = uniq(pf.filter(f => f.tracking?.type === 'issue').map(f => f.check));
-    return h('div', { class: 'part' },
-      h('span', { class: 'level', style: 'justify-self:start;align-self:start', text: p.part }),
-      h('div', {},
-        h('div', { class: 'head' }, statusPill(p.status)),
-        lines.map(t => h('p', { text: t })),
-        linksRow([
-          pf.length ? ['Findings register', `#findings-${q.id}`] : null,
-          issueChecks.length ? ['Live issues on GitHub', liveIssuesUrl(issueChecks)] : null,
-          p.deviation ? [`Deviation ${p.deviation}`, '#deviations'] : null,
-        ])));
-  });
+  // Requirement summary (static): each clause with its level; only the requirement's own level is assessed
+  const textNode = h('div', { class: 'tr-clauses' }, (TR_TEXT[q.id] ?? []).map(([lvl, txt]) => h('div', { class: 'tr-clause' + (lvl === q.level ? '' : ' muted') },
+    h('span', { class: 'level', text: lvl }),
+    h('span', {}, txt, lvl === q.level ? null : h('span', { class: 'small', text: ' Not assessed in this version.' })))));
 
-  // How it is verified
+  // What the check table does not show: basis, deviation
+  const notes = [];
+  if (q.basis) notes.push(`Basis: ${q.basis}.`);
+  if (q.deviation) {
+    const d = DEV[q.deviation];
+    notes.push(d ? `No check covers this requirement. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this requirement. Deviation ${q.deviation}.`);
+  }
+
   const verified = allChecks.length ? h('table', {},
-    h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Part', 'Source'].map(x => h('th', { text: x })))),
+    h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Source'].map(x => h('th', { text: x })))),
     h('tbody', {}, allChecks.map(c => {
-      const def = DATA.checks[c];
-      const orgR = ORG_RESULTS.find(r => r.check === c);
+      const def = DATA.catalogue[c];
       return h('tr', {},
         h('td', {}, checkLink(c), def?.threshold != null ? h('div', { class: 'small muted', text: `threshold: score ≥ ${def.threshold}` }) : null),
         h('td', {}, def?.documentation?.short ?? '–',
-          orgR ? h('div', { style: 'margin-top:4px' }, resultPill(orgR), ' ', h('span', { class: 'small', text: orgR.reason })) : null,
-          snapshotNode(c)),
-        h('td', { class: 'nowrap', text: q.parts.filter(p => p.checks?.includes(c)).map(p => p.part).join(', ') }),
-        h('td', {}, h('code', { text: CHECK_FILE[c] ?? 'data.json' })));
+        ),
+        h('td', { class: 'nowrap' }, sourceNode(c)));
     }))) : h('p', { class: 'muted', text: 'No check is mapped to this requirement.' });
+  const verifiedSec = sec('How it is verified', verified, notes.map(t => h('p', { style: 'margin-top:8px', text: t })));
 
-  // Results per repository
-  const repoChecks = allChecks.filter(c => !ORG_RESULTS.some(r => r.check === c));
-  const rows = [...REPO_RESULTS, ...DERIVED].filter(r => repoChecks.includes(r.check));
-  const fails = rows.filter(r => r.result === 'fail');
-  const cnt = k => rows.filter(r => r.result === k).length;
-  const resultsSec = rows.length ? sec('Results per repository',
-    fails.length ? resultsTable(fails, false) : h('p', { class: 'muted', text: 'No failing results.' }),
-    h('details', { class: 'more', style: 'margin-top:6px' }, h('summary', { text: `All ${rows.length} results (${cnt('pass')} pass, ${cnt('fail')} fail, ${cnt('na')} not applicable)` }),
-      resultsTable([...rows].sort((a, b) => a.repo.localeCompare(b.repo) || a.check.localeCompare(b.check))))) : null;
 
-  // Archivals (DE.01)
+
   const archSec = allChecks.includes('archive/notice-before-archival') && DATA.archivals.length ? sec('Archivals recorded',
     h('table', {}, h('thead', {}, h('tr', {}, ['Repository', 'Archived', 'By', 'Notice', 'Days of notice'].map((x, i) => h('th', { class: i === 4 ? 'num' : '', text: x })))),
-      h('tbody', {}, DATA.archivals.map(a => h('tr', {}, h('td', { class: 'id', text: a.repo }),
+      h('tbody', {}, DATA.archivals.slice(0, 10).map(a => h('tr', {}, h('td', { class: 'id', text: a.repo }),
         h('td', { class: 'nowrap' }, fmtDate(a.archived_date), a.date_accuracy ? h('div', { class: 'small muted', text: a.date_accuracy }) : null),
         h('td', { text: a.by }), h('td', { class: 'nowrap', text: a.notice_date ? fmtDate(a.notice_date) : 'none' }), h('td', { class: 'num', text: a.days_notice ?? '–' })))))) : null;
 
-  const acts = DATA.actions.filter(a => a.requirement === q.id);
-  const actSec = acts.length ? sec('Remediation actions', acts.map(a => h('p', {}, h('a', { href: '#plan', class: 'id', text: a.id }), ` ${a.action}. Owner: ${a.owner}, due ${fmtDate(a.due)}${a.overdue ? ' (overdue)' : ''}.`))) : null;
 
-  const evFiles = uniq([...allChecks.map(c => CHECK_FILE[c]).filter(Boolean), ...rows.filter(r => r.file === 'data.json').map(() => 'data.json')]);
-  const atts = q.parts.filter(p => p.attestation).map(p => p.attestation.file);
-  const evSec = evFiles.length || atts.length ? sec('Evidence', h('p', {}, joinNodes([
-    ...evFiles.map(f => { const i = DATA.inputs.find(x => x.file === f); return h('span', {}, h('a', { href: '#evidence', text: f }), i ? h('span', { class: 'muted', text: ` (SHA-256 ${shortSha(i.sha256)})` }) : null); }),
-    ...atts.map(f => h('span', {}, h('a', { href: '#evidence', text: f }), h('span', { class: 'muted', text: ' (attestation)' }))),
-  ]))) : null;
+  const infoSec = repoChecks.length ? sec('Additional information', linksRow([
+    liveIssuesLink(repoChecks, null, 'Live issues on GitHub'),
+    qf.length ? repoListLink(`Repositories failing ${q.id} (section 5)`, { req: q.id }) : null,
+  ])) : null;
 
-  return h('div', { class: 'rcard' },
-    sec('Result', partNodes),
-    sec('How it is verified', verified),
-    resultsSec, archSec, actSec, evSec);
+  return h('div', { class: 'rcard' }, sec(`Requirement · summary of BSI TR-03185 ${q.id}`, textNode), verifiedSec, archSec, infoSec);
 }
 
-const tbody = document.querySelector('#req-table tbody');
-let lastCh = null;
-for (const q of DATA.requirements) {
-  const ch = q.id.slice(0, 2);
-  if (ch !== lastCh) { tbody.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 6, text: `${ch} · ${CHAPTERS[ch] ?? ''}` }))); lastCh = ch; }
-  const det = h('details', { class: 'req' }, h('summary', { text: q.title }));
-  const levels = uniq([q.level, ...q.parts.map(p => p.part).filter(x => ['MUST', 'SHOULD', 'MAY'].includes(x))]);
-  const qf = findingsOf(q.id);
-  const oldest = Math.max(-1, ...q.parts.map(p => p.oldest_finding_days ?? -1));
-  const od = qf.some(f => f.age_days > f.target_days);
-  tbody.append(h('tr', {},
-    h('td', { class: 'id', text: q.id }),
-    h('td', {}, det, qf.length ? h('div', { class: 'small muted', style: 'margin-left:14px', text: plural(qf.length, 'open finding') }) : null),
-    h('td', {}, joinNodes(levels.map(l => h('span', { class: 'level', text: l })), ' ')),
-    h('td', {}, statusPill(q.status)),
-    h('td', {}, coverageNode(q)),
-    h('td', { class: 'num' }, oldest < 0 ? h('span', { class: 'muted', text: '–' })
-      : od ? h('span', { class: 'status' }, h('span', { class: 'ico', style: 'background:var(--critical);color:#fff', 'aria-hidden': 'true', text: '!' }), `${oldest} days`)
-      : `${oldest} days`),
-  ));
-  const row = h('tr', { class: 'card-row', hidden: '' }, h('td', { colspan: 6 }, renderCard(q)));
-  det.addEventListener('toggle', () => { row.hidden = !det.open; });
-  tbody.append(row);
+{
+  const tbody = document.querySelector('#req-table tbody');
+  $('req-trend-h').textContent = `${HISTORY.length}-week trend`;
+  let lastCh = null;
+  for (const q of DATA.requirements) {
+    const ch = q.id.slice(0, 2);
+    if (ch !== lastCh) { tbody.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 6, text: `${ch} · ${CHAPTERS[ch] ?? ''}` }))); lastCh = ch; }
+    const det = h('details', { class: 'req' }, h('summary', { text: q.title }));
+    tbody.append(h('tr', {},
+      h('td', { class: 'id', text: q.id }),
+      h('td', {}, det),
+      h('td', {}, h('span', { class: 'level', text: q.level })),
+      h('td', {}, statusPill(q.status)),
+      h('td', {}, coverageNode(q)),
+      h('td', {}, trendNode(q))));
+    // cards are built on first open, so large scopes stay fast
+    const cell = h('td', { colspan: 6 });
+    const row = h('tr', { class: 'card-row', hidden: '' }, cell);
+    det.addEventListener('toggle', () => { if (det.open && !cell.firstChild) cell.append(renderCard(q)); row.hidden = !det.open; });
+    tbody.append(row);
+  }
 }
 
 /* ═══════════════════════════ 3 Trends ═══════════════════════════ */
-$('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${fmtDate(HISTORY[0].date)} to ${fmtDate(HISTORY.at(-1).date)}, carried forward in data.json → history.`;
 {
+  $('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${fmtDate(HISTORY[0].date)} to ${fmtDate(HISTORY.at(-1).date)}, carried forward in data.json → history.`;
   const labels = HISTORY.map(x => fmtDay(x.date));
   const cv = HISTORY.map(x => x.compliance_pct);
   const ct = niceTicks(Math.floor(Math.min(...cv)) - 1, Math.min(100, Math.ceil(Math.max(...cv)) + 1));
@@ -4920,8 +4578,8 @@ $('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${f
     DATA.requirements.map(q => ({ id: q.id, label: q.title, value: findingsOf(q.id).length })).filter(d => d.value).sort((a, b) => b.value - a.value),
     'Open findings by requirement');
 
-  const nOf = r => FINDINGS.filter(f => f.repo === r).length;
-  const bucket = (lo, hi) => ACTIVE.filter(r => nOf(r) >= lo && nOf(r) <= hi);
+  const nBy = new Map(countBy(FINDINGS, f => f.repo));
+  const bucket = (lo, hi) => ACTIVE.filter(r => (nBy.get(r) ?? 0) >= lo && (nBy.get(r) ?? 0) <= hi);
   $('repos-sub').textContent = `${ACTIVE.length} active repositories in scope`;
   segBar($('seg-repos'), [
     { label: 'No findings', names: bucket(0, 0), color: 'var(--good)', ink: '#fff' },
@@ -4929,46 +4587,15 @@ $('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${f
     { label: '2–3 findings', names: bucket(2, 3), color: 'var(--serious)', ink: '#fff' },
     { label: '4 or more', names: bucket(4, Infinity), color: 'var(--critical)', ink: '#fff' },
   ].map(p => ({ ...p, value: p.names.length })), { unit: 'repositories' });
-
-  const tgt = uniq(FINDINGS.map(f => f.target_days));
-  $('aging-sub').textContent = `Target: resolved within ${tgt.join(' or ')} days`;
-  segBar($('seg-aging'), [
-    { label: 'Under 30 days', value: FINDINGS.filter(f => f.age_days < 30).length, color: 'var(--ord-1)', ink: 'var(--ord-1-ink)' },
-    { label: '30 days to target', value: FINDINGS.filter(f => f.age_days >= 30 && f.age_days <= f.target_days).length, color: 'var(--ord-2)', ink: 'var(--ord-2-ink)' },
-    { label: 'Older than target (overdue)', value: overdue.length, color: 'var(--ord-3)', ink: 'var(--ord-3-ink)' },
-  ], { unit: 'findings' });
-
-  const rt = document.querySelector('#repo-table tbody');
-  const repos = uniq(FINDINGS.map(f => f.repo)).map(repo => {
-    const fs = FINDINGS.filter(f => f.repo === repo);
-    return { repo, fs, n: fs.length, oldest: fs.reduce((a, f) => f.age_days > a.age_days ? f : a) };
-  }).sort((a, b) => b.n - a.n || b.oldest.age_days - a.oldest.age_days);
-  for (const r of repos) {
-    const tracks = uniq(r.fs.map(f => JSON.stringify(f.tracking ?? null))).map(t => JSON.parse(t));
-    rt.append(h('tr', {},
-      h('td', { class: 'id' }, r.repo, ARCHIVED.includes(r.repo) ? h('span', { class: 'small muted', style: 'font-weight:400', text: ' (archived)' }) : null),
-      h('td', { class: 'num', text: r.n }),
-      h('td', {}, uniq(r.fs.flatMap(f => f.requirements)).sort().map(x => h('a', { class: 'tag', href: `#findings-${x}`, text: x }))),
-      h('td', { class: 'num' }, overdueAge(r.oldest)),
-      h('td', {}, joinNodes(tracks.map(trackingNode), h('br')))));
-  }
 }
-
-/* ═══════════════════════════ 5 Actions ═══════════════════════════ */
-{
-  const pt = document.querySelector('#plan-table tbody');
-  for (const a of DATA.actions) pt.append(h('tr', {},
-    h('td', { class: 'id', text: a.id }), h('td', { class: 'id', text: a.requirement }), h('td', { text: a.action }), h('td', { text: a.owner }),
-    h('td', { class: 'nowrap', text: fmtDate(a.due) }),
-    h('td', {}, a.overdue ? statusPill('not-met', 'Overdue') : h('span', { class: 'cov-txt', text: `Open · due in ${daysBetween(DATA.run_at, a.due)} days` }))));
-}
+function repoListTag(text, filter) { const a = repoListLink(text, filter); a.className = 'tag'; return a; }
 
 /* ═══════════════════════════ 6 Deviations ═══════════════════════════ */
 {
   const dt = document.querySelector('#dev-table tbody');
   for (const d of DATA.deviations) {
     const users = [
-      ...DATA.requirements.flatMap(q => q.parts.filter(p => p.deviation === d.id).map(p => `${q.id} ${p.part}`)),
+      ...DATA.requirements.filter(q => q.deviation === d.id).map(q => q.id),
       ...DATA.scope.excluded.filter(x => x.deviation === d.id).map(x => `excludes ${x.repo}`),
     ];
     dt.append(h('tr', {},
@@ -4979,25 +4606,6 @@ $('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${f
   }
 }
 
-/* ═══════════════════════════ 7 Changes ═══════════════════════════ */
-{
-  const prevDate = PREV?.date;
-  $('changes-lead').textContent = `Compared with ${DATA.previous_report.report_id} (run of ${fmtDate(prevDate)}).`;
-  const ct = document.querySelector('#change-table tbody');
-  const row = (e, n, d) => ct.append(h('tr', {}, h('td', { text: e }), h('td', { class: 'num nowrap', text: n }), h('td', {}, d)));
-  row('Overall compliance', `${fmtPct(PREV.compliance_pct)} → ${fmtPct(S.compliance_pct)}`, `${(S.compliance_pct - PREV.compliance_pct).toFixed(1)} pts. Now ${S.checks_passed} of ${S.checks_evaluated} evaluated checks pass.`);
-  row('Open findings', `${PREV.open_findings} → ${S.open_findings}`, `Net change ${S.open_findings - PREV.open_findings}.`);
-  const newF = FINDINGS.filter(f => f.since > prevDate);
-  row('New findings', newF.length, newF.length ? joinNodes(uniq(newF.map(f => f.repo)).map(r => `${r}: ${newF.filter(f => f.repo === r).map(f => f.name).join(', ')}`), '; ') : 'None');
-  const arch = DATA.archivals.filter(a => a.archived_date > prevDate);
-  row('Repositories archived', arch.length, arch.length ? arch.map(a => `${a.repo} on ${fmtDate(a.archived_date)} by ${a.by}` + (a.days_notice != null ? `, after ${a.days_notice} days of notice` : '')).join('; ') : 'None');
-  row('Org configuration changes', snap.changes_since_previous.length, snap.changes_since_previous.length ? flatten(snap.changes_since_previous).map(x => x.join(': ')).join('; ') : `Org settings, ruleset, security configuration and org security policy unchanged since the snapshot of ${fmtDate(snap.previous_snapshot_date)}.`);
-  row('Access drift (planned changes)', plannedN, drift.results[0].reason);
-  const advNew = adv.published_in_period.filter(a => a.published_at > prevDate);
-  row('Security advisories published', advNew.length, `${adv.published_in_period.length} published in the snapshot period, the latest on ${fmtDate(adv.published_in_period.map(a => a.published_at).sort().at(-1))}.`);
-  row('Tool errors', errN, errN ? 'See Appendix A.' : 'No repository × check pair failed to evaluate.');
-}
-
 /* ═══════════════════════════ A Scope & method ═══════════════════════════ */
 {
   const st = document.querySelector('#scope-table tbody');
@@ -5005,17 +4613,16 @@ $('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${f
   for (const t of Object.values(FILES)) for (const x of t.skipped) (skipped[x.repo] ??= new Set()).add(x.reason);
   const notAssessed = Object.keys(skipped).filter(r => !ARCHIVED.includes(r) && !DATA.scope.excluded.some(x => x.repo === r));
   const srow = (k, n, names) => st.append(h('tr', {}, h('td', {}, k, names ? h('div', { class: 'small muted', text: names }) : null), h('td', { class: 'num', text: n })));
-  srow('Active repositories in scope', ACTIVE.length, ACTIVE.join(', '));
-  srow('Archived repositories (only DE.01 and DE.02 apply)', ARCHIVED.length, ARCHIVED.join(', '));
+  srow('Active repositories in scope', ACTIVE.length, capText(ACTIVE, 12));
+  srow('Archived repositories (only DE.01 and DE.02 apply)', ARCHIVED.length, capText(ARCHIVED, 12));
   srow('Excluded from scope', DATA.scope.excluded.length, DATA.scope.excluded.map(x => `${x.repo} (deviation ${x.deviation})`).join(', '));
   srow('Not assessed by any tool', notAssessed.length, notAssessed.map(r => `${r}: ${[...skipped[r]].join('; ')}`).join(' · '));
 
   const DEFS = [ // fixed template text (status logic of compliance_report)
     ['met', 'All applicable repositories pass, and all org-level checks pass.'],
-    ['met-tracked', 'Some repositories fail, but every failure has an open issue or an OSPO notification, and none is older than its target.'],
-    ['not-met', 'At least one failure is older than its target or untracked, or an org-level check fails.'],
-    ['not-verified', 'No check covers this part. For a SHOULD it links to a deviation; for a MUST it counts as Not met.'],
-    ['deviation-accepted', 'SHOULD requirement that is not verified, with an approved deviation (section 6).'],
+    ['met-findings', 'Every org-level check passes, but some applicable repositories fail.'],
+    ['not-met', 'An org-level check fails, or no check covers a MUST requirement.'],
+    ['deviation-accepted', 'SHOULD requirement that no check covers, with an approved deviation (section 6).'],
     ['optional', 'MAY requirement. Reported for information only.'],
   ];
   const df = document.querySelector('#def-table tbody');
@@ -5036,120 +4643,95 @@ $('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${f
   }
 }
 
-/* ═══════════════════════════ B Check catalogue ═══════════════════════════ */
+/* ═══════════════════════════ 5 Repositories (sortable, filterable) ═══════════════════════════ */
+const RL = { sort: 'findings', repo: '', req: '', failing: false, page: 1, size: 25 };
+const REPO_ROWS = uniq([...ACTIVE, ...FINDINGS.map(f => f.repo)]).map(repo => {
+  const fs = FINDINGS.filter(f => f.repo === repo);
+  const counted = REPO_RESULTS.filter(r => r.repo === repo && isMapped(r.check) && r.result !== 'na');
+  const passed = counted.filter(r => r.result === 'pass').length;
+  return { repo, fs, n: fs.length, checks: uniq(fs.map(f => f.check)), reqs: uniq(fs.flatMap(f => f.requirements)).sort(),
+    passed, total: counted.length, share: counted.length ? passed / counted.length : 1 };
+});
+const RL_SORT = {
+  findings: (a, b) => b.n - a.n || a.share - b.share || a.repo.localeCompare(b.repo),
+  passed: (a, b) => a.share - b.share || b.n - a.n || a.repo.localeCompare(b.repo),
+  repo: (a, b) => a.repo.localeCompare(b.repo),
+};
+function readRepoControls() {
+  RL.sort = $('r-sort').value; RL.repo = $('r-repo').value.trim().toLowerCase(); RL.req = $('r-req').value; RL.failing = $('r-failing').checked;
+  RL.size = +$('r-size').value; RL.page = 1;
+  renderRepos();
+}
+function applyRepoFilter(f) {
+  $('r-sort').value = f.sort ?? 'findings'; $('r-repo').value = f.repo ?? ''; $('r-req').value = f.req ?? ''; $('r-failing').checked = !!f.failing;
+  readRepoControls();
+}
+function renderRepos() {
+  const rows = REPO_ROWS.filter(r => (!RL.repo || r.repo.toLowerCase().includes(RL.repo)) && (!RL.req || r.reqs.includes(RL.req)) && (!RL.failing || r.n))
+    .sort(RL_SORT[RL.sort]);
+  const pages = Math.max(1, Math.ceil(rows.length / RL.size));
+  RL.page = Math.min(Math.max(1, RL.page), pages);
+  const from = RL.page > 1 ? (RL.page - 1) * RL.size : 0, shown = rows.slice(from, from + RL.size);  // size is Infinity when printing
+  document.querySelector('#repos-table tbody').replaceChildren(...shown.map(r => h('tr', {},
+    h('td', { class: 'id' }, r.repo, ARCHIVED.includes(r.repo) ? h('div', { class: 'small muted', style: 'font-weight:400', text: 'archived' }) : null),
+    h('td', { class: 'num', text: r.n || '–' }),
+    h('td', { class: 'small' }, joinNodes(r.checks.map(c => checkName(c)), ', ')),
+    h('td', {}, r.reqs.map(x => repoListTag(x, { ...RL, req: x }))),
+    h('td', { class: 'num nowrap', text: r.total ? `${r.passed}/${r.total}` : '–' }),
+    h('td', { class: 'nowrap' }, r.n ? liveIssuesLink(r.checks, r.repo) : null))));
+  const active = RL.repo || RL.req || RL.failing;
+  $('r-count').textContent = (active ? `${rows.length} of ${REPO_ROWS.length} repositories match the filter` : `${REPO_ROWS.length} repositories`) +
+    (rows.length > shown.length ? `; showing ${from + 1}–${from + shown.length}` : '') + '. Checks passed counts the mapped checks that apply to the repository.';
+  renderPager($('r-pager'), RL.page, pages, p => { RL.page = p; renderRepos(); });
+}
+/* Page buttons: previous, first, a window around the current page, last, next */
+function renderPager(el, page, pages, go) {
+  el.replaceChildren();
+  const single = pages <= 1;  // one page only: show the pager greyed out
+  const btn = (label, p, opts = {}) => {
+    if (single) opts.disabled = true;
+    const b = h('button', { type: 'button', text: label, 'aria-label': opts.aria ?? `Page ${p}`, 'aria-current': opts.current ? 'page' : null, disabled: opts.disabled ? '' : null });
+    if (!opts.disabled && !opts.current) b.addEventListener('click', () => go(p));
+    return b;
+  };
+  el.append(btn('‹ Previous', page - 1, { aria: 'Previous page', disabled: page === 1 }));
+  const nums = uniq([1, page - 2, page - 1, page, page + 1, page + 2, pages].filter(p => p >= 1 && p <= pages)).sort((a, b) => a - b);
+  nums.forEach((p, i) => {
+    if (i && p - nums[i - 1] > 1) el.append(h('span', { class: 'gap', text: '…' }));
+    el.append(btn(String(p), p, { current: p === page }));
+  });
+  el.append(btn('Next ›', page + 1, { aria: 'Next page', disabled: page === pages }));
+  el.append(h('span', { style: 'margin-left:8px', text: `Page ${page} of ${pages}` }));
+}
 {
-  const ct = document.querySelector('#check-table tbody');
-  for (const i of DATA.inputs) {
-    const ids = Object.keys(FILES[i.file].checks);
-    ct.append(h('tr', { class: 'chapter-row' }, h('td', { colspan: 5, text: `${FILES[i.file].tool} · ${i.file}` })));
-    for (const id of ids) {
-      const c = DATA.checks[id] ?? FILES[i.file].checks[id];
-      const rs = [...RESULTS, ...DERIVED].filter(r => r.check === id);
-      const n = k => rs.filter(r => r.result === k).length;
-      ct.append(h('tr', {},
-        h('td', {}, checkLink(id)),
-        h('td', { text: c.documentation?.short ?? '–' }),
-        h('td', { class: 'nowrap', text: c.threshold != null ? `score ≥ ${c.threshold}` : '–' }),
-        h('td', {}, isMapped(id) ? [...REQS_OF_CHECK[id]].map(x => h('span', { class: 'tag', text: x })) : h('span', { class: 'muted small', text: 'Not mapped (information only)' })),
-        h('td', { class: 'num nowrap', text: `${n('pass')} / ${n('fail')} / ${n('na')}` })));
-    }
-  }
+  $('r-req').append(h('option', { value: '', text: 'All requirements' }),
+    ...DATA.requirements.filter(q => findingsOf(q.id).length).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
+  for (const id of ['r-sort', 'r-req', 'r-failing', 'r-size']) $(id).addEventListener('change', readRepoControls);
+  $('r-repo').addEventListener('input', readRepoControls);
+  $('r-reset').addEventListener('click', () => applyRepoFilter({}));
+  renderRepos();
 }
 
-/* ═══════════════════════════ C Evidence ═══════════════════════════ */
+/* ═══════════════════════════ Footer ═══════════════════════════ */
 {
-  $('evidence-lead').textContent = `The input files of run ${DATA.run_url.split('/').pop()}, identified by SHA-256, plus the attestations the report relies on. Report configuration: ${DATA.report_config}.`;
-  const et = document.querySelector('#ev-table tbody');
-  for (const i of DATA.inputs) {
-    const age = daysBetween(i.run_at, DATA.run_at);
-    et.append(h('tr', {},
-      h('td', {}, h('code', { text: i.file })), h('td', { text: i.tool }),
-      h('td', { class: 'nowrap', text: fmtDateTime(i.run_at) }),
-      h('td', { class: 'num nowrap', text: plural(age, 'day') }),
-      h('td', { class: 'nowrap' }, h('code', { title: i.sha256, text: shortSha(i.sha256) }))));
-  }
-  const tt = document.querySelector('#att-table tbody');
-  for (const a of DATA.attestations) {
-    const part = DATA.requirements.flatMap(q => q.parts.filter(p => p.attestation?.id === a.id).map(p => ({ q, p })))[0];
-    tt.append(h('tr', {},
-      h('td', { class: 'id' }, a.id, part ? h('div', { class: 'small muted', style: 'font-weight:400', text: `used by ${part.q.id}` }) : null),
-      h('td', {}, h('code', { text: a.file })), h('td', { text: a.covers.join(', ') }), h('td', { text: a.approved_by }),
-      h('td', { class: 'nowrap', text: fmtDate(a.date) }), h('td', { class: 'nowrap', text: part ? fmtDate(part.p.attestation.valid_until) : '–' })));
-  }
-}
-
-/* ═══════════════════════════ D Findings register ═══════════════════════════ */
-{
-  const rg = document.querySelector('#reg-table tbody');
-  for (const q of DATA.requirements) {
-    const fs = findingsOf(q.id).sort((a, b) => b.age_days - a.age_days);
-    if (!fs.length) continue;
-    rg.append(h('tr', { class: 'chapter-row', id: `findings-${q.id}` }, h('td', { colspan: 6 }, `${q.id} · ${q.title} · ${plural(fs.length, 'open finding')} · `, statusPill(q.status))));
-    for (const f of fs) rg.append(h('tr', {},
-      h('td', {}, checkLink(f.check), f.requirements.length > 1 ? h('div', { class: 'small muted', text: `also counts for ${f.requirements.filter(x => x !== q.id).join(', ')}` }) : null),
-      h('td', { class: 'id' }, f.repo, ARCHIVED.includes(f.repo) ? h('div', { class: 'small muted', style: 'font-weight:400', text: 'archived' }) : null),
-      h('td', { text: f.reason }),
-      h('td', { class: 'nowrap', text: fmtDate(f.since) }),
-      h('td', { class: 'num nowrap' }, overdueAge(f)),
-      h('td', { class: 'nowrap' }, trackingNode(f.tracking))));
-  }
-  const multi = FINDINGS.filter(f => f.requirements.length > 1);
-  if (multi.length) rg.append(h('tr', {}, h('td', { colspan: 6, class: 'chart-sub', text: `${plural(multi.length, 'finding maps', 'findings map')} to more than one requirement and ${multi.length === 1 ? 'is' : 'are'} listed under each. The total of ${FINDINGS.length} open findings counts each once.` })));
-}
-
-/* ═══════════════════════════ E Results per repository ═══════════════════════════ */
-{
-  const groups = DATA.inputs.map(i => ({ file: i.file, tool: FILES[i.file].tool, checks: Object.keys(FILES[i.file].checks).filter(c => REPO_RESULTS.some(r => r.check === c && ACTIVE.includes(r.repo))) })).filter(g => g.checks.length);
-  const m = $('matrix');
-  m.append(h('thead', {},
-    h('tr', {}, h('th', { class: 'rowh' }), groups.map(g => h('th', { class: 'grp sep', colspan: g.checks.length, text: g.tool }))),
-    h('tr', {}, h('th', { class: 'rowh', style: 'vertical-align:bottom', text: 'Repository' }),
-      groups.map(g => g.checks.map((c, i) => h('th', { class: 'vh' + (isMapped(c) ? '' : ' unmapped') + (i === 0 ? ' sep' : ''), title: c }, h('span', { text: checkName(c) + (isMapped(c) ? '' : ' †') })))))));
-  const tb = h('tbody');
-  for (const repo of ACTIVE) {
-    tb.append(h('tr', {}, h('td', { class: 'rowh id', text: repo }),
-      groups.map(g => g.checks.map((c, i) => {
-        const r = REPO_RESULTS.find(x => x.repo === repo && x.check === c);
-        const td = h('td', { class: i === 0 ? 'sep' : '' });
-        if (!r) { td.append(h('span', { class: 'mcell none', text: '·' })); return td; }
-        const cell = h('span', { class: `mcell ${r.result}`, tabindex: 0, 'aria-label': `${repo}, ${r.name}: ${STATUS[r.result].label}${r.score != null ? `, score ${r.score}` : ''}. ${r.reason}`,
-          text: r.score != null && r.result !== 'na' ? r.score : STATUS[r.result].glyph });
-        const thr = DATA.checks[c]?.threshold;
-        const on = evt => showTip(evt, `${r.name}: ${STATUS[r.result].label}${r.score != null ? ` · score ${r.score}${thr != null ? ` (≥ ${thr})` : ''}` : ''}`,
-          `${repo}\n${r.reason}${r.details.length ? '\n' + r.details.join('\n') : ''}${r.tracking ? '\nTracking: ' + (r.tracking.url ?? 'OSPO notification, ' + r.tracking.reason) : ''}${isMapped(c) ? '' : '\nNot mapped to a requirement (information only)'}`);
-        cell.addEventListener('pointermove', on); cell.addEventListener('pointerleave', hideTip);
-        cell.addEventListener('focus', on); cell.addEventListener('blur', hideTip);
-        td.append(cell);
-        return td;
-      }))));
-  }
-  m.append(tb);
-  $('matrix-legend').append(
-    h('span', {}, h('span', { class: 'mcell pass', style: 'width:16px;height:16px;font-size:9px;margin-right:6px', text: '✓' }), 'Pass'),
-    h('span', {}, h('span', { class: 'mcell fail', style: 'width:16px;height:16px;font-size:9px;margin-right:6px', text: '✕' }), 'Fail'),
-    h('span', {}, h('span', { class: 'mcell na', style: 'width:16px;height:16px;font-size:9px;margin-right:6px', text: '–' }), 'Not applicable'),
-    h('span', { text: 'Number: Scorecard score, coloured by pass or fail against the threshold' }),
-    h('span', { text: '† not mapped to a requirement, never affects a status' }));
-
-  const ot = document.querySelector('#org-table tbody');
-  for (const r of ORG_RESULTS) ot.append(h('tr', {}, h('td', {}, checkLink(r.check), h('div', { class: 'small muted' }, h('code', { text: r.file }))), h('td', {}, resultPill(r)), h('td', { text: r.reason })));
-
-  const at2 = document.querySelector('#arch-table tbody');
-  const archRows = [...REPO_RESULTS, ...DERIVED].filter(r => ARCHIVED.includes(r.repo));
-  for (const r of archRows) at2.append(h('tr', {},
-    h('td', { class: 'id', text: r.repo }),
-    h('td', {}, checkName(r.check), isMapped(r.check) ? null : h('div', { class: 'small muted', text: 'not mapped (information only)' }), r.derived ? h('div', { class: 'small muted', text: 'derived by compliance_report' }) : null),
-    h('td', {}, resultPill(r)), h('td', { text: r.reason })));
-
   $('integrity').append('Generated from ', h('code', { text: `${ORG}/ospo@${DATA.ospo_sha}` }), ' · ', h('a', { href: DATA.run_url, text: `workflow run ${DATA.run_url.split('/').pop()}` }),
     ' · report configuration ', h('code', { text: DATA.report_config }), ' · inputs: ',
     h('span', {}, joinNodes(DATA.inputs.map(i => h('span', {}, h('code', { text: i.file }), ' ', h('code', { title: i.sha256, text: shortSha(i.sha256) }))), ', ')),
-    ' · report template v2 (mock-up)');
+    ' · report template v3 (mock-up)');
 }
 
-// Print: expand requirement details so the PDF contains them
-addEventListener('beforeprint', () => document.querySelectorAll('details.req').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; }));
-addEventListener('afterprint', () => document.querySelectorAll('details.req').forEach(d => { d.open = d.dataset.wasOpen === 'true'; }));
+/* ═══════════════════════════ Print ═══════════════════════════ */
+// The printed report is the frozen record: every repository in section 5, all cards expanded.
+let saved = null;
+addEventListener('beforeprint', () => {
+  saved = { rl: { ...RL } };
+  Object.assign(RL, { repo: '', req: '', failing: false, page: 1, size: Infinity }); renderRepos();
+  document.querySelectorAll('details.req').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; d.dispatchEvent(new Event('toggle')); });
+});
+addEventListener('afterprint', () => {
+  if (saved) { Object.assign(RL, saved.rl); renderRepos(); }
+  document.querySelectorAll('details.req').forEach(d => { d.open = d.dataset.wasOpen === 'true'; });
+});
 </script>
 </body>
 </html>

@@ -6,7 +6,7 @@
   "config_file": "config/license_scan.yaml",
   "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
-  "checks": {
+  "catalogue": {
     "sbom/available": {
       "name": "SBOM Available",
       "documentation": {

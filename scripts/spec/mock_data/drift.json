@@ -12,7 +12,7 @@
     "security": [],
     "branch_protection": []
   },
-  "checks": {
+  "catalogue": {
     "drift/access": {
       "name": "Access Drift",
       "documentation": {

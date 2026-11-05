@@ -8,7 +8,7 @@
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
   "source": "scorecard CLI (--format=json --show-details), run per repository in this workflow",
   "scorecard_version": "v5.6.0",
-  "checks": {
+  "catalogue": {
     "scorecard/ci-tests": {
       "name": "CI-Tests",
       "threshold": 8,

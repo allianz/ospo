@@ -17,7 +17,7 @@
       "days_notice": 60
     }
   ],
-  "checks": {
+  "catalogue": {
     "archive/notice-before-archival": {
       "name": "Notice Before Archival",
       "documentation": {

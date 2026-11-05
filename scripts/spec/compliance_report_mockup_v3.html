@@ -488,7 +488,7 @@
       "sha256": "3c300a6e86c6f916a290ce54f1400237723536b2e289411a32face3062ddca73"
     }
   ],
-  "checks": {
+  "catalogue": {
     "advisories/published-in-time": {
       "name": "Advisories Published in Time",
       "documentation": {
@@ -1372,7 +1372,7 @@
   "config_file": "config/lint_repos.yaml",
   "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
-  "checks": {
+  "catalogue": {
     "lint/license-file": {
       "name": "License File",
       "documentation": {
@@ -2652,7 +2652,7 @@
   "config_file": "config/license_scan.yaml",
   "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
-  "checks": {
+  "catalogue": {
     "sbom/available": {
       "name": "SBOM Available",
       "documentation": {
@@ -2965,7 +2965,7 @@
       "days_notice": 60
     }
   ],
-  "checks": {
+  "catalogue": {
     "archive/notice-before-archival": {
       "name": "Notice Before Archival",
       "documentation": {
@@ -3027,7 +3027,7 @@
     "security": [],
     "branch_protection": []
   },
-  "checks": {
+  "catalogue": {
     "drift/access": {
       "name": "Access Drift",
       "documentation": {
@@ -3156,7 +3156,7 @@
   },
   "previous_snapshot_date": "2026-10-27",
   "changes_since_previous": [],
-  "checks": {
+  "catalogue": {
     "org/settings": {
       "name": "Org Settings",
       "documentation": {
@@ -3253,7 +3253,7 @@
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
   "source": "scorecard CLI (--format=json --show-details), run per repository in this workflow",
   "scorecard_version": "v5.6.0",
-  "checks": {
+  "catalogue": {
     "scorecard/ci-tests": {
       "name": "CI-Tests",
       "threshold": 8,
@@ -3973,7 +3973,7 @@ function scaleMock(factor, worst) {
   const mutate = (r, repo) => {
     const out = { ...r, repo, details: [...r.details] };
     if (r.result === 'na') return out;
-    const thr = DATA.checks[r.check]?.threshold;
+    const thr = DATA.catalogue[r.check]?.threshold;
     if (thr != null) {
       if (rnd() < 0.5) {
         const sc = Math.max(0, Math.min(10, Math.round((r.score ?? 5) + (rnd() - 0.5) * 8)));
@@ -3996,7 +3996,7 @@ function scaleMock(factor, worst) {
   const all = TOOLS.flatMap(f => FILES[f].results);
 
   if (worst) for (const r of all) if (r.check === worst && r.result === 'pass') {
-    const thr = DATA.checks[worst]?.threshold;
+    const thr = DATA.catalogue[worst]?.threshold;
     r.result = 'fail';
     if (thr != null) { r.score = Math.floor(rnd() * thr); r.reason = scoreReason(worst, r.score, 'fail'); r.details = []; }
     else { const e = fromPool(worst, 'fail'); r.reason = e?.reason ?? 'Synthetic failure (worst-case mock)'; r.details = e ? [...e.details] : []; }
@@ -4066,7 +4066,7 @@ const RESULTS = Object.entries(FILES).flatMap(([file, t]) => t.results.map(r => 
 const REPO_RESULTS = RESULTS.filter(r => r.repo);
 const ORG_RESULTS = RESULTS.filter(r => !r.repo);
 const CHECK_FILE = {};
-for (const [file, t] of Object.entries(FILES)) for (const id of Object.keys(t.checks)) CHECK_FILE[id] ??= file;
+for (const [file, t] of Object.entries(FILES)) for (const id of Object.keys(t.catalogue)) CHECK_FILE[id] ??= file;
 /* The tool that produced a check: its script in the ospo repository, pinned to the commit of this run */
 function sourceNode(check) {
   const file = CHECK_FILE[check], inp = DATA.inputs.find(i => i.file === file);
@@ -4159,7 +4159,7 @@ const shortSha = x => x.length > 12 ? `${x.slice(0, 4)}…${x.slice(-4)}` : x;
 const uniq = xs => [...new Set(xs)];
 const capText = (xs, n) => xs.length > n ? `${xs.slice(0, n).join(', ')} and ${xs.length - n} more` : xs.join(', ');
 const countBy = (xs, f) => { const m = new Map(); for (const x of xs) { const k = f(x); m.set(k, (m.get(k) ?? 0) + 1); } return [...m.entries()].sort((a, b) => b[1] - a[1]); };
-const checkName = id => DATA.checks[id]?.name ?? id;
+const checkName = id => DATA.catalogue[id]?.name ?? id;
 const joinNodes = (nodes, sep = ' · ') => nodes.flatMap((n, i) => i ? [sep, n] : [n]);
 
 const tip = $('tip');
@@ -4181,7 +4181,7 @@ function statusPill(key, label) {
   return h('span', { class: 'status' }, ico, label ?? st.label);
 }
 function checkLink(id) {
-  const c = DATA.checks[id];
+  const c = DATA.catalogue[id];
   return h('span', {}, c?.documentation?.url ? h('a', { href: c.documentation.url, text: c.name }) : checkName(id), ' ', h('code', { text: id }));
 }
 /* Live GitHub search for the scanners' issues, by check label. The report does not read issues; this is only a link. */
@@ -4359,7 +4359,7 @@ function niceTicks(lo, hi, count = 4) {
   for (const v of [1, 10, 40, 100]) sc.append(h('option', { value: v, selected: v === SCALE ? '' : null, text: v === 1 ? `Mock as is (${MOCK_REPOS} repositories)` : `×${v} (${MOCK_REPOS * v} repositories)` }));
   if (![1, 10, 40, 100].includes(SCALE)) sc.append(h('option', { value: SCALE, selected: '', text: `×${SCALE}` }));
   wc.append(h('option', { value: '', text: 'None' }));
-  for (const [id, c] of Object.entries(DATA.checks)) if (isMapped(id) && !ORG_CHECKS.has(id) && !id.startsWith('archive/'))
+  for (const [id, c] of Object.entries(DATA.catalogue)) if (isMapped(id) && !ORG_CHECKS.has(id) && !id.startsWith('archive/'))
     wc.append(h('option', { value: id, selected: id === WORST ? '' : null, text: `Every repository fails ${c.name}` }));
   const go = () => { const p = new URLSearchParams(); if (sc.value !== '1') p.set('scale', sc.value); if (wc.value) p.set('worst', wc.value); location.search = p.toString(); };
   sc.addEventListener('change', go); wc.addEventListener('change', go);
@@ -4509,7 +4509,7 @@ function renderCard(q) {
   const verified = allChecks.length ? h('table', {},
     h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Source'].map(x => h('th', { text: x })))),
     h('tbody', {}, allChecks.map(c => {
-      const def = DATA.checks[c];
+      const def = DATA.catalogue[c];
       return h('tr', {},
         h('td', {}, checkLink(c), def?.threshold != null ? h('div', { class: 'small muted', text: `threshold: score ≥ ${def.threshold}` }) : null),
         h('td', {}, def?.documentation?.short ?? '–',
