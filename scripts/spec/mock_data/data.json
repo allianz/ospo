@@ -11,13 +11,13 @@
     "sha256": "183e6a02b1a2f57336ab5c6645b2db43f3b7908c229a0373b71ed5e915dfc3b1",
     "as_of": "2026-11-03",
     "key_messages": [
-      "**The gaps are in individual repositories, not in the central setup.** No requirement is \"Not met\", and the organisation-wide security policy covers every repository.",
-      "**Compliance fell from 83.9% to 80.0%, mostly because of one repository.** `ng-aquila` is skipped by the scanners while its license is under legal review, so it counts as failing 15 checks.",
+      "**The gaps are in individual repositories, not in the central setup.** No requirement is \"Not met\", and the organisation-wide security policy covers every scanned repository.",
+      "**Compliance fell from 84.8% to 80.5%, mostly because of one repository.** `ng-aquila` is skipped by the scanners while its license is under legal review, so it counts as failing 16 checks.",
       "**Release integrity is the weakest area.** Only 2 of 5 releasing repositories sign their releases (BR.03), and 2 of 5 publish no release notes (BR.04). A shared release workflow would fix both.",
       "**Contribution guides are improving.** GV.01 rose from 55% to 70% since 6 Oct, after the CONTRIBUTING template was added to new repositories."
     ],
     "needs_attention": [
-      "**Decision: ng-aquila license review** (Legal, by 30 Nov 2026). Until the review is done, `ng-aquila` fails 14 requirements.",
+      "**Decision: ng-aquila license review** (Legal, by 30 Nov 2026). Until the review is done, `ng-aquila` fails 15 requirements.",
       "**Proposal: signed releases through a shared workflow** (OSPO platform team, Q1 2027). Add artifact attestation to the [release workflow template](https://github.com/allianz/ospo/issues/142).",
       "**Policy decision: single-maintainer projects** (OSPO lead). `insurance-rule-dsl` fails QA.06 because nobody else can review its changes."
     ]
@@ -54,7 +54,7 @@
       "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
       "counts": {
-        "results": 72,
+        "results": 63,
         "skipped": 5,
         "errors": 0
       }
@@ -71,7 +71,7 @@
       "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
       "counts": {
-        "results": 27,
+        "results": 9,
         "skipped": 5,
         "errors": 0
       }
@@ -94,18 +94,18 @@
       }
     },
     {
-      "file": "org_check.json",
-      "script": "scripts/org_check.js",
+      "file": "advisories_check.json",
+      "script": "scripts/advisories_check.js",
       "status": "ok",
       "sha256": "c04f6d9c966dc5b9e59782a2482c0c57d0e5554e65a4603feb24aec6d9a6a8b4",
-      "tool": "org_check",
+      "tool": "advisories_check",
       "run_at": "2026-11-03T02:00:00Z",
       "ospo_sha": "869f4bb",
-      "config_file": "config/org_check.yaml",
+      "config_file": "config/advisories_check.yaml",
       "config_sha256": "cae59b3b176c28941ae773f81c6d20f6148f3d0ff8ce1eb9bbfef8b1f94ff70b",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
       "counts": {
-        "results": 13,
+        "results": 10,
         "skipped": 4,
         "errors": 0
       }
@@ -124,7 +124,7 @@
       "source": "scorecard CLI (--format=json --show-details), run per repository in this workflow",
       "scorecard_version": "v5.6.0",
       "counts": {
-        "results": 63,
+        "results": 72,
         "skipped": 5,
         "errors": 0
       }
@@ -149,12 +149,12 @@
     ]
   },
   "summary": {
-    "checks_evaluated": 145,
-    "checks_passed": 116,
-    "compliance_pct": 80.0,
+    "checks_evaluated": 154,
+    "checks_passed": 124,
+    "compliance_pct": 80.5,
     "requirements_by_status": {
-      "met": 4,
-      "met-findings": 14,
+      "met": 3,
+      "met-findings": 15,
       "not-met": 0,
       "not-assessed": 2,
       "optional": 0
@@ -549,14 +549,14 @@
         }
       ],
       "implementation": "An organisation-wide security policy applies to every repository without its own. It names the OSPO as security contact and asks reporters to use private vulnerability reporting, which is enabled on every repository.",
-      "status": "met",
+      "status": "met-findings",
       "checks": [
-        "org/security-policy"
+        "scorecard/security-policy"
       ],
       "repositories": {
         "applicable": 10,
-        "passing": 10,
-        "failing": 0,
+        "passing": 9,
+        "failing": 1,
         "not_applicable": 0
       }
     },
@@ -624,7 +624,7 @@
   "history": [
     {
       "date": "2026-10-06",
-      "compliance_pct": 82.5,
+      "compliance_pct": 83.5,
       "failing_repositories": 8,
       "coverage": {
         "GV.01": 54.7,
@@ -649,7 +649,7 @@
     },
     {
       "date": "2026-10-13",
-      "compliance_pct": 83.0,
+      "compliance_pct": 84.0,
       "failing_repositories": 8,
       "coverage": {
         "GV.01": 67.2,
@@ -674,7 +674,7 @@
     },
     {
       "date": "2026-10-20",
-      "compliance_pct": 83.3,
+      "compliance_pct": 84.3,
       "failing_repositories": 7,
       "coverage": {
         "GV.01": 67.2,
@@ -699,7 +699,7 @@
     },
     {
       "date": "2026-10-27",
-      "compliance_pct": 83.9,
+      "compliance_pct": 84.8,
       "failing_repositories": 7,
       "coverage": {
         "GV.01": 67.2,
@@ -724,7 +724,7 @@
     },
     {
       "date": "2026-11-03",
-      "compliance_pct": 80.0,
+      "compliance_pct": 80.5,
       "failing_repositories": 7,
       "coverage": {
         "GV.01": 70.0,
@@ -742,7 +742,7 @@
         "BR.03": 40.0,
         "BR.04": 60.0,
         "BR.05": 100.0,
-        "VM.01": 100.0,
+        "VM.01": 90.0,
         "VM.02": 100.0,
         "DE.01": 100.0
       }
@@ -750,9 +750,9 @@
   ],
   "catalogue": {
     "advisories/published-in-time": {
-      "tool": "org_check",
+      "tool": "advisories_check",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#advisories-published-in-time",
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/advisories_check_spec.md#advisories-published-in-time",
         "short": "Every security advisory of the repository published in the last 12 months was published within 90 days of its creation. Only published advisories are counted; they are public."
       }
     },
@@ -768,13 +768,6 @@
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/compliance_report_spec.md#by-construction-source-archives",
         "short": "Not a test; always passes. Source archives of a release are generated by GitHub from the tag, so they contain exactly the repository content. Built assets are covered by BR.03."
-      }
-    },
-    "license/denied": {
-      "tool": "license_scan",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#denied-licenses",
-        "short": "No dependency in the SBOM uses a license on the deny list."
       }
     },
     "lint/contributing": {
@@ -805,13 +798,6 @@
         "short": "The license GitHub detects is on the approved list. A missing or unidentified license (NOASSERTION) fails."
       }
     },
-    "lint/private-reporting": {
-      "tool": "lint_repos",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#private-vulnerability-reporting",
-        "short": "For repositories with security: custom, private vulnerability reporting is enabled. Other repositories are covered by the org security configuration."
-      }
-    },
     "lint/public": {
       "tool": "lint_repos",
       "documentation": {
@@ -833,42 +819,11 @@
         "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line."
       }
     },
-    "org/code-scanning": {
-      "tool": "org_check",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-code-scanning",
-        "short": "The ospo-managed security configuration is enforced and enables code scanning (CodeQL default setup).",
-        "fix": "OSPO: restore code scanning in the ospo-managed security configuration, or change the expected value in config/org_check.yaml through a pull request."
-      }
-    },
-    "org/private-reporting": {
-      "tool": "org_check",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-private-reporting",
-        "short": "The ospo-managed security configuration is enforced and enables private vulnerability reporting.",
-        "fix": "OSPO: restore private vulnerability reporting in the ospo-managed security configuration, or change the expected value in config/org_check.yaml through a pull request."
-      }
-    },
-    "org/security-policy": {
-      "tool": "org_check",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-security-policy",
-        "short": "The org default allianz/.github/SECURITY.md exists and names a security contact.",
-        "fix": "OSPO: restore allianz/.github/SECURITY.md with a security contact."
-      }
-    },
     "sbom/available": {
       "tool": "license_scan",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
         "short": "The dependency graph SBOM can be retrieved for the default branch."
-      }
-    },
-    "sbom/license-coverage": {
-      "tool": "license_scan",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#license-coverage",
-        "short": "At most 5% of the packages in the SBOM have no license information (NOASSERTION)."
       }
     },
     "scorecard/branch-protection": {
@@ -911,6 +866,14 @@
         "short": "Determines if the project uses fuzzing. Applies only to repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly); all others are not applicable."
       }
     },
+    "scorecard/security-policy": {
+      "tool": "scorecard_check",
+      "threshold": 10,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#security-policy",
+        "short": "Determines if the project has published a security policy."
+      }
+    },
     "scorecard/signed-releases": {
       "tool": "scorecard_check",
       "threshold": 8,
@@ -951,11 +914,6 @@
     },
     {
       "repo": "pricing-engine",
-      "check": "lint/private-reporting",
-      "result": "na"
-    },
-    {
-      "repo": "pricing-engine",
       "check": "lint/development-file",
       "result": "pass"
     },
@@ -991,11 +949,6 @@
     },
     {
       "repo": "insurance-rule-dsl",
-      "check": "lint/private-reporting",
-      "result": "na"
-    },
-    {
-      "repo": "insurance-rule-dsl",
       "check": "lint/development-file",
       "result": "pass"
     },
@@ -1031,11 +984,6 @@
     },
     {
       "repo": "quote-calculator-demo",
-      "check": "lint/private-reporting",
-      "result": "na"
-    },
-    {
-      "repo": "quote-calculator-demo",
       "check": "lint/development-file",
       "result": "pass"
     },
@@ -1071,11 +1019,6 @@
     },
     {
       "repo": "pdf-render-service",
-      "check": "lint/private-reporting",
-      "result": "pass"
-    },
-    {
-      "repo": "pdf-render-service",
       "check": "lint/development-file",
       "result": "fail"
     },
@@ -1111,11 +1054,6 @@
     },
     {
       "repo": "design-guidelines",
-      "check": "lint/private-reporting",
-      "result": "na"
-    },
-    {
-      "repo": "design-guidelines",
       "check": "lint/development-file",
       "result": "na"
     },
@@ -1151,11 +1089,6 @@
     },
     {
       "repo": "mobile-sdk-ios",
-      "check": "lint/private-reporting",
-      "result": "na"
-    },
-    {
-      "repo": "mobile-sdk-ios",
       "check": "lint/development-file",
       "result": "pass"
     },
@@ -1188,11 +1121,6 @@
       "repo": "pricing-sandbox",
       "check": "lint/issues-enabled",
       "result": "pass"
-    },
-    {
-      "repo": "pricing-sandbox",
-      "check": "lint/private-reporting",
-      "result": "na"
     },
     {
       "repo": "pricing-sandbox",
@@ -1231,11 +1159,6 @@
     },
     {
       "repo": "claims-event-schemas",
-      "check": "lint/private-reporting",
-      "result": "na"
-    },
-    {
-      "repo": "claims-event-schemas",
       "check": "lint/development-file",
       "result": "pass"
     },
@@ -1268,11 +1191,6 @@
       "repo": "kafka-schema-tools",
       "check": "lint/issues-enabled",
       "result": "pass"
-    },
-    {
-      "repo": "kafka-schema-tools",
-      "check": "lint/private-reporting",
-      "result": "na"
     },
     {
       "repo": "kafka-schema-tools",
@@ -1330,28 +1248,8 @@
       "result": "pass"
     },
     {
-      "repo": "pricing-engine",
-      "check": "sbom/license-coverage",
-      "result": "pass"
-    },
-    {
-      "repo": "pricing-engine",
-      "check": "license/denied",
-      "result": "pass"
-    },
-    {
       "repo": "insurance-rule-dsl",
       "check": "sbom/available",
-      "result": "pass"
-    },
-    {
-      "repo": "insurance-rule-dsl",
-      "check": "sbom/license-coverage",
-      "result": "pass"
-    },
-    {
-      "repo": "insurance-rule-dsl",
-      "check": "license/denied",
       "result": "pass"
     },
     {
@@ -1360,28 +1258,8 @@
       "result": "pass"
     },
     {
-      "repo": "quote-calculator-demo",
-      "check": "sbom/license-coverage",
-      "result": "pass"
-    },
-    {
-      "repo": "quote-calculator-demo",
-      "check": "license/denied",
-      "result": "fail"
-    },
-    {
       "repo": "pdf-render-service",
       "check": "sbom/available",
-      "result": "pass"
-    },
-    {
-      "repo": "pdf-render-service",
-      "check": "sbom/license-coverage",
-      "result": "pass"
-    },
-    {
-      "repo": "pdf-render-service",
-      "check": "license/denied",
       "result": "pass"
     },
     {
@@ -1390,28 +1268,8 @@
       "result": "pass"
     },
     {
-      "repo": "design-guidelines",
-      "check": "sbom/license-coverage",
-      "result": "fail"
-    },
-    {
-      "repo": "design-guidelines",
-      "check": "license/denied",
-      "result": "pass"
-    },
-    {
       "repo": "mobile-sdk-ios",
       "check": "sbom/available",
-      "result": "pass"
-    },
-    {
-      "repo": "mobile-sdk-ios",
-      "check": "sbom/license-coverage",
-      "result": "fail"
-    },
-    {
-      "repo": "mobile-sdk-ios",
-      "check": "license/denied",
       "result": "pass"
     },
     {
@@ -1420,43 +1278,13 @@
       "result": "fail"
     },
     {
-      "repo": "pricing-sandbox",
-      "check": "sbom/license-coverage",
-      "result": "na"
-    },
-    {
-      "repo": "pricing-sandbox",
-      "check": "license/denied",
-      "result": "na"
-    },
-    {
       "repo": "claims-event-schemas",
       "check": "sbom/available",
       "result": "pass"
     },
     {
-      "repo": "claims-event-schemas",
-      "check": "sbom/license-coverage",
-      "result": "na"
-    },
-    {
-      "repo": "claims-event-schemas",
-      "check": "license/denied",
-      "result": "pass"
-    },
-    {
       "repo": "kafka-schema-tools",
       "check": "sbom/available",
-      "result": "pass"
-    },
-    {
-      "repo": "kafka-schema-tools",
-      "check": "sbom/license-coverage",
-      "result": "pass"
-    },
-    {
-      "repo": "kafka-schema-tools",
-      "check": "license/denied",
       "result": "pass"
     },
     {
@@ -1513,24 +1341,6 @@
       "repo": "ng-aquila",
       "check": "archive/activity-checked",
       "result": "pass"
-    },
-    {
-      "repo": null,
-      "check": "org/code-scanning",
-      "result": "pass",
-      "reason": "Code scanning default setup is enabled and enforced for 8 repositories"
-    },
-    {
-      "repo": null,
-      "check": "org/private-reporting",
-      "result": "pass",
-      "reason": "Private vulnerability reporting is enabled and enforced for 8 repositories"
-    },
-    {
-      "repo": null,
-      "check": "org/security-policy",
-      "result": "pass",
-      "reason": "allianz/.github/SECURITY.md names ospo@allianz.com as security contact"
     },
     {
       "repo": "pricing-engine",
@@ -1623,6 +1433,12 @@
       "check": "scorecard/fuzzing",
       "result": "na",
       "score": 0
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
     },
     {
       "repo": "insurance-rule-dsl",
@@ -1667,6 +1483,12 @@
       "score": 0
     },
     {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
+    },
+    {
       "repo": "quote-calculator-demo",
       "check": "scorecard/ci-tests",
       "result": "pass",
@@ -1707,6 +1529,12 @@
       "check": "scorecard/fuzzing",
       "result": "na",
       "score": 0
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
     },
     {
       "repo": "pdf-render-service",
@@ -1751,6 +1579,12 @@
       "score": 0
     },
     {
+      "repo": "pdf-render-service",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
+    },
+    {
       "repo": "design-guidelines",
       "check": "scorecard/ci-tests",
       "result": "na",
@@ -1791,6 +1625,12 @@
       "check": "scorecard/fuzzing",
       "result": "na",
       "score": 0
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
     },
     {
       "repo": "mobile-sdk-ios",
@@ -1835,6 +1675,12 @@
       "score": 0
     },
     {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
+    },
+    {
       "repo": "pricing-sandbox",
       "check": "scorecard/ci-tests",
       "result": "na",
@@ -1877,6 +1723,12 @@
       "score": 0
     },
     {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
+    },
+    {
       "repo": "claims-event-schemas",
       "check": "scorecard/ci-tests",
       "result": "pass",
@@ -1919,6 +1771,12 @@
       "score": 0
     },
     {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
+    },
+    {
       "repo": "kafka-schema-tools",
       "check": "scorecard/ci-tests",
       "result": "na",
@@ -1961,6 +1819,12 @@
       "score": 0
     },
     {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/security-policy",
+      "result": "pass",
+      "score": 10
+    },
+    {
       "repo": "ng-aquila",
       "check": "scorecard/ci-tests",
       "result": "fail"
@@ -1993,6 +1857,11 @@
     {
       "repo": "ng-aquila",
       "check": "scorecard/fuzzing",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/security-policy",
       "result": "fail"
     },
     {
@@ -2143,22 +2012,22 @@
       "reason": "archived"
     },
     {
-      "tool": "org_check",
+      "tool": "advisories_check",
       "repo": ".github",
       "reason": "organisation configuration repository"
     },
     {
-      "tool": "org_check",
+      "tool": "advisories_check",
       "repo": "ospo",
       "reason": "assessment tooling, reviewed separately"
     },
     {
-      "tool": "org_check",
+      "tool": "advisories_check",
       "repo": "legacy-xml-mapper",
       "reason": "archived"
     },
     {
-      "tool": "org_check",
+      "tool": "advisories_check",
       "repo": "old-batch-tools",
       "reason": "archived"
     }

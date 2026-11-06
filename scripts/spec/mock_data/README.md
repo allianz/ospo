@@ -7,9 +7,9 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | File | Written by | Content |
 |---|---|---|
 | `lint_repos.json` | `lint_repos.js --json` | Per-repository lint checks. Archived repositories only appear under `skipped` |
-| `license_scan.json` | `license_scan.js --json` | SBOM availability, license coverage (not mapped), deny list (internal policy, not mapped) |
+| `license_scan.json` | `license_scan.js --json` | SBOM availability (LE.02, QA.01). The deny list and license coverage are not written: only mapped checks are in the tool files |
 | `archive_repos.json` | `archive_repos.js --json` | One `archive/activity-checked` result per active repository (DE.01). Archived repositories only appear under `skipped` |
-| `org_check.json` | `org_check.js` | Org-level checks: org SECURITY.md (VM.01), plus code scanning and private reporting in the security configuration (not mapped). Plus one `advisories/published-in-time` result per active repository (VM.02), from published advisories only. Actual values are in `details`; no raw API data |
+| `advisories_check.json` | `advisories_check.js` | One `advisories/published-in-time` result per active repository (VM.02), from published advisories only |
 | `scorecard.json` | `scorecard_check.js` | Scorecard CLI results per repository, converted to the common format with thresholds applied |
 | `compliance_report_bsi_notes.md` | OSPO, by hand | Sample notes file of the BSI report (draft 1.8, `notes:` in `config/compliance_report_bsi.yaml`): Key messages and Needs attention for the run of 3 Nov 2026. Copied into `data.json` → `notes` |
 | `data.json` | `compliance_report.js --config config/compliance_report_bsi.yaml` (published as `bsi-data.json`) | Aggregation of all files above (draft 1.10), reduced to what the report shows: shown header fields in `inputs`; `catalogue` without `name`; `results` rows with `repo`, `check`, `result`, plus `score` (scored checks) or `reason` (org-level checks); `skipped` and `errors` with `tool`. Plus `fail` results for active repositories a tool skipped, requirement statuses, summary, history. The only input for the HTML report. Created by hand from the files above |
@@ -20,7 +20,7 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 |---|---|
 | `pricing-engine` | Fully compliant, releasing, signed release assets |
 | `insurance-rule-dsl` | Missing CONTRIBUTING (GV.01); low Code-Review (QA.06); unsigned releases (BR.03) |
-| `quote-calculator-demo` | Unapproved license WTFPL (LE.01); denied dependency license (internal policy, not in the TR findings) |
+| `quote-calculator-demo` | Unapproved license WTFPL (LE.01) |
 | `pdf-render-service` | `branch-protection: custom` (Scorecard Branch-Protection applies, GV.02); no DEVELOPMENT.md (BR.01); CI-Tests 2 (QA.04); release without notes (BR.04) |
 | `design-guidelines` | Topic `docs` → BR.01 and QA.04 not applicable; Scorecard CI-Tests not applicable |
 | `mobile-sdk-ios` | Objective-C 26% → QA.05 applies; not fuzzed (Scorecard Fuzzing 0), so it fails QA.05. All other repositories with Scorecard results are `na` for fuzzing (memory-safe languages only); version going backwards in major line 3 (BR.02) |
@@ -31,7 +31,7 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | `ng-aquila` | Excluded from the tools (`excluded_repos`), but counted as failing all of their mapped checks (see below) |
 | `old-batch-tools` | Archived manually between the runs of 13 and 20 Oct. Out of scope like `legacy-xml-mapper`; how it was archived does not matter for DE.01 |
 
-`ng-aquila` is in `excluded_repos` (license under legal review). `lint_repos`, `license_scan` and `scorecard_check` skip it, so it has no tool results and appears in their `skipped`. It is still active and in scope: `compliance_report` adds a `fail` result to `data.json` for every mapped per-repository check of each tool that skipped it (15 rows), so it fails every requirement with per-repository checks. The skip reason is shown in section A of the report.
+`ng-aquila` is in `excluded_repos` (license under legal review). `lint_repos`, `license_scan` and `scorecard_check` skip it, so it has no tool results and appears in their `skipped`. It is still active and in scope: `compliance_report` adds a `fail` result to `data.json` for every mapped per-repository check of each tool that skipped it (16 rows), so it fails every requirement with per-repository checks. The skip reason is shown in section A of the report.
 
 BR.06 has no check because builds cannot be verified as reproducible at portfolio scale. It has status `not-assessed` and is not counted. DE.02 (MAY) is `not-assessed` as well: it is not implemented yet. BR.05 is met by construction: `compliance_report` writes the placeholder check `by-construction/source-archives`, one `pass` per active repository, so BR.05 shows coverage like every other requirement.
 
@@ -47,8 +47,8 @@ On 4 Nov 2026, yukimi was the only active public allianz repository with results
 ## Conventions used
 
 - In the tool files, every result has `repo`, `check`, `name`, `result` (`pass`, `fail`, `na`), `score` (Scorecard 0–10, otherwise `null`), `reason` (always filled) and `details` (list, Scorecard style). See section 1.6 of the draft. `data.json` keeps less, see above.
-- Checks that are not mapped in `data.json` → `requirements` (license coverage, deny list) never affect a status.
-- `repo: null` marks org-level checks (`org/*`).
+- Every check in the tool files is mapped to at least one requirement in `data.json` → `requirements`. Tools keep their other checks (deny list, required files) for their own issues, but do not write them.
+- `repo: null` would mark org-level checks; there are none in this version. Every check is per repository.
 - Every file has a `catalogue` (`name`, `documentation.url`, `documentation.short`, `documentation.fix`); `data.json` → `catalogue` merges them, adds the defining `tool`, drops `name`, and keeps `fix` only for org-level checks and `report/*`. Scorecard checks have no `fix`. The OSPO URLs point to spec headings that do not exist yet; the Scorecard URLs are real.
 - Data the report computes with would be in a header block, never in `reason` or `details`; no tool needs one today.
 - Results carry no `tracking`. Each tool keeps one issue per repository, but the report does not read issues; it only links to a live GitHub search by check label. Labels on that issue (= the failing check IDs) exist on GitHub only.

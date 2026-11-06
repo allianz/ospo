@@ -64,6 +64,14 @@
         "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#fuzzing",
         "short": "Determines if the project uses fuzzing. Applies only to repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly); all others are not applicable."
       }
+    },
+    "scorecard/security-policy": {
+      "name": "Security-Policy",
+      "threshold": 10,
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#security-policy",
+        "short": "Determines if the project has published a security policy."
+      }
     }
   },
   "skipped": [
@@ -158,6 +166,20 @@
       ]
     },
     {
+      "repo": "pricing-engine",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
+      ]
+    },
+    {
       "repo": "insurance-rule-dsl",
       "check": "scorecard/ci-tests",
       "name": "CI-Tests",
@@ -222,6 +244,20 @@
       "reason": "project is not fuzzed",
       "details": [
         "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
       ]
     },
     {
@@ -292,6 +328,20 @@
       ]
     },
     {
+      "repo": "quote-calculator-demo",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
+      ]
+    },
+    {
       "repo": "pdf-render-service",
       "check": "scorecard/ci-tests",
       "name": "CI-Tests",
@@ -354,6 +404,20 @@
       "reason": "project is not fuzzed",
       "details": [
         "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
       ]
     },
     {
@@ -426,6 +490,20 @@
       ]
     },
     {
+      "repo": "design-guidelines",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
+      ]
+    },
+    {
       "repo": "mobile-sdk-ios",
       "check": "scorecard/ci-tests",
       "name": "CI-Tests",
@@ -490,6 +568,20 @@
       "reason": "project is not fuzzed",
       "details": [
         "Info: scorecard_check: applies, Objective-C 26%, C 3%"
+      ]
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
       ]
     },
     {
@@ -560,6 +652,20 @@
       ]
     },
     {
+      "repo": "pricing-sandbox",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
+      ]
+    },
+    {
       "repo": "claims-event-schemas",
       "check": "scorecard/ci-tests",
       "name": "CI-Tests",
@@ -627,6 +733,20 @@
       ]
     },
     {
+      "repo": "claims-event-schemas",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
+      ]
+    },
+    {
       "repo": "kafka-schema-tools",
       "check": "scorecard/ci-tests",
       "name": "CI-Tests",
@@ -691,6 +811,20 @@
       "reason": "project is not fuzzed",
       "details": [
         "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "scorecard/security-policy",
+      "name": "Security-Policy",
+      "result": "pass",
+      "score": 10,
+      "reason": "security policy file detected",
+      "details": [
+        "Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found linked content: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1",
+        "Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"
       ]
     }
   ]

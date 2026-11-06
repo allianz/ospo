@@ -39,14 +39,6 @@
         "fix": "Enable Issues under Settings > General > Features."
       }
     },
-    "lint/private-reporting": {
-      "name": "Private Vulnerability Reporting",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#private-vulnerability-reporting",
-        "short": "For repositories with security: custom, private vulnerability reporting is enabled. Other repositories are covered by the org security configuration.",
-        "fix": "Enable private vulnerability reporting under Settings > Code security, or switch the repository to the managed security configuration."
-      }
-    },
     "lint/development-file": {
       "name": "Development Guide",
       "documentation": {
@@ -134,15 +126,6 @@
     },
     {
       "repo": "pricing-engine",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "na",
-      "score": null,
-      "reason": "security: managed (covered by org/private-reporting)",
-      "details": []
-    },
-    {
-      "repo": "pricing-engine",
       "check": "lint/development-file",
       "name": "Development Guide",
       "result": "pass",
@@ -204,15 +187,6 @@
       "result": "pass",
       "score": null,
       "reason": "Issues are enabled",
-      "details": []
-    },
-    {
-      "repo": "insurance-rule-dsl",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "na",
-      "score": null,
-      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -282,15 +256,6 @@
     },
     {
       "repo": "quote-calculator-demo",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "na",
-      "score": null,
-      "reason": "security: managed (covered by org/private-reporting)",
-      "details": []
-    },
-    {
-      "repo": "quote-calculator-demo",
       "check": "lint/development-file",
       "name": "Development Guide",
       "result": "pass",
@@ -350,15 +315,6 @@
       "result": "pass",
       "score": null,
       "reason": "Issues are enabled",
-      "details": []
-    },
-    {
-      "repo": "pdf-render-service",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "pass",
-      "score": null,
-      "reason": "Private vulnerability reporting is enabled",
       "details": []
     },
     {
@@ -430,15 +386,6 @@
     },
     {
       "repo": "design-guidelines",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "na",
-      "score": null,
-      "reason": "security: managed (covered by org/private-reporting)",
-      "details": []
-    },
-    {
-      "repo": "design-guidelines",
       "check": "lint/development-file",
       "name": "Development Guide",
       "result": "na",
@@ -498,15 +445,6 @@
       "result": "pass",
       "score": null,
       "reason": "Issues are enabled",
-      "details": []
-    },
-    {
-      "repo": "mobile-sdk-ios",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "na",
-      "score": null,
-      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {
@@ -576,15 +514,6 @@
     },
     {
       "repo": "pricing-sandbox",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "na",
-      "score": null,
-      "reason": "security: managed (covered by org/private-reporting)",
-      "details": []
-    },
-    {
-      "repo": "pricing-sandbox",
       "check": "lint/development-file",
       "name": "Development Guide",
       "result": "fail",
@@ -648,15 +577,6 @@
     },
     {
       "repo": "claims-event-schemas",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "na",
-      "score": null,
-      "reason": "security: managed (covered by org/private-reporting)",
-      "details": []
-    },
-    {
-      "repo": "claims-event-schemas",
       "check": "lint/development-file",
       "name": "Development Guide",
       "result": "pass",
@@ -716,15 +636,6 @@
       "result": "pass",
       "score": null,
       "reason": "Issues are enabled",
-      "details": []
-    },
-    {
-      "repo": "kafka-schema-tools",
-      "check": "lint/private-reporting",
-      "name": "Private Vulnerability Reporting",
-      "result": "na",
-      "score": null,
-      "reason": "security: managed (covered by org/private-reporting)",
       "details": []
     },
     {

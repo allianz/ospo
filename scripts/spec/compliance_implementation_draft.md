@@ -14,7 +14,7 @@ Every check has exactly one type:
 
 | Type | When to use | What proves it |
 |---|---|---|
-| **Enforced** | Set centrally; project teams cannot change it | `org_check` compares the setting with the expected value every run; the actual value is in the result's `details` |
+| **Enforced** | Set centrally; project teams cannot change it | Not checked in this version: described in the implementation text (e.g. GV.02). Its effect is measured per repository where a check exists |
 | **Exact check** | Can change per repository, and the condition can be tested precisely | A per-repository check with a clear pass/fail |
 | **Structural check** | Can change per repository, but only the form can be tested, not the content | A per-repository check, plus a "Limits of the check" note on the card |
 | **By construction** | GitHub guarantees it; there is nothing to check | A placeholder check `by-construction/<name>` written by `compliance_report`: one `pass` per active repository. Not a test; its rule says so. It keeps statuses, coverage and the report layout the same as for every other requirement |
@@ -40,7 +40,7 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `lint_repos.js` | exists, extend | Per-repository checks on repository data and the cloned content |
 | `license_scan.js` | exists, extend | SBOM retrieval and dependency licenses |
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
-| `org_check.js` | **new** | Checks the org security policy (VM.01) and the published security advisories of every repository (VM.02). Writes results only. No issues. |
+| `advisories_check.js` | **new** | Checks the published security advisories of every repository (VM.02). Writes results only. No issues. |
 | `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds and applicability (e.g. languages for fuzzing, QA.05), opens and closes issues (see 1.9) |
 | `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses. Renders HTML and Markdown from `data.json` only |
 
@@ -52,7 +52,7 @@ One workflow, `compliance.yaml`, runs every week and replaces the separate sched
 lint_repos --json               → out/lint_repos.json
 license_scan --json             → out/license_scan.json
 archive_repos --json            → out/archive_repos.json
-org_check                       → out/org_check.json
+advisories_check                → out/advisories_check.json
 scorecard_check                 → out/scorecard.json
 compliance_report --config config/compliance_report_bsi.yaml
                                 ← out/*.json + previous bsi-data.json + its notes file
@@ -118,14 +118,14 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 
 - **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with would live in a tool-specific block in the header; today no tool needs one. A tool writes such a block only if the report computes with it; raw API data that only serves as evidence goes into `details`, not into a block.
 - **`catalogue`:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`, optional `fix`), the same fields as Scorecard plus `fix`. `fix` is one sentence telling a project team what to do when the check fails, e.g. "Add CONTRIBUTING.md to .github/ …". It is written once per check, never per result, and is shown in the report next to "How it is verified" and in the tool's issue body. Checks the project team cannot fix (central settings, e.g. `lint/public`) say who acts. `scorecard_check` leaves `fix` out; the Scorecard `url` already explains remediation. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `catalogue`, adding the defining `tool` to each entry (see 1.10); the report uses it for "How it is verified". Each spec therefore needs one heading per check, named like the check's `name`, with the rule and a "How to fix" line that is the source of `fix`.
-- **Enforced checks: one check per expected value.** An org-level check that fails makes every requirement it is mapped to "Not met" (1.7), so a check must only test what all of its requirements depend on. `org_check` therefore has one check per setting, e.g. `org/security-policy` (VM.01), not one check per API object. Its `reason` states the values, and `details` has one line per compared field: `Info: <field>: <actual> (expected <expected>)`, or `Warn: …` when it deviates.
+- **All checks are per repository.** No tool writes org-level results (`repo: null`) in this version. The format and the status logic (1.7) still allow them: an org-level check that fails would make every requirement it is mapped to "Not met".
 - **Thresholds come from the tool's configuration** and are written once per check into the catalogue, never into the results. `config_sha256` pins the configuration of each run.
-- **Whether a check counts** is decided only by the mapping in the report configuration (1.8). Unmapped checks (e.g. `sbom/license-coverage`) are written like any other result and do not affect a status.
+- **Whether a check counts** is decided only by the mapping in the report configuration (1.8). Tools write only checks that are mapped to a requirement; a tool's other checks (e.g. the deny list in `license_scan`, the required files in `lint_repos`) keep running and opening their issues, but stay out of the JSON. An unmapped check found in a tool file would not affect a status.
 - `skipped` lists repositories without results (excluded, archived). `errors` lists repository × check pairs the tool could not evaluate. Both are always present, `[]` if empty, so every file has the same shape.
 
 ### 1.7 Status logic (computed by the report)
 
-Each requirement is assessed once, at its own level: a MUST requirement on its MUST clause, a SHOULD requirement on its SHOULD clause. Weaker clauses inside a requirement (the SHOULD in GV.01 and VM.01, the MAY in BR.03) are not assessed in this version. A requirement has one list of checks and one coverage figure: a repository passes only if it passes every applicable check of the requirement. Org-level checks do not count toward coverage; they decide the status. A requirement with only org-level checks (VM.01) therefore applies to every active repository, and all of them pass (100%).
+Each requirement is assessed once, at its own level: a MUST requirement on its MUST clause, a SHOULD requirement on its SHOULD clause. Weaker clauses inside a requirement (the SHOULD in GV.01 and VM.01, the MAY in BR.03) are not assessed in this version. A requirement has one list of checks and one coverage figure: a repository passes only if it passes every applicable check of the requirement. Org-level checks, if a tool ever writes one, do not count toward coverage; they only decide the status.
 
 - **Met:** all applicable repositories pass, and every org-level check passes.
 - **Met, with findings:** some applicable repositories fail, and every org-level check passes.
@@ -162,7 +162,7 @@ inputs:                      # tool files expected in out/ (see 1.10)
   - { file: lint_repos.json,    script: scripts/lint_repos.js }
   - { file: license_scan.json,  script: scripts/license_scan.js }
   - { file: archive_repos.json, script: scripts/archive_repos.js }
-  - { file: org_check.json,     script: scripts/org_check.js }
+  - { file: advisories_check.json, script: scripts/advisories_check.js }
   - { file: scorecard.json,     script: scripts/scorecard_check.js }
 
 notes: config/compliance_report_bsi_notes.md   # optional, any path; see below
@@ -288,7 +288,7 @@ as_of: 2026-11-03            # the run the text was written for
 
 > The project's repository, websites and sensitive data MUST be protected against unauthorized actions.
 
-**Implementation** (documented, not checked by `org_check`)
+**Implementation** (documented, not checked)
 - **Repository:** Changes need a company account with SSO and MFA; 2FA is required for all members. The base permission is `none`: only teams get access, synced with Entra ID, and members cannot create repositories. Every permission change is a pull request and is approved first; `create_repos` applies it. The org ruleset `ospo-managed` protects the default branches: pull request required, no force-push, no deletion.
 - **Websites:** published with GitHub Pages only, so the repository's access rules apply.
 - **Sensitive data:** secret scanning and push protection are on for every repository through the security configuration `ospo-managed`.
@@ -334,19 +334,15 @@ as_of: 2026-11-03            # the run the text was written for
 **Exact check**
 - `sbom/available`: the SBOM can be retrieved for the default branch. This is the same check as QA.01.
 
-**For information, no issue**
-- The share of components without license information (`NOASSERTION`) per repository.
-- Projects usually cannot fix missing license metadata of upstream packages, so an issue would be noise.
-
 **Script:** `license_scan` (extend).
 
 **Limits of the check:** components not declared through a package manager (copied-in code) are not in the SBOM.
 
-**Not part of the TR:** the deny list for dependency licenses (the existing `license_scan` issue) is internal policy. It stays in place but is not mapped to a requirement.
+**Not part of the TR:** the deny list for dependency licenses (the existing `license_scan` issue) is internal policy. It stays in place, but is not written to the JSON and not in the report. Missing license information of components (`NOASSERTION`) is not measured: projects usually cannot fix upstream metadata.
 
-**New work:** record `sbom/available` per repository and the `NOASSERTION` share, plus `--json`.
+**New work:** record `sbom/available` per repository, plus `--json`.
 
-> Differs from the mock-up: LE.02 becomes "Met" based on SBOM availability. The `NOASSERTION` share is information only.
+> Differs from the mock-up: LE.02 becomes "Met" based on SBOM availability. The `NOASSERTION` share is not reported.
 
 ---
 
@@ -434,7 +430,7 @@ as_of: 2026-11-03            # the run the text was written for
 
 **Exact check:** `scorecard/fuzzing` = 10 (Scorecard Fuzzing is 0 or 10). `scorecard_check` reads the languages and writes `na` for repositories without a non-memory-safe language above 5%, with a `details` line saying so; for the others it applies the threshold as usual.
 
-**For information:** `org/code-scanning`, code scanning enabled in the security configuration (`org_check`). Not mapped: QA.05 is assessed on `scorecard/fuzzing` only, so code scanning that is switched off does not make QA.05 "Not met". **(verify** that code scanning is part of `ospo-managed`.)
+**Not checked:** code scanning (CodeQL) through the security configuration is part of the implementation text only. **(verify** that code scanning is part of `ospo-managed`.)
 
 **Script:** `scorecard_check` (languages, threshold).
 
@@ -595,11 +591,15 @@ as_of: 2026-11-03            # the run the text was written for
 
 **Implementation:** An organisation-wide `SECURITY.md` in `allianz/.github` applies to every repository without its own. It names the OSPO as contact and asks for private vulnerability reporting, which is enabled on every repository.
 
-- **Enforced:** `org/security-policy`. `org_check` confirms that `allianz/.github/SECURITY.md` exists and contains a contact. Repositories with their own `SECURITY.md` are listed in its `details` for information.
+**Exact check:** `scorecard/security-policy` = 10, for all repositories. Scorecard finds a `SECURITY.md` in the repository or, if there is none, the org default in `allianz/.github`, and scores its content: linked content (contact), disclosure text, free text. Observed on real data: yukimi scores 10 through `allianz/.github/SECURITY.md`. A repository with its own policy that names no contact scores lower and fails. **(verify** the scoring of a repository's own policy without disclosure text.)
 
-**SHOULD clause (private reporting):** not assessed in this version (see 1.7). Private vulnerability reporting is still enabled through the `ospo-managed` security configuration. `org/private-reporting` (the configuration) and `lint/private-reporting` (repositories with `security: custom`) run for information and are not mapped to a requirement.
+**Script:** `scorecard_check`.
 
-**New work:** the `org/security-policy` check in `org_check`.
+**Issue:** Scorecard issue, label `scorecard/security-policy`.
+
+**SHOULD clause (private reporting):** not assessed in this version (see 1.7). Private vulnerability reporting is still enabled through the `ospo-managed` security configuration. Neither the security configuration nor individual repositories are checked for it.
+
+**New work:** the threshold in `scorecard_check`.
 
 ---
 
@@ -614,7 +614,7 @@ as_of: 2026-11-03            # the run the text was written for
 - `fail` if at least one took longer. A late publication therefore counts for 12 months.
 - `reason` names each advisory and its days to publication, e.g. "1 advisory published in the last 12 months: GHSA-7q4x-2m9c-h3vf after 18 days".
 
-**Script:** `org_check`.
+**Script:** `advisories_check` (new, separate for now).
 
 **Issue:** none. A failure is a past event that the project team cannot fix any more; it disappears after 12 months.
 
