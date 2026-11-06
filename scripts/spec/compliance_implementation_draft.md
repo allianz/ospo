@@ -17,7 +17,7 @@ Every check has exactly one type:
 | **Enforced** | Set centrally; project teams cannot change it | `org_check` compares the setting with the expected value every run; the actual value is in the result's `details` |
 | **Exact check** | Can change per repository, and the condition can be tested precisely | A per-repository check with a clear pass/fail |
 | **Structural check** | Can change per repository, but only the form can be tested, not the content | A per-repository check, plus a "Limits of the check" note on the card |
-| **By construction** | GitHub guarantees it; there is nothing to check | A statement in the implementation text |
+| **By construction** | GitHub guarantees it; there is nothing to check | A placeholder check `by-construction/<name>` written by `compliance_report`: one `pass` per active repository. Not a test; its rule says so. It keeps statuses, coverage and the report layout the same as for every other requirement |
 | **Not verifiable** | No practical way to verify (SHOULD or MAY only) | Nothing. The requirement has status "Not assessed" and is not counted |
 
 Rule: a MUST can never rely on **Not verifiable**.
@@ -238,7 +238,7 @@ as_of: 2026-11-03            # the run the text was written for
    - `catalogue`: the union of all catalogues. Each entry gets the defining `tool` and keeps `threshold` and `documentation` (`url`, `short`). `name` is dropped: the report shows the check ID. `fix` is kept only for checks the OSPO fixes and no issue carries: org-level checks and `compliance_report`'s own checks.
    - `results`, concatenated in input order. Each row keeps `repo`, `check` and `result`; `score` only for scored checks (the catalogue entry has a `threshold`); `reason` only for org-level results (`repo: null`), where it states the checked values. `name`, `details` and the rest of `reason` are not copied; the tool is found through `catalogue[check].tool`.
    - `skipped` and `errors`, concatenated, each row with `tool`.
-4. **Add own results.** Checks that need data from several tools or runs are computed here, with their own check IDs (`report/…`) and catalogue entries (`tool: compliance_report`). They open no issues. Today there are none. In addition, every active repository that a tool skipped (`excluded_repos`) gets a `fail` result for each mapped per-repository check of that tool (1.2).
+4. **Add own results.** Checks that need data from several tools or runs are computed here, with their own check IDs (`report/…`) and catalogue entries (`tool: compliance_report`). They open no issues. Today there are none. `compliance_report` also writes the placeholder checks `by-construction/…` (1.1): one `pass` per active repository. In addition, every active repository that a tool skipped (`excluded_repos`) gets a `fail` result for each mapped per-repository check of that tool (1.2).
 5. **Compute** from the merged results and the report configuration only:
    - `scope`: active and archived repositories;
    - `requirements`: the mapped checks, status and coverage per requirement (1.7);
@@ -589,11 +589,11 @@ as_of: 2026-11-03            # the run the text was written for
 
 **Covered by BR.03:** for built assets, through the attestation.
 
-**Check:** none of its own.
+**Check:** `by-construction/source-archives` (`compliance_report`): a placeholder, one `pass` per active repository (1.1). It tests nothing; its rule says "Not a test; always passes". It adds one passing result per active repository to the compliance %.
 
 **Limits:** source tarballs uploaded by hand as release assets are not covered. The release template removes the need for them.
 
-**New work:** none beyond BR.03.
+**New work:** the placeholder check in `compliance_report` (trivial).
 
 > Differs from the mock-up: the mock-up used Scorecard Binary-Artifacts. That check finds binaries *in the repository*, which is a different question, so it is dropped here.
 
