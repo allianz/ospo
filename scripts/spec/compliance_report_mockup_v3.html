@@ -211,6 +211,12 @@
   details.datatable table, details.more table { margin-top: 6px; }
 
   .scroll-x { overflow-x: auto; }
+  /* narrow windows: let headers and coverage wrap so the tables need less width; .scroll-x catches the rest */
+  @media (max-width: 860px) {
+    th { white-space: normal; }
+    .cov { grid-template-columns: minmax(60px, 90px); white-space: normal; gap: 4px; }
+    .cov .txt { white-space: normal; }
+  }
 
   #tip {
     position: fixed; z-index: 10; pointer-events: none;
@@ -271,6 +277,7 @@
   .why { white-space: nowrap; }
   @media print {
     .filters, .filter-count, .showall, .pager-bar, .mockctl { display: none !important; }
+    .scroll-x { overflow: visible; }
   }
 </style>
 </head>
@@ -329,10 +336,12 @@
     <h2><span class="num">2</span>Requirement status</h2>
     <p class="lead">Every requirement with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. Every repository with the requirements it fails is listed in section 5.</p>
     <div class="card" style="padding:6px 8px">
+      <div class="scroll-x">
       <table id="req-table">
         <thead><tr><th>ID</th><th>Requirement</th><th>Level</th><th>Status</th><th>Coverage</th><th id="req-trend-h">Trend</th></tr></thead>
         <tbody></tbody>
       </table>
+      </div>
     </div>
   </section>
 
@@ -389,12 +398,14 @@
         <button type="button" id="r-reset">Reset</button>
       </div>
       <div class="filter-count" id="r-count"></div>
+      <div class="scroll-x">
       <table id="repos-table">
         <thead><tr>
           <th>Repository</th><th class="num">Failed requirements</th><th>Requirements</th><th>Failing checks</th><th class="num">Checks passed</th><th>Issues</th>
         </tr></thead>
         <tbody></tbody>
       </table>
+      </div>
       <div class="pager-bar">
         <nav class="pager" id="r-pager" aria-label="Repository table pages"></nav>
         <label class="pager-size">Rows per page <select id="r-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label>
