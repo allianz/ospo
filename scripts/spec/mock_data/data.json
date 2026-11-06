@@ -132,33 +132,28 @@
       "mobile-sdk-ios",
       "pricing-sandbox",
       "claims-event-schemas",
-      "kafka-schema-tools"
+      "kafka-schema-tools",
+      "ng-aquila"
     ],
     "archived": [
       "legacy-xml-mapper",
       "old-batch-tools"
-    ],
-    "excluded": [
-      {
-        "repo": "ng-aquila",
-        "deviation": "D-03"
-      }
     ]
   },
   "summary": {
-    "checks_evaluated": 146,
+    "checks_evaluated": 166,
     "checks_passed": 127,
-    "compliance_pct": 87.0,
+    "compliance_pct": 76.5,
     "requirements_by_status": {
-      "met": 5,
-      "met-findings": 13,
+      "met": 3,
+      "met-findings": 15,
       "not-met": 0,
-      "deviation-accepted": 1,
+      "not-assessed": 1,
       "optional": 1
     },
     "must_met": 15,
     "must_total": 15,
-    "failing_repositories": 6
+    "failing_repositories": 7
   },
   "requirements": [
     {
@@ -170,9 +165,9 @@
         "lint/contributing"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 7,
-        "failing": 2,
+        "failing": 3,
         "not_applicable": 0
       }
     },
@@ -195,9 +190,9 @@
         "scorecard/token-permissions"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -211,9 +206,9 @@
         "lint/license-type"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -226,9 +221,9 @@
         "sbom/available"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -242,9 +237,9 @@
         "sbom/available"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -252,15 +247,15 @@
       "id": "QA.02",
       "level": "MUST",
       "title": "Source code publicly readable",
-      "status": "met",
+      "status": "met-findings",
       "checks": [
         "org/repo-creation",
         "lint/public"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 9,
-        "failing": 0,
+        "failing": 1,
         "not_applicable": 0
       }
     },
@@ -273,9 +268,9 @@
         "lint/issues-enabled"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -289,9 +284,9 @@
         "scorecard/ci-tests"
       ],
       "repositories": {
-        "applicable": 8,
+        "applicable": 9,
         "passing": 6,
-        "failing": 2,
+        "failing": 3,
         "not_applicable": 1
       }
     },
@@ -299,14 +294,14 @@
       "id": "QA.05",
       "level": "SHOULD",
       "title": "Memory safety issues reduced",
-      "status": "met",
+      "status": "met-findings",
       "checks": [
         "lint/memory-safety-section"
       ],
       "repositories": {
-        "applicable": 1,
+        "applicable": 2,
         "passing": 1,
-        "failing": 0,
+        "failing": 1,
         "not_applicable": 8
       }
     },
@@ -320,9 +315,9 @@
         "scorecard/code-review"
       ],
       "repositories": {
-        "applicable": 8,
+        "applicable": 9,
         "passing": 7,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 1
       }
     },
@@ -336,9 +331,9 @@
         "lint/development-build"
       ],
       "repositories": {
-        "applicable": 8,
+        "applicable": 9,
         "passing": 6,
-        "failing": 2,
+        "failing": 3,
         "not_applicable": 1
       }
     },
@@ -351,9 +346,9 @@
         "lint/versioning"
       ],
       "repositories": {
-        "applicable": 4,
+        "applicable": 5,
         "passing": 3,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 5
       }
     },
@@ -366,9 +361,9 @@
         "scorecard/signed-releases"
       ],
       "repositories": {
-        "applicable": 4,
+        "applicable": 5,
         "passing": 2,
-        "failing": 2,
+        "failing": 3,
         "not_applicable": 5
       }
     },
@@ -381,9 +376,9 @@
         "lint/release-notes"
       ],
       "repositories": {
-        "applicable": 4,
+        "applicable": 5,
         "passing": 3,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 5
       }
     },
@@ -398,8 +393,7 @@
       "id": "BR.06",
       "level": "SHOULD",
       "title": "Builds reproducible",
-      "status": "deviation-accepted",
-      "deviation": "D-01"
+      "status": "not-assessed"
     },
     {
       "id": "VM.01",
@@ -442,24 +436,6 @@
       "status": "optional"
     }
   ],
-  "deviations": [
-    {
-      "id": "D-01",
-      "requirement": "BR.06",
-      "scope": "all repositories",
-      "approved_by": "Head of OSPO, ISO",
-      "valid_until": "2027-09-30",
-      "expired": false
-    },
-    {
-      "id": "D-03",
-      "requirement": "scope",
-      "scope": "ng-aquila",
-      "approved_by": "Legal, Head of OSPO",
-      "valid_until": "2026-12-31",
-      "expired": false
-    }
-  ],
   "archivals": [
     {
       "repo": "legacy-xml-mapper",
@@ -479,111 +455,111 @@
   "history": [
     {
       "date": "2026-10-06",
-      "compliance_pct": 89.1,
-      "failing_repositories": 7,
+      "compliance_pct": 78.6,
+      "failing_repositories": 8,
       "coverage": {
-        "GV.01": 62.5,
-        "GV.02": 87.5,
-        "LE.01": 87.5,
-        "LE.02": 87.5,
-        "QA.01": 87.5,
-        "QA.02": 100.0,
-        "QA.03": 87.5,
-        "QA.04": 57.1,
-        "QA.05": 100.0,
-        "QA.06": 75.0,
-        "BR.01": 71.4,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 50.0,
+        "GV.01": 54.7,
+        "GV.02": 78.6,
+        "LE.01": 78.6,
+        "LE.02": 78.6,
+        "QA.01": 78.6,
+        "QA.02": 90.0,
+        "QA.03": 78.6,
+        "QA.04": 48.8,
+        "QA.05": 50.0,
+        "QA.06": 65.3,
+        "BR.01": 63.1,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 35.0,
         "DE.01": null
       }
     },
     {
       "date": "2026-10-13",
-      "compliance_pct": 89.6,
-      "failing_repositories": 7,
+      "compliance_pct": 79.1,
+      "failing_repositories": 8,
       "coverage": {
-        "GV.01": 75.0,
-        "GV.02": 87.5,
-        "LE.01": 87.5,
-        "LE.02": 100.0,
-        "QA.01": 100.0,
-        "QA.02": 100.0,
-        "QA.03": 87.5,
-        "QA.04": 71.4,
-        "QA.05": 100.0,
-        "QA.06": 75.0,
-        "BR.01": 85.7,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 50.0,
+        "GV.01": 67.2,
+        "GV.02": 78.6,
+        "LE.01": 78.6,
+        "LE.02": 91.1,
+        "QA.01": 91.1,
+        "QA.02": 90.0,
+        "QA.03": 78.6,
+        "QA.04": 63.1,
+        "QA.05": 50.0,
+        "QA.06": 65.3,
+        "BR.01": 77.4,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 35.0,
         "DE.01": null
       }
     },
     {
       "date": "2026-10-20",
-      "compliance_pct": 90.3,
-      "failing_repositories": 6,
+      "compliance_pct": 79.8,
+      "failing_repositories": 7,
       "coverage": {
-        "GV.01": 75.0,
-        "GV.02": 100.0,
-        "LE.01": 87.5,
-        "LE.02": 100.0,
-        "QA.01": 100.0,
-        "QA.02": 100.0,
-        "QA.03": 87.5,
-        "QA.04": 71.4,
-        "QA.05": 100.0,
-        "QA.06": 87.5,
-        "BR.01": 85.7,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 75.0,
+        "GV.01": 67.2,
+        "GV.02": 91.1,
+        "LE.01": 78.6,
+        "LE.02": 91.1,
+        "QA.01": 91.1,
+        "QA.02": 90.0,
+        "QA.03": 78.6,
+        "QA.04": 63.1,
+        "QA.05": 50.0,
+        "QA.06": 77.8,
+        "BR.01": 77.4,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 60.0,
         "DE.01": 0.0
       }
     },
     {
       "date": "2026-10-27",
-      "compliance_pct": 90.8,
-      "failing_repositories": 6,
+      "compliance_pct": 80.3,
+      "failing_repositories": 7,
       "coverage": {
-        "GV.01": 75.0,
-        "GV.02": 87.5,
-        "LE.01": 87.5,
-        "LE.02": 100.0,
-        "QA.01": 100.0,
-        "QA.02": 100.0,
-        "QA.03": 87.5,
-        "QA.04": 85.7,
-        "QA.05": 100.0,
-        "QA.06": 87.5,
-        "BR.01": 85.7,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 75.0,
+        "GV.01": 67.2,
+        "GV.02": 78.6,
+        "LE.01": 78.6,
+        "LE.02": 91.1,
+        "QA.01": 91.1,
+        "QA.02": 90.0,
+        "QA.03": 78.6,
+        "QA.04": 77.4,
+        "QA.05": 50.0,
+        "QA.06": 77.8,
+        "BR.01": 77.4,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 60.0,
         "DE.01": 0.0
       }
     },
     {
       "date": "2026-11-03",
-      "compliance_pct": 87.0,
-      "failing_repositories": 6,
+      "compliance_pct": 76.5,
+      "failing_repositories": 7,
       "coverage": {
-        "GV.01": 77.8,
-        "GV.02": 88.9,
-        "LE.01": 88.9,
-        "LE.02": 88.9,
-        "QA.01": 88.9,
-        "QA.02": 100.0,
-        "QA.03": 88.9,
-        "QA.04": 75.0,
-        "QA.05": 100.0,
-        "QA.06": 87.5,
-        "BR.01": 75.0,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 75.0,
+        "GV.01": 70.0,
+        "GV.02": 80.0,
+        "LE.01": 80.0,
+        "LE.02": 80.0,
+        "QA.01": 80.0,
+        "QA.02": 90.0,
+        "QA.03": 80.0,
+        "QA.04": 66.7,
+        "QA.05": 50.0,
+        "QA.06": 77.8,
+        "BR.01": 66.7,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 60.0,
         "DE.01": 50.0
       }
     }
@@ -1515,6 +1491,71 @@
       "result": "na"
     },
     {
+      "repo": "ng-aquila",
+      "check": "lint/license-file",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/license-type",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/contributing",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/public",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/issues-enabled",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/no-direct-collaborators",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/secret-scanning",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/development-file",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/development-build",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/development-test",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/versioning",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/release-notes",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/memory-safety-section",
+      "result": "fail"
+    },
+    {
       "repo": "pricing-engine",
       "check": "sbom/available",
       "result": "pass"
@@ -1648,6 +1689,11 @@
       "repo": "kafka-schema-tools",
       "check": "license/denied",
       "result": "pass"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "sbom/available",
+      "result": "fail"
     },
     {
       "repo": "legacy-xml-mapper",
@@ -2108,6 +2154,36 @@
       "check": "scorecard/fuzzing",
       "result": "fail",
       "score": 0
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/ci-tests",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/code-review",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/signed-releases",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/dangerous-workflow",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/token-permissions",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/branch-protection",
+      "result": "fail"
     },
     {
       "repo": "old-batch-tools",

@@ -12,9 +12,9 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | `drift.json` | `create_repos.js --dry-run --json` | Planned changes (none) = no drift |
 | `org_check.json` | `org_check.js` | Org-level checks, one per expected value: org settings, ruleset, security configuration, org SECURITY.md, advisories. Actual values are in `details`; no raw API data |
 | `scorecard.json` | `scorecard_check.js` | Scorecard CLI results per repository, converted to the common format with thresholds applied |
-| `data.json` | `compliance_report.js` | Aggregation of all files above (draft 1.10), reduced to what the report shows: shown header fields in `inputs`; `catalogue` without `name`; `results` rows with `repo`, `check`, `result`, plus `score` (scored checks) or `reason` (org-level checks); `skipped` and `errors` with `tool`. Plus requirement statuses, summary, history. The only input for the HTML report. Created by hand from the files above |
+| `data.json` | `compliance_report.js` | Aggregation of all files above (draft 1.10), reduced to what the report shows: shown header fields in `inputs`; `catalogue` without `name`; `results` rows with `repo`, `check`, `result`, plus `score` (scored checks) or `reason` (org-level checks); `skipped` and `errors` with `tool`. Plus `fail` results for active repositories a tool skipped, requirement statuses, summary, history. The only input for the HTML report. Created by hand from the files above |
 
-## The 11 repositories and what each one demonstrates
+## The 12 repositories and what each one demonstrates
 
 | Repository | Demonstrates |
 |---|---|
@@ -28,9 +28,12 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | `claims-event-schemas` | Issues disabled (QA.03); a user with direct access (GV.02) |
 | `kafka-schema-tools` | Inactive with an open notice. Not visible in `archive_repos.json`: open notices are not needed for any check |
 | `legacy-xml-mapper` | Archived by `archive_repos` in this run, 60 days after the notice (DE.01 pass); listed as `skipped` (archived) in `lint_repos.json` and `license_scan.json`, so its missing license is not reported |
+| `ng-aquila` | Excluded from the tools (`excluded_repos`), but counted as failing all of their mapped checks (see below) |
 | `old-batch-tools` | Archived manually between the runs of 13 and 20 Oct. Not in any `archive_repos` output, so `compliance_report` derives the DE.01 failure (`report/archived-outside-process`, a check of `compliance_report` itself, only in `data.json`) |
 
-`ng-aquila` is excluded from scope (deviation D-03) and appears only in `skipped` and `scope.excluded`.
+`ng-aquila` is in `excluded_repos` (license under legal review). `lint_repos`, `license_scan` and `scorecard_check` skip it, so it has no tool results and appears in their `skipped`. It is still active and in scope: `compliance_report` adds a `fail` result to `data.json` for every mapped per-repository check of each tool that skipped it (20 rows), so it fails every requirement with per-repository checks. The skip reason is shown in section A of the report.
+
+There are no deviations. BR.06 has no check because builds cannot be verified as reproducible at portfolio scale. It has status `not-assessed` and is not counted. BR.05 has no check either, but it is `met` by construction (`basis`).
 
 ## Real reference output (not mock data)
 

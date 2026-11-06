@@ -297,7 +297,6 @@
     <a href="#trends">3 Trends</a>
     <a href="#findings">4 Findings</a>
     <a href="#repositories">5 Repositories</a>
-    <a href="#deviations">6 Deviations</a>
     <a href="#method">A Scope &amp; method</a>
   </nav>
 
@@ -400,18 +399,6 @@
         <nav class="pager" id="r-pager" aria-label="Repository table pages"></nav>
         <label class="pager-size">Rows per page <select id="r-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label>
       </div>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── 6 Deviations ─────────────────────────── -->
-  <section id="deviations">
-    <h2><span class="num">6</span>Deviations and exclusions</h2>
-    <p class="lead">Approved deviations from a requirement, and repositories excluded from scope. Each has an expiry date.</p>
-    <div class="card" style="padding:6px 8px">
-      <table id="dev-table">
-        <thead><tr><th>ID</th><th>Req.</th><th>Scope</th><th>Approved by</th><th>Valid until</th><th>Status</th><th>Used by</th></tr></thead>
-        <tbody></tbody>
-      </table>
     </div>
   </section>
 
@@ -572,33 +559,28 @@
       "mobile-sdk-ios",
       "pricing-sandbox",
       "claims-event-schemas",
-      "kafka-schema-tools"
+      "kafka-schema-tools",
+      "ng-aquila"
     ],
     "archived": [
       "legacy-xml-mapper",
       "old-batch-tools"
-    ],
-    "excluded": [
-      {
-        "repo": "ng-aquila",
-        "deviation": "D-03"
-      }
     ]
   },
   "summary": {
-    "checks_evaluated": 146,
+    "checks_evaluated": 166,
     "checks_passed": 127,
-    "compliance_pct": 87.0,
+    "compliance_pct": 76.5,
     "requirements_by_status": {
-      "met": 5,
-      "met-findings": 13,
+      "met": 3,
+      "met-findings": 15,
       "not-met": 0,
-      "deviation-accepted": 1,
+      "not-assessed": 1,
       "optional": 1
     },
     "must_met": 15,
     "must_total": 15,
-    "failing_repositories": 6
+    "failing_repositories": 7
   },
   "requirements": [
     {
@@ -610,9 +592,9 @@
         "lint/contributing"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 7,
-        "failing": 2,
+        "failing": 3,
         "not_applicable": 0
       }
     },
@@ -635,9 +617,9 @@
         "scorecard/token-permissions"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -651,9 +633,9 @@
         "lint/license-type"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -666,9 +648,9 @@
         "sbom/available"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -682,9 +664,9 @@
         "sbom/available"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -692,15 +674,15 @@
       "id": "QA.02",
       "level": "MUST",
       "title": "Source code publicly readable",
-      "status": "met",
+      "status": "met-findings",
       "checks": [
         "org/repo-creation",
         "lint/public"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 9,
-        "failing": 0,
+        "failing": 1,
         "not_applicable": 0
       }
     },
@@ -713,9 +695,9 @@
         "lint/issues-enabled"
       ],
       "repositories": {
-        "applicable": 9,
+        "applicable": 10,
         "passing": 8,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 0
       }
     },
@@ -729,9 +711,9 @@
         "scorecard/ci-tests"
       ],
       "repositories": {
-        "applicable": 8,
+        "applicable": 9,
         "passing": 6,
-        "failing": 2,
+        "failing": 3,
         "not_applicable": 1
       }
     },
@@ -739,14 +721,14 @@
       "id": "QA.05",
       "level": "SHOULD",
       "title": "Memory safety issues reduced",
-      "status": "met",
+      "status": "met-findings",
       "checks": [
         "lint/memory-safety-section"
       ],
       "repositories": {
-        "applicable": 1,
+        "applicable": 2,
         "passing": 1,
-        "failing": 0,
+        "failing": 1,
         "not_applicable": 8
       }
     },
@@ -760,9 +742,9 @@
         "scorecard/code-review"
       ],
       "repositories": {
-        "applicable": 8,
+        "applicable": 9,
         "passing": 7,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 1
       }
     },
@@ -776,9 +758,9 @@
         "lint/development-build"
       ],
       "repositories": {
-        "applicable": 8,
+        "applicable": 9,
         "passing": 6,
-        "failing": 2,
+        "failing": 3,
         "not_applicable": 1
       }
     },
@@ -791,9 +773,9 @@
         "lint/versioning"
       ],
       "repositories": {
-        "applicable": 4,
+        "applicable": 5,
         "passing": 3,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 5
       }
     },
@@ -806,9 +788,9 @@
         "scorecard/signed-releases"
       ],
       "repositories": {
-        "applicable": 4,
+        "applicable": 5,
         "passing": 2,
-        "failing": 2,
+        "failing": 3,
         "not_applicable": 5
       }
     },
@@ -821,9 +803,9 @@
         "lint/release-notes"
       ],
       "repositories": {
-        "applicable": 4,
+        "applicable": 5,
         "passing": 3,
-        "failing": 1,
+        "failing": 2,
         "not_applicable": 5
       }
     },
@@ -838,8 +820,7 @@
       "id": "BR.06",
       "level": "SHOULD",
       "title": "Builds reproducible",
-      "status": "deviation-accepted",
-      "deviation": "D-01"
+      "status": "not-assessed"
     },
     {
       "id": "VM.01",
@@ -882,24 +863,6 @@
       "status": "optional"
     }
   ],
-  "deviations": [
-    {
-      "id": "D-01",
-      "requirement": "BR.06",
-      "scope": "all repositories",
-      "approved_by": "Head of OSPO, ISO",
-      "valid_until": "2027-09-30",
-      "expired": false
-    },
-    {
-      "id": "D-03",
-      "requirement": "scope",
-      "scope": "ng-aquila",
-      "approved_by": "Legal, Head of OSPO",
-      "valid_until": "2026-12-31",
-      "expired": false
-    }
-  ],
   "archivals": [
     {
       "repo": "legacy-xml-mapper",
@@ -919,111 +882,111 @@
   "history": [
     {
       "date": "2026-10-06",
-      "compliance_pct": 89.1,
-      "failing_repositories": 7,
+      "compliance_pct": 78.6,
+      "failing_repositories": 8,
       "coverage": {
-        "GV.01": 62.5,
-        "GV.02": 87.5,
-        "LE.01": 87.5,
-        "LE.02": 87.5,
-        "QA.01": 87.5,
-        "QA.02": 100.0,
-        "QA.03": 87.5,
-        "QA.04": 57.1,
-        "QA.05": 100.0,
-        "QA.06": 75.0,
-        "BR.01": 71.4,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 50.0,
+        "GV.01": 54.7,
+        "GV.02": 78.6,
+        "LE.01": 78.6,
+        "LE.02": 78.6,
+        "QA.01": 78.6,
+        "QA.02": 90.0,
+        "QA.03": 78.6,
+        "QA.04": 48.8,
+        "QA.05": 50.0,
+        "QA.06": 65.3,
+        "BR.01": 63.1,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 35.0,
         "DE.01": null
       }
     },
     {
       "date": "2026-10-13",
-      "compliance_pct": 89.6,
-      "failing_repositories": 7,
+      "compliance_pct": 79.1,
+      "failing_repositories": 8,
       "coverage": {
-        "GV.01": 75.0,
-        "GV.02": 87.5,
-        "LE.01": 87.5,
-        "LE.02": 100.0,
-        "QA.01": 100.0,
-        "QA.02": 100.0,
-        "QA.03": 87.5,
-        "QA.04": 71.4,
-        "QA.05": 100.0,
-        "QA.06": 75.0,
-        "BR.01": 85.7,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 50.0,
+        "GV.01": 67.2,
+        "GV.02": 78.6,
+        "LE.01": 78.6,
+        "LE.02": 91.1,
+        "QA.01": 91.1,
+        "QA.02": 90.0,
+        "QA.03": 78.6,
+        "QA.04": 63.1,
+        "QA.05": 50.0,
+        "QA.06": 65.3,
+        "BR.01": 77.4,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 35.0,
         "DE.01": null
       }
     },
     {
       "date": "2026-10-20",
-      "compliance_pct": 90.3,
-      "failing_repositories": 6,
+      "compliance_pct": 79.8,
+      "failing_repositories": 7,
       "coverage": {
-        "GV.01": 75.0,
-        "GV.02": 100.0,
-        "LE.01": 87.5,
-        "LE.02": 100.0,
-        "QA.01": 100.0,
-        "QA.02": 100.0,
-        "QA.03": 87.5,
-        "QA.04": 71.4,
-        "QA.05": 100.0,
-        "QA.06": 87.5,
-        "BR.01": 85.7,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 75.0,
+        "GV.01": 67.2,
+        "GV.02": 91.1,
+        "LE.01": 78.6,
+        "LE.02": 91.1,
+        "QA.01": 91.1,
+        "QA.02": 90.0,
+        "QA.03": 78.6,
+        "QA.04": 63.1,
+        "QA.05": 50.0,
+        "QA.06": 77.8,
+        "BR.01": 77.4,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 60.0,
         "DE.01": 0.0
       }
     },
     {
       "date": "2026-10-27",
-      "compliance_pct": 90.8,
-      "failing_repositories": 6,
+      "compliance_pct": 80.3,
+      "failing_repositories": 7,
       "coverage": {
-        "GV.01": 75.0,
-        "GV.02": 87.5,
-        "LE.01": 87.5,
-        "LE.02": 100.0,
-        "QA.01": 100.0,
-        "QA.02": 100.0,
-        "QA.03": 87.5,
-        "QA.04": 85.7,
-        "QA.05": 100.0,
-        "QA.06": 87.5,
-        "BR.01": 85.7,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 75.0,
+        "GV.01": 67.2,
+        "GV.02": 78.6,
+        "LE.01": 78.6,
+        "LE.02": 91.1,
+        "QA.01": 91.1,
+        "QA.02": 90.0,
+        "QA.03": 78.6,
+        "QA.04": 77.4,
+        "QA.05": 50.0,
+        "QA.06": 77.8,
+        "BR.01": 77.4,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 60.0,
         "DE.01": 0.0
       }
     },
     {
       "date": "2026-11-03",
-      "compliance_pct": 87.0,
-      "failing_repositories": 6,
+      "compliance_pct": 76.5,
+      "failing_repositories": 7,
       "coverage": {
-        "GV.01": 77.8,
-        "GV.02": 88.9,
-        "LE.01": 88.9,
-        "LE.02": 88.9,
-        "QA.01": 88.9,
-        "QA.02": 100.0,
-        "QA.03": 88.9,
-        "QA.04": 75.0,
-        "QA.05": 100.0,
-        "QA.06": 87.5,
-        "BR.01": 75.0,
-        "BR.02": 75.0,
-        "BR.03": 50.0,
-        "BR.04": 75.0,
+        "GV.01": 70.0,
+        "GV.02": 80.0,
+        "LE.01": 80.0,
+        "LE.02": 80.0,
+        "QA.01": 80.0,
+        "QA.02": 90.0,
+        "QA.03": 80.0,
+        "QA.04": 66.7,
+        "QA.05": 50.0,
+        "QA.06": 77.8,
+        "BR.01": 66.7,
+        "BR.02": 60.0,
+        "BR.03": 40.0,
+        "BR.04": 60.0,
         "DE.01": 50.0
       }
     }
@@ -1955,6 +1918,71 @@
       "result": "na"
     },
     {
+      "repo": "ng-aquila",
+      "check": "lint/license-file",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/license-type",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/contributing",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/public",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/issues-enabled",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/no-direct-collaborators",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/secret-scanning",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/development-file",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/development-build",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/development-test",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/versioning",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/release-notes",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "lint/memory-safety-section",
+      "result": "fail"
+    },
+    {
       "repo": "pricing-engine",
       "check": "sbom/available",
       "result": "pass"
@@ -2088,6 +2116,11 @@
       "repo": "kafka-schema-tools",
       "check": "license/denied",
       "result": "pass"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "sbom/available",
+      "result": "fail"
     },
     {
       "repo": "legacy-xml-mapper",
@@ -2550,6 +2583,36 @@
       "score": 0
     },
     {
+      "repo": "ng-aquila",
+      "check": "scorecard/ci-tests",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/code-review",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/signed-releases",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/dangerous-workflow",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/token-permissions",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "scorecard/branch-protection",
+      "result": "fail"
+    },
+    {
       "repo": "old-batch-tools",
       "check": "report/archived-outside-process",
       "result": "fail"
@@ -2678,7 +2741,7 @@ function scaleMock(factor, worst) {
 
   const PRE = ['claims', 'policy', 'pricing', 'quote', 'risk', 'fraud', 'payment', 'broker', 'motor', 'travel', 'health', 'life', 'pension', 'fleet', 'geo', 'iot', 'event', 'schema', 'customer', 'partner', 'document', 'billing', 'underwriting', 'reinsurance'];
   const SUF = ['service', 'sdk', 'connector', 'rules', 'engine', 'toolkit', 'lib', 'api', 'cli', 'ui', 'gateway', 'adapter', 'pipeline', 'models', 'docs', 'templates', 'operator', 'exporter', 'plugin', 'starter'];
-  const used = new Set([...templates, ...DATA.scope.archived, ...DATA.scope.excluded.map(x => x.repo)]);
+  const used = new Set([...templates, ...DATA.scope.archived, ...DATA.skipped.map(x => x.repo)]);
   const newName = () => {
     for (let i = 0; i < 40; i++) { const n = `${pick(PRE)}-${pick(SUF)}`; if (!used.has(n)) { used.add(n); return n; } }
     for (let k = 2; ; k++) { const n = `${pick(PRE)}-${pick(SUF)}-${k}`; if (!used.has(n)) { used.add(n); return n; } }
@@ -2765,7 +2828,6 @@ function sourceNode(check) {
   return h('span', {}, h('a', { href: `https://github.com/${ORG}/ospo/blob/${DATA.ospo_sha}/${inp.script}` }, h('code', { style: 'color:inherit', text: inp.script.split('/').pop() })),
     sv ? h('div', { class: 'small muted', text: `Scorecard ${sv}` }) : null);
 }
-const DEV = Object.fromEntries(DATA.deviations.map(d => [d.id, d]));
 const FINDINGS = deriveFindings();
 const RESULT_KEY = new Map(REPO_RESULTS.map(r => [r.repo + '|' + r.check, r]));
 /* Ranges for "number of failed requirements": one definition for the chart in section 4 and the filter in section 5 */
@@ -2821,7 +2883,7 @@ const STATUS = {
   'met':                { label: 'Met',                        color: 'var(--good)',     glyph: '✓', ink: '#fff' },
   'met-findings':        { label: 'Met, with findings', color: 'repeating-linear-gradient(135deg, var(--good) 0 6px, var(--good-2) 6px 9px)', glyph: '✓', ink: '#fff', ring: 'ring-good' },
   'not-met':            { label: 'Not met',                    color: 'var(--critical)', glyph: '✕', ink: '#fff' },
-  'deviation-accepted': { label: 'Deviation accepted',         color: 'var(--neutral)',  glyph: 'D', ink: '#fff' },
+  'not-assessed':       { label: 'Not assessed',               color: 'var(--neutral)',  glyph: '–', ink: '#fff' },
   'optional':           { label: 'Optional',                   color: 'transparent',     glyph: '–', ink: 'var(--muted)', ring: 'ring' },
   'pass':               { label: 'Pass',                       color: 'var(--good)',     glyph: '✓', ink: '#fff' },
   'fail':               { label: 'Fail',                       color: 'var(--critical)', glyph: '✕', ink: '#fff' },
@@ -3109,7 +3171,7 @@ const errN = DATA.errors.length;
   $('hero-value').append(String(S.compliance_pct), h('small', { text: '%' }));
   $('hero-delta').append(deltaNode(S.compliance_pct, PREV?.compliance_pct, { unit: ' pts' }) ?? '');
   $('hero-spark').append(sparkline(HISTORY.map(x => x.compliance_pct), { w: 220, hgt: 36 }));
-  $('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results and unmapped checks are not counted.`;
+  $('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results and unmapped checks are not counted; an active repository that a tool skipped fails that tool's checks.`;
 
   const withF = new Set(FINDINGS.map(f => f.repo));
   const reqsWithF = reqs => reqs.filter(q => q.repositories?.failing).map(q => q.id);
@@ -3131,13 +3193,18 @@ const errN = DATA.errors.length;
   const sb = $('status-bars');
   for (const lvl of ['MUST', 'SHOULD']) {
     const reqs = DATA.requirements.filter(q => q.level === lvl);
-    segBar(sb, ['met', 'met-findings', 'not-met', 'deviation-accepted', 'optional'].map(st => {
+    segBar(sb, ['met', 'met-findings', 'not-met'].map(st => {
       const qs = reqs.filter(q => q.status === st);
       return { label: STATUS[st].label, color: STATUS[st].color, ink: STATUS[st].ink, border: STATUS[st].ring === 'ring', value: qs.length, names: qs.map(q => q.id) };
     }), { title: `${lvl} requirements`, unit: 'requirements', table: false });
   }
   const mayReqs = DATA.requirements.filter(q => q.level === 'MAY');
-  if (mayReqs.length) sb.append(h('p', { class: 'chart-sub', style: 'margin:4px 0 0', text: `Plus ${plural(mayReqs.length, 'MAY requirement')} (${mayReqs.map(q => q.id).join(', ')}), reported for information. Details per requirement in section 2.` }));
+  const naReqs = DATA.requirements.filter(q => q.status === 'not-assessed');
+  const plusTxt = [
+    naReqs.length ? `${plural(naReqs.length, 'requirement')} not assessed (${naReqs.map(q => q.id).join(', ')}), because no check can verify ${naReqs.length === 1 ? 'it' : 'them'}` : null,
+    mayReqs.length ? `${plural(mayReqs.length, 'MAY requirement')} (${mayReqs.map(q => q.id).join(', ')}), reported for information` : null,
+  ].filter(Boolean);
+  if (plusTxt.length) sb.append(h('p', { class: 'chart-sub', style: 'margin:4px 0 0', text: `Not counted: ${plusTxt.join('; ')}. Details per requirement in section 2.` }));
 
   // Key messages (generated)
   const km = $('key-messages');
@@ -3163,9 +3230,6 @@ const errN = DATA.errors.length;
 
   // Needs attention (generated, capped)
   const at = $('attention');
-  const expiredDev = DATA.deviations.filter(d => d.expired);
-  at.append(h('li', {}, h('b', { text: 'Deviations: ' }),
-    expiredDev.length ? `${plural(expiredDev.length, 'deviation has', 'deviations have')} expired (${expiredDev.map(d => d.id).join(', ')}).` : `None of the ${DATA.deviations.length} deviations has expired.`));
   const ospoFail = RESULTS.filter(r => r.result === 'fail' && DATA.catalogue[r.check]?.documentation?.fix);
   at.append(h('li', {}, h('b', { text: 'OSPO actions: ' }), ospoFail.length
     ? joinNodes(ospoFail.map(r => h('span', {}, h('code', { text: r.check }), r.repo ? ` (${r.repo})` : '', `: ${DATA.catalogue[r.check].documentation.fix.replace(/^OSPO: /, '')}`)), ' ')
@@ -3185,7 +3249,6 @@ function coverageNode(q) {
   let txt;
   const org = ORG_RESULTS.filter(r => q.checks?.includes(r.check));
   if (org.length) txt = `Org level · ${org.filter(r => r.result === 'pass').length}/${org.length} checks pass`;
-  else if (q.deviation) txt = `Not assessed (${q.deviation})`;
   else if (q.basis) txt = 'By construction';
   else txt = 'Not assessed';
   return h('span', { class: 'cov-txt', text: txt });
@@ -3212,13 +3275,10 @@ function renderCard(q) {
     h('span', { class: 'level', text: lvl }),
     h('span', {}, txt, lvl === q.level ? null : h('span', { class: 'small', text: ' Not assessed in this version.' })))));
 
-  // What the check table does not show: basis, deviation
+  // What the check table does not show: basis, not assessed
   const notes = [];
   if (q.basis) notes.push(`Basis: ${q.basis}.`);
-  if (q.deviation) {
-    const d = DEV[q.deviation];
-    notes.push(d ? `No check covers this requirement. Deviation ${d.id}: scope ${d.scope}, approved by ${d.approved_by}, valid until ${fmtDate(d.valid_until)}${d.expired ? ' (expired)' : ''}.` : `No check covers this requirement. Deviation ${q.deviation}.`);
-  }
+  if (q.status === 'not-assessed') notes.push('No check can verify this requirement, so it is not counted in the summary.');
 
   const verified = allChecks.length ? h('table', {},
     h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Source'].map(x => h('th', { text: x })))),
@@ -3303,39 +3363,24 @@ function renderCard(q) {
 }
 function repoListTag(text, filter) { const a = repoListLink(text, filter); a.className = 'tag'; return a; }
 
-/* ═══════════════════════════ 6 Deviations ═══════════════════════════ */
-{
-  const dt = document.querySelector('#dev-table tbody');
-  for (const d of DATA.deviations) {
-    const users = [
-      ...DATA.requirements.filter(q => q.deviation === d.id).map(q => q.id),
-      ...DATA.scope.excluded.filter(x => x.deviation === d.id).map(x => `excludes ${x.repo}`),
-    ];
-    dt.append(h('tr', {},
-      h('td', { class: 'id', text: d.id }), h('td', { class: 'id', text: d.requirement }), h('td', { text: d.scope }), h('td', { text: d.approved_by }),
-      h('td', { class: 'nowrap', text: fmtDate(d.valid_until) }),
-      h('td', {}, d.expired ? statusPill('not-met', 'Expired') : h('span', { class: 'cov-txt', text: `Valid · ${daysBetween(DATA.run_at, d.valid_until)} days left` })),
-      h('td', {}, users.map(u => h('span', { class: 'tag', text: u })))));
-  }
-}
-
 /* ═══════════════════════════ A Scope & method ═══════════════════════════ */
 {
   const st = document.querySelector('#scope-table tbody');
   const skipped = {};
   for (const x of DATA.skipped) (skipped[x.repo] ??= new Set()).add(x.reason);
-  const notAssessed = Object.keys(skipped).filter(r => !ARCHIVED.includes(r) && !DATA.scope.excluded.some(x => x.repo === r));
+  const skippedActive = Object.keys(skipped).filter(r => ACTIVE.includes(r));   // counted as failing every mapped check of the skipping tool
+  const notAssessed = Object.keys(skipped).filter(r => !ARCHIVED.includes(r) && !ACTIVE.includes(r));
   const srow = (k, n, names) => st.append(h('tr', {}, h('td', {}, k, names ? h('div', { class: 'small muted', text: names }) : null), h('td', { class: 'num', text: n })));
   srow('Active repositories in scope', ACTIVE.length, capText(ACTIVE, 12));
   srow('Archived repositories (only DE.01 and DE.02 apply)', ARCHIVED.length, capText(ARCHIVED, 12));
-  srow('Excluded from scope', DATA.scope.excluded.length, DATA.scope.excluded.map(x => `${x.repo} (deviation ${x.deviation})`).join(', '));
+  srow('Active, but skipped by a tool (counted as failing its checks)', skippedActive.length, skippedActive.map(r => `${r}: ${[...skipped[r]].join('; ')}`).join(' · '));
   srow('Not assessed by any tool', notAssessed.length, notAssessed.map(r => `${r}: ${[...skipped[r]].join('; ')}`).join(' · '));
 
   const DEFS = [ // fixed template text (status logic of compliance_report)
     ['met', 'All applicable repositories pass, and all org-level checks pass.'],
     ['met-findings', 'Every org-level check passes, but some applicable repositories fail.'],
     ['not-met', 'An org-level check fails, or no check covers a MUST requirement.'],
-    ['deviation-accepted', 'SHOULD requirement that no check covers, with an approved deviation (section 6).'],
+    ['not-assessed', 'SHOULD requirement that no check can verify. Not counted.'],
     ['optional', 'MAY requirement. Reported for information only.'],
   ];
   const df = document.querySelector('#def-table tbody');
