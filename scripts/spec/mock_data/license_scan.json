@@ -7,7 +7,7 @@
   "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
   "catalogue": {
-    "sbom/available": {
+    "license/sbom-available": {
       "name": "SBOM Available",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/license_scan_spec.md#sbom-available",
@@ -42,7 +42,7 @@
   "results": [
     {
       "repo": "pricing-engine",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "pass",
       "score": null,
@@ -51,7 +51,7 @@
     },
     {
       "repo": "insurance-rule-dsl",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "pass",
       "score": null,
@@ -60,7 +60,7 @@
     },
     {
       "repo": "quote-calculator-demo",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "pass",
       "score": null,
@@ -69,7 +69,7 @@
     },
     {
       "repo": "pdf-render-service",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "pass",
       "score": null,
@@ -78,7 +78,7 @@
     },
     {
       "repo": "design-guidelines",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "pass",
       "score": null,
@@ -87,7 +87,7 @@
     },
     {
       "repo": "mobile-sdk-ios",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "pass",
       "score": null,
@@ -96,7 +96,7 @@
     },
     {
       "repo": "pricing-sandbox",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "fail",
       "score": null,
@@ -105,7 +105,7 @@
     },
     {
       "repo": "claims-event-schemas",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "pass",
       "score": null,
@@ -114,7 +114,7 @@
     },
     {
       "repo": "kafka-schema-tools",
-      "check": "sbom/available",
+      "check": "license/sbom-available",
       "name": "SBOM Available",
       "result": "pass",
       "score": null,
