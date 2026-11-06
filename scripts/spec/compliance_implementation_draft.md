@@ -42,7 +42,7 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
 | `org_check.js` | **new** | Reads org settings, ruleset, security configurations, org security policy and security advisories, and compares them with expected values. Writes results only, no copy of the settings. No issues. |
 | `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds, opens and closes issues (see 1.9) |
-| `compliance_report.js` | **new** | Aggregates all tool files into one self-contained `data.json` (see 1.10): merges results, maps checks to requirements, computes statuses, compares with the previous run (archivals). Renders HTML and Markdown from `data.json` only |
+| `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses, compares with the previous run (archivals). Renders HTML and Markdown from `data.json` only |
 
 ### 1.4 Weekly workflow
 
@@ -55,19 +55,25 @@ archive_repos --json            → out/archive_repos.json
 create_repos --dry-run --json   → out/drift.json
 org_check                       → out/org_check.json
 scorecard_check                 → out/scorecard.json
-compliance_report               ← out/*.json + previous data.json
-                                → out/data.json, out/report.html, out/report.md
-release compliance-YYYY-MM-DD   ← report.html, report.md, data.json, all tool files
+compliance_report --config config/compliance_report_bsi.yaml
+                                ← out/*.json + previous bsi-data.json + its notes file
+                                → out/bsi-data.json, out/bsi-report.html, out/bsi-report.md
+compliance_report --config config/compliance_report_allianz.yaml
+                                ← out/*.json + previous allianz-data.json + its notes file
+                                → out/allianz-data.json, out/allianz-report.html, out/allianz-report.md
+release compliance-YYYY-MM-DD   ← the files of every report, all tool files (once)
 ```
 
+- **One run, several reports.** The tools run once; each report configuration (1.8) turns the same tool files into its own report. The release of a run holds all reports, so they always rest on the same evidence. Asset names start with the report's `key`.
+
 - Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10).
-- `compliance_report` downloads the previous release's `data.json`, which carries the trend history and the archivals. The checking scripts never read a previous run.
+- `compliance_report` downloads `<key>-data.json` of its own report from the previous release, which carries the trend history and the archivals. Each report has its own history. The checking scripts never read a previous run.
 - The tool files are published in the release as evidence. The report itself is rendered from `data.json` only.
 
 ### 1.5 Check IDs, issues and labels
 
 - **Check IDs** have the form `<tool>/<check>`, e.g. `lint/contributing`, `scorecard/ci-tests`.
-- **Requirement mapping** exists in one place only: `config/compliance_report.yaml`. The scripts know nothing about BSI IDs.
+- **Requirement mapping** exists in one place only: the report configuration (1.8), one per report. Each report maps the same check IDs to its own requirements. The scripts know nothing about requirement IDs.
 - **Issues:** each tool keeps one issue per repository, as `lint_repos` does today. That issue lists all failing checks of that tool. Issues are a convenience for the project teams. The report does not read them, and they do not affect any status: a team may close an issue without fixing the finding, and the tool opens it again on the next run. The report only links to the live issues on GitHub.
 - **Labels:** the issue carries one label per failing check, e.g. `lint/contributing`. Labels are added and removed as checks change. The report's "Live issues" link searches by label, e.g. `org:allianz is:issue is:open label:lint/contributing`.
 - **Security-sensitive results never become public issues.** For example: an unpublished advisory, or a repository with secret scanning switched off. The tool opens no issue, and the public report shows counts only.
@@ -115,7 +121,7 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 - **`catalogue`:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`, optional `fix`), the same fields as Scorecard plus `fix`. `fix` is one sentence telling a project team what to do when the check fails, e.g. "Add CONTRIBUTING.md to .github/ …". It is written once per check, never per result, and is shown in the report next to "How it is verified" and in the tool's issue body. Checks the project team cannot fix (central settings, e.g. `lint/public`) say who acts. `scorecard_check` leaves `fix` out; the Scorecard `url` already explains remediation. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `catalogue`, adding the defining `tool` to each entry (see 1.10); the report uses it for "How it is verified". Each spec therefore needs one heading per check, named like the check's `name`, with the rule and a "How to fix" line that is the source of `fix`.
 - **Enforced checks: one check per expected value.** An org-level check that fails makes every requirement it is mapped to "Not met" (1.7), so a check must only test what all of its requirements depend on. `org_check` therefore has one check per setting, e.g. `org/repo-creation` (GV.02, QA.02) and `org/ruleset-approvals` (QA.06), not one check per API object. Its `reason` states the values, and `details` has one line per compared field: `Info: <field>: <actual> (expected <expected>)`, or `Warn: …` when it deviates.
 - **Thresholds come from the tool's configuration** and are written once per check into the catalogue, never into the results. `config_sha256` pins the configuration of each run.
-- **Whether a check counts** is decided only by the mapping in `config/compliance_report.yaml`. Unmapped checks (e.g. `sbom/license-coverage`, `scorecard/fuzzing`) are written like any other result and do not affect a status.
+- **Whether a check counts** is decided only by the mapping in the report configuration (1.8). Unmapped checks (e.g. `sbom/license-coverage`, `scorecard/fuzzing`) are written like any other result and do not affect a status.
 - `skipped` lists repositories without results (excluded, archived). `errors` lists repository × check pairs the tool could not evaluate. Both are always present, `[]` if empty, so every file has the same shape.
 
 ### 1.7 Status logic (computed by the report)
@@ -134,10 +140,25 @@ Each requirement is assessed once, at its own level: a MUST requirement on its M
 
 - **No finding age:** the report does not compute how long a finding has been open. A "failing since" date would have to be carried forward from run to run, and it would silently reset on a missed run, a renamed repository or check, or a check that flaps. The live issues on GitHub show a finding's history.
 
-### 1.8 Configuration of the report
+### 1.8 Report configurations
+
+One configuration file per report. Every file and file name is set in the configuration; nothing is derived from the requirement set. Today there are two:
+
+| Configuration | Report | Notes file |
+|---|---|---|
+| `config/compliance_report_bsi.yaml` | BSI TR-03185 Chapter 2 | `config/compliance_report_bsi_notes.md` |
+| `config/compliance_report_allianz.yaml` | Allianz open source compliance | `config/compliance_report_allianz_notes.md` |
 
 ```yaml
-# config/compliance_report.yaml
+# config/compliance_report_bsi.yaml
+key: bsi                     # prefix of asset names (bsi-data.json, …) and of the report ID (OSPO-CR-BSI-2026-11-03)
+framework:                   # requirement set, copied into data.json → framework
+  id: bsi-tr-03185
+  title: BSI TR-03185 Chapter 2
+  version: 1.1.1
+  url: https://www.bsi.bund.de/dok/TR-03185-en
+  chapters: { GV: Governance, LE: Legal, QA: Quality, BR: Build and release, VM: Vulnerability management, DE: Decommissioning }
+
 inputs:                      # tool files expected in out/ (see 1.10)
   - { file: lint_repos.json,    script: scripts/lint_repos.js }
   - { file: license_scan.json,  script: scripts/license_scan.js }
@@ -146,8 +167,12 @@ inputs:                      # tool files expected in out/ (see 1.10)
   - { file: org_check.json,     script: scripts/org_check.js }
   - { file: scorecard.json,     script: scripts/scorecard_check.js }
 
+notes: config/compliance_report_bsi_notes.md   # optional, any path; see below
+
 requirements:
   GV.01:
+    title: How to contribute is documented
+    level: MUST
     implementation: >
       Every repository must contain a contribution guide …
     checks: [lint/contributing]
@@ -155,7 +180,29 @@ requirements:
     checks: []               # not verifiable → "Not assessed"
 ```
 
-- Every change to this file goes through a PR, which gives the audit trail.
+- Every change to these files goes through a PR, which gives the audit trail.
+- `key` must be unique across the configurations.
+
+**Notes file.** "Key messages" and "Needs attention" in the report are written by hand, never generated: they say what the numbers cannot (causes, decisions, owners, dates). Each report has its own notes file, set by `notes:` in its configuration; without `notes:` the report has no commentary. The OSPO updates it from time to time through a PR. It is kept apart from the configuration, so `config_sha256` still changes only when the mapping changes.
+
+```markdown
+---
+as_of: 2026-11-03            # the run the text was written for
+---
+
+## Key messages
+
+- **Release integrity is the weakest area.** Only 2 of 5 releasing repositories sign their releases (BR.03).
+
+## Needs attention
+
+- **Decision: ng-aquila license review** (Legal, by 30 Nov 2026). Until it is done, `ng-aquila` fails 14 requirements.
+```
+
+- Exactly these two headings, each a list of bullets. Inline Markdown only: `**bold**`, `` `code` ``, `[text](https://…)`. Anything else makes the file invalid.
+- `as_of` is required and must not be later than the run. The report shows "Written for the run of …" under each box, highlighted with "N weeks before this run" once the text is older than the run.
+- No file, an empty section, or an invalid file: the box is hidden. An invalid file is also reported in the data-health banner (1.10).
+- Text in the file is published as is. It must follow the same rule as issues: nothing security-sensitive (1.5).
 
 ### 1.9 Scorecard conversion (`scorecard_check`)
 
@@ -185,29 +232,32 @@ requirements:
 
 **Steps**
 
-1. **Read and validate.** Read every tool file listed in `config/compliance_report.yaml` → `inputs`. Validate it against 1.6: all header fields present; `catalogue`, `results`, `skipped` and `errors` present; every `check` in `results` is in the file's catalogue; `result` is `pass`, `fail` or `na`. A missing or invalid file gets `status: missing` or `status: invalid` in `inputs` and contributes nothing else: its checks have no results, which the report shows as "no data".
+1. **Read and validate.** Read every tool file listed in the report configuration → `inputs`. Validate it against 1.6: all header fields present; `catalogue`, `results`, `skipped` and `errors` present; every `check` in `results` is in the file's catalogue; `result` is `pass`, `fail` or `na`. A missing or invalid file gets `status: missing` or `status: invalid` in `inputs` and contributes nothing else: its checks have no results, which the report shows as "no data".
 2. **Record inputs.** One `inputs` entry per file: `file`, `script`, `status`, the `sha256` of the file as read, the header fields the report shows (`tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, and where present `source`, `scorecard_version`, `planned_changes`), and `counts` (`results`, `skipped`, `errors`).
 3. **Merge.** A check ID defined in two files is a bug and stops the run.
    - `catalogue`: the union of all catalogues. Each entry gets the defining `tool` and keeps `threshold` and `documentation` (`url`, `short`). `name` is dropped: the report shows the check ID. `fix` is kept only for checks the OSPO fixes and no issue carries: org-level checks and `compliance_report`'s own checks.
    - `results`, concatenated in input order. Each row keeps `repo`, `check` and `result`; `score` only for scored checks (the catalogue entry has a `threshold`); `reason` only for org-level results (`repo: null`), where it states the checked values. `name`, `details` and the rest of `reason` are not copied; the tool is found through `catalogue[check].tool`.
    - `skipped` and `errors`, concatenated, each row with `tool`.
 4. **Add own results.** Checks that need two runs are computed here, with their own check IDs (`report/…`) and catalogue entries (`tool: compliance_report`). Today this is only `report/archived-outside-process` (DE.01). They open no issues. In addition, every active repository that a tool skipped (`excluded_repos`) gets a `fail` result for each mapped per-repository check of that tool (1.2).
-5. **Compute** from the merged results and `config/compliance_report.yaml` only:
+5. **Compute** from the merged results and the report configuration only:
    - `scope`: active and archived repositories;
    - `requirements`: the mapped checks, status and coverage per requirement (1.7);
    - `summary`: checks evaluated and passed, compliance %, requirements by status, active repositories with findings (`failing_repositories`).
-6. **Carry forward** from the previous release's `data.json`: `history` (this run is appended) and `archivals` (12 months are kept). `scope.active` of the previous run is read for `report/archived-outside-process` (step 4). Nothing else is read from the previous run.
-7. **Write** `data.json`, then render `report.html` and `report.md` from it.
+6. **Carry forward** from `<key>-data.json` of the previous release: `history` (this run is appended) and `archivals` (12 months are kept). `scope.active` of the previous run is read for `report/archived-outside-process` (step 4). Nothing else is read from the previous run.
+7. **Read the notes file** named by `notes:` (1.8), if configured: `notes` gets `file`, `sha256`, `as_of`, `key_messages` and `needs_attention` (each a list of inline-Markdown strings). Missing file: `notes: null`. Invalid file: `notes: null` and an entry in `errors` with `tool: compliance_report`.
+8. **Write** `<key>-data.json`, then render `<key>-report.html` and `<key>-report.md` from it. The data-health banner at the top of the summary is generated and appears only when an input is `missing` or `invalid` or `errors` is not empty.
 
 **`data.json` keys**
 
 | Key | Content | Step |
 |---|---|---|
-| `report_id`, `run_at`, `org`, `ospo_sha`, `run_url` | This run | – |
-| `report_config`, `config_sha256` | Path and hash of `config/compliance_report.yaml`, which pin the mapping that produced the statuses | – |
+| `report_id`, `run_at`, `org`, `ospo_sha`, `run_url` | This run; `report_id` is `OSPO-CR-<KEY>-<date>` | – |
+| `report_config`, `config_sha256` | Path and hash of the report configuration, which pin the mapping that produced the statuses | – |
+| `framework` | Copied from the report configuration | – |
 | `previous_report` | The `data.json` that `history` and `archivals` were read from | 6 |
 | `inputs` | One entry per tool file: status, hash, header, counts | 2 |
 | `scope`, `requirements`, `summary` | Computed | 5 |
+| `notes` | Hand-written text from the notes file, or `null` | 7 |
 | `archivals`, `history` | Carried forward | 6 |
 | `catalogue`, `results`, `skipped`, `errors` | Merged from the tool files, reduced to what the report shows, plus own results | 3, 4 |
 

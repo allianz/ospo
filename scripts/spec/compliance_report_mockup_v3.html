@@ -54,6 +54,7 @@
   }
 
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
     margin: 0;
     background: var(--page);
@@ -133,6 +134,9 @@
 
   ul.points { margin: 8px 0 0; padding-left: 18px; }
   ul.points li { margin-bottom: 8px; }
+  .note-age { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+  .note-age.stale { color: var(--delta-bad); }
+  .alert { border: 1px solid var(--critical); border-left-width: 4px; border-radius: 8px; padding: 8px 14px; margin: 0 0 16px; background: var(--surface); }
 
   /* status */
   .status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; }
@@ -285,14 +289,14 @@
 <div id="tip" hidden></div>
 <div class="page">
 
-  <div class="draft"><strong>MOCK-UP v3 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix A. Only headings, column labels and the status definitions are fixed template text.
+  <div class="draft"><strong>MOCK-UP v3 · fictitious data.</strong> Every number, name, date and link on this page is read from the JSON files embedded at the end of the page: <code>data.json</code> and the six tool outputs listed in Appendix A. Only headings, column labels and the status definitions are fixed template text. Key messages and Needs attention are hand-written in a notes file (<code>data.json</code> → <code>notes</code>).
     <div class="mockctl"><label>Scale <select id="ctl-scale"></select></label><label>Worst case <select id="ctl-worst"></select></label><span id="ctl-note"></span></div>
   </div>
 
   <header class="report">
     <div>
       <div class="brand">Open Source Program Office</div>
-      <h1>Secure Open Source Lifecycle<br>Compliance Report</h1>
+      <h1 id="title"></h1>
       <p class="subtitle" id="subtitle"></p>
     </div>
     <dl class="meta" id="meta"></dl>
@@ -311,6 +315,7 @@
   <section id="summary">
     <h2><span class="num">1</span>Management summary</h2>
     <p class="lead" id="summary-lead"></p>
+    <div class="alert" id="data-alert" role="alert" hidden></div>
     <div class="grid-hero">
       <div class="card hero">
         <div class="label">Overall compliance</div>
@@ -325,7 +330,7 @@
       <h3>Requirement status</h3>
       <div id="status-bars"></div>
     </div>
-    <div class="grid-2">
+    <div class="grid-2" id="notes-grid">
       <div class="card"><h3>Key messages</h3><ul class="points" id="key-messages"></ul></div>
       <div class="card"><h3>Needs attention</h3><ul class="points" id="attention"></ul></div>
     </div>
@@ -437,13 +442,30 @@
 
 <!-- ═══════════════ Embedded input data (verbatim copies of mock_data/*.json) ═══════════════ -->
 <script type="application/json" id="data.json">{
-  "report_id": "OSPO-CR-2026-11-03",
+  "report_id": "OSPO-CR-BSI-2026-11-03",
   "run_at": "2026-11-03T02:00:00Z",
   "org": "allianz",
   "ospo_sha": "869f4bb",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
-  "report_config": "config/compliance_report.yaml",
+  "report_config": "config/compliance_report_bsi.yaml",
   "config_sha256": "4b60a4ad83c79f35904689dee3b38ecf0774086ab7936bcc41bd00ccc83a25b4",
+  "notes": {
+    "file": "config/compliance_report_bsi_notes.md",
+    "sha256": "183e6a02b1a2f57336ab5c6645b2db43f3b7908c229a0373b71ed5e915dfc3b1",
+    "as_of": "2026-11-03",
+    "key_messages": [
+      "**The platform is in order; the gaps are in individual repositories.** All central settings (2FA, base permission, ruleset, secret scanning, dependency graph, security policy) are enforced as configured.",
+      "**Compliance fell from 80.3% to 76.5%, mostly because of one repository.** `ng-aquila` is skipped by the scanners while its license is under legal review, so it counts as failing 20 checks.",
+      "**Release integrity is the weakest area.** Only 2 of 5 releasing repositories sign their releases (BR.03), and 2 of 5 publish no release notes (BR.04). A shared release workflow would fix both.",
+      "**Contribution guides are improving.** GV.01 rose from 55% to 70% since 6 Oct, after the CONTRIBUTING template was added to new repositories."
+    ],
+    "needs_attention": [
+      "**Decision: ng-aquila license review** (Legal, by 30 Nov 2026). Until the review is done, `ng-aquila` fails 14 requirements.",
+      "**Action: unarchive old-batch-tools** (OSPO, by 13 Nov 2026). It was archived by hand without the 60-day notice, the only DE.01 finding.",
+      "**Proposal: signed releases through a shared workflow** (OSPO platform team, Q1 2027). Add artifact attestation to the [release workflow template](https://github.com/allianz/ospo/issues/142).",
+      "**Policy decision: single-maintainer projects** (OSPO lead). `insurance-rule-dsl` fails QA.06 because nobody else can review its changes."
+    ]
+  },
   "framework": {
     "id": "bsi-tr-03185",
     "title": "BSI TR-03185 Chapter 2",
@@ -460,8 +482,8 @@
     }
   },
   "previous_report": {
-    "report_id": "OSPO-CR-2026-10-27",
-    "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10-27/data.json"
+    "report_id": "OSPO-CR-BSI-2026-10-27",
+    "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10-27/bsi-data.json"
   },
   "inputs": [
     {
@@ -2904,7 +2926,8 @@
     }
   ],
   "errors": []
-}</script>
+}
+</script>
 
 <script>
 /* ═══════════════════════════ Load data ═══════════════════════════ */
@@ -3096,6 +3119,18 @@ const uniq = xs => [...new Set(xs)];
 const capText = (xs, n) => xs.length > n ? `${xs.slice(0, n).join(', ')} and ${xs.length - n} more` : xs.join(', ');
 const countBy = (xs, f) => { const m = new Map(); for (const x of xs) { const k = f(x); m.set(k, (m.get(k) ?? 0) + 1); } return [...m.entries()].sort((a, b) => b[1] - a[1]); };
 const joinNodes = (nodes, sep = ' · ') => nodes.flatMap((n, i) => i ? [sep, n] : [n]);
+/* Inline Markdown of the notes file: **bold**, `code` and [text](url) only. Builds DOM nodes, never HTML, so the text cannot inject markup. */
+function inlineMd(src) {
+  const out = [], re = /\*\*(.+?)\*\*|`([^`]+)`|\[([^\]]+)\]\(((?:https:\/\/|#)[^)\s]+)\)/g;
+  let last = 0;
+  for (const m of src.matchAll(re)) {
+    out.push(src.slice(last, m.index));
+    out.push(m[1] != null ? h('b', {}, inlineMd(m[1])) : m[2] != null ? h('code', { text: m[2] }) : h('a', { href: m[4], text: m[3] }));
+    last = m.index + m[0].length;
+  }
+  out.push(src.slice(last));
+  return out.filter(x => x !== '');
+}
 
 const tip = $('tip');
 function showTip(evt, value, label) {
@@ -3311,7 +3346,8 @@ function niceTicks(lo, hi, count = 4) {
 }
 
 /* ═══════════════════════════ Header ═══════════════════════════ */
-$('subtitle').textContent = `Open source projects published under github.com/${ORG}, assessed against ${FW.title}`;
+$('title').append(FW.title, h('br'), 'Compliance Report');
+$('subtitle').textContent = `Open source projects published under github.com/${ORG}` + (FW.version ? ` · requirements version ${FW.version}` : '');
 document.title = `${FW.title} Compliance Report · ${ORG} · ${fmtDate(DATA.run_at)} (MOCK-UP v3)`;
 {
   const meta = $('meta');
@@ -3326,8 +3362,6 @@ document.title = `${FW.title} Compliance Report · ${ORG} · ${fmtDate(DATA.run_
 
 /* ═══════════════════════════ 1 Summary ═══════════════════════════ */
 const notMet = DATA.requirements.filter(q => q.status === 'not-met');
-const drift = DATA.inputs.find(i => i.planned_changes);   // create_repos --dry-run header, copied into inputs
-const plannedN = Object.values(drift?.planned_changes ?? {}).reduce((a, x) => a + x.length, 0);
 const errN = DATA.errors.length;
 {
   $('summary-lead').textContent =
@@ -3379,35 +3413,29 @@ const errN = DATA.errors.length;
   ].filter(Boolean);
   if (plusTxt.length) sb.append(h('p', { class: 'chart-sub', style: 'margin:4px 0 0', text: `Not counted: ${plusTxt.join('; ')}. Details per requirement in section 2.` }));
 
-  // Key messages (generated)
-  const km = $('key-messages');
-  const KM_CAP = 3;
-  const byFailing = [...notMet].sort((a, b) => (b.repositories?.failing ?? 0) - (a.repositories?.failing ?? 0));
-  for (const q of byFailing.slice(0, KM_CAP)) {
-    const qf = findingsOf(q.id), r = q.repositories;
-    const orgF = ORG_RESULTS.filter(r => q.checks?.includes(r.check) && r.result === 'fail').map(r => r.check);
-    km.append(h('li', {}, h('b', { text: `${q.id} ${q.title}: not met. ` }),
-      orgF.length ? `Failing org-level ${orgF.length === 1 ? 'check' : 'checks'}: ${orgF.join(', ')}. ` : '',
-      r?.failing ? `${r.failing} of ${r.applicable} applicable repositories fail (${uniq(qf.map(f => f.check)).join(', ')}).` : ''));
-  }
-  if (byFailing.length > KM_CAP) km.append(h('li', {}, h('b', { text: `${byFailing.length - KM_CAP} more not met: ` }), byFailing.slice(KM_CAP).map(q => `${q.id} (${plural(q.repositories?.failing ?? 0, 'failing repository', 'failing repositories')})`).join(', ') + '. Details in section 2.'));
-  const orgFail = ORG_RESULTS.filter(r => r.result === 'fail');
-  km.append(h('li', {}, h('b', { text: orgFail.length ? `${orgFail.length} of ${ORG_RESULTS.length} org-level checks fail. ` : `All ${ORG_RESULTS.length} org-level checks pass. ` }), ORG_RESULTS.map(r => r.check).join(', ') + '.'));
-  km.append(h('li', {}, h('b', { text: 'Access drift: ' }),
-    plannedN ? `${plural(plannedN, 'planned change')}.` : 'none, access on GitHub matches the approved configuration.'));
-  const findingChecks = uniq(FINDINGS.map(f => f.check));
-  if (findingChecks.length) km.append(h('li', {}, h('b', { text: 'Issues: ' }), 'the scanners open issues in the affected repositories; their current state is on GitHub, not in this report. ',
-    liveIssuesLink(findingChecks, null, 'Live issues for all failing checks'), '.'));
-  const advRes = ORG_RESULTS.find(r => r.check === 'advisories/published-in-time');
-  if (advRes) km.append(h('li', {}, h('b', { text: 'Vulnerability handling: ' }), `${advRes.reason}.`));
+  // Key messages and Needs attention: hand-written in the notes file (data.json → notes), never generated
+  const N = DATA.notes;
+  if (N) {
+    const weeks = Math.round(daysBetween(N.as_of, DATA.run_at) / 7);
+    const asOf = `Written for the run of ${fmtDate(N.as_of)}` + (weeks > 0 ? ` (${plural(weeks, 'week')} before this run)` : '');
+    for (const [id, items] of [['key-messages', N.key_messages], ['attention', N.needs_attention]]) {
+      const card = $(id).closest('.card');
+      if (!items?.length) { card.hidden = true; continue; }
+      $(id).append(...items.map(t => h('li', {}, inlineMd(t))));
+      card.append(h('p', { class: weeks > 0 ? 'note-age stale' : 'note-age', text: asOf }));
+    }
+  } else $('notes-grid').hidden = true;
 
-  // Needs attention (generated, capped)
-  const at = $('attention');
-  const ospoFail = RESULTS.filter(r => r.result === 'fail' && DATA.catalogue[r.check]?.documentation?.fix);
-  at.append(h('li', {}, h('b', { text: 'OSPO actions: ' }), ospoFail.length
-    ? joinNodes(ospoFail.map(r => h('span', {}, h('code', { text: r.check }), r.repo ? ` (${r.repo})` : '', `: ${DATA.catalogue[r.check].documentation.fix.replace(/^OSPO: /, '')}`)), ' ')
-    : 'none, all org-level checks pass.'));
-  at.append(h('li', {}, h('b', { text: 'Data: ' }), errN ? `${plural(errN, 'check')} could not be evaluated (tool errors, treated as no data).` : `All ${DATA.inputs.length} tool outputs are present, with no tool errors.`));
+  // Data health: shown only when something is missing, so a reader cannot overlook it
+  const badInputs = DATA.inputs.filter(i => i.status !== 'ok');
+  const health = [
+    ...badInputs.map(i => `${i.file} is ${i.status}: its checks have no results (no data, not passed).`),
+    errN ? `${plural(errN, 'check')} could not be evaluated (tool errors, treated as no data).` : null,
+  ].filter(Boolean);
+  if (health.length) {
+    $('data-alert').append(h('b', { text: 'Incomplete data. ' }), health.join(' '));
+    $('data-alert').hidden = false;
+  }
 }
 
 /* ═══════════════════════════ 2 Requirements ═══════════════════════════ */
@@ -3460,6 +3488,7 @@ function renderCard(q) {
       return h('tr', {},
         h('td', {}, checkLink(c), def?.threshold != null ? h('div', { class: 'small muted', text: `threshold: score ≥ ${def.threshold}` }) : null),
         h('td', {}, def?.documentation?.short ?? '–',
+          def?.documentation?.fix && RESULTS.some(r => r.check === c && r.result === 'fail') ? h('div', { class: 'small', text: `How to fix: ${def.documentation.fix}` }) : null,
           ORG_RESULT_OF[c] ? h('div', { class: 'small muted', text: `Result: ${ORG_RESULT_OF[c].result}. ${ORG_RESULT_OF[c].reason}` }) : null),
         h('td', { class: 'nowrap' }, sourceNode(c)));
     }))) : h('p', { class: 'muted', text: 'No check is mapped to this requirement.' });

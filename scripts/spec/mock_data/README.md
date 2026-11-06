@@ -12,7 +12,8 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | `drift.json` | `create_repos.js --dry-run --json` | Planned changes (none) = no drift |
 | `org_check.json` | `org_check.js` | Org-level checks, one per expected value: org settings, ruleset, security configuration, org SECURITY.md, advisories. Actual values are in `details`; no raw API data |
 | `scorecard.json` | `scorecard_check.js` | Scorecard CLI results per repository, converted to the common format with thresholds applied |
-| `data.json` | `compliance_report.js` | Aggregation of all files above (draft 1.10), reduced to what the report shows: shown header fields in `inputs`; `catalogue` without `name`; `results` rows with `repo`, `check`, `result`, plus `score` (scored checks) or `reason` (org-level checks); `skipped` and `errors` with `tool`. Plus `fail` results for active repositories a tool skipped, requirement statuses, summary, history. The only input for the HTML report. Created by hand from the files above |
+| `compliance_report_bsi_notes.md` | OSPO, by hand | Sample notes file of the BSI report (draft 1.8, `notes:` in `config/compliance_report_bsi.yaml`): Key messages and Needs attention for the run of 3 Nov 2026. Copied into `data.json` → `notes` |
+| `data.json` | `compliance_report.js --config config/compliance_report_bsi.yaml` (published as `bsi-data.json`) | Aggregation of all files above (draft 1.10), reduced to what the report shows: shown header fields in `inputs`; `catalogue` without `name`; `results` rows with `repo`, `check`, `result`, plus `score` (scored checks) or `reason` (org-level checks); `skipped` and `errors` with `tool`. Plus `fail` results for active repositories a tool skipped, requirement statuses, summary, history. The only input for the HTML report. Created by hand from the files above |
 
 ## The 12 repositories and what each one demonstrates
 
