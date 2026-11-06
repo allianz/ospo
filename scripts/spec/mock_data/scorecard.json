@@ -62,7 +62,7 @@
       "threshold": 10,
       "documentation": {
         "url": "https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#fuzzing",
-        "short": "Determines if the project uses fuzzing."
+        "short": "Determines if the project uses fuzzing. Applies only to repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, assembly); all others are not applicable."
       }
     }
   },
@@ -143,17 +143,19 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed"
       ]
     },
     {
       "repo": "pricing-engine",
       "check": "scorecard/fuzzing",
       "name": "Fuzzing",
-      "result": "fail",
+      "result": "na",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
     },
     {
       "repo": "insurance-rule-dsl",
@@ -208,17 +210,19 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed"
       ]
     },
     {
       "repo": "insurance-rule-dsl",
       "check": "scorecard/fuzzing",
       "name": "Fuzzing",
-      "result": "fail",
+      "result": "na",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
     },
     {
       "repo": "quote-calculator-demo",
@@ -273,17 +277,19 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed"
       ]
     },
     {
       "repo": "quote-calculator-demo",
       "check": "scorecard/fuzzing",
       "name": "Fuzzing",
-      "result": "fail",
+      "result": "na",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
     },
     {
       "repo": "pdf-render-service",
@@ -343,10 +349,12 @@
       "repo": "pdf-render-service",
       "check": "scorecard/fuzzing",
       "name": "Fuzzing",
-      "result": "fail",
+      "result": "na",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
     },
     {
       "repo": "design-guidelines",
@@ -403,17 +411,19 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed"
       ]
     },
     {
       "repo": "design-guidelines",
       "check": "scorecard/fuzzing",
       "name": "Fuzzing",
-      "result": "fail",
+      "result": "na",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
     },
     {
       "repo": "mobile-sdk-ios",
@@ -468,7 +478,7 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed"
       ]
     },
     {
@@ -478,7 +488,9 @@
       "result": "fail",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: applies, Objective-C 26%, C 3%"
+      ]
     },
     {
       "repo": "pricing-sandbox",
@@ -533,17 +545,19 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed"
       ]
     },
     {
       "repo": "pricing-sandbox",
       "check": "scorecard/fuzzing",
       "name": "Fuzzing",
-      "result": "fail",
+      "result": "na",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
     },
     {
       "repo": "claims-event-schemas",
@@ -598,17 +612,19 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed"
       ]
     },
     {
       "repo": "claims-event-schemas",
       "check": "scorecard/fuzzing",
       "name": "Fuzzing",
-      "result": "fail",
+      "result": "na",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
     },
     {
       "repo": "kafka-schema-tools",
@@ -663,17 +679,19 @@
       "score": 8,
       "reason": "branch protection is not maximal on development and all release branches",
       "details": [
-        "Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)"
+        "Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed"
       ]
     },
     {
       "repo": "kafka-schema-tools",
       "check": "scorecard/fuzzing",
       "name": "Fuzzing",
-      "result": "fail",
+      "result": "na",
       "score": 0,
       "reason": "project is not fuzzed",
-      "details": []
+      "details": [
+        "Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, assembly) above 5%"
+      ]
     }
   ]
 }

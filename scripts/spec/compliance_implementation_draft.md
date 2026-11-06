@@ -36,12 +36,12 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 
 | Script | Status | Role |
 |---|---|---|
-| `create_repos.js` | exists | Preventive: provisions repositories, teams, security configuration, ruleset targets. With `--dry-run --json`: drift check. |
+| `create_repos.js` | exists | Preventive: provisions repositories, teams, security configuration, ruleset targets. Not part of the weekly compliance run. |
 | `lint_repos.js` | exists, extend | Per-repository checks on repository data and the cloned content |
 | `license_scan.js` | exists, extend | SBOM retrieval and dependency licenses |
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
-| `org_check.js` | **new** | Reads org settings, ruleset, security configurations and org security policy, and compares them with expected values. Also checks the published security advisories of every repository (VM.02). Writes results only, no copy of the settings. No issues. |
-| `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds, opens and closes issues (see 1.9) |
+| `org_check.js` | **new** | Checks the org security policy (VM.01) and the published security advisories of every repository (VM.02). Writes results only. No issues. |
+| `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds and applicability (e.g. languages for fuzzing, QA.05), opens and closes issues (see 1.9) |
 | `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses. Renders HTML and Markdown from `data.json` only |
 
 ### 1.4 Weekly workflow
@@ -52,7 +52,6 @@ One workflow, `compliance.yaml`, runs every week and replaces the separate sched
 lint_repos --json               → out/lint_repos.json
 license_scan --json             → out/license_scan.json
 archive_repos --json            → out/archive_repos.json
-create_repos --dry-run --json   → out/drift.json
 org_check                       → out/org_check.json
 scorecard_check                 → out/scorecard.json
 compliance_report --config config/compliance_report_bsi.yaml
@@ -117,11 +116,11 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 | `reason` | One sentence for people, always filled (also for `pass` and `na`), e.g. "6 of 412 packages (1.5%) have no license information" |
 | `details` | List of lines for people, Scorecard style (`Warn: …`, `Info: …`), e.g. one line per denied package. Always a list, `[]` if empty. Never parsed |
 
-- **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header, e.g. `planned_changes` in `create_repos --json`. A tool writes such a block only if the report computes with it; raw API data that only serves as evidence goes into `details`, not into a block.
+- **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with would live in a tool-specific block in the header; today no tool needs one. A tool writes such a block only if the report computes with it; raw API data that only serves as evidence goes into `details`, not into a block.
 - **`catalogue`:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`, optional `fix`), the same fields as Scorecard plus `fix`. `fix` is one sentence telling a project team what to do when the check fails, e.g. "Add CONTRIBUTING.md to .github/ …". It is written once per check, never per result, and is shown in the report next to "How it is verified" and in the tool's issue body. Checks the project team cannot fix (central settings, e.g. `lint/public`) say who acts. `scorecard_check` leaves `fix` out; the Scorecard `url` already explains remediation. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `catalogue`, adding the defining `tool` to each entry (see 1.10); the report uses it for "How it is verified". Each spec therefore needs one heading per check, named like the check's `name`, with the rule and a "How to fix" line that is the source of `fix`.
-- **Enforced checks: one check per expected value.** An org-level check that fails makes every requirement it is mapped to "Not met" (1.7), so a check must only test what all of its requirements depend on. `org_check` therefore has one check per setting, e.g. `org/repo-creation` (GV.02, QA.02) and `org/ruleset-approvals` (QA.06), not one check per API object. Its `reason` states the values, and `details` has one line per compared field: `Info: <field>: <actual> (expected <expected>)`, or `Warn: …` when it deviates.
+- **Enforced checks: one check per expected value.** An org-level check that fails makes every requirement it is mapped to "Not met" (1.7), so a check must only test what all of its requirements depend on. `org_check` therefore has one check per setting, e.g. `org/security-policy` (VM.01), not one check per API object. Its `reason` states the values, and `details` has one line per compared field: `Info: <field>: <actual> (expected <expected>)`, or `Warn: …` when it deviates.
 - **Thresholds come from the tool's configuration** and are written once per check into the catalogue, never into the results. `config_sha256` pins the configuration of each run.
-- **Whether a check counts** is decided only by the mapping in the report configuration (1.8). Unmapped checks (e.g. `sbom/license-coverage`, `scorecard/fuzzing`) are written like any other result and do not affect a status.
+- **Whether a check counts** is decided only by the mapping in the report configuration (1.8). Unmapped checks (e.g. `sbom/license-coverage`) are written like any other result and do not affect a status.
 - `skipped` lists repositories without results (excluded, archived). `errors` lists repository × check pairs the tool could not evaluate. Both are always present, `[]` if empty, so every file has the same shape.
 
 ### 1.7 Status logic (computed by the report)
@@ -163,7 +162,6 @@ inputs:                      # tool files expected in out/ (see 1.10)
   - { file: lint_repos.json,    script: scripts/lint_repos.js }
   - { file: license_scan.json,  script: scripts/license_scan.js }
   - { file: archive_repos.json, script: scripts/archive_repos.js }
-  - { file: drift.json,         script: scripts/create_repos.js }
   - { file: org_check.json,     script: scripts/org_check.js }
   - { file: scorecard.json,     script: scripts/scorecard_check.js }
 
@@ -217,10 +215,10 @@ as_of: 2026-11-03            # the run the text was written for
 | `-1`, reason starts with `internal error` | `errors` (no data), never `na` |
 | `-1` on CI-Tests while Code-Review counted changesets ("Found x/N approved changesets", N > 0) | `fail`: changes without pull requests |
 | any other `-1` | `na` |
-| Branch-Protection on a `branch-protection: managed` repository | `na` (covered by the org ruleset) |
+| Branch-Protection on a `branch-protection: managed` repository | `na` (protected by the org ruleset `ospo-managed`, documented in GV.02) |
 
 - `name`, `score`, `reason` and `details` are copied unchanged from Scorecard. `-1` becomes `score: null`, `details: null` becomes `[]`, `date` is converted to UTC.
-- When `scorecard_check` decides the result itself (managed branch protection, topic `docs`/`template`, changes without pull requests), `reason` stays Scorecard's text and the first `details` line explains the decision, e.g. `Info: scorecard_check: not evaluated, branch-protection is managed (covered by org/ruleset-protection)` or `Warn: scorecard_check: 30 changesets reached the default branch without pull requests`.
+- When `scorecard_check` decides the result itself (managed branch protection, topic `docs`/`template`, changes without pull requests), `reason` stays Scorecard's text and the first `details` line explains the decision, e.g. `Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed` or `Warn: scorecard_check: 30 changesets reached the default branch without pull requests`.
 - **Reason text is parsed** only for the changeset count. A reason the parser does not recognise goes to `errors`, so a new Scorecard wording cannot silently turn a `fail` into `na`. The real outputs in `mock_data/` serve as test fixtures.
 - **Observed on real data:** ng-aquila had CI-Tests `-1` ("no pull request found") but 30 changesets in Code-Review, i.e. direct pushes to `main`. yukimi's Branch-Protection is 5 with the current ruleset (no status checks, 1 approval, no code-owner review), so a threshold of 6 needs a stricter ruleset. **(verify)**
 
@@ -233,7 +231,7 @@ as_of: 2026-11-03            # the run the text was written for
 **Steps**
 
 1. **Read and validate.** Read every tool file listed in the report configuration → `inputs`. Validate it against 1.6: all header fields present; `catalogue`, `results`, `skipped` and `errors` present; every `check` in `results` is in the file's catalogue; `result` is `pass`, `fail` or `na`. A missing or invalid file gets `status: missing` or `status: invalid` in `inputs` and contributes nothing else: its checks have no results, which the report shows as "no data".
-2. **Record inputs.** One `inputs` entry per file: `file`, `script`, `status`, the `sha256` of the file as read, the header fields the report shows (`tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, and where present `source`, `scorecard_version`, `planned_changes`), and `counts` (`results`, `skipped`, `errors`).
+2. **Record inputs.** One `inputs` entry per file: `file`, `script`, `status`, the `sha256` of the file as read, the header fields the report shows (`tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, and where present `source`, `scorecard_version`), and `counts` (`results`, `skipped`, `errors`).
 3. **Merge.** A check ID defined in two files is a bug and stops the run.
    - `catalogue`: the union of all catalogues. Each entry gets the defining `tool` and keeps `threshold` and `documentation` (`url`, `short`). `name` is dropped: the report shows the check ID. `fix` is kept only for checks the OSPO fixes and no issue carries: org-level checks and `compliance_report`'s own checks.
    - `results`, concatenated in input order. Each row keeps `repo`, `check` and `result`; `score` only for scored checks (the catalogue entry has a `threshold`); `reason` only for org-level results (`repo: null`), where it states the checked values. `name`, `details` and the rest of `reason` are not copied; the tool is found through `catalogue[check].tool`.
@@ -280,7 +278,7 @@ as_of: 2026-11-03            # the run the text was written for
 - **Issue:** lint issue, label `lint/contributing`.
 - **Evidence:** the file path found.
 
-**SHOULD clause (quality of contributions):** not assessed in this version (see 1.7). A later version could add a structural check `lint/contributing-sections`, requiring headings for coding standards, tests and review, with the same heading-check mechanism as BR.01.
+**SHOULD clause (quality of contributions):** not assessed in this version (see 1.7). A later version could add a structural check `lint/contributing-sections`, requiring headings for coding standards, tests and review (a new heading check in `lint_repos`: `required_headings` on a `required_files` entry).
 
 **New work:** labels and `--json` only. The check itself already exists.
 
@@ -290,33 +288,22 @@ as_of: 2026-11-03            # the run the text was written for
 
 > The project's repository, websites and sensitive data MUST be protected against unauthorized actions.
 
-**Implementation**
-- **Repository:** Changes need a company account with SSO and MFA. Only teams get access, synced with Entra ID. Every permission change is a pull request and is approved first. An org ruleset protects the default branches.
+**Implementation** (documented, not checked by `org_check`)
+- **Repository:** Changes need a company account with SSO and MFA; 2FA is required for all members. The base permission is `none`: only teams get access, synced with Entra ID, and members cannot create repositories. Every permission change is a pull request and is approved first; `create_repos` applies it. The org ruleset `ospo-managed` protects the default branches: pull request required, no force-push, no deletion.
 - **Websites:** published with GitHub Pages only, so the repository's access rules apply.
-- **Sensitive data:** secret scanning and push protection are on for every repository.
+- **Sensitive data:** secret scanning and push protection are on for every repository through the security configuration `ospo-managed`.
 
-**Enforced**, via `org_check`, compared with expected values (one check per expected value, see 1.6):
-- **Org settings** (`GET /orgs/{org}`): `org/two-factor` (2FA required), `org/base-permission` (base permission `none`), `org/repo-creation` (members cannot create repositories).
-- **Ruleset `ospo-managed`** (`GET /orgs/{org}/rulesets/{id}`): `org/ruleset-protection` (active on default branches, pull request required, no force-push, no deletion).
-- **Security configuration `ospo-managed`** (`GET /orgs/{org}/code-security/configurations`): `org/secret-scanning` (secret scanning and push protection enabled, configuration enforced).
-
-**Exact checks**
-- `lint/no-direct-collaborators`: no user has direct access, only teams (`GET /repos/{o}/{r}/collaborators?affiliation=direct`). **(verify** that org owners are not listed.)
-- `lint/secret-scanning`: for repositories with `security: custom`, secret scanning and push protection are on. Reads the repo's `security_and_analysis` field. **(verify** the App permission needed to see this field.)
-- `scorecard/branch-protection`: for repositories with `branch-protection: custom`, Scorecard Branch-Protection ≥ 6. `scorecard_check` reads `config/create_repos.yaml` to know which repositories are custom.
+**Exact checks** (Scorecard, per repository)
+- `scorecard/branch-protection` ≥ 6, for repositories with `branch-protection: custom`. Repositories with managed branch protection get `na`: the org ruleset covers them (see 1.9). `scorecard_check` reads `config/create_repos.yaml` to know which repositories are custom.
 - `scorecard/dangerous-workflow` = 10 and `scorecard/token-permissions` ≥ 8, for all repositories.
-- `drift/access`: `create_repos --dry-run --json` plans no changes.
 
-**Not assessed in this version:** SSO enforcement, MFA and Entra ID team sync. No API shows them, so the report does not cover them.
+**Not checked in this version:** the org settings (2FA, base permission, repository creation), the ruleset, the security configuration, direct collaborators and drift between `config/create_repos.yaml` and GitHub. They are part of the implementation text only. SSO enforcement, MFA and Entra ID team sync have no API at all.
 
 **Websites:** no check. The scope statement "GitHub Pages only" is in the implementation text.
 
-**Issues**
-- `lint/no-direct-collaborators` and the Scorecard checks: public issue.
-- `lint/secret-scanning`: no issue (security-sensitive).
-- Drift and failing `org/*` checks: no issue. These are central settings, fixed by the OSPO.
+**Issue:** Scorecard issue per check.
 
-**New work:** `org_check`, the two lint checks, the `scorecard_check` thresholds, and `create_repos --json`.
+**New work:** the `scorecard_check` thresholds.
 
 ---
 
@@ -326,13 +313,11 @@ as_of: 2026-11-03            # the run the text was written for
 
 **Implementation:** Every repository must contain a license file with an approved license (Apache-2.0, MIT, CC-BY-4.0, CC0-1.0). The license file in the root applies to all content of the repository, including documentation and the Pages website, unless a file states otherwise. A weekly check opens an issue if the license is missing or not approved.
 
-**Exact checks**
-- `lint/license-file`: a file `LICENSE*` exists in the root.
-- `lint/license-type`: the SPDX ID detected by GitHub is on the approved list. `NOASSERTION` fails.
+**Exact check:** `lint/license-type`: the SPDX ID detected by GitHub is on the approved list. No detected license (no license file) and `NOASSERTION` fail, so a separate file check is not needed. `lint_repos` keeps `LICENSE*` in `required_files` for its own issue, but that check is not mapped.
 
 **Script:** `lint_repos` (exists).
 
-**Issue:** lint issue, labels as above.
+**Issue:** lint issue, label `lint/license-type`.
 
 **Archived repositories:** not checked (listed under `skipped`).
 
@@ -371,9 +356,7 @@ as_of: 2026-11-03            # the run the text was written for
 
 **Implementation:** The dependency graph is enabled for every repository through the security configuration. Its SPDX SBOM is the public list of third-party components.
 
-**Enforced:** `org/dependency-graph`, dependency graph enabled in the `ospo-managed` security configuration, configuration enforced (`org_check`).
-
-**Exact check:** `sbom/available` (shared with LE.02).
+**Exact check:** `sbom/available` (shared with LE.02). The SBOM endpoint only answers when the dependency graph is enabled, so a disabled dependency graph fails this check per repository. The security configuration setting itself is not checked.
 
 **Issue:** `license_scan` issue, label `sbom/available`. Today `license_scan` opens issues only for denied licenses; it must also open one when the SBOM is missing.
 
@@ -389,11 +372,11 @@ as_of: 2026-11-03            # the run the text was written for
 
 > All of the project's source code MUST be publicly readable.
 
-**Implementation:** All repositories are created by the provisioning pipeline as public. Members cannot create repositories.
+**Implementation:** All repositories are created by the provisioning pipeline as public. A weekly check confirms that every repository in scope is public.
 
-**Enforced:** `org/repo-creation`, members cannot create repositories (`org_check`, shared with GV.02).
+**Exact check:** `lint/public`. The visibility of every in-scope repository is `public`. This checks the result directly, so it also catches repositories created or switched to private by an admin. `org/repo-creation` (members cannot create repositories) stays mapped to GV.02 only.
 
-**Exact check:** `lint/public`. The visibility of every in-scope repository is `public`.
+**Precondition:** `lint_repos` lists all repositories of the organisation, including private and internal ones. The GitHub App must therefore be installed on all repositories, otherwise a private repository is invisible and cannot fail.
 
 **Script:** `lint_repos`. The data is already in the repository list, so no extra call is needed.
 
@@ -423,21 +406,19 @@ as_of: 2026-11-03            # the run the text was written for
 
 > Procedures for testing MUST be implemented and utilised.
 
-**Implementation:** Every repository with code tests its changes automatically in CI. `DEVELOPMENT.md` describes how to run the tests locally. A weekly check opens an issue when CI did not run on recently merged pull requests.
+**Implementation:** Every repository with code tests its changes automatically in CI before pull requests are merged. A weekly check opens an issue when CI did not run on recently merged pull requests.
 
-**Checks** (one coverage figure: a repository passes only if both applicable checks pass)
-- **Implemented, structural check:** `lint/development-test`. `DEVELOPMENT.md` has a "Test" heading. This is a separate check from BR.01's `lint/development-build`, so a missing "Build" heading does not fail QA.04.
-- **Utilised, exact check:** `scorecard/ci-tests` ≥ 8. Scorecard "inconclusive" → `na`, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is `fail` (see 1.9).
+**Exact check:** `scorecard/ci-tests` ≥ 8. Tests that run in CI are both implemented and utilised. Scorecard "inconclusive" → `na`, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is `fail` (see 1.9).
 
-**Not applicable:** topics `docs` or `template`.
+**Not applicable:** topics `docs` or `template` (applied by `scorecard_check`).
 
-**Scripts:** `lint_repos` and `scorecard_check`.
+**Script:** `scorecard_check`.
 
-**Issues:** lint issue; Scorecard issue, label `scorecard/ci-tests`.
+**Issue:** Scorecard issue, label `scorecard/ci-tests`.
 
-**Limits of the check:** Scorecard detects that CI ran, not what it tested.
+**Limits of the check:** Scorecard detects that CI ran, not what it tested. Repositories without recent pull requests are inconclusive and therefore not applicable, so QA.04 says nothing about them until the next change. Whether `DEVELOPMENT.md` describes how to run the tests is not checked in this version.
 
-**New work:** comes with BR.01 and `scorecard_check`.
+**New work:** comes with `scorecard_check`.
 
 ---
 
@@ -445,21 +426,23 @@ as_of: 2026-11-03            # the run the text was written for
 
 > The project SHOULD take measures to reduce or avoid memory safety issues.
 
-**Implementation:** Projects use memory-safe languages. Projects that contain C, C++, Objective-C or assembly use fuzzing or sanitizers, and describe this in `DEVELOPMENT.md`. Code scanning (CodeQL) runs on every repository through the security configuration.
+**Implementation:** Projects use memory-safe languages. Projects with more than 5% code in C, C++, Objective-C or assembly are fuzzed, through OSS-Fuzz or ClusterFuzzLite. Code scanning (CodeQL) runs on every repository through the security configuration.
+
+**Policy:** for non-memory-safe code, fuzzing is the required measure. Sanitizers or other measures alone do not pass.
 
 **Applicability:** repositories whose languages (`GET /repos/{o}/{r}/languages`) include a non-memory-safe language with more than 5% of the code. All others are not applicable, because the language choice itself is the measure.
 
-**Structural check:** `lint/memory-safety-section`. `DEVELOPMENT.md` has a "Memory safety" heading that describes the measures (fuzzing, sanitizers, …). Only `lint_repos` opens issues for QA.05.
+**Exact check:** `scorecard/fuzzing` = 10 (Scorecard Fuzzing is 0 or 10). `scorecard_check` reads the languages and writes `na` for repositories without a non-memory-safe language above 5%, with a `details` line saying so; for the others it applies the threshold as usual.
 
-**For information:** `scorecard/fuzzing`. It is reported without issues, because one check per requirement owns the issue; otherwise two tools would open issues for the same gap.
+**For information:** `org/code-scanning`, code scanning enabled in the security configuration (`org_check`). Not mapped: QA.05 is assessed on `scorecard/fuzzing` only, so code scanning that is switched off does not make QA.05 "Not met". **(verify** that code scanning is part of `ospo-managed`.)
 
-**For information:** `org/code-scanning`, code scanning enabled in the security configuration (`org_check`). Not mapped: QA.05 is assessed on `lint/memory-safety-section` only, so code scanning that is switched off does not make QA.05 "Not met". **(verify** that code scanning is part of `ospo-managed`.)
+**Script:** `scorecard_check` (languages, threshold).
 
-**Scripts:** `lint_repos` (languages, heading); `scorecard_check` for information only.
+**Issue:** Scorecard issue, label `scorecard/fuzzing`, only for applicable repositories.
 
-**Issue:** yes, it is a SHOULD with a clear action.
+**Limits of the check:** Scorecard recognises fuzzing mainly through OSS-Fuzz, ClusterFuzzLite and a few language-specific fuzzing frameworks. Whether an Objective-C or Swift project can reach 10 at all **(verify)**; if not, Objective-C comes off the list.
 
-**New work:** the language lookup and the heading check (same mechanism as BR.01).
+**New work:** the language lookup in `scorecard_check`.
 
 ---
 
@@ -469,9 +452,7 @@ as_of: 2026-11-03            # the run the text was written for
 
 **Implementation:** The org ruleset requires a pull request with at least one approval before merging into the default branch.
 
-**Enforced:** `org/ruleset-approvals`, the ruleset requires approvals ≥ 1 (`org_check`). **(verify** whether `ospo-managed` requires approvals today.)
-
-**Exact check:** `scorecard/code-review` ≥ 7, for all repositories. It confirms the effect, including repositories with custom branch protection and admin bypasses.
+**Exact check:** `scorecard/code-review` ≥ 7, for all repositories. It measures the effect, whatever the cause: it also covers repositories with custom branch protection, admin bypasses and direct pushes. The ruleset setting itself is not checked; if it is weakened, Code-Review drops gradually, because Scorecard looks at the last ~30 changesets.
 
 **Single-maintainer projects:** a required approval would block them. How they get a second reviewer is a policy decision; until then they fail QA.06.
 
@@ -487,11 +468,9 @@ as_of: 2026-11-03            # the run the text was written for
 
 > Information on how to build all software assets MUST be publicly available.
 
-**Implementation:** Every repository with code contains `DEVELOPMENT.md` (in the root, `docs` or `.github`) describing how to build and test it. The OSPO standards guide defines the required sections. New repositories get a template.
+**Implementation:** Every repository with code contains `DEVELOPMENT.md` (in the root, `docs` or `.github`) describing how to build and test it. New repositories get a template.
 
-**Structural checks**
-- `lint/development-file`: `DEVELOPMENT*` exists, with at least 300 characters (`min_chars`, which already exists).
-- `lint/development-build`: the file has a "Build" heading. (The "Test" heading is `lint/development-test`, used by QA.04.)
+**Structural check:** `lint/development-file`: `DEVELOPMENT*` exists, with at least 300 characters (`min_chars`, which already exists). A "Build" heading is not checked in this version.
 
 **Not applicable:** topics `docs` or `template`.
 
@@ -499,14 +478,13 @@ as_of: 2026-11-03            # the run the text was written for
 
 **Issue:** lint issue.
 
-**Limits of the check:** correctness of the instructions is the project team's responsibility.
+**Limits of the check:** only the file is checked, not whether it describes the build. Correctness of the instructions is the project team's responsibility.
 
 **Preventive:** `create_repos` adds the template to new repositories. **(New capability:** today `create_repos` creates empty repositories; adding a file requires a commit through the API.)
 
 **Rollout:** announce first, then a grace period before the check is switched on.
 
 **New work:**
-- the heading check in `lint_repos` (generic: `required_headings` on a `required_files` entry);
 - topic-based applicability;
 - the template.
 

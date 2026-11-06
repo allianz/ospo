@@ -4,8 +4,8 @@ as_of: 2026-11-03
 
 ## Key messages
 
-- **The platform is in order; the gaps are in individual repositories.** All central settings (2FA, base permission, ruleset, secret scanning, dependency graph, security policy) are enforced as configured.
-- **Compliance fell from 83.2% to 80.3%, mostly because of one repository.** `ng-aquila` is skipped by the scanners while its license is under legal review, so it counts as failing 20 checks.
+- **The gaps are in individual repositories, not in the central setup.** No requirement is "Not met", and the organisation-wide security policy covers every repository.
+- **Compliance fell from 83.9% to 80.0%, mostly because of one repository.** `ng-aquila` is skipped by the scanners while its license is under legal review, so it counts as failing 15 checks.
 - **Release integrity is the weakest area.** Only 2 of 5 releasing repositories sign their releases (BR.03), and 2 of 5 publish no release notes (BR.04). A shared release workflow would fix both.
 - **Contribution guides are improving.** GV.01 rose from 55% to 70% since 6 Oct, after the CONTRIBUTING template was added to new repositories.
 
