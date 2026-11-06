@@ -6,6 +6,21 @@
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
   "report_config": "config/compliance_report.yaml",
   "config_sha256": "4b60a4ad83c79f35904689dee3b38ecf0774086ab7936bcc41bd00ccc83a25b4",
+  "framework": {
+    "id": "bsi-tr-03185",
+    "title": "BSI TR-03185 Chapter 2",
+    "version": "1.1.1",
+    "url": "https://www.bsi.bund.de/dok/TR-03185-en",
+    "text_note": "Short summary of each requirement, not a quotation.",
+    "chapters": {
+      "GV": "Governance",
+      "LE": "Legal",
+      "QA": "Quality",
+      "BR": "Build and release",
+      "VM": "Vulnerability management",
+      "DE": "Decommissioning"
+    }
+  },
   "previous_report": {
     "report_id": "OSPO-CR-2026-10-27",
     "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10-27/data.json"
@@ -158,8 +173,20 @@
   "requirements": [
     {
       "id": "GV.01",
+      "chapter": "GV",
       "level": "MUST",
       "title": "How to contribute is documented",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "Information on how to contribute to the project MUST be documented."
+        },
+        {
+          "level": "SHOULD",
+          "text": "Information about the expected quality of contributions SHOULD be given."
+        }
+      ],
+      "implementation": "Every repository must contain a contribution guide (a CONTRIBUTING file in the root, .github or docs). A weekly check opens an issue in any repository that lacks one, until it is fixed.",
       "status": "met-findings",
       "checks": [
         "lint/contributing"
@@ -173,8 +200,16 @@
     },
     {
       "id": "GV.02",
+      "chapter": "GV",
       "level": "MUST",
       "title": "Protected against unauthorised actions",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "The project's repository, websites and sensitive data MUST be protected against unauthorized actions."
+        }
+      ],
+      "implementation": "Changes need a company account with single sign-on and multi-factor authentication. Only teams get access, and team membership is managed centrally. Every permission change is requested by pull request and approved first. An organisation-wide ruleset protects the default branches. Websites are published with GitHub Pages only, so the repository's access rules apply. Secret scanning and push protection are on for every repository.",
       "status": "met-findings",
       "checks": [
         "org/two-factor",
@@ -198,8 +233,16 @@
     },
     {
       "id": "LE.01",
+      "chapter": "LE",
       "level": "MUST",
       "title": "License stated for all content",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "A license MUST be stated for all content made available by the project, including the project's documentation."
+        }
+      ],
+      "implementation": "Every repository must contain a license file with an approved license (Apache-2.0, MIT, CC-BY-4.0 or CC0-1.0). It covers all content of the repository, including its documentation and website, unless a file states otherwise. A weekly check opens an issue if the license is missing or not approved.",
       "status": "met-findings",
       "checks": [
         "lint/license-file",
@@ -214,8 +257,16 @@
     },
     {
       "id": "LE.02",
+      "chapter": "LE",
       "level": "MUST",
       "title": "Licenses of all components referenced",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "A copy of all licenses in use, or references hereto, MUST be provided."
+        }
+      ],
+      "implementation": "For every repository, a public SPDX SBOM is available from the dependency graph. It lists every declared dependency with its license identifier, which references the license text. The project's own license is covered by LE.01.",
       "status": "met-findings",
       "checks": [
         "sbom/available"
@@ -229,8 +280,16 @@
     },
     {
       "id": "QA.01",
+      "chapter": "QA",
       "level": "MUST",
       "title": "List of third-party components available",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "A list of third-party components used in the software MUST be available."
+        }
+      ],
+      "implementation": "The dependency graph is enabled for every repository through the organisation's security configuration. Its SPDX SBOM is the public list of third-party components.",
       "status": "met-findings",
       "checks": [
         "org/dependency-graph",
@@ -245,8 +304,16 @@
     },
     {
       "id": "QA.02",
+      "chapter": "QA",
       "level": "MUST",
       "title": "Source code publicly readable",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "All of the project's source code MUST be publicly readable."
+        }
+      ],
+      "implementation": "All repositories are created as public by the provisioning pipeline. Members cannot create repositories themselves.",
       "status": "met-findings",
       "checks": [
         "org/repo-creation",
@@ -261,8 +328,16 @@
     },
     {
       "id": "QA.03",
+      "chapter": "QA",
       "level": "MUST",
       "title": "How to report defects is communicated",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "The project MUST inform how to report defects."
+        }
+      ],
+      "implementation": "Issues are enabled on every repository, and project teams cannot disable them. Security defects are reported privately (VM.01).",
       "status": "met-findings",
       "checks": [
         "lint/issues-enabled"
@@ -276,8 +351,16 @@
     },
     {
       "id": "QA.04",
+      "chapter": "QA",
       "level": "MUST",
       "title": "Testing procedures implemented and used",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "Procedures for testing MUST be implemented and utilised."
+        }
+      ],
+      "implementation": "Every repository with code tests its changes automatically in CI, and DEVELOPMENT.md describes how to run the tests locally. A weekly check opens an issue when the test section is missing or CI did not run on recently merged pull requests.",
       "status": "met-findings",
       "checks": [
         "lint/development-test",
@@ -292,8 +375,16 @@
     },
     {
       "id": "QA.05",
+      "chapter": "QA",
       "level": "SHOULD",
       "title": "Memory safety issues reduced",
+      "text": [
+        {
+          "level": "SHOULD",
+          "text": "The project SHOULD take measures to reduce or avoid memory safety issues."
+        }
+      ],
+      "implementation": "Projects use memory-safe languages. Projects that contain C, C++, Objective-C or assembly use fuzzing or sanitizers and describe this in DEVELOPMENT.md. Code scanning runs on every repository through the security configuration.",
       "status": "met-findings",
       "checks": [
         "lint/memory-safety-section"
@@ -307,8 +398,16 @@
     },
     {
       "id": "QA.06",
+      "chapter": "QA",
       "level": "SHOULD",
       "title": "Changes peer-reviewed",
+      "text": [
+        {
+          "level": "SHOULD",
+          "text": "All changes to the source code SHOULD be peer-reviewed."
+        }
+      ],
+      "implementation": "The organisation-wide ruleset requires a pull request with at least one approval before merging into the default branch.",
       "status": "met-findings",
       "checks": [
         "org/ruleset-approvals",
@@ -323,8 +422,16 @@
     },
     {
       "id": "BR.01",
+      "chapter": "BR",
       "level": "MUST",
       "title": "Build information public",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "Information on how to build all software assets MUST be publicly available."
+        }
+      ],
+      "implementation": "Every repository with code contains DEVELOPMENT.md describing how to build and test it. The OSPO standards guide defines the required sections, and new repositories get a template.",
       "status": "met-findings",
       "checks": [
         "lint/development-file",
@@ -339,8 +446,16 @@
     },
     {
       "id": "BR.02",
+      "chapter": "BR",
       "level": "MUST",
       "title": "Unique, increasing version identifiers",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "All releases and released software assets intended for use MUST be assigned unique, monotonically increasing version identifiers."
+        }
+      ],
+      "implementation": "Releases are tagged with SemVer or CalVer. Tags are unique by construction in git. A weekly check confirms that versions increase within each major version line.",
       "status": "met-findings",
       "checks": [
         "lint/versioning"
@@ -354,8 +469,20 @@
     },
     {
       "id": "BR.03",
+      "chapter": "BR",
       "level": "MUST",
       "title": "Integrity of distributed assets verifiable",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "All assets MUST be distributed in a way that maintains integrity or at least allows its verification."
+        },
+        {
+          "level": "MAY",
+          "text": "Means to maintain and verify authenticity MAY be deployed."
+        }
+      ],
+      "implementation": "GitHub generates source archives from the tag and serves them over HTTPS. Release assets are built by the OSPO release workflow template, which adds SHA-256 checksums and a signed artifact attestation.",
       "status": "met-findings",
       "checks": [
         "scorecard/signed-releases"
@@ -369,8 +496,16 @@
     },
     {
       "id": "BR.04",
+      "chapter": "BR",
       "level": "MUST",
       "title": "Change log per release",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "All releases MUST provide a descriptive log of functional and security modifications."
+        }
+      ],
+      "implementation": "Every GitHub release has release notes. The release template enables generated release notes, grouped by labels such as security.",
       "status": "met-findings",
       "checks": [
         "lint/release-notes"
@@ -384,21 +519,49 @@
     },
     {
       "id": "BR.05",
+      "chapter": "BR",
       "level": "MUST",
       "title": "Source packages match the repository",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "Released source packages MUST NOT contain any content that is not present in the project's repository or cannot be deterministically generated from it."
+        }
+      ],
+      "implementation": "Source packages are the archives GitHub generates from the tag, so they contain exactly the repository content. Built packages are produced by the release workflow from the tagged commit, and the artifact attestation (BR.03) links each asset to that commit.",
       "status": "met",
       "basis": "by construction (GitHub-generated source archives; built assets covered by BR.03)"
     },
     {
       "id": "BR.06",
+      "chapter": "BR",
       "level": "SHOULD",
       "title": "Builds reproducible",
+      "text": [
+        {
+          "level": "SHOULD",
+          "text": "Builds SHOULD be reproducible."
+        }
+      ],
+      "implementation": "No measure across the portfolio yet. Reproducible builds cannot be verified at this scale; the requirement is reassessed once BR.03 is met.",
       "status": "not-assessed"
     },
     {
       "id": "VM.01",
+      "chapter": "VM",
       "level": "MUST",
       "title": "Security contact and private reporting",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "The project documentation MUST contain security contacts for reporting vulnerabilities."
+        },
+        {
+          "level": "SHOULD",
+          "text": "There SHOULD be a way to do so privately."
+        }
+      ],
+      "implementation": "An organisation-wide security policy applies to every repository without its own. It names the OSPO as security contact and asks reporters to use private vulnerability reporting, which is enabled on every repository.",
       "status": "met",
       "checks": [
         "org/security-policy"
@@ -406,8 +569,16 @@
     },
     {
       "id": "VM.02",
+      "chapter": "VM",
       "level": "MUST",
       "title": "Vulnerabilities published in reasonable time",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "The project MUST publish information about discovered vulnerabilities within a reasonable period of time."
+        }
+      ],
+      "implementation": "Privately reported vulnerabilities are triaged by the project team and the OSPO and published as a GitHub Security Advisory with a CVE. Target: 90 days from report to publication.",
       "status": "met",
       "checks": [
         "advisories/published-in-time"
@@ -415,8 +586,16 @@
     },
     {
       "id": "DE.01",
+      "chapter": "DE",
       "level": "SHOULD",
       "title": "Discontinuation communicated",
+      "text": [
+        {
+          "level": "SHOULD",
+          "text": "Discontinuation of the project, parts of it, or specific versions or version ranges SHOULD be communicated adequately."
+        }
+      ],
+      "implementation": "Repositories without activity for 12 months get a public notice issue. After 60 more days without activity they are archived. The notice stays visible, and GitHub marks the repository as archived and read-only.",
       "status": "met-findings",
       "checks": [
         "archive/notice-before-archival",
@@ -431,8 +610,16 @@
     },
     {
       "id": "DE.02",
+      "chapter": "DE",
       "level": "MAY",
       "title": "Migration paths outlined",
+      "text": [
+        {
+          "level": "MAY",
+          "text": "Migration paths MAY be outlined."
+        }
+      ],
+      "implementation": "The archival notice asks maintainers to name a successor or alternative in the README before the repository is archived.",
       "status": "optional"
     }
   ],
