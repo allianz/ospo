@@ -23,7 +23,7 @@
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
         "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days).",
-        "fix": "Ask the OSPO to unarchive the repository and let it go through the notice process, or to record an accepted exception in config/compliance_report.yaml."
+        "fix": "Ask the OSPO to unarchive the repository and let it go through the notice process."
       }
     },
     "archive/migration-path": {

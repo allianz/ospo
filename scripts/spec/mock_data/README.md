@@ -33,7 +33,7 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 
 `ng-aquila` is in `excluded_repos` (license under legal review). `lint_repos`, `license_scan` and `scorecard_check` skip it, so it has no tool results and appears in their `skipped`. It is still active and in scope: `compliance_report` adds a `fail` result to `data.json` for every mapped per-repository check of each tool that skipped it (20 rows), so it fails every requirement with per-repository checks. The skip reason is shown in section A of the report.
 
-There are no deviations. BR.06 has no check because builds cannot be verified as reproducible at portfolio scale. It has status `not-assessed` and is not counted. BR.05 has no check either, but it is `met` by construction (`basis`).
+BR.06 has no check because builds cannot be verified as reproducible at portfolio scale. It has status `not-assessed` and is not counted. BR.05 has no check either, but it is `met` by construction (`basis`).
 
 ## Real reference output (not mock data)
 

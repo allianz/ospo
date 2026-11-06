@@ -18,14 +18,14 @@ Every check has exactly one type:
 | **Exact check** | Can change per repository, and the condition can be tested precisely | A per-repository check with a clear pass/fail |
 | **Structural check** | Can change per repository, but only the form can be tested, not the content | A per-repository check, plus a "Limits of the check" note on the card |
 | **By construction** | GitHub guarantees it; there is nothing to check | A statement in the implementation text |
-| **Not verifiable** | No practical way to verify (SHOULD only) | An approved deviation with an expiry date |
+| **Not verifiable** | No practical way to verify (SHOULD only) | Nothing. The requirement has status "Not assessed" and is not counted |
 
-Rule: a MUST can never rely on **Not verifiable**. Deviations are only allowed for SHOULD.
+Rule: a MUST can never rely on **Not verifiable**.
 
 ### 1.2 Scope and applicability
 
-- **In scope:** all active (not archived) repositories of the organisation, except `excluded_repos` in `config/compliance_report.yaml`. Each exclusion needs a deviation entry with an expiry date.
-- **Archived repositories:** only DE.01 and DE.02 apply. All other tools list them under `skipped` (reason `archived`) and write no results for them.
+- **In scope:** all active (not archived) repositories of the organisation. A repository in a tool's `excluded_repos` stays in scope: the tool skips it and lists it under `skipped`, and `compliance_report` counts it as failing every mapped per-repository check of that tool (see 1.10 step 4).
+- **Archived repositories:** the checking tools list them under `skipped` (reason `archived`) and write no results for them. Only the archival checks of `archive_repos` and `compliance_report` have results for them.
 - **Not applicable by topic:** repositories tagged `docs` or `template` have no software to build or test. BR.01 and QA.04 do not apply to them.
 - **Releasing repositories:** repositories with at least one GitHub release in the last 12 months. BR.02–BR.05 only apply to these.
 - **Not applicable by data:** when a check has no data to judge (e.g. Scorecard "inconclusive" because there were no changes), the result is `na`, not `pass`. A tool error is never `na`: it goes to `errors`, which the report treats as "no data".
@@ -127,7 +127,7 @@ Each requirement is assessed once, at its own level: a MUST requirement on its M
 
 - **Findings count repositories.** A repository has a finding for a requirement if it fails at least one applicable check of that requirement. Every number in the report counts repositories (per requirement, or active repositories with at least one finding), never failing checks: which checks implement a requirement is an implementation detail, and one missing file can fail several checks. Failing checks are shown only as the explanation next to a repository.
 - **Not met:** an org-level check fails (the enforced setting deviates from its expected value), or no check covers a MUST requirement.
-- **Deviation accepted:** no check covers a SHOULD requirement, and an approved deviation explains why.
+- **Not assessed:** no check can verify a SHOULD requirement. It is shown in the report, but not counted in the summary.
 - **Optional:** a MAY requirement, reported for information.
 
 - **Trend:** each run appends to `data.json` → `history` the overall compliance, the number of active repositories with findings (`failing_repositories`) and, per requirement, the share of applicable repositories that pass (`coverage`). Each value is computed from that run's own results; a missed run is a gap, not a wrong value.
@@ -146,29 +146,15 @@ inputs:                      # tool files expected in out/ (see 1.10)
   - { file: org_check.json,     script: scripts/org_check.js }
   - { file: scorecard.json,     script: scripts/scorecard_check.js }
 
-excluded_repos:
-  - name: ng-aquila
-    deviation: D-03
-
 requirements:
   GV.01:
     implementation: >
       Every repository must contain a contribution guide …
     checks: [lint/contributing]
   BR.06:
-    checks: []
-    deviation: D-01
-
-deviations:
-  - id: D-01
-    requirement: BR.06
-    scope: all repositories
-    justification: …
-    approved_by: Head of OSPO, ISO
-    valid_until: 2027-09-30
+    checks: []               # not verifiable → "Not assessed"
 ```
 
-- Deviations are data, so the report can flag expired deviations.
 - Every change to this file goes through a PR, which gives the audit trail.
 
 ### 1.9 Scorecard conversion (`scorecard_check`)
@@ -205,12 +191,11 @@ deviations:
    - `catalogue`: the union of all catalogues. Each entry gets the defining `tool` and keeps `threshold` and `documentation` (`url`, `short`). `name` is dropped: the report shows the check ID. `fix` is kept only for checks the OSPO fixes and no issue carries: org-level checks and `compliance_report`'s own checks.
    - `results`, concatenated in input order. Each row keeps `repo`, `check` and `result`; `score` only for scored checks (the catalogue entry has a `threshold`); `reason` only for org-level results (`repo: null`), where it states the checked values. `name`, `details` and the rest of `reason` are not copied; the tool is found through `catalogue[check].tool`.
    - `skipped` and `errors`, concatenated, each row with `tool`.
-4. **Add own results.** Checks that need two runs are computed here, with their own check IDs (`report/…`) and catalogue entries (`tool: compliance_report`). Today this is only `report/archived-outside-process` (DE.01). They open no issues.
+4. **Add own results.** Checks that need two runs are computed here, with their own check IDs (`report/…`) and catalogue entries (`tool: compliance_report`). Today this is only `report/archived-outside-process` (DE.01). They open no issues. In addition, every active repository that a tool skipped (`excluded_repos`) gets a `fail` result for each mapped per-repository check of that tool (1.2).
 5. **Compute** from the merged results and `config/compliance_report.yaml` only:
-   - `scope`: active, archived and excluded repositories;
+   - `scope`: active and archived repositories;
    - `requirements`: the mapped checks, status and coverage per requirement (1.7);
-   - `summary`: checks evaluated and passed, compliance %, requirements by status, active repositories with findings (`failing_repositories`);
-   - `deviations`: copied from the configuration, with `expired` computed from `valid_until`.
+   - `summary`: checks evaluated and passed, compliance %, requirements by status, active repositories with findings (`failing_repositories`).
 6. **Carry forward** from the previous release's `data.json`: `history` (this run is appended) and `archivals` (12 months are kept). `scope.active` of the previous run is read for `report/archived-outside-process` (step 4). Nothing else is read from the previous run.
 7. **Write** `data.json`, then render `report.html` and `report.md` from it.
 
@@ -222,7 +207,7 @@ deviations:
 | `report_config`, `config_sha256` | Path and hash of `config/compliance_report.yaml`, which pin the mapping that produced the statuses | – |
 | `previous_report` | The `data.json` that `history` and `archivals` were read from | 6 |
 | `inputs` | One entry per tool file: status, hash, header, counts | 2 |
-| `scope`, `requirements`, `summary`, `deviations` | Computed | 5 |
+| `scope`, `requirements`, `summary` | Computed | 5 |
 | `archivals`, `history` | Carried forward | 6 |
 | `catalogue`, `results`, `skipped`, `errors` | Merged from the tool files, reduced to what the report shows, plus own results | 3, 4 |
 
@@ -300,8 +285,6 @@ deviations:
 **Issue:** lint issue, labels as above.
 
 **Archived repositories:** not checked (listed under `skipped`).
-
-**Exclusions:** ng-aquila (D-03).
 
 **New work:** labels and `--json` only.
 
@@ -420,7 +403,7 @@ deviations:
 
 **For information:** `scorecard/fuzzing`. It is reported without issues, because one check per requirement owns the issue; otherwise two tools would open issues for the same gap.
 
-**For information:** `org/code-scanning`, code scanning enabled in the security configuration (`org_check`). Not mapped: QA.05 is assessed on `lint/memory-safety-section` only, so a code scanning deviation does not make QA.05 "Not met". **(verify** that code scanning is part of `ospo-managed`.)
+**For information:** `org/code-scanning`, code scanning enabled in the security configuration (`org_check`). Not mapped: QA.05 is assessed on `lint/memory-safety-section` only, so code scanning that is switched off does not make QA.05 "Not met". **(verify** that code scanning is part of `ospo-managed`.)
 
 **Scripts:** `lint_repos` (languages, heading); `scorecard_check` for information only.
 
@@ -440,7 +423,7 @@ deviations:
 
 **Exact check:** `scorecard/code-review` ≥ 7, for all repositories. It confirms the effect, including repositories with custom branch protection and admin bypasses.
 
-**Single-maintainer projects:** a required approval would block them. Each such project needs a deviation (like D-02) until it has a second maintainer, which is a policy decision.
+**Single-maintainer projects:** a required approval would block them. How they get a second reviewer is a policy decision; until then they fail QA.06.
 
 **Script:** `scorecard_check`.
 
@@ -570,11 +553,11 @@ deviations:
 
 > Builds SHOULD be reproducible.
 
-**Not verifiable** at portfolio scale → deviation D-01, reassessed once BR.03 is met.
+**Not verifiable** at portfolio scale → status "Not assessed", not counted. Reassessed once BR.03 is met.
 
 **Optional later:** a yearly self-assessment question (see Part 3).
 
-**New work:** the deviation entry only.
+**New work:** none.
 
 ---
 
@@ -633,7 +616,7 @@ deviations:
 - `archive_repos`: adds `--json` with the archivals it performed in this run (notice issue, notice date, archival date). It needs no history and no new API calls: it already reads the warning issue's `created_at` before archiving.
 - `compliance_report`: does the comparison with the previous run, writes the failure as its own result `report/archived-outside-process` (see 1.10 step 4), and carries an `archivals` list forward for 12 months (it feeds the DE.01 card: "N of M archived in the period had a notice").
 
-**Issue:** none, because the repository is archived. A finding is listed for the OSPO (the existing `Stale Repository Summary` issue in the `ospo` repository is the natural place). It stays open until the OSPO resolves it: either unarchive and go through the process, or accept it with an entry in `config/compliance_report.yaml`.
+**Issue:** none, because the repository is archived. A finding is listed for the OSPO (the existing `Stale Repository Summary` issue in the `ospo` repository is the natural place). It stays open until the OSPO resolves it by unarchiving the repository and letting it go through the process.
 
 **Limits:** discontinued *versions* (end of life of a major line) are not covered. That is a project decision and not detectable.
 

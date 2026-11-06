@@ -972,7 +972,7 @@
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/compliance_report_spec.md#archived-outside-process",
         "short": "A repository that was active in the previous run and is archived now was archived by archive_repos, after a notice. Computed by compliance_report from two runs.",
-        "fix": "OSPO: unarchive the repository and let it go through the notice process, or accept the archival with an entry in config/compliance_report.yaml."
+        "fix": "OSPO: unarchive the repository and let it go through the notice process."
       }
     },
     "sbom/available": {

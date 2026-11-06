@@ -1410,7 +1410,7 @@
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/compliance_report_spec.md#archived-outside-process",
         "short": "A repository that was active in the previous run and is archived now was archived by archive_repos, after a notice. Computed by compliance_report from two runs.",
-        "fix": "OSPO: unarchive the repository and let it go through the notice process, or accept the archival with an entry in config/compliance_report.yaml."
+        "fix": "OSPO: unarchive the repository and let it go through the notice process."
       }
     },
     "sbom/available": {
@@ -3547,9 +3547,7 @@ function repoListTag(text, filter) { const a = repoListLink(text, filter); a.cla
   const notAssessed = Object.keys(skipped).filter(r => !ARCHIVED.includes(r) && !ACTIVE.includes(r));
   const srow = (k, n, names) => st.append(h('tr', {}, h('td', {}, k, names ? h('div', { class: 'small muted', text: names }) : null), h('td', { class: 'num', text: n })));
   srow('Active repositories in scope', ACTIVE.length, capText(ACTIVE, 12));
-  const archChecks = new Set(REPO_RESULTS.filter(r => ARCHIVED.includes(r.repo)).map(r => r.check));
-  const archReqs = DATA.requirements.filter(q => q.checks?.some(c => archChecks.has(c))).map(q => q.id);
-  srow(`Archived repositories (${archReqs.length ? `only ${archReqs.join(', ')} ${archReqs.length === 1 ? 'applies' : 'apply'}` : 'no requirement applies'})`, ARCHIVED.length, capText(ARCHIVED, 12));
+  srow('Archived repositories', ARCHIVED.length, capText(ARCHIVED, 12));
   srow('Active, but skipped by a tool (counted as failing its checks)', skippedActive.length, skippedActive.map(r => `${r}: ${[...skipped[r]].join('; ')}`).join(' · '));
   srow('Not assessed by any tool', notAssessed.length, notAssessed.map(r => `${r}: ${[...skipped[r]].join('; ')}`).join(' · '));
 
