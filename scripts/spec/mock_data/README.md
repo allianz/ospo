@@ -8,9 +8,9 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 |---|---|---|
 | `lint_repos.json` | `lint_repos.js --json` | Per-repository lint checks. Archived repositories only appear under `skipped` |
 | `license_scan.json` | `license_scan.js --json` | SBOM availability, license coverage (not mapped), deny list (internal policy, not mapped) |
-| `archive_repos.json` | `archive_repos.js --json` | Only the archivals performed in this run; notice and archival dates in the `archivals` block |
+| `archive_repos.json` | `archive_repos.js --json` | One `archive/activity-checked` result per active repository (DE.01). Archived repositories only appear under `skipped` |
 | `drift.json` | `create_repos.js --dry-run --json` | Planned changes (none) = no drift |
-| `org_check.json` | `org_check.js` | Org-level checks, one per expected value: org settings, ruleset, security configuration, org SECURITY.md, advisories. Actual values are in `details`; no raw API data |
+| `org_check.json` | `org_check.js` | Org-level checks, one per expected value: org settings, ruleset, security configuration, org SECURITY.md. Plus one `advisories/published-in-time` result per active repository (VM.02), from published advisories only. Actual values are in `details`; no raw API data |
 | `scorecard.json` | `scorecard_check.js` | Scorecard CLI results per repository, converted to the common format with thresholds applied |
 | `compliance_report_bsi_notes.md` | OSPO, by hand | Sample notes file of the BSI report (draft 1.8, `notes:` in `config/compliance_report_bsi.yaml`): Key messages and Needs attention for the run of 3 Nov 2026. Copied into `data.json` → `notes` |
 | `data.json` | `compliance_report.js --config config/compliance_report_bsi.yaml` (published as `bsi-data.json`) | Aggregation of all files above (draft 1.10), reduced to what the report shows: shown header fields in `inputs`; `catalogue` without `name`; `results` rows with `repo`, `check`, `result`, plus `score` (scored checks) or `reason` (org-level checks); `skipped` and `errors` with `tool`. Plus `fail` results for active repositories a tool skipped, requirement statuses, summary, history. The only input for the HTML report. Created by hand from the files above |
@@ -27,14 +27,14 @@ Fictitious JSON outputs for one weekly compliance run on 3 Nov 2026. They follow
 | `mobile-sdk-ios` | Objective-C 26% → QA.05 applies (passes via the "Memory safety" section; Scorecard fuzzing is not mapped); version going backwards in major line 3 (BR.02) |
 | `pricing-sandbox` | New repository: no SBOM, request returns 404 (QA.01, LE.02); no DEVELOPMENT.md; no pull requests yet → Scorecard inconclusive = `na` |
 | `claims-event-schemas` | Issues disabled (QA.03); a user with direct access (GV.02) |
-| `kafka-schema-tools` | Inactive with an open notice. Not visible in `archive_repos.json`: open notices are not needed for any check |
-| `legacy-xml-mapper` | Archived by `archive_repos` in this run, 60 days after the notice (DE.01 pass); listed as `skipped` (archived) in `lint_repos.json` and `license_scan.json`, so its missing license is not reported |
+| `kafka-schema-tools` | Inactive with an open notice. Still active, so it passes DE.01; the notice and archival date are in the `reason` of its result in `archive_repos.json` |
+| `legacy-xml-mapper` | Archived by `archive_repos` in this run, 60 days after the notice. Out of scope: listed as `skipped` (archived) in every tool file, so it has no results and its missing license is not reported |
 | `ng-aquila` | Excluded from the tools (`excluded_repos`), but counted as failing all of their mapped checks (see below) |
-| `old-batch-tools` | Archived manually between the runs of 13 and 20 Oct. Not in any `archive_repos` output, so `compliance_report` derives the DE.01 failure (`report/archived-outside-process`, a check of `compliance_report` itself, only in `data.json`) |
+| `old-batch-tools` | Archived manually between the runs of 13 and 20 Oct. Out of scope like `legacy-xml-mapper`; how it was archived does not matter for DE.01 |
 
 `ng-aquila` is in `excluded_repos` (license under legal review). `lint_repos`, `license_scan` and `scorecard_check` skip it, so it has no tool results and appears in their `skipped`. It is still active and in scope: `compliance_report` adds a `fail` result to `data.json` for every mapped per-repository check of each tool that skipped it (20 rows), so it fails every requirement with per-repository checks. The skip reason is shown in section A of the report.
 
-BR.06 has no check because builds cannot be verified as reproducible at portfolio scale. It has status `not-assessed` and is not counted. BR.05 has no check either, but it is `met` by construction (`basis`).
+BR.06 has no check because builds cannot be verified as reproducible at portfolio scale. It has status `not-assessed` and is not counted. DE.02 (MAY) is `not-assessed` as well: it is not implemented yet. BR.05 has no check either, but it is `met` by construction (`basis`).
 
 ## Real reference output (not mock data)
 
@@ -48,12 +48,11 @@ On 4 Nov 2026, yukimi was the only active public allianz repository with results
 ## Conventions used
 
 - In the tool files, every result has `repo`, `check`, `name`, `result` (`pass`, `fail`, `na`), `score` (Scorecard 0–10, otherwise `null`), `reason` (always filled) and `details` (list, Scorecard style). See section 1.6 of the draft. `data.json` keeps less, see above.
-- Checks that are not mapped in `data.json` → `requirements` (license coverage, fuzzing, migration path, deny list) never affect a status.
-- `repo: null` marks org-level checks (`org/*`, `drift/access`, `advisories/*`).
+- Checks that are not mapped in `data.json` → `requirements` (license coverage, fuzzing, deny list) never affect a status.
+- `repo: null` marks org-level checks (`org/*`, `drift/access`).
 - Every file has a `catalogue` (`name`, `documentation.url`, `documentation.short`, `documentation.fix`); `data.json` → `catalogue` merges them, adds the defining `tool`, drops `name`, and keeps `fix` only for org-level checks and `report/*`. Scorecard checks have no `fix`. The OSPO URLs point to spec headings that do not exist yet; the Scorecard URLs are real.
-- Data the report computes with is in a header block (`archivals`, `planned_changes`), never in `reason` or `details`.
+- Data the report computes with is in a header block (`planned_changes`), never in `reason` or `details`.
 - Results carry no `tracking`. Each tool keeps one issue per repository, but the report does not read issues; it only links to a live GitHub search by check label. Labels on that issue (= the failing check IDs) exist on GitHub only.
-- Unpublished security advisories are redacted: their `details` lines in `org_check.json` carry no repository name.
-- `data.json` stores no `findings` list. A repository has a finding for a requirement if it fails at least one applicable check of it; the report derives this from `results` and `requirements` and counts repositories, never failing checks. Findings carry no age or "failing since" date. From the previous `data.json`, only `history`, `archivals` and `scope.active` (for DE.01) are read. `history` holds overall compliance, active repositories with findings and, per requirement, `coverage` (share of applicable repositories that pass) for each weekly run. `pricing-sandbox` is new in the run of 3 Nov, so earlier runs have one applicable repository less where it applies; DE.01 has no value before the first archival. A finding's history is on GitHub, in the live issues. The `failing_repositories` values of the runs before 3 Nov are made up.
+- `data.json` stores no `findings` list. A repository has a finding for a requirement if it fails at least one applicable check of it; the report derives this from `results` and `requirements` and counts repositories, never failing checks. Findings carry no age or "failing since" date. From the previous `data.json`, only `history` is read. `history` holds overall compliance, active repositories with findings and, per requirement, `coverage` (share of applicable repositories that pass) for each weekly run. `pricing-sandbox` is new in the run of 3 Nov, so earlier runs have one applicable repository less where it applies. `old-batch-tools` (until 13 Oct) and `legacy-xml-mapper` (until 27 Oct) were active, so they count in DE.01 and in the compliance % of those runs. A finding's history is on GitHub, in the live issues. The `failing_repositories` values of the runs before 3 Nov are made up.
 - `data.json` → `requirements[]` has one assessment per requirement, at the requirement's own level (no `parts`). Weaker clauses (SHOULD in GV.01 and VM.01, MAY in BR.03) are not assessed in this version.
 - The requirement set is data, not template text. `data.json` → `framework` has `id`, `title`, `version`, `url`, `text_note` and `chapters`. Each entry in `requirements[]` has `chapter`, `text` (the clauses, each with `level` and `text`) and `implementation` (the implementation strategy as plain text), next to `level`, `title`, `checks`, `basis` and the computed `status` and `repositories`. `compliance_report` copies them from the requirement set configuration, so an old report shows the texts that were valid in its run. The HTML holds no requirement content, so the same template can render another requirement set.

@@ -18,14 +18,14 @@ Every check has exactly one type:
 | **Exact check** | Can change per repository, and the condition can be tested precisely | A per-repository check with a clear pass/fail |
 | **Structural check** | Can change per repository, but only the form can be tested, not the content | A per-repository check, plus a "Limits of the check" note on the card |
 | **By construction** | GitHub guarantees it; there is nothing to check | A statement in the implementation text |
-| **Not verifiable** | No practical way to verify (SHOULD only) | Nothing. The requirement has status "Not assessed" and is not counted |
+| **Not verifiable** | No practical way to verify (SHOULD or MAY only) | Nothing. The requirement has status "Not assessed" and is not counted |
 
 Rule: a MUST can never rely on **Not verifiable**.
 
 ### 1.2 Scope and applicability
 
 - **In scope:** all active (not archived) repositories of the organisation. A repository in a tool's `excluded_repos` stays in scope: the tool skips it and lists it under `skipped`, and `compliance_report` counts it as failing every mapped per-repository check of that tool (see 1.10 step 4).
-- **Archived repositories:** the checking tools list them under `skipped` (reason `archived`) and write no results for them. Only the archival checks of `archive_repos` and `compliance_report` have results for them.
+- **Archived repositories:** the checking tools list them under `skipped` (reason `archived`) and write no results for them. They are out of scope, so no check has results for them.
 - **Not applicable by topic:** repositories tagged `docs` or `template` have no software to build or test. BR.01 and QA.04 do not apply to them.
 - **Releasing repositories:** repositories with at least one GitHub release in the last 12 months. BR.02–BR.05 only apply to these.
 - **Not applicable by data:** when a check has no data to judge (e.g. Scorecard "inconclusive" because there were no changes), the result is `na`, not `pass`. A tool error is never `na`: it goes to `errors`, which the report treats as "no data".
@@ -40,9 +40,9 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `lint_repos.js` | exists, extend | Per-repository checks on repository data and the cloned content |
 | `license_scan.js` | exists, extend | SBOM retrieval and dependency licenses |
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
-| `org_check.js` | **new** | Reads org settings, ruleset, security configurations, org security policy and security advisories, and compares them with expected values. Writes results only, no copy of the settings. No issues. |
+| `org_check.js` | **new** | Reads org settings, ruleset, security configurations and org security policy, and compares them with expected values. Also checks the published security advisories of every repository (VM.02). Writes results only, no copy of the settings. No issues. |
 | `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds, opens and closes issues (see 1.9) |
-| `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses, compares with the previous run (archivals). Renders HTML and Markdown from `data.json` only |
+| `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses. Renders HTML and Markdown from `data.json` only |
 
 ### 1.4 Weekly workflow
 
@@ -67,7 +67,7 @@ release compliance-YYYY-MM-DD   ← the files of every report, all tool files (o
 - **One run, several reports.** The tools run once; each report configuration (1.8) turns the same tool files into its own report. The release of a run holds all reports, so they always rest on the same evidence. Asset names start with the report's `key`.
 
 - Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10).
-- `compliance_report` downloads `<key>-data.json` of its own report from the previous release, which carries the trend history and the archivals. Each report has its own history. The checking scripts never read a previous run.
+- `compliance_report` downloads `<key>-data.json` of its own report from the previous release, which carries the trend history. Each report has its own history. The checking scripts never read a previous run.
 - The tool files are published in the release as evidence. The report itself is rendered from `data.json` only.
 
 ### 1.5 Check IDs, issues and labels
@@ -76,7 +76,7 @@ release compliance-YYYY-MM-DD   ← the files of every report, all tool files (o
 - **Requirement mapping** exists in one place only: the report configuration (1.8), one per report. Each report maps the same check IDs to its own requirements. The scripts know nothing about requirement IDs.
 - **Issues:** each tool keeps one issue per repository, as `lint_repos` does today. That issue lists all failing checks of that tool. Issues are a convenience for the project teams. The report does not read them, and they do not affect any status: a team may close an issue without fixing the finding, and the tool opens it again on the next run. The report only links to the live issues on GitHub.
 - **Labels:** the issue carries one label per failing check, e.g. `lint/contributing`. Labels are added and removed as checks change. The report's "Live issues" link searches by label, e.g. `org:allianz is:issue is:open label:lint/contributing`.
-- **Security-sensitive results never become public issues.** For example: an unpublished advisory, or a repository with secret scanning switched off. The tool opens no issue, and the public report shows counts only.
+- **Security-sensitive results never become public issues.** For example: a repository with secret scanning switched off. The tool opens no issue, and the public report shows counts only.
 - **Issues disabled or archived:** a tool cannot open an issue in a repository whose issues are switched off (QA.03) or that is archived. It logs a warning in its workflow run. This is a tool problem, not a report concern; the finding is in the report either way.
 
 ### 1.6 Common JSON format
@@ -117,7 +117,7 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 | `reason` | One sentence for people, always filled (also for `pass` and `na`), e.g. "6 of 412 packages (1.5%) have no license information" |
 | `details` | List of lines for people, Scorecard style (`Warn: …`, `Info: …`), e.g. one line per denied package. Always a list, `[]` if empty. Never parsed |
 
-- **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header: `archivals` in `archive_repos`, `planned_changes` in `create_repos --json`. A tool writes such a block only if the report computes with it; raw API data that only serves as evidence goes into `details`, not into a block.
+- **Text for people, fields for the program.** Nothing parses `reason` or `details`. Data that the report computes with lives in a tool-specific block in the header, e.g. `planned_changes` in `create_repos --json`. A tool writes such a block only if the report computes with it; raw API data that only serves as evidence goes into `details`, not into a block.
 - **`catalogue`:** once per file, one entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`, optional `fix`), the same fields as Scorecard plus `fix`. `fix` is one sentence telling a project team what to do when the check fails, e.g. "Add CONTRIBUTING.md to .github/ …". It is written once per check, never per result, and is shown in the report next to "How it is verified" and in the tool's issue body. Checks the project team cannot fix (central settings, e.g. `lint/public`) say who acts. `scorecard_check` leaves `fix` out; the Scorecard `url` already explains remediation. `threshold` is the minimum score (0–10) to pass: `score >= threshold` → `pass`. The report shows it ("CI-Tests ≥ 8") and can verify that every non-`na` result agrees with it. Checks without a score have no threshold; their limit (e.g. 300 characters) is part of the rule in `documentation.short`. The URL is pinned to `ospo_sha`, so an old report links to the rule that was valid in that run. `scorecard_check` copies Scorecard's own documentation (pinned to the Scorecard commit). Every check ID used in `results` must be in the catalogue. `compliance_report` merges the catalogues into `data.json` → `catalogue`, adding the defining `tool` to each entry (see 1.10); the report uses it for "How it is verified". Each spec therefore needs one heading per check, named like the check's `name`, with the rule and a "How to fix" line that is the source of `fix`.
 - **Enforced checks: one check per expected value.** An org-level check that fails makes every requirement it is mapped to "Not met" (1.7), so a check must only test what all of its requirements depend on. `org_check` therefore has one check per setting, e.g. `org/repo-creation` (GV.02, QA.02) and `org/ruleset-approvals` (QA.06), not one check per API object. Its `reason` states the values, and `details` has one line per compared field: `Info: <field>: <actual> (expected <expected>)`, or `Warn: …` when it deviates.
 - **Thresholds come from the tool's configuration** and are written once per check into the catalogue, never into the results. `config_sha256` pins the configuration of each run.
@@ -126,7 +126,7 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 
 ### 1.7 Status logic (computed by the report)
 
-Each requirement is assessed once, at its own level: a MUST requirement on its MUST clause, a SHOULD requirement on its SHOULD clause. Weaker clauses inside a requirement (the SHOULD in GV.01 and VM.01, the MAY in BR.03) are not assessed in this version. A requirement has one list of checks and one coverage figure: a repository passes only if it passes every applicable check of the requirement.
+Each requirement is assessed once, at its own level: a MUST requirement on its MUST clause, a SHOULD requirement on its SHOULD clause. Weaker clauses inside a requirement (the SHOULD in GV.01 and VM.01, the MAY in BR.03) are not assessed in this version. A requirement has one list of checks and one coverage figure: a repository passes only if it passes every applicable check of the requirement. Org-level checks do not count toward coverage; they decide the status. A requirement with only org-level checks (VM.01) therefore applies to every active repository, and all of them pass (100%).
 
 - **Met:** all applicable repositories pass, and every org-level check passes.
 - **Met, with findings:** some applicable repositories fail, and every org-level check passes.
@@ -238,12 +238,12 @@ as_of: 2026-11-03            # the run the text was written for
    - `catalogue`: the union of all catalogues. Each entry gets the defining `tool` and keeps `threshold` and `documentation` (`url`, `short`). `name` is dropped: the report shows the check ID. `fix` is kept only for checks the OSPO fixes and no issue carries: org-level checks and `compliance_report`'s own checks.
    - `results`, concatenated in input order. Each row keeps `repo`, `check` and `result`; `score` only for scored checks (the catalogue entry has a `threshold`); `reason` only for org-level results (`repo: null`), where it states the checked values. `name`, `details` and the rest of `reason` are not copied; the tool is found through `catalogue[check].tool`.
    - `skipped` and `errors`, concatenated, each row with `tool`.
-4. **Add own results.** Checks that need two runs are computed here, with their own check IDs (`report/…`) and catalogue entries (`tool: compliance_report`). Today this is only `report/archived-outside-process` (DE.01). They open no issues. In addition, every active repository that a tool skipped (`excluded_repos`) gets a `fail` result for each mapped per-repository check of that tool (1.2).
+4. **Add own results.** Checks that need data from several tools or runs are computed here, with their own check IDs (`report/…`) and catalogue entries (`tool: compliance_report`). They open no issues. Today there are none. In addition, every active repository that a tool skipped (`excluded_repos`) gets a `fail` result for each mapped per-repository check of that tool (1.2).
 5. **Compute** from the merged results and the report configuration only:
    - `scope`: active and archived repositories;
    - `requirements`: the mapped checks, status and coverage per requirement (1.7);
    - `summary`: checks evaluated and passed, compliance %, requirements by status, active repositories with findings (`failing_repositories`).
-6. **Carry forward** from `<key>-data.json` of the previous release: `history` (this run is appended) and `archivals` (12 months are kept). `scope.active` of the previous run is read for `report/archived-outside-process` (step 4). Nothing else is read from the previous run.
+6. **Carry forward** from `<key>-data.json` of the previous release: `history` (this run is appended). Nothing else is read from the previous run.
 7. **Read the notes file** named by `notes:` (1.8), if configured: `notes` gets `file`, `sha256`, `as_of`, `key_messages` and `needs_attention` (each a list of inline-Markdown strings). Missing file: `notes: null`. Invalid file: `notes: null` and an entry in `errors` with `tool: compliance_report`.
 8. **Write** `<key>-data.json`, then render `<key>-report.html` and `<key>-report.md` from it. The data-health banner at the top of the summary is generated and appears only when an input is `missing` or `invalid` or `errors` is not empty.
 
@@ -254,16 +254,16 @@ as_of: 2026-11-03            # the run the text was written for
 | `report_id`, `run_at`, `org`, `ospo_sha`, `run_url` | This run; `report_id` is `OSPO-CR-<KEY>-<date>` | – |
 | `report_config`, `config_sha256` | Path and hash of the report configuration, which pin the mapping that produced the statuses | – |
 | `framework` | Copied from the report configuration | – |
-| `previous_report` | The `data.json` that `history` and `archivals` were read from | 6 |
+| `previous_report` | The `data.json` that `history` was read from | 6 |
 | `inputs` | One entry per tool file: status, hash, header, counts | 2 |
 | `scope`, `requirements`, `summary` | Computed | 5 |
 | `notes` | Hand-written text from the notes file, or `null` | 7 |
-| `archivals`, `history` | Carried forward | 6 |
+| `history` | Carried forward | 6 |
 | `catalogue`, `results`, `skipped`, `errors` | Merged from the tool files, reduced to what the report shows, plus own results | 3, 4 |
 
 - **Findings are not stored.** Which repository fails which requirement, and through which checks, is derived from `results` and `requirements` by the renderer. `data.json` stores no derived lists: if one is ever needed for performance, it goes into a block named `cache`, so it is obvious that it duplicates data.
 - **Reproducible.** `summary` and the per-requirement counts can be recomputed from `results` and the mapping in `requirements`. A test recomputes them from `data.json` alone and compares.
-- **Size.** `data.json` holds one short row per result (about 60 KB for the mock data, against about 110 KB for the tool files). The next run reads only `scope`, `history` and `archivals` from it.
+- **Size.** `data.json` holds one short row per result (about 60 KB for the mock data, against about 110 KB for the tool files). The next run reads only `history` from it.
 
 ---
 
@@ -629,20 +629,20 @@ as_of: 2026-11-03            # the run the text was written for
 
 > The project MUST publish information about discovered vulnerabilities within a reasonable period of time.
 
-**Implementation:** Vulnerabilities reported privately are triaged by the project team and the OSPO, and published as a GitHub Security Advisory with a CVE. Target: 90 days from report to publication.
+**Implementation:** Vulnerabilities reported privately are triaged by the project team and the OSPO, and published as a GitHub Security Advisory with a CVE, within 90 days of the report.
 
-**Exact check:** `advisories/published-in-time`, using the repository advisories of the org (`GET /orgs/{org}/security-advisories`):
-- Every advisory in `triage` or `draft` that is older than 90 days fails.
-- Published advisories record their days to publication. A late publication does not fail the check; it shows in the median and maximum.
-- `reason` states both counts, e.g. "3 published in the period (median 18 days, maximum 41 days), 1 unpublished (12 days)". `details` has one line per advisory; unpublished ones without repository or details. The 90-day limit is part of the rule in `documentation.short`.
+**Exact check:** `advisories/published-in-time`, one result per active repository. Only public information is used: the published advisories of the repository (`GET /repos/{owner}/{repo}/security-advisories?state=published`).
+- `pass` if every advisory published in the last 12 months was published within 90 days of its creation (`published_at` − `created_at`), or if there is none.
+- `fail` if at least one took longer. A late publication therefore counts for 12 months.
+- `reason` names each advisory and its days to publication, e.g. "1 advisory published in the last 12 months: GHSA-7q4x-2m9c-h3vf after 18 days".
 
 **Script:** `org_check`.
 
-**Issue:** none, because these are unpublished vulnerabilities. The public report shows counts and the median time.
+**Issue:** none. A failure is a past event that the project team cannot fix any more; it disappears after 12 months.
 
-**Limits of the check:** vulnerabilities reported through other channels (e.g. email to the OSPO) are only visible once an advisory is created. The process statement covers this: every report becomes an advisory.
+**Limits of the check:** advisories in `triage` or `draft` and closed ones are not public and are not counted, so an advisory that is never published never fails the check. Whether `created_at` is the time of the private report **(verify)**. Vulnerabilities reported through other channels (e.g. email to the OSPO) are only measured from the moment an advisory is created. The process statement covers this: every report becomes an advisory.
 
-**New work:** the advisories call, the check.
+**New work:** the advisories call per repository, the check.
 
 ---
 
@@ -650,33 +650,26 @@ as_of: 2026-11-03            # the run the text was written for
 
 > Discontinuation of the project, parts of it, or specific versions or version ranges SHOULD be communicated adequately.
 
-**Implementation:** Repositories without activity for 12 months get a public notice issue (`warn_after: "1 years"`). After 60 more days (`grace_period: "60 days"`) they are archived. The notice issue stays visible on the archived repository, and GitHub marks the repository as archived and read-only.
+**Implementation:** Every active repository is checked for activity in each weekly run. Repositories without activity for 12 months get a public notice issue (`warn_after: "1 years"`). After 60 more days (`grace_period: "60 days"`) without activity they are archived and leave the scope. The notice issue stays visible on the archived repository, and GitHub marks the repository as archived and read-only.
 
-**By construction:** `archive_repos` only archives after the grace period. Every archival it performs therefore had a notice of at least 60 days. Its JSON records each archival as the evidence.
+**What is verified:** that the process covers every repository in scope, not each individual notice. A repository the process does not check could go unmaintained without anyone noticing; a repository it checks is either active or on its way to archival with a notice. Archived repositories are out of scope (1.2) and have no result.
 
-**Exact checks**
-- `archive/notice-before-archival` (`archive_repos`): one `pass` per archival it performed, as evidence of the notice.
-- `report/archived-outside-process` (`compliance_report`) for repositories archived *outside* the process. This needs two runs to compare, so `compliance_report` does it, not `archive_repos`:
-- a repository that was active in the previous `data.json`,
-- is archived now,
-- and was not archived by `archive_repos`
-→ fail, "archived outside the process". GitHub does not record when a repository was archived **(verify)**, so the date is "between the previous run and this run".
+**Exact check**
+- `archive/activity-checked` (`archive_repos`): one result per active repository. `pass` if `archive_repos` read the repository's last activity in this run; the `reason` states the last push and, if one is open, the notice issue and the archival date. An active repository that `archive_repos` skips (`excluded_repos`) gets a `fail` from `compliance_report` (1.10 step 4); one it could not evaluate is listed under `errors`.
 
-**Scripts**
-- `archive_repos`: adds `--json` with the archivals it performed in this run (notice issue, notice date, archival date). It needs no history and no new API calls: it already reads the warning issue's `created_at` before archiving.
-- `compliance_report`: does the comparison with the previous run, writes the failure as its own result `report/archived-outside-process` (see 1.10 step 4), and carries an `archivals` list forward for 12 months (it feeds the DE.01 card: "N of M archived in the period had a notice").
+**Script:** `archive_repos`: adds `--json` with one `archive/activity-checked` result per repository it evaluated. It needs no history and no new API calls: it already reads the last push of every repository.
 
-**Issue:** none, because the repository is archived. A finding is listed for the OSPO (the existing `Stale Repository Summary` issue in the `ospo` repository is the natural place). It stays open until the OSPO resolves it by unarchiving the repository and letting it go through the process.
+**Issue:** none. `archive_repos` itself never fails the check; a failure is a configuration matter for the OSPO (`fix` names it).
 
-**Limits:** discontinued *versions* (end of life of a major line) are not covered. That is a project decision and not detectable.
+**Limits:** discontinued *versions* (end of life of a major line) are not covered. That is a project decision and not detectable. Whether the notice was given before an archival is not checked: archival only happens through the notice process, and an archived repository is out of scope either way.
 
-**New work:** `--json` in `archive_repos` (small); the comparison and the `archivals` list in `compliance_report`.
+**New work:** `--json` in `archive_repos` (small).
 
 ### DE.02 · Migration paths outlined · MAY
 
-> Migration paths MAY be outlined.
+> If the project, parts of it, or specific versions are discontinued, migration paths MAY be outlined, for example by naming a successor project or a maintained alternative and describing how users can move to it.
 
-**Optional, not assessed.** The notice issue from `archive_repos` asks maintainers to name a successor or alternative in the README before archival.
+**Currently not done, status `not-assessed`.** We will revisit this requirement once the open source programme is more mature.
 
-**New work:** one sentence in the notice issue template.
+**New work:** none.
 

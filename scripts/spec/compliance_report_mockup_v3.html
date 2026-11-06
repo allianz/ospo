@@ -455,13 +455,12 @@
     "as_of": "2026-11-03",
     "key_messages": [
       "**The platform is in order; the gaps are in individual repositories.** All central settings (2FA, base permission, ruleset, secret scanning, dependency graph, security policy) are enforced as configured.",
-      "**Compliance fell from 80.3% to 76.5%, mostly because of one repository.** `ng-aquila` is skipped by the scanners while its license is under legal review, so it counts as failing 20 checks.",
+      "**Compliance fell from 82.3% to 79.2%, mostly because of one repository.** `ng-aquila` is skipped by the scanners while its license is under legal review, so it counts as failing 20 checks.",
       "**Release integrity is the weakest area.** Only 2 of 5 releasing repositories sign their releases (BR.03), and 2 of 5 publish no release notes (BR.04). A shared release workflow would fix both.",
       "**Contribution guides are improving.** GV.01 rose from 55% to 70% since 6 Oct, after the CONTRIBUTING template was added to new repositories."
     ],
     "needs_attention": [
       "**Decision: ng-aquila license review** (Legal, by 30 Nov 2026). Until the review is done, `ng-aquila` fails 14 requirements.",
-      "**Action: unarchive old-batch-tools** (OSPO, by 13 Nov 2026). It was archived by hand without the 60-day notice, the only DE.01 finding.",
       "**Proposal: signed releases through a shared workflow** (OSPO platform team, Q1 2027). Add artifact attestation to the [release workflow template](https://github.com/allianz/ospo/issues/142).",
       "**Policy decision: single-maintainer projects** (OSPO lead). `insurance-rule-dsl` fails QA.06 because nobody else can review its changes."
     ]
@@ -532,8 +531,8 @@
       "config_sha256": "c0fc81434204a00b7702804ee9846f6496635045949c082f4af8ccaadac0ee9f",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
       "counts": {
-        "results": 2,
-        "skipped": 2,
+        "results": 10,
+        "skipped": 4,
         "errors": 0
       }
     },
@@ -572,8 +571,8 @@
       "config_sha256": "cae59b3b176c28941ae773f81c6d20f6148f3d0ff8ce1eb9bbfef8b1f94ff70b",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
       "counts": {
-        "results": 11,
-        "skipped": 0,
+        "results": 20,
+        "skipped": 4,
         "errors": 0
       }
     },
@@ -616,15 +615,15 @@
     ]
   },
   "summary": {
-    "checks_evaluated": 166,
-    "checks_passed": 127,
-    "compliance_pct": 76.5,
+    "checks_evaluated": 183,
+    "checks_passed": 145,
+    "compliance_pct": 79.2,
     "requirements_by_status": {
-      "met": 3,
-      "met-findings": 15,
+      "met": 4,
+      "met-findings": 14,
       "not-met": 0,
-      "not-assessed": 1,
-      "optional": 1
+      "not-assessed": 2,
+      "optional": 0
     },
     "must_met": 15,
     "must_total": 15,
@@ -1025,7 +1024,13 @@
       "status": "met",
       "checks": [
         "org/security-policy"
-      ]
+      ],
+      "repositories": {
+        "applicable": 10,
+        "passing": 10,
+        "failing": 0,
+        "not_applicable": 0
+      }
     },
     {
       "id": "VM.02",
@@ -1038,11 +1043,17 @@
           "text": "The project MUST publish information about discovered vulnerabilities within a reasonable period of time."
         }
       ],
-      "implementation": "Privately reported vulnerabilities are triaged by the project team and the OSPO and published as a GitHub Security Advisory with a CVE. Target: 90 days from report to publication.",
+      "implementation": "Privately reported vulnerabilities are triaged by the project team and the OSPO and published as a GitHub Security Advisory with a CVE, within 90 days of the report.",
       "status": "met",
       "checks": [
         "advisories/published-in-time"
-      ]
+      ],
+      "repositories": {
+        "applicable": 10,
+        "passing": 10,
+        "failing": 0,
+        "not_applicable": 0
+      }
     },
     {
       "id": "DE.01",
@@ -1055,16 +1066,15 @@
           "text": "Discontinuation of the project, parts of it, or specific versions or version ranges SHOULD be communicated adequately."
         }
       ],
-      "implementation": "Repositories without activity for 12 months get a public notice issue. After 60 more days without activity they are archived. The notice stays visible, and GitHub marks the repository as archived and read-only.",
-      "status": "met-findings",
+      "implementation": "Every active repository is checked for activity in each weekly run. Repositories without activity for 12 months get a public notice issue. After 60 more days without activity they are archived and leave the scope. The notice stays visible, and GitHub marks the repository as archived and read-only.",
+      "status": "met",
       "checks": [
-        "archive/notice-before-archival",
-        "report/archived-outside-process"
+        "archive/activity-checked"
       ],
       "repositories": {
-        "applicable": 2,
-        "passing": 1,
-        "failing": 1,
+        "applicable": 10,
+        "passing": 10,
+        "failing": 0,
         "not_applicable": 0
       }
     },
@@ -1076,33 +1086,17 @@
       "text": [
         {
           "level": "MAY",
-          "text": "Migration paths MAY be outlined."
+          "text": "If the project, parts of it, or specific versions are discontinued, migration paths MAY be outlined, for example by naming a successor project or a maintained alternative and describing how users can move to it."
         }
       ],
-      "implementation": "The archival notice asks maintainers to name a successor or alternative in the README before the repository is archived.",
-      "status": "optional"
-    }
-  ],
-  "archivals": [
-    {
-      "repo": "legacy-xml-mapper",
-      "archived_date": "2026-11-03",
-      "by": "archive_repos",
-      "notice_date": "2026-09-04",
-      "days_notice": 60
-    },
-    {
-      "repo": "old-batch-tools",
-      "archived_date": "2026-10-20",
-      "date_accuracy": "detected in weekly run",
-      "by": "outside the process",
-      "notice_date": null
+      "implementation": "Currently not done. We will revisit this requirement once the open source programme is more mature.",
+      "status": "not-assessed"
     }
   ],
   "history": [
     {
       "date": "2026-10-06",
-      "compliance_pct": 78.6,
+      "compliance_pct": 81.0,
       "failing_repositories": 8,
       "coverage": {
         "GV.01": 54.7,
@@ -1119,12 +1113,14 @@
         "BR.02": 60.0,
         "BR.03": 40.0,
         "BR.04": 35.0,
-        "DE.01": null
+        "VM.01": 100.0,
+        "VM.02": 100.0,
+        "DE.01": 100.0
       }
     },
     {
       "date": "2026-10-13",
-      "compliance_pct": 79.1,
+      "compliance_pct": 81.5,
       "failing_repositories": 8,
       "coverage": {
         "GV.01": 67.2,
@@ -1141,12 +1137,14 @@
         "BR.02": 60.0,
         "BR.03": 40.0,
         "BR.04": 35.0,
-        "DE.01": null
+        "VM.01": 100.0,
+        "VM.02": 100.0,
+        "DE.01": 100.0
       }
     },
     {
       "date": "2026-10-20",
-      "compliance_pct": 79.8,
+      "compliance_pct": 81.9,
       "failing_repositories": 7,
       "coverage": {
         "GV.01": 67.2,
@@ -1163,12 +1161,14 @@
         "BR.02": 60.0,
         "BR.03": 40.0,
         "BR.04": 60.0,
-        "DE.01": 0.0
+        "VM.01": 100.0,
+        "VM.02": 100.0,
+        "DE.01": 100.0
       }
     },
     {
       "date": "2026-10-27",
-      "compliance_pct": 80.3,
+      "compliance_pct": 82.3,
       "failing_repositories": 7,
       "coverage": {
         "GV.01": 67.2,
@@ -1185,12 +1185,14 @@
         "BR.02": 60.0,
         "BR.03": 40.0,
         "BR.04": 60.0,
-        "DE.01": 0.0
+        "VM.01": 100.0,
+        "VM.02": 100.0,
+        "DE.01": 100.0
       }
     },
     {
       "date": "2026-11-03",
-      "compliance_pct": 76.5,
+      "compliance_pct": 79.2,
       "failing_repositories": 7,
       "coverage": {
         "GV.01": 70.0,
@@ -1207,7 +1209,9 @@
         "BR.02": 60.0,
         "BR.03": 40.0,
         "BR.04": 60.0,
-        "DE.01": 50.0
+        "VM.01": 100.0,
+        "VM.02": 100.0,
+        "DE.01": 100.0
       }
     }
   ],
@@ -1216,22 +1220,14 @@
       "tool": "org_check",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#advisories-published-in-time",
-        "short": "No security advisory stays in triage or draft for more than 90 days. Published advisories record their days to publication.",
-        "fix": "Project team with the OSPO: finish the triage and publish the advisory with a CVE, or close it as not a vulnerability."
+        "short": "Every security advisory of the repository published in the last 12 months was published within 90 days of its creation. Only published advisories are counted; they are public."
       }
     },
-    "archive/migration-path": {
+    "archive/activity-checked": {
       "tool": "archive_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#migration-path",
-        "short": "The README of the archived repository names a successor or an alternative."
-      }
-    },
-    "archive/notice-before-archival": {
-      "tool": "archive_repos",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#notice-before-archival",
-        "short": "The repository was archived only after a public notice issue had been open for the grace period (60 days)."
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/archive_repos_spec.md#activity-checked",
+        "short": "archive_repos checked the last activity of the repository in this run. Repositories without activity for 12 months get a public notice issue and are archived 60 days later."
       }
     },
     "drift/access": {
@@ -1425,14 +1421,6 @@
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#org-two-factor-required",
         "short": "Two-factor authentication is required for all members of the organisation.",
         "fix": "OSPO: require two-factor authentication again in the organisation settings, or change the expected value in config/org_check.yaml through a pull request."
-      }
-    },
-    "report/archived-outside-process": {
-      "tool": "compliance_report",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/compliance_report_spec.md#archived-outside-process",
-        "short": "A repository that was active in the previous run and is archived now was archived by archive_repos, after a notice. Computed by compliance_report from two runs.",
-        "fix": "OSPO: unarchive the repository and let it go through the notice process."
       }
     },
     "sbom/available": {
@@ -2343,14 +2331,54 @@
       "result": "fail"
     },
     {
-      "repo": "legacy-xml-mapper",
-      "check": "archive/notice-before-archival",
+      "repo": "pricing-engine",
+      "check": "archive/activity-checked",
       "result": "pass"
     },
     {
-      "repo": "legacy-xml-mapper",
-      "check": "archive/migration-path",
-      "result": "fail"
+      "repo": "insurance-rule-dsl",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "archive/activity-checked",
+      "result": "pass"
     },
     {
       "repo": null,
@@ -2419,10 +2447,54 @@
       "reason": "allianz/.github/SECURITY.md names ospo@allianz.com as security contact"
     },
     {
-      "repo": null,
+      "repo": "pricing-engine",
       "check": "advisories/published-in-time",
-      "result": "pass",
-      "reason": "No unpublished advisory is older than 90 days; 3 published in the period (median 18 days, maximum 41 days), 1 unpublished (12 days)"
+      "result": "pass"
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "advisories/published-in-time",
+      "result": "pass"
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "advisories/published-in-time",
+      "result": "pass"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "advisories/published-in-time",
+      "result": "pass"
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "advisories/published-in-time",
+      "result": "pass"
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "advisories/published-in-time",
+      "result": "pass"
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "advisories/published-in-time",
+      "result": "pass"
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "advisories/published-in-time",
+      "result": "pass"
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "advisories/published-in-time",
+      "result": "pass"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "advisories/published-in-time",
+      "result": "pass"
     },
     {
       "repo": "pricing-engine",
@@ -2831,11 +2903,6 @@
       "repo": "ng-aquila",
       "check": "scorecard/branch-protection",
       "result": "fail"
-    },
-    {
-      "repo": "old-batch-tools",
-      "check": "report/archived-outside-process",
-      "result": "fail"
     }
   ],
   "skipped": [
@@ -2900,6 +2967,16 @@
       "reason": "assessment tooling, reviewed separately"
     },
     {
+      "tool": "archive_repos",
+      "repo": "legacy-xml-mapper",
+      "reason": "archived (in this run, after the 60-day notice)"
+    },
+    {
+      "tool": "archive_repos",
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    },
+    {
       "tool": "scorecard_check",
       "repo": ".github",
       "reason": "organisation configuration repository"
@@ -2923,11 +3000,30 @@
       "tool": "scorecard_check",
       "repo": "old-batch-tools",
       "reason": "archived"
+    },
+    {
+      "tool": "org_check",
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "tool": "org_check",
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "tool": "org_check",
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "tool": "org_check",
+      "repo": "old-batch-tools",
+      "reason": "archived"
     }
   ],
   "errors": []
-}
-</script>
+}</script>
 
 <script>
 /* ═══════════════════════════ Load data ═══════════════════════════ */
@@ -2957,7 +3053,7 @@ function scaleMock(factor, worst) {
   let seed = 20261103;
   const rnd = () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   const pick = xs => xs[Math.floor(rnd() * xs.length)];
-  const TOOLS = new Set(['lint_repos', 'license_scan', 'scorecard_check']);
+  const TOOLS = new Set(['lint_repos', 'license_scan', 'scorecard_check', 'archive_repos', 'org_check']);
   const templates = [...DATA.scope.active];
   const src = DATA.results.filter(r => TOOLS.has(DATA.catalogue[r.check]?.tool));
 
@@ -3004,9 +3100,9 @@ function scaleMock(factor, worst) {
     const rc = q.checks.filter(c => !ORG_CHECKS.has(c));
     const by = {};
     for (const c of rc) for (const r of byCheck[c] ?? []) (by[r.repo] ??= []).push(r.result);
-    const repos = Object.keys(by);
-    const app = repos.filter(x => by[x].some(v => v !== 'na'));
-    const fail = app.filter(x => by[x].includes('fail'));
+    const repos = rc.length ? Object.keys(by) : [...DATA.scope.active];   // only org-level checks: every active repository applies and passes (1.7)
+    const app = repos.filter(x => !by[x] || by[x].some(v => v !== 'na'));
+    const fail = app.filter(x => by[x]?.includes('fail'));
     q.repositories = { applicable: app.length, passing: app.length - fail.length, failing: fail.length, not_applicable: repos.length - app.length };
     const orgFail = q.checks.some(c => orgFailed.has(c));
     q.status = orgFail ? 'not-met' : fail.length ? 'met-findings' : 'met';
@@ -3405,7 +3501,7 @@ const errN = DATA.errors.length;
       return { label: STATUS[st].label, color: STATUS[st].color, ink: STATUS[st].ink, border: STATUS[st].ring === 'ring', value: qs.length, names: qs.map(q => q.id) };
     }), { title: `${lvl} requirements`, unit: 'requirements', table: false });
   }
-  const mayReqs = DATA.requirements.filter(q => q.level === 'MAY');
+  const mayReqs = DATA.requirements.filter(q => q.level === 'MAY' && q.status !== 'not-assessed');
   const naReqs = DATA.requirements.filter(q => q.status === 'not-assessed');
   const plusTxt = [
     naReqs.length ? `${plural(naReqs.length, 'requirement')} not assessed (${naReqs.map(q => q.id).join(', ')}), because no check can verify ${naReqs.length === 1 ? 'it' : 'them'}` : null,
@@ -3494,23 +3590,14 @@ function renderCard(q) {
     }))) : h('p', { class: 'muted', text: 'No check is mapped to this requirement.' });
   const verifiedSec = sec('How it is verified', verified, notes.map(t => h('p', { style: 'margin-top:8px', text: t })));
 
-
-
-  const archSec = allChecks.includes('archive/notice-before-archival') && DATA.archivals.length ? sec('Archivals recorded',
-    h('table', {}, h('thead', {}, h('tr', {}, ['Repository', 'Archived', 'By', 'Notice', 'Days of notice'].map((x, i) => h('th', { class: i === 4 ? 'num' : '', text: x })))),
-      h('tbody', {}, DATA.archivals.slice(0, 10).map(a => h('tr', {}, h('td', { class: 'id', text: a.repo }),
-        h('td', { class: 'nowrap' }, fmtDate(a.archived_date), a.date_accuracy ? h('div', { class: 'small muted', text: a.date_accuracy }) : null),
-        h('td', { text: a.by }), h('td', { class: 'nowrap', text: a.notice_date ? fmtDate(a.notice_date) : 'none' }), h('td', { class: 'num', text: a.days_notice ?? '–' })))))) : null;
-
-
-  const infoSec = repoChecks.length ? sec('Additional information', linksRow([
-    liveIssuesLink(repoChecks, null, 'Live issues on GitHub'),
-    q.repositories?.failing ? repoListLink(`Repositories failing ${q.id} (section 5)`, { req: q.id }) : null,
+  const infoSec = q.repositories ? sec('Additional information', linksRow([
+    liveIssuesLink(repoChecks.length ? repoChecks : allChecks, null, 'Live issues on GitHub'),
+    q.repositories ? repoListLink(`Repositories failing ${q.id} (${q.repositories.failing})`, { req: q.id }) : null,
   ])) : null;
 
   const reqSec = sec(`Requirement · ${FW.title} ${q.id}`, textNode, FW.text_note ? h('p', { class: 'small muted', style: 'margin-top:6px', text: FW.text_note }) : null);
   const implSec = q.implementation ? sec('Implementation', h('p', { text: q.implementation })) : null;
-  return h('div', { class: 'rcard' }, reqSec, implSec, verifiedSec, archSec, infoSec);
+  return h('div', { class: 'rcard' }, reqSec, implSec, verifiedSec, infoSec);
 }
 
 {
@@ -3584,7 +3671,7 @@ function repoListTag(text, filter) { const a = repoListLink(text, filter); a.cla
     ['met', 'All applicable repositories pass, and all org-level checks pass.'],
     ['met-findings', 'Every org-level check passes, but some applicable repositories fail.'],
     ['not-met', 'An org-level check fails, or no check covers a MUST requirement.'],
-    ['not-assessed', 'SHOULD requirement that no check can verify. Not counted.'],
+    ['not-assessed', 'SHOULD or MAY requirement that no check can verify. Not counted.'],
     ['optional', 'MAY requirement. Reported for information only.'],
   ];
   const df = document.querySelector('#def-table tbody');
@@ -3670,7 +3757,7 @@ function renderPager(el, page, pages, go) {
 }
 {
   $('r-req').append(h('option', { value: '', text: 'All requirements' }),
-    ...DATA.requirements.filter(q => q.repositories?.failing).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
+    ...DATA.requirements.filter(q => q.repositories).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
   $('r-failed').append(h('option', { value: '', text: 'All repositories' }), h('option', { value: 'any', text: 'At least 1' }),
     h('optgroup', { label: 'Active repositories' }, ...FAILED_RANGES.map(b => h('option', { value: b.key, text: b.label }))));
   for (const id of ['r-sort', 'r-req', 'r-failed', 'r-size']) $(id).addEventListener('change', readRepoControls);

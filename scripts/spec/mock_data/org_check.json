@@ -91,12 +91,29 @@
       "name": "Advisories Published in Time",
       "documentation": {
         "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/org_check_spec.md#advisories-published-in-time",
-        "short": "No security advisory stays in triage or draft for more than 90 days. Published advisories record their days to publication.",
-        "fix": "Project team with the OSPO: finish the triage and publish the advisory with a CVE, or close it as not a vulnerability."
+        "short": "Every security advisory of the repository published in the last 12 months was published within 90 days of its creation. Only published advisories are counted; they are public.",
+        "fix": "Project team with the OSPO: publish advisories within 90 days of the report. A late publication counts for 12 months."
       }
     }
   },
-  "skipped": [],
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "repo": "old-batch-tools",
+      "reason": "archived"
+    }
+  ],
   "errors": [],
   "results": [
     {
@@ -219,18 +236,94 @@
       ]
     },
     {
-      "repo": null,
+      "repo": "pricing-engine",
       "check": "advisories/published-in-time",
       "name": "Advisories Published in Time",
       "result": "pass",
       "score": null,
-      "reason": "No unpublished advisory is older than 90 days; 3 published in the period (median 18 days, maximum 41 days), 1 unpublished (12 days)",
-      "details": [
-        "Info: GHSA-7q4x-2m9c-h3vf (pricing-engine) published after 18 days",
-        "Info: GHSA-p2w8-xr6j-9cq4 (pdf-render-service) published after 41 days",
-        "Info: GHSA-m5hv-6f3k-q8tz (mobile-sdk-ios) published after 9 days",
-        "Info: 1 advisory in triage for 12 days, details withheld"
-      ]
+      "reason": "1 advisory published in the last 12 months: GHSA-7q4x-2m9c-h3vf after 18 days",
+      "details": []
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "No advisory published in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "No advisory published in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "1 advisory published in the last 12 months: GHSA-p2w8-xr6j-9cq4 after 41 days",
+      "details": []
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "No advisory published in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "1 advisory published in the last 12 months: GHSA-m5hv-6f3k-q8tz after 9 days",
+      "details": []
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "No advisory published in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "No advisory published in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "No advisory published in the last 12 months",
+      "details": []
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "advisories/published-in-time",
+      "name": "Advisories Published in Time",
+      "result": "pass",
+      "score": null,
+      "reason": "No advisory published in the last 12 months",
+      "details": []
     }
   ]
 }
