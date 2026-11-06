@@ -200,13 +200,14 @@ as_of: 2026-11-03            # the run the text was written for
 
 ## Key messages
 
-- **Release integrity is the weakest area.** Only 2 of 5 releasing repositories sign their releases (BR.03).
+- **Release integrity is the weakest area.** Several releasing repositories do not sign their releases (BR.03).
 
 ## Needs attention
 
-- **Decision: ng-aquila license review** (Legal, by 30 Nov 2026). Until it is done, `ng-aquila` fails 15 requirements.
+- **Decision: ng-aquila license review** (Legal, by 30 Nov 2026). Until it is done, `ng-aquila` fails most requirements.
 ```
 
+- **No numbers.** The text is high level for management: what matters, why, next actions, decisions with owner and date. Percentages and counts are in the report next to the boxes; the notes are written before the run, and numbers in them would go stale with the next run.
 - Exactly these two headings, each a list of bullets. Inline Markdown only: `**bold**`, `` `code` ``, `[text](https://…)`. Anything else makes the file invalid.
 - `as_of` is required and must not be later than the run. The report shows "Written for the run of …" under each box, highlighted with "N weeks before this run" once the text is older than the run.
 - No file, an empty section, or an invalid file: the box is hidden. An invalid file is also reported in the data-health banner (1.10).
