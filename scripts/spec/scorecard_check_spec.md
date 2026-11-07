@@ -88,6 +88,12 @@ A short log for the workflow run. The JSON file holds the results.
 ```
 Active repositories: 4 (archived: 1, excluded: 1)
 Scorecard v5.6.0 (61e8474)
+Scanning 4 repositories (3 at a time)...
+  [1/4] broken: not scanned
+  [2/4] design-guidelines: score 9.1
+  [3/4] mobile-sdk-ios: score 9.1
+  [4/4] pricing-engine: score 9.1
+
   broken: not scanned: Scorecard returned no checks (empty repository or no read access)
   mobile-sdk-ios: Branch-Protection 5 (< 6): branch protection is not maximal on development and all release branches
   mobile-sdk-ios: Fuzzing 0 (< 10): project is not fuzzed
@@ -100,7 +106,7 @@ Errors: 2 repositories
 JSON written to out/scorecard.json
 ```
 
-Failing checks are listed with score and threshold, one line per repository and check; a `fail` decided by scorecard_check (no score) shows its decision instead. Then one line per repository that could not be scanned and per check in `errors`. If none fails, the summary line is `No findings.`. With `--debug`, a line `Managed branch protection: N repositories (from <create_repos_config>)` follows the version, and passing (`License 10: license file detected`) and not applicable checks (`CI-Tests na: not applicable, topic 'docs'`) are listed too.
+A scan can take minutes per repository, so the progress is printed while it runs: one line per repository as soon as its scan has finished, in the order they finish, with Scorecard's overall score (or `not scanned`). An empty line separates it from the results. Failing checks are listed with score and threshold, one line per repository and check; a `fail` decided by scorecard_check (no score) shows its decision instead. Then one line per repository that could not be scanned and per check in `errors`. If none fails, the summary line is `No findings.`. With `--debug`, a line `Managed branch protection: N repositories (from <create_repos_config>)` follows the version, and passing (`License 10: license file detected`) and not applicable checks (`CI-Tests na: not applicable, topic 'docs'`) are listed too.
 
 ---
 

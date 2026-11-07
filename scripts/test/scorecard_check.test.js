@@ -515,6 +515,28 @@ describe('run', () => {
     assert.match(out, / {2}pricing-engine: Branch-Protection na: not evaluated, branch-protection is managed by the org ruleset ospo-managed\n/);
   });
 
+  it('reports progress as each scan finishes, then an empty line before the results', async () => {
+    const delays = { 'pricing-engine': 0, 'design-guidelines': 30, 'mobile-sdk-ios': 10 };
+    const scorecard = fakeScorecard({
+      scan: async (o, repo) => {
+        await new Promise(resolve => setTimeout(resolve, delays[repo]));
+        return { ...structuredClone(outputs['pricing-engine']), score: repo === 'mobile-sdk-ios' ? undefined : 7.5 };
+      },
+    });
+    const { logger } = await runCheck(['--json', path.join(tmpDir, 'out', 'progress.json')], {
+      scorecard,
+      fakeOptions: { repos: repos.filter(r => r.name in delays) },
+    });
+    assert.match(logger.output(), new RegExp([
+      'Scanning 3 repositories \\(3 at a time\\)\\.\\.\\.',
+      '  \\[1/3\\] pricing-engine: score 7\\.5',
+      '  \\[2/3\\] mobile-sdk-ios: score n/a',
+      '  \\[3/3\\] design-guidelines: score 7\\.5',
+      '',
+      '',
+    ].join('\n')));
+  });
+
   it('says so when nothing fails', async () => {
     const scorecard = fakeScorecard({ scan: async () => structuredClone(outputs['pricing-engine']) });
     const { logger } = await runCheck(['--json', path.join(tmpDir, 'out', 'ok.json')], {

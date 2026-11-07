@@ -384,9 +384,16 @@ export async function run({ argv = [], env = {}, logger, github, scorecard, now 
   log.info(`Scorecard ${version.version}${version.commit ? ` (${version.commit.slice(0, 7)})` : ''}`);
   log.debug(`Managed branch protection: ${plural(managed.size, 'repository', 'repositories')} (from ${config.create_repos_config})`);
 
-  const evaluated = await mapWithConcurrency([...active].sort(byName), config.concurrency, repo =>
-    evaluateRepo({ gh, sc, org, repo, config, managed }),
-  );
+  // Progress: a scan takes up to minutes per repository, so report each one as it finishes.
+  log.info(`Scanning ${plural(active.length, 'repository', 'repositories')} (${config.concurrency} at a time)...`);
+  let done = 0;
+  const evaluated = await mapWithConcurrency([...active].sort(byName), config.concurrency, async repo => {
+    const e = await evaluateRepo({ gh, sc, org, repo, config, managed });
+    done += 1;
+    log.info(`  [${done}/${active.length}] ${e.repo}: ${e.error ? 'not scanned' : `score ${e.output.score ?? 'n/a'}`}`);
+    return e;
+  });
+  log.info('');
 
   for (const e of evaluated) logRepo(log, e, config.thresholds, debug);
   const scanned = evaluated.filter(e => !e.error);
