@@ -6,6 +6,7 @@
   "config_file": "config/lint_repos.yaml",
   "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "issue_title": "Mandatory Repository Configuration",
   "catalogue": {
     "lint/license-type": {
       "name": "License Type",

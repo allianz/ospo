@@ -6,6 +6,7 @@
   "config_file": "config/advisories_check.yaml",
   "config_sha256": "cae59b3b176c28941ae773f81c6d20f6148f3d0ff8ce1eb9bbfef8b1f94ff70b",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "issue_title": null,
   "catalogue": {
     "advisories/published-in-time": {
       "name": "Advisories Published in Time",

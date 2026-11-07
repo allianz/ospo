@@ -6,6 +6,7 @@
   "config_file": "config/archive_repos.yaml",
   "config_sha256": "c0fc81434204a00b7702804ee9846f6496635045949c082f4af8ccaadac0ee9f",
   "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+  "issue_title": null,
   "warn_after": "1 years",
   "grace_period": "60 days",
   "catalogue": {

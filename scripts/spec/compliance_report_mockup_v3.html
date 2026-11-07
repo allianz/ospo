@@ -370,7 +370,7 @@
   <!-- ─────────────────────────── 4 Findings ─────────────────────────── -->
   <section id="findings" class="break">
     <h2><span class="num">4</span>Findings</h2>
-    <p class="lead">A repository has a finding for a requirement if it fails at least one applicable check of that requirement. All numbers in this section count repositories, not checks. The tools also open issues in the affected repositories; the report does not read them and only links to the live issues on GitHub.</p>
+    <p class="lead">A repository has a finding for a requirement if it fails at least one applicable check of that requirement. All numbers in this section count repositories, not checks. The tools also open issues in the affected repositories; the report does not read them and only links to each repository's open issue per tool.</p>
     <div class="grid-2" style="margin-bottom:16px">
       <div class="card">
         <h3 class="chart-title">Failing repositories by requirement</h3>
@@ -494,6 +494,7 @@
       "config_file": "config/lint_repos.yaml",
       "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": "Mandatory Repository Configuration",
       "counts": {
         "results": 63,
         "skipped": 5,
@@ -511,6 +512,7 @@
       "config_file": "config/license_scan.yaml",
       "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": "Dependency License Violation",
       "counts": {
         "results": 9,
         "skipped": 5,
@@ -528,6 +530,7 @@
       "config_file": "config/archive_repos.yaml",
       "config_sha256": "c0fc81434204a00b7702804ee9846f6496635045949c082f4af8ccaadac0ee9f",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": null,
       "counts": {
         "results": 10,
         "skipped": 4,
@@ -545,6 +548,7 @@
       "config_file": "config/advisories_check.yaml",
       "config_sha256": "cae59b3b176c28941ae773f81c6d20f6148f3d0ff8ce1eb9bbfef8b1f94ff70b",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": null,
       "counts": {
         "results": 10,
         "skipped": 4,
@@ -562,6 +566,7 @@
       "config_file": "config/scorecard_check.yaml",
       "config_sha256": "670210fd6b478339b7f953cc4943faadfe1a2a3372b5e336a5c29638522b5d9f",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": "OpenSSF Scorecard Findings",
       "source": "scorecard CLI (--format=json --show-details), run per repository in this workflow",
       "scorecard_version": "v5.6.0",
       "counts": {
@@ -2602,8 +2607,11 @@ const FAILED_RANGES = [
   { key: '4+', label: '4 or more', lo: 4, hi: Infinity, color: 'var(--critical)', ink: '#fff' },
 ];
 /* Check ID, plus score and threshold for scored checks (Scorecard), e.g. "scorecard/ci-tests 2 (≥ 8)" */
-/* compliance_report's own checks open no issues, so they get no live-issue link */
-const issueChecks = checks => checks.filter(c => DATA.catalogue[c]?.tool !== 'compliance_report');
+/* Tools whose issue lists a repository's failing checks: the tool has an issue title (inputs[]) and did not skip the repository.
+   compliance_report's own checks and tools without issues (issue_title null) get no link. */
+const ISSUE_TITLE = Object.fromEntries(DATA.inputs.filter(i => i.issue_title).map(i => [i.tool, i.issue_title]));
+const issueTools = (checks, repo) => [...new Set(checks.map(c => DATA.catalogue[c]?.tool))]
+  .filter(t => ISSUE_TITLE[t] && !DATA.skipped.some(x => x.tool === t && x.repo === repo));
 function checkWithScore(check, repo) {
   const thr = DATA.catalogue[check]?.threshold, sc = RESULT_KEY.get(repo + '|' + check)?.score;
   return h('span', {}, h('code', { text: check }), thr != null && sc != null ? ` ${sc} (≥ ${thr})` : null);
@@ -2703,9 +2711,9 @@ function checkLink(id) {
   const c = DATA.catalogue[id];
   return c?.documentation?.url ? h('a', { href: c.documentation.url }, h('code', { style: 'color:inherit', text: id })) : h('code', { text: id });
 }
-/* Live GitHub search for the scanners' issues, by check label. The report does not read issues; this is only a link. */
-const liveIssuesUrl = (checks, repo) => `https://github.com/search?q=${encodeURIComponent(`${repo ? `repo:${ORG}/${repo}` : `org:${ORG}`} is:issue is:open label:${checks.join(',')}`)}&type=issues`;
-const liveIssuesLink = (checks, repo, text = 'Live issues') => h('a', { href: liveIssuesUrl(checks, repo), text });
+/* Live GitHub search for a tool's open issue in one repository, by its title. The report does not read issues; this is only a link. */
+const issueUrl = (repo, tool) => `https://github.com/search?q=${encodeURIComponent(`repo:${ORG}/${repo} is:issue is:open in:title "${ISSUE_TITLE[tool]}"`)}&type=issues`;
+const issueLinks = (checks, repo) => { const ts = issueTools(checks, repo); return ts.length ? joinNodes(ts.map(t => h('a', { href: issueUrl(repo, t), text: t })), ', ') : null; };
 /* Link that applies a filter to the repository table in section 5 */
 const repoListLink = (text, filter) => h('a', { href: '#repositories', 'data-filter': JSON.stringify(filter), text });
 const linksRow = nodes => { nodes = nodes.filter(Boolean); return nodes.length ? h('div', { class: 'links' }, '→ ', joinNodes(nodes)) : null; };
@@ -3040,7 +3048,6 @@ function renderCard(q) {
   const verifiedSec = sec('How it is verified', verified, notes.map(t => h('p', { style: 'margin-top:8px', text: t })));
 
   const infoSec = q.repositories ? sec('Additional information', linksRow([
-    liveIssuesLink(allChecks, null, 'Live issues on GitHub'),
     q.repositories ? repoListLink(`Repositories failing ${q.id} (${q.repositories.failing})`, { req: q.id }) : null,
   ])) : null;
 
@@ -3180,7 +3187,7 @@ function renderRepos() {
     h('td', {}, r.reqs.map(x => repoListTag(x, { ...RL, req: x }))),
     h('td', { class: 'small' }, joinNodes(r.checks.map(c => checkWithScore(c, r.repo)), ', ')),
     h('td', { class: 'num nowrap', text: r.total ? `${r.passed}/${r.total}` : '–' }),
-    h('td', { class: 'nowrap' }, issueChecks(r.checks).length ? liveIssuesLink(issueChecks(r.checks), r.repo) : null))));
+    h('td', { class: 'nowrap' }, issueLinks(r.checks, r.repo)))));
   const active = RL.repo || RL.req || RL.failed;
   $('r-count').textContent = (active ? `${rows.length} of ${REPO_ROWS.length} repositories match the filter` : `${REPO_ROWS.length} repositories`) +
     (rows.length > shown.length ? `; showing ${from + 1}–${from + shown.length}` : '') + '. Checks passed counts the mapped checks that apply to the repository.';

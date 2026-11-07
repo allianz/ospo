@@ -52,6 +52,7 @@
       "config_file": "config/lint_repos.yaml",
       "config_sha256": "2e94b74c71d4283f98747e2f74f7914d2656b97a3f300269e8f97dfd0d1ff606",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": "Mandatory Repository Configuration",
       "counts": {
         "results": 63,
         "skipped": 5,
@@ -69,6 +70,7 @@
       "config_file": "config/license_scan.yaml",
       "config_sha256": "fd365b3021e282b8e7b5ae6521cc2632c6ef48b08a0627fd4e0a48122f7100fb",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": "Dependency License Violation",
       "counts": {
         "results": 9,
         "skipped": 5,
@@ -86,6 +88,7 @@
       "config_file": "config/archive_repos.yaml",
       "config_sha256": "c0fc81434204a00b7702804ee9846f6496635045949c082f4af8ccaadac0ee9f",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": null,
       "counts": {
         "results": 10,
         "skipped": 4,
@@ -103,6 +106,7 @@
       "config_file": "config/advisories_check.yaml",
       "config_sha256": "cae59b3b176c28941ae773f81c6d20f6148f3d0ff8ce1eb9bbfef8b1f94ff70b",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": null,
       "counts": {
         "results": 10,
         "skipped": 4,
@@ -120,6 +124,7 @@
       "config_file": "config/scorecard_check.yaml",
       "config_sha256": "670210fd6b478339b7f953cc4943faadfe1a2a3372b5e336a5c29638522b5d9f",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": "OpenSSF Scorecard Findings",
       "source": "scorecard CLI (--format=json --show-details), run per repository in this workflow",
       "scorecard_version": "v5.6.0",
       "counts": {
