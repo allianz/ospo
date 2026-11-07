@@ -1,6 +1,6 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -11,7 +11,13 @@ import {
   checkLicense,
   checkRequiredFile,
   buildIssueBody,
-} from './lint_repos.js';
+  cloneOrUpdate,
+  formatResultLine,
+  metadataChecks,
+  run,
+} from '../lint_repos.js';
+import { createFakeGitHub } from './helpers/fake_github.js';
+import { createMemoryLogger } from './helpers/memory_logger.js';
 
 // ── loadConfig ────────────────────────────────────────────────────────────────
 
@@ -359,5 +365,181 @@ describe('buildIssueBody', () => {
   it('includes the bot attribution line', () => {
     const body = buildIssueBody([], docsLink);
     assert.ok(body.includes('OSPO linting bot'));
+  });
+});
+
+// ── metadataChecks / formatResultLine ─────────────────────────────────────────
+
+describe('metadataChecks', () => {
+  it('runs description, topics and license checks in this order', () => {
+    const config = { description_length: { min: 5, max: 50 }, allowed_topics: [], allowed_licenses: ['MIT'] };
+    const checks = metadataChecks({ description: 'A fine repo', topics: ['x'], license: { spdx_id: 'GPL-3.0-only' } }, config);
+    assert.deepEqual(checks.map(c => [c.checkName, c.passed]), [
+      ['Repository Description', true],
+      ['Repository Topics', true],
+      ['License Type', false],
+    ]);
+  });
+});
+
+describe('formatResultLine', () => {
+  it('uses ✅/❌ for active and ✔️/✖️ for archived repos', () => {
+    assert.equal(formatResultLine('a', [], false), '✅ a');
+    assert.equal(formatResultLine('a', [{ checkName: 'X' }, { checkName: 'Y' }], false), '❌ a  [X, Y]');
+    assert.equal(formatResultLine('a', [], true), '✔️ a');
+    assert.equal(formatResultLine('a', [{ checkName: 'X' }], true), '✖️ a  [X]');
+  });
+});
+
+// ── cloneOrUpdate ─────────────────────────────────────────────────────────────
+
+/** Records simple-git calls; `fail` names operations ('fetch', 'reset') that should throw. */
+function fakeGit({ fail = [] } = {}) {
+  const calls = [];
+  const op = name => async (...args) => {
+    calls.push([name, ...args]);
+    if (fail.includes(name)) throw new Error(`${name} failed`);
+  };
+  const git = dir => ({ dir, clone: op('clone'), fetch: op('fetch'), reset: op('reset') });
+  git.calls = calls;
+  return git;
+}
+
+describe('cloneOrUpdate', () => {
+  let cacheDir;
+  before(async () => { cacheDir = await mkdtemp(path.join(tmpdir(), 'lint-clone-')); });
+  after(async () => { await rm(cacheDir, { recursive: true }); });
+
+  it('shallow-clones a repository that is not cached yet', async () => {
+    const git = fakeGit();
+    const logger = createMemoryLogger({ debug: true });
+    await cloneOrUpdate('new', path.join(cacheDir, 'new'), 'org', { git, logger });
+    assert.deepEqual(git.calls, [['clone', 'https://github.com/org/new.git', path.join(cacheDir, 'new'), ['--depth', '1']]]);
+    assert.match(logger.output(), /Cloning new\.\.\./);
+  });
+
+  it('fetches and hard-resets an existing clone', async () => {
+    await mkdir(path.join(cacheDir, 'cached'));
+    const git = fakeGit();
+    await cloneOrUpdate('cached', path.join(cacheDir, 'cached'), 'org', { git });
+    assert.deepEqual(git.calls.map(c => c[0]), ['fetch', 'reset']);
+  });
+
+  it('tolerates a failed reset (empty remote)', async () => {
+    await mkdir(path.join(cacheDir, 'empty'));
+    const git = fakeGit({ fail: ['reset'] });
+    await cloneOrUpdate('empty', path.join(cacheDir, 'empty'), 'org', { git });
+    assert.deepEqual(git.calls.map(c => c[0]), ['fetch', 'reset']);
+  });
+
+  it('deletes and re-clones when the update fails', async () => {
+    const dir = path.join(cacheDir, 'corrupt');
+    await mkdir(dir);
+    await writeFile(path.join(dir, 'junk'), 'x');
+    const git = fakeGit({ fail: ['fetch'] });
+    const logger = createMemoryLogger({ debug: true });
+    await cloneOrUpdate('corrupt', dir, 'org', { git, logger });
+    assert.deepEqual(git.calls.map(c => c[0]), ['fetch', 'clone']);
+    assert.match(logger.output(), /Re-cloning corrupt \(update failed\)/);
+    await assert.rejects(() => readdir(dir), { code: 'ENOENT' }, 'the old clone is removed before re-cloning');
+  });
+});
+
+// ── run ───────────────────────────────────────────────────────────────────────
+
+describe('run', () => {
+  const org = 'test-org';
+  let tmpDir;
+  let cacheDir;
+  let configPath;
+
+  const goodRepo = name => ({
+    name,
+    description: 'A repository description that is long enough',
+    topics: ['api'],
+    license: { spdx_id: 'MIT' },
+  });
+  const repos = [
+    goodRepo('good'),
+    { ...goodRepo('bad'), description: '', topics: [] },
+    goodRepo('fixed'),
+    goodRepo('.github'),
+    { ...goodRepo('old'), archived: true, license: null },
+  ];
+  const issues = { fixed: [{ number: 4, title: 'Mandatory Repository Configuration', state: 'open' }] };
+
+  before(async () => {
+    tmpDir = await mkdtemp(path.join(tmpdir(), 'lint-run-'));
+    cacheDir = path.join(tmpDir, 'cache');
+    for (const name of ['good', 'fixed']) {
+      await mkdir(path.join(cacheDir, name), { recursive: true });
+      await writeFile(path.join(cacheDir, name, 'README.md'), 'hello');
+    }
+    await mkdir(path.join(cacheDir, 'bad'), { recursive: true });
+    configPath = path.join(tmpDir, 'lint.yaml');
+    await writeFile(configPath, [
+      'issue_title: Mandatory Repository Configuration',
+      'docs_link: https://docs.example',
+      'allowed_licenses: [MIT]',
+      'excluded_repos: [.github]',
+      'required_files:',
+      '  - pattern: "README*"',
+      '    description: README File',
+    ].join('\n'));
+  });
+  after(async () => { await rm(tmpDir, { recursive: true }); });
+
+  async function runLint(argv, fakeOptions = {}, { debug = false } = {}) {
+    const gh = createFakeGitHub({ repos, issues, ...fakeOptions });
+    const logger = createMemoryLogger({ debug });
+    const git = fakeGit();
+    const code = await run({ argv: ['--org', org, '--config', configPath, ...argv], github: gh, logger, git, cacheDir });
+    return { gh, logger, git, code };
+  }
+
+  it('dry-run prints results, skipped repos and the planned issue changes', async t => {
+    const { gh, logger, code } = await runLint(['--dry-run']);
+    assert.equal(code, 0);
+    assert.deepEqual(gh.writes(), []);
+    t.assert.snapshot(logger.output());
+  });
+
+  it('updates every active clone and none of the skipped repos', async () => {
+    const { git } = await runLint(['--dry-run']);
+    assert.deepEqual(git.calls.filter(c => c[0] === 'fetch').length, 3);
+    assert.equal(git.calls.some(c => String(c[1]).includes('old') || String(c[1]).includes('.github')), false);
+  });
+
+  it('live run opens an issue for failures and closes resolved ones with a comment', async () => {
+    const { gh } = await runLint([]);
+    const [opened] = gh.state.issues.bad;
+    assert.equal(opened.title, 'Mandatory Repository Configuration');
+    assert.match(opened.body, /\| Repository Description \| ❌ Failed \| No description set \|/);
+    assert.match(opened.body, /\| README File \| ❌ Failed \| File not found in \. \|/);
+    assert.match(opened.body, /\(https:\/\/docs\.example\)/);
+
+    const [closed] = gh.state.issues.fixed;
+    assert.equal(closed.state, 'closed');
+    assert.deepEqual(closed.comments, ['_All compliance checks now pass. Closing this issue automatically._']);
+  });
+
+  it('updates an existing issue for a repo that still fails', async () => {
+    const { gh } = await runLint(['--dry-run'], { issues: { bad: [{ number: 11, title: 'Mandatory Repository Configuration', state: 'open' }] } });
+    assert.deepEqual(gh.writes(), []);
+    const live = await runLint([], { issues: { bad: [{ number: 11, title: 'Mandatory Repository Configuration', body: 'old', state: 'open' }] } });
+    assert.match(live.gh.state.issues.bad[0].body, /No description set/);
+    assert.equal(live.gh.callsTo('createIssue').length, 0);
+  });
+
+  it('prints failure details with --debug', async () => {
+    const { logger } = await runLint(['--dry-run', '--debug'], {}, { debug: true });
+    assert.match(logger.output(), /Cloning 3 repositories \(5 at a time\)/);
+    assert.match(logger.output(), /     Repository Topics: No topics set/);
+  });
+
+  it('works for an org without repositories', async () => {
+    const { logger, git } = await runLint([], { repos: [] });
+    assert.equal(logger.output(), 'Results\n───────\n');
+    assert.deepEqual(git.calls, []);
   });
 });

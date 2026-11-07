@@ -63,7 +63,7 @@ node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 
 Exit codes: `0` on success, `1` on any error.
 
-Requires `GITHUB_TOKEN` in the environment. The default config path is resolved relative to the repo root, not the working directory.
+Requires `GITHUB_TOKEN` (or `GH_TOKEN`) in the environment. The default config path is resolved relative to the repo root, not the working directory.
 
 ---
 

@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 
-import { Octokit } from '@octokit/rest';
-import yaml from 'js-yaml';
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const repoRoot = path.join(__dirname, '..');
-const defaultConfigPath = path.join(repoRoot, 'config', 'archive_repos.yaml');
+import { parseCli, resolveToken, runIfMain } from './lib/cli.js';
+import { defaultConfigPath, loadYaml, requireFields } from './lib/config.js';
+import { daysUntil, parseRelativeDate } from './lib/dates.js';
+import { createGitHub, createOctokit } from './lib/github.js';
+import { findOpenIssue, syncSummaryIssue } from './lib/issues.js';
+import { createLogger } from './lib/logger.js';
+import { createPlan } from './lib/plan.js';
+import { byName, partitionRepos } from './lib/repos.js';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const ISSUE_TITLE = 'Inactive Repository Reminder';
+export const ISSUE_TITLE = 'Inactive Repository Reminder';
+export const OSPO_ARCHIVE_ISSUE_TITLE = 'Stale Repository Summary';
 
-function buildIssueBody(gracePeriod) {
+export function buildIssueBody(gracePeriod) {
   return `Dear Maintainers,
 
 This repository has had no activity for an extended period. Inactive repositories tend to accumulate outdated dependencies and security vulnerabilities over time. To prevent this, this repository will be archived if no action is taken within the next ${gracePeriod}.
@@ -35,12 +35,8 @@ Best regards,
 OSPO Team`;
 }
 
-const OSPO_ARCHIVE_ISSUE_TITLE = 'Stale Repository Summary';
-
 export function buildOspoArchiveIssueBody(staleRepos) {
-  const rows = staleRepos.map(({ repo, daysLeft }) =>
-    `| ${repo} | ${daysLeft} days |`
-  );
+  const rows = staleRepos.map(({ repo, daysLeft }) => `| ${repo} | ${daysLeft} days |`);
   return [
     '## Stale Repository Summary',
     '',
@@ -54,39 +50,11 @@ export function buildOspoArchiveIssueBody(staleRepos) {
   ].join('\n');
 }
 
-// ── Date parsing ─────────────────────────────────────────────────────────────
-
-export function parseRelativeDate(str) {
-  const match = str.match(/^(\d+)\s+(minutes?|days?|months?|years?)(\s+ago)?$/);
-  if (!match) {
-    throw new Error(`Invalid relative date: "${str}". Expected format: "<N> <unit>" (e.g. "2 years")`);
-  }
-  const n = parseInt(match[1], 10);
-  const unit = match[2];
-  const date = new Date();
-  if (unit.startsWith('minute')) {
-    date.setUTCMinutes(date.getUTCMinutes() - n);
-  } else if (unit.startsWith('day')) {
-    date.setUTCDate(date.getUTCDate() - n);
-  } else if (unit.startsWith('month')) {
-    date.setUTCMonth(date.getUTCMonth() - n);
-  } else if (unit.startsWith('year')) {
-    date.setUTCFullYear(date.getUTCFullYear() - n);
-  }
-  return date;
-}
-
 // ── Config ───────────────────────────────────────────────────────────────────
 
 export async function loadConfig(configPath) {
-  const raw = await readFile(configPath, 'utf8');
-  const config = yaml.load(raw);
-  if (!config.warn_after) {
-    throw new Error(`Config missing required field: warn_after (in ${configPath})`);
-  }
-  if (!config.grace_period) {
-    throw new Error(`Config missing required field: grace_period (in ${configPath})`);
-  }
+  const config = await loadYaml(configPath);
+  requireFields(config, ['warn_after', 'grace_period'], configPath);
   // Validate date formats by parsing them
   parseRelativeDate(config.warn_after);
   parseRelativeDate(config.grace_period);
@@ -94,257 +62,129 @@ export async function loadConfig(configPath) {
   return config;
 }
 
-// ── Issue helpers ────────────────────────────────────────────────────────────
-
-async function findOpenIssue(octokit, org, repo, issueTitle) {
-  const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
-    owner: org,
-    repo,
-    state: 'open',
-  });
-  return issues.find(i => i.title === issueTitle && !i.pull_request) ?? null;
-}
-
-async function createIssue(octokit, org, repo, title, body) {
-  await octokit.rest.issues.create({ owner: org, repo, title, body });
-}
-
-async function updateIssue(octokit, org, repo, issueNumber, body) {
-  await octokit.rest.issues.update({ owner: org, repo, issue_number: issueNumber, body });
-}
-
-async function closeIssue(octokit, org, repo, issueNumber) {
-  await octokit.rest.issues.update({
-    owner: org,
-    repo,
-    issue_number: issueNumber,
-    state: 'closed',
-  });
-}
-
 // ── Core logic ───────────────────────────────────────────────────────────────
 
-export async function processRepos(octokit, org, repos, config, opts = {}) {
-  const { dryRun = false, debug = false } = opts;
-  const { staleCutoff, graceCutoff, gracePeriod } = config;
-  const planned = [];
+/**
+ * Warns stale repositories, archives those whose warning is older than the grace period,
+ * and closes warnings of repositories that became active again.
+ * Returns the repositories in their grace period (`upcoming`) and the next three to be warned.
+ */
+export async function processRepos({ gh, plan, logger, org, repos, staleCutoff, graceCutoff, gracePeriod, now = new Date() }) {
   const upcoming = [];
   const nextWarnings = [];
 
-  console.log('READING REPOSITORIES...');
+  logger.info('READING REPOSITORIES...');
 
   for (const repo of repos) {
+    const fullName = `${org}/${repo.name}`;
     if (!repo.pushed_at) {
-      if (debug) console.log(`${org}/${repo.name} — skipped (no push activity yet)`);
+      logger.debug(`${fullName} — skipped (no push activity yet)`);
       continue;
     }
     const pushedAt = new Date(repo.pushed_at);
+    const existingIssue = await findOpenIssue(gh, org, repo.name, ISSUE_TITLE);
 
     if (pushedAt < staleCutoff) {
-      console.log(`${org}/${repo.name} is stale.`);
-      if (debug) {
-        console.log(`  pushed_at: ${repo.pushed_at} (before ${staleCutoff.toISOString()})`);
-      }
+      logger.info(`${fullName} is stale.`);
+      logger.debug(`  pushed_at: ${repo.pushed_at} (before ${staleCutoff.toISOString()})`);
 
-      const existingIssue = await findOpenIssue(octokit, org, repo.name, ISSUE_TITLE);
       let effectiveIssueDate;
-
       if (!existingIssue) {
-        if (debug) console.log('  No warning issue found.');
-        if (dryRun) {
-          planned.push(`Would create an issue for '${org}/${repo.name}'.`);
-        } else {
-          await createIssue(octokit, org, repo.name, ISSUE_TITLE, buildIssueBody(gracePeriod));
-          console.log('  Created warning issue.');
-        }
+        logger.debug('  No warning issue found.');
+        await plan.apply(() => gh.createIssue(org, repo.name, { title: ISSUE_TITLE, body: buildIssueBody(gracePeriod) }), {
+          planned: `Would create an issue for '${fullName}'.`,
+          done: '  Created warning issue.',
+        });
         // Treat a new (or, in dry-run, would-be) issue as created now, so it never archives in the same run
-        effectiveIssueDate = new Date();
+        effectiveIssueDate = now;
       } else {
         effectiveIssueDate = new Date(existingIssue.created_at);
-        if (debug) {
-          console.log(`  Warning issue #${existingIssue.number} created on ${existingIssue.created_at}`);
-        }
+        logger.debug(`  Warning issue #${existingIssue.number} created on ${existingIssue.created_at}`);
       }
 
       if (effectiveIssueDate < graceCutoff) {
-        if (dryRun) {
-          planned.push(`Would archive repository '${org}/${repo.name}'.`);
-        } else {
-          await octokit.rest.repos.update({ owner: org, repo: repo.name, archived: true });
-          console.log(`  Archived the repository '${org}/${repo.name}'.`);
-        }
+        await plan.apply(() => gh.archiveRepo(org, repo.name), {
+          planned: `Would archive repository '${fullName}'.`,
+          done: `  Archived the repository '${fullName}'.`,
+        });
       } else {
-        const msLeft = effectiveIssueDate.getTime() - graceCutoff.getTime();
-        const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
-        upcoming.push({ repo: repo.name, daysLeft });
-        if (!dryRun) console.log(`  ${org}/${repo.name} has remaining grace period.`);
+        upcoming.push({ repo: repo.name, daysLeft: daysUntil(graceCutoff, effectiveIssueDate) });
+        if (!plan.dryRun) logger.info(`  ${fullName} has remaining grace period.`);
       }
     } else {
-      if (debug) {
-        console.log(`${org}/${repo.name} — pushed_at: ${repo.pushed_at} (not stale)`);
-      }
-      const existingIssue = await findOpenIssue(octokit, org, repo.name, ISSUE_TITLE);
+      logger.debug(`${fullName} — pushed_at: ${repo.pushed_at} (not stale)`);
       if (existingIssue) {
-        if (dryRun) {
-          planned.push(`Would close the existing issue in '${org}/${repo.name}'.`);
-        } else {
-          await closeIssue(octokit, org, repo.name, existingIssue.number);
-          console.log(`  Closed the existing issue in the repository '${org}/${repo.name}'.`);
-        }
+        await plan.apply(() => gh.closeIssue(org, repo.name, existingIssue.number), {
+          planned: `Would close the existing issue in '${fullName}'.`,
+          done: `  Closed the existing issue in the repository '${fullName}'.`,
+        });
       } else {
-        const daysUntilWarning = Math.ceil((pushedAt.getTime() - staleCutoff.getTime()) / (1000 * 60 * 60 * 24));
-        nextWarnings.push({ repo: repo.name, daysUntilWarning });
+        nextWarnings.push({ repo: repo.name, daysUntilWarning: daysUntil(staleCutoff, pushedAt) });
       }
     }
 
-    if (!dryRun) console.log('');
+    if (!plan.dryRun) logger.info('');
   }
 
   upcoming.sort((a, b) => a.daysLeft - b.daysLeft);
   nextWarnings.sort((a, b) => a.daysUntilWarning - b.daysUntilWarning);
 
-  return { planned, upcoming, nextWarnings: nextWarnings.slice(0, 3) };
+  return { upcoming, nextWarnings: nextWarnings.slice(0, 3) };
+}
+
+// ── Output ───────────────────────────────────────────────────────────────────
+
+const plural = (n, unit) => (n <= 1 ? `${n} ${unit}` : `${n} ${unit}s`);
+
+function printAligned(logger, title, rows) {
+  if (rows.length === 0) return;
+  const width = Math.max(...rows.map(([name]) => name.length));
+  logger.info(`\n${title}`);
+  for (const [name, label] of rows) logger.info(`  ${name.padEnd(width)}  ${label}`);
+}
+
+export function printSummary(logger, plan, { upcoming, nextWarnings }) {
+  if (plan.dryRun && plan.planned.length > 0) {
+    logger.info('\nPlanned changes:');
+    for (const message of plan.planned) logger.info(`  ${message}`);
+  }
+  printAligned(logger, 'Upcoming archival:', upcoming.map(u => [u.repo, `${plural(u.daysLeft, 'day')} left`]));
+  printAligned(logger, 'Next warning issues (top 3):', nextWarnings.map(w => [w.repo, `in ${plural(w.daysUntilWarning, 'day')}`]));
+  if (plan.planned.length === 0 && upcoming.length === 0) logger.info('\nNo changes needed.');
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
-async function main() {
-  const args = process.argv.slice(2);
-  let org = null;
-  let configPath = defaultConfigPath;
-  let dryRun = false;
-  let debug = false;
-
-  for (let i = 0; i < args.length; i++) {
-    switch (args[i]) {
-      case '--org':
-        org = args[++i];
-        break;
-      case '--config':
-        configPath = path.resolve(args[++i]);
-        break;
-      case '--dry-run':
-        dryRun = true;
-        break;
-      case '--debug':
-        debug = true;
-        break;
-    }
-  }
-
-  if (!org) {
-    console.error('Error: --org is required');
-    process.exit(1);
-  }
-
-  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-  if (!token) {
-    console.error('Error: GITHUB_TOKEN (or GH_TOKEN) environment variable is not set');
-    process.exit(1);
-  }
-
+export async function run({ argv = [], env = {}, logger, github, now = new Date() } = {}) {
+  const { org, configPath, dryRun, debug } = parseCli(argv, { defaultConfigPath: defaultConfigPath('archive_repos') });
+  const gh = github ?? createGitHub(createOctokit(resolveToken(env)));
+  const log = logger ?? createLogger({ debug });
   const config = await loadConfig(configPath);
-  const octokit = new Octokit({ auth: token });
-  octokit.hook.before('request', options => {
-    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
+  const plan = createPlan({ dryRun, logger: log });
+
+  const staleCutoff = parseRelativeDate(config.warn_after, now);
+  const graceCutoff = parseRelativeDate(config.grace_period, now);
+  log.debug(`Stale period cutoff: ${staleCutoff.toISOString()}`);
+  log.debug(`Grace period cutoff: ${graceCutoff.toISOString()}`);
+
+  const { active, excluded } = partitionRepos(await gh.listOrgRepos(org), config.excluded_repos);
+  const candidates = active.sort(byName);
+  log.debug(`Repos to process: ${candidates.map(r => r.name).join(', ')}`);
+  if (excluded.length > 0) log.debug(`Excluded repos: ${excluded.map(r => r.name).join(', ')}`);
+  log.debug('');
+
+  const result = await processRepos({
+    gh, plan, logger: log, org, repos: candidates, staleCutoff, graceCutoff, gracePeriod: config.grace_period, now,
   });
 
-  const staleCutoff = parseRelativeDate(config.warn_after);
-  const graceCutoff = parseRelativeDate(config.grace_period);
-
-  if (debug) {
-    console.log(`Stale period cutoff: ${staleCutoff.toISOString()}`);
-    console.log(`Grace period cutoff: ${graceCutoff.toISOString()}`);
-  }
-
-  const allRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
+  await syncSummaryIssue(gh, plan, {
     org,
-    per_page: 100,
+    title: OSPO_ARCHIVE_ISSUE_TITLE,
+    body: result.upcoming.length > 0 ? buildOspoArchiveIssueBody(result.upcoming) : null,
   });
 
-  const excluded = new Set(config.excluded_repos);
-  const candidates = allRepos
-    .filter(r => !r.archived && !excluded.has(r.name))
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  if (debug) {
-    const excludedNames = allRepos.filter(r => excluded.has(r.name)).map(r => r.name);
-    console.log(`Repos to process: ${candidates.map(r => r.name).join(', ')}`);
-    if (excludedNames.length > 0) {
-      console.log(`Excluded repos: ${excludedNames.join(', ')}`);
-    }
-    console.log('');
-  }
-
-  const { planned, upcoming, nextWarnings } = await processRepos(octokit, org, candidates, { staleCutoff, graceCutoff, gracePeriod: config.grace_period }, { dryRun, debug });
-
-  // ── OSPO summary issue ────────────────────────────────────────────────────
-  let ospoIssue;
-  try {
-    ospoIssue = await findOpenIssue(octokit, org, 'ospo', OSPO_ARCHIVE_ISSUE_TITLE);
-  } catch (err) {
-    if (err.status === 404) {
-      console.error(`Error: repository '${org}/ospo' not found. The OSPO summary issue cannot be managed without this repository.`);
-      process.exit(1);
-    }
-    throw err;
-  }
-  if (upcoming.length > 0) {
-    const body = buildOspoArchiveIssueBody(upcoming);
-    if (dryRun) {
-      planned.push(ospoIssue
-        ? `Would update OSPO summary issue #${ospoIssue.number} in '${org}/ospo'.`
-        : `Would create OSPO summary issue in '${org}/ospo'.`);
-    } else if (!ospoIssue) {
-      await createIssue(octokit, org, 'ospo', OSPO_ARCHIVE_ISSUE_TITLE, body);
-      console.log(`Created OSPO summary issue in '${org}/ospo'.`);
-    } else {
-      await updateIssue(octokit, org, 'ospo', ospoIssue.number, body);
-      console.log(`Updated OSPO summary issue #${ospoIssue.number} in '${org}/ospo'.`);
-    }
-  } else if (ospoIssue) {
-    if (dryRun) {
-      planned.push(`Would close OSPO summary issue #${ospoIssue.number} in '${org}/ospo'.`);
-    } else {
-      await closeIssue(octokit, org, 'ospo', ospoIssue.number);
-      console.log(`Closed OSPO summary issue #${ospoIssue.number} in '${org}/ospo'.`);
-    }
-  }
-
-  if (dryRun && planned.length > 0) {
-    console.log('\nPlanned changes:');
-    for (const msg of planned) {
-      console.log(`  ${msg}`);
-    }
-  }
-
-  if (upcoming.length > 0) {
-    const maxName = Math.max(...upcoming.map(u => u.repo.length));
-    console.log('\nUpcoming archival:');
-    for (const { repo, daysLeft } of upcoming) {
-      const label = daysLeft <= 1 ? `${daysLeft} day left` : `${daysLeft} days left`;
-      console.log(`  ${repo.padEnd(maxName)}  ${label}`);
-    }
-  }
-
-  if (nextWarnings.length > 0) {
-    const maxName = Math.max(...nextWarnings.map(u => u.repo.length));
-    console.log('\nNext warning issues (top 3):');
-    for (const { repo, daysUntilWarning } of nextWarnings) {
-      const label = daysUntilWarning <= 1 ? `in ${daysUntilWarning} day` : `in ${daysUntilWarning} days`;
-      console.log(`  ${repo.padEnd(maxName)}  ${label}`);
-    }
-  }
-
-  if (planned.length === 0 && upcoming.length === 0) {
-    console.log('\nNo changes needed.');
-  }
+  printSummary(log, plan, result);
+  return 0;
 }
 
-// Only run main() when this file is the entry point (not when imported by tests)
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main().catch(err => {
-    console.error('Fatal error:', err.message);
-    process.exit(1);
-  });
-}
+runIfMain(import.meta.url, run);

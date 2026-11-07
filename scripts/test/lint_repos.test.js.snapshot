@@ -1,0 +1,3 @@
+exports[`run > dry-run prints results, skipped repos and the planned issue changes 1`] = `
+"Results\\n───────\\n✅ good\\n❌ bad  [Repository Description, Repository Topics, README File]\\n✅ fixed\\n\\nSkipped (archived)\\n──────────────────\\n✖️ old  [License Type]\\n\\nSkipped (configuration)\\n───────────────────────\\n– .github\\n\\n──── Dry-run: 1 would be created, 0 would be updated, 1 would be closed ────\\n  ✉️   create  bad\\n  ✔️   close   #4  fixed\\n"
+`;

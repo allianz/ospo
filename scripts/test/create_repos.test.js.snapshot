@@ -1,0 +1,7 @@
+exports[`run > dry-run prints every planned change and makes none 1`] = `
+"REPOSITORIES\\n  + Create 'brand-new'\\n\\nTEAMS\\n  + Create team 'Team New'\\n  + Sync 'Team New' with Entra ID group 'Team New'\\n  + Grant own: 'Team New' on 'brand-new'\\n  + Grant triage: 'Team A' on 'switch'\\n  - Revoke: 'Team A' on 'gone'\\n  ~ Update triage→write: 'Team B' on 'existing'\\n  - Delete team 'Old Team'\\n\\nSECURITY\\n  + Assign to 'ospo-managed': 'existing'\\n  + Assign to 'custom': 'switch'\\n\\nBRANCH PROTECTION\\n  + Assign to 'ospo-managed': 'existing'\\n  + Assign to 'custom': 'switch'\\n\\n──── Dry-run: no changes were made ────\\n"
+`;
+
+exports[`run > live run converges: the second run has no changes 1`] = `
+"REPOSITORIES\\n  + Create 'brand-new'... ✓\\n\\nTEAMS\\n  + Create team 'Team New'... ✓\\n  + Sync 'Team New' with Entra ID group 'Team New'... ✓\\n  + Grant own: 'Team New' on 'brand-new'... ✓\\n  + Grant triage: 'Team A' on 'switch'... ✓\\n  - Revoke: 'Team A' on 'gone'... ✓\\n  ~ Update triage→write: 'Team B' on 'existing'... ✓\\n  - Delete team 'Old Team'... ✓\\n\\nSECURITY\\n  + Assign to 'ospo-managed': 'existing', 'brand-new'... ✓\\n  + Assign to 'custom': 'switch'... ✓\\n\\nBRANCH PROTECTION\\n  + Assign to 'ospo-managed': 'existing', 'brand-new'\\n  + Assign to 'custom': 'switch'... ✓\\n"
+`;

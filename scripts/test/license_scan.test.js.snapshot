@@ -1,0 +1,3 @@
+exports[`run > dry-run prints results, skipped repos and the planned issue changes 1`] = `
+"Config: <path>\\n\\nResults\\n───────\\n✅ clean                 2 packages, 2 unique licenses\\n❌ dirty                 2 packages, 2 unique licenses\\n       Non-compliant: gpl-lib@3.1 (GPL-3.0-only)\\n✅ fixed                 1 packages, 1 unique licenses\\n\\nSkipped (archived)\\n──────────────────\\n– old\\n\\nSkipped (configuration)\\n───────────────────────\\n– ospo\\n\\nSkipped (no SBOM available)\\n───────────────────────────\\n– no-sbom\\n\\n──── Dry-run: 2 issue would be created, 0 would be updated, 1 would be closed ────\\n  ✉️   create  dirty\\n  ✉️   create  ospo (OSPO summary)\\n  ✔️   close   #7  fixed\\n"
+`;

@@ -1,0 +1,3 @@
+exports[`run > dry-run prints the plan, upcoming archival and next warnings 1`] = `
+"READING REPOSITORIES...\\ntest-org/alpha-expired is stale.\\ntest-org/zeta-stale is stale.\\n\\nPlanned changes:\\n  Would archive repository 'test-org/alpha-expired'.\\n  Would create an issue for 'test-org/zeta-stale'.\\n  Would create OSPO summary issue in 'test-org/ospo'.\\n\\nUpcoming archival:\\n  zeta-stale  40 days left\\n\\nNext warning issues (top 3):\\n  beta-active  in 579 days\\n"
+`;
