@@ -42,7 +42,7 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `by_construction.js` | exists | Writes the `by-construction` checks (1.5): one `pass` per check and active repository. Tests nothing. No issues. |
 | `advisories_check.js` | exists | Checks the published security advisories of every repository (VM.02). Writes the JSON file only. No issues, no writes to GitHub. |
 | `releases_check.js` | exists | Checks the GitHub releases of every repository: version identifiers (BR.02) and release notes (BR.04). Writes the JSON file only. No issues, no writes to GitHub. |
-| `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds and applicability (e.g. languages for fuzzing, QA.05), opens and closes issues (see 1.9) |
+| `scorecard_check.js` | exists | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds and applicability (e.g. languages for fuzzing, QA.05; see 1.9). Writes all Scorecard checks, not only the mapped ones, for a later Scorecard report. Writes the JSON file only. No issues, no writes to GitHub. |
 | `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses. Renders HTML and Markdown from `data.json` only |
 
 ### 1.4 Monthly workflow
@@ -56,7 +56,7 @@ archive_repos --json            → out/archive_repos.json
 by_construction --json          → out/by_construction.json
 advisories_check --json         → out/advisories_check.json
 releases_check --json           → out/releases_check.json
-scorecard_check                 → out/scorecard.json
+scorecard_check --json          → out/scorecard.json
 compliance_report --config config/compliance_report_bsi.yaml
                                 ← out/*.json + reports/bsi-data.json on main + its notes file
                                 → out/bsi-data.json, out/bsi-report.html, out/bsi-report.md
@@ -72,7 +72,7 @@ commit out/ as reports/         → branch compliance-report, PR opened if none 
 - **Editing the notes reruns everything.** `compliance.yaml` also runs on `pull_request` with `paths: config/compliance_report_*_notes.md`, only for the report PR (`if: github.head_ref == 'compliance-report'`). It runs all tools again, so the PR always shows the latest run. Its own commit changes only `reports/`, so it does not trigger another run.
 - **Rerun:** dispatch the workflow. It adds a commit to the open PR, or opens a new PR if none is open. The run uses the scripts on the branch; if `main` changed while the PR was open, update the branch first.
 - **Usually one report per month.** Every merge publishes a report. If two are merged in the same month, the later one replaces that month's entry in `history` (1.10 step 6).
-- **The tools run in two places.** As part of `compliance.yaml`, once a month with `--json`, for the report. And on their own schedules as today, for issues and notices (`lint_repos` twice a week, `license_scan` and `archive_repos` weekly; `scorecard_check` gets its own schedule too), so project teams get feedback within days. Both runs use the same code and configuration; only the run in `compliance.yaml` writes the JSON file. Issues are updated by both, which is harmless because each tool keeps one issue per repository.
+- **The tools run in two places.** As part of `compliance.yaml`, once a month with `--json`, for the report. And on their own schedules as today, for issues and notices (`lint_repos` twice a week, `license_scan` and `archive_repos` weekly), so project teams get feedback within days. The JSON-only tools (`by_construction`, `advisories_check`, `releases_check`, `scorecard_check`) open no issues and run only in `compliance.yaml`. Both runs use the same code and configuration; only the run in `compliance.yaml` writes the JSON file. Issues are updated by both, which is harmless because each tool keeps one issue per repository.
 - Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10). Because `out/` starts empty and replaces `reports/` as a whole, a failed tool leaves no file, never last month's.
 - `compliance_report` reads `reports/<key>-data.json` of its own report from `main` (`git show origin/main:reports/<key>-data.json`), which carries the trend history. It never reads the file on the branch, so runs that were not merged never enter the history. Each report has its own history. The checking scripts never read a previous run.
 - The tool files are committed with the reports as evidence. The report itself is rendered from `data.json` only.
@@ -93,7 +93,7 @@ commit out/ as reports/         → branch compliance-report, PR opened if none 
 
 - **`by-construction` checks test nothing.** The small script `by_construction` ([spec](by_construction_spec.md)) only lists the repositories of the organisation; its checks always pass. They stand for guarantees GitHub gives by design, e.g. `by-construction/source-archives`: the source archives of a release are generated by GitHub from the tag, so they always match the repository content (BR.05). Likewise `by-construction/sbom-available`: the dependency graph, and with it the SBOM, is always enabled for public repositories (LE.02, QA.01). It writes one `pass` per check and active repository into `out/by_construction.json`, like every other tool file, so that such a requirement has statuses, coverage and a card like every other requirement. The rule text of each check starts with "Not a test; always passes", and the report shows it under "How it is verified". It adds passing results to the compliance %.
 - **Requirement mapping** exists in one place only: the report configuration (1.8), one per report. Each report maps the same check IDs to its own requirements. The scripts know nothing about requirement IDs.
-- **JSON-only checks:** a check on something project teams have no influence on gets no issue: it writes results to the JSON file, but is not listed in the tool's issue and never opens one. Its results are evidence for the report and audits only, and the report shows them like every other check. This applies to `lint/public` (teams cannot change the visibility) and `lint/issues-enabled` (teams cannot disable Issues). A check can also be JSON only by decision: `lint/development` (BR.01) is something teams can fix, but it is tracked in the report only, without an issue (`json_only: true` in `config/lint_repos.yaml`). Likewise `releases/versioning` (BR.02) and `releases/release-notes` (BR.04): `releases_check` opens no issues at all. The `by-construction` checks (e.g. `by-construction/sbom-available`: teams cannot remove the SBOM) open no issues anyway. The `fix` of a JSON-only check names the OSPO as the one who acts.
+- **JSON-only checks:** a check on something project teams have no influence on gets no issue: it writes results to the JSON file, but is not listed in the tool's issue and never opens one. Its results are evidence for the report and audits only, and the report shows them like every other check. This applies to `lint/public` (teams cannot change the visibility) and `lint/issues-enabled` (teams cannot disable Issues). A check can also be JSON only by decision: `lint/development` (BR.01) is something teams can fix, but it is tracked in the report only, without an issue (`json_only: true` in `config/lint_repos.yaml`). Likewise `releases/versioning` (BR.02) and `releases/release-notes` (BR.04): `releases_check` opens no issues at all. The same holds for all `scorecard/*` checks (GV.02, QA.04–QA.06, BR.03, VM.01): `scorecard_check` opens no issues; the Scorecard documentation linked in the catalogue explains remediation. The `by-construction` checks (e.g. `by-construction/sbom-available`: teams cannot remove the SBOM) open no issues anyway. The `fix` of a JSON-only check names the OSPO as the one who acts.
 - **Issues:** each tool keeps one issue per repository, as `lint_repos` and `license_scan` do today. That issue lists all failing checks of that tool; it is the project team's to-do list for that tool. Issues are a convenience for the project teams. The report does not read them, and they do not affect any status: a team may close an issue without fixing the finding, and the tool opens it again on the next run. There are no labels.
 - **Issue title:** each tool finds its own issue by its title (`issue_title` in its configuration, as today), and writes the title into its JSON header (1.6). The report uses it only for a link: next to a failing repository, one link per tool to that tool's open issue, a GitHub search such as `repo:allianz/foo is:issue is:open in:title "Mandatory Repository Configuration"`. There is no org-wide link per check or requirement: an issue lists all of a tool's findings in a repository, so it cannot be filtered by check. No link is shown for a tool without issues (`issue_title: null`) or for a repository the tool skipped, because the tool opened no issue there.
 - **Security-sensitive results never become public issues.** If a check ever produces one, the tool opens no issue, and the public report shows counts only. No check in this version does.
@@ -143,7 +143,8 @@ The result fields follow the Scorecard JSON (`name`, `score`, `reason`, `details
 - **All checks are per repository.** Every result has a `repo`. Central settings are not checked; they are described in the implementation text (1.1).
 - **Thresholds come from the tool's configuration** and are written once per check into the catalogue, never into the results. `config_sha256` pins the configuration of each run.
 - **Whether a check counts** is decided only by the mapping in the report configuration (1.8). Tools write only checks that are mapped to a requirement; a tool's other checks (e.g. the deny list in `license_scan`, the required files in `lint_repos`) keep running and opening their issues, but stay out of the JSON. An unmapped check found in a tool file would not affect a status.
-- **`issue_title`:** the title of the tool's issue (1.5), copied from its configuration. `null` for tools whose checks open no issue (`advisories_check`, `archive_repos`, `releases_check`).
+- **Exception: `scorecard_check` writes all Scorecard checks** listed in its `thresholds` (all 18 of Scorecard v5.6.0), with `score`, `reason` and `details`, also the 10 that no BSI requirement maps. They are kept for a later Scorecard report next to the BSI report and do not affect any BSI status. For the same report, `scorecard.json` has an extra top-level list `repositories` (`repo`, scanned `commit`, `date`, overall `score`) and the header fields `source`, `scorecard_version` and `scorecard_commit`. `compliance_report` ignores `repositories`.
+- **`issue_title`:** the title of the tool's issue (1.5), copied from its configuration. `null` for tools whose checks open no issue (`advisories_check`, `archive_repos`, `releases_check`, `scorecard_check`).
 - `skipped` lists repositories without results (excluded, archived). `errors` lists repository × check pairs the tool could not evaluate. Both are always present, `[]` if empty, so every file has the same shape.
 
 ### 1.7 Status logic (computed by the report)
@@ -226,23 +227,30 @@ requirements:
 
 ### 1.9 Scorecard conversion (`scorecard_check`)
 
-**Source:** the Scorecard CLI, `scorecard --repo=github.com/<org>/<repo> --format=json --show-details`, run for every in-scope repository in the compliance workflow, with a pinned version. The public API (`api.scorecard.dev`) only has results for repositories that run the Scorecard Action with `publish_results`; on 4 Nov 2026 that was 1 of 5 active allianz repositories. The CLI output is identical to the API response except `date` (local time) and an extra `metadata: null` (see `mock_data/scorecard_*_real_yukimi.json`).
+**Source:** the Scorecard CLI, `scorecard --repo=github.com/<org>/<repo> --format=json --show-details`, run for every in-scope repository in the compliance workflow, with a pinned version (`scorecard_version` in `config/scorecard_check.yaml`; the run fails on another version). Full rules: [`scorecard_check_spec.md`](scorecard_check_spec.md). The public API (`api.scorecard.dev`) only has results for repositories that run the Scorecard Action with `publish_results`; on 4 Nov 2026 that was 1 of 5 active allianz repositories. The CLI output is identical to the API response except `date` (local time) and an extra `metadata: null` (see `mock_data/scorecard_*_real_yukimi.json`).
 
-**Conversion per check** (match by `name`, not by position):
+**Conversion per check** (match by `name`, not by position; the first matching row decides):
 
 | Scorecard | Result |
 |---|---|
-| `score` ≥ threshold | `pass` |
-| `score` < threshold | `fail` |
+| Branch-Protection on a `branch-protection: managed` repository (`config/create_repos.yaml`) | `na` (protected by the org ruleset `ospo-managed`, documented in GV.02) |
+| CI-Tests on a repository with topic `docs` or `template` | `na` (1.2) |
+| Fuzzing on a repository without a non-memory-safe language above 5% (`GET /repos/{o}/{r}/languages`) | `na` (QA.05) |
 | `-1`, reason starts with `internal error` | `errors` (no data), never `na` |
 | `-1` on CI-Tests while Code-Review counted changesets ("Found x/N approved changesets", N > 0) | `fail`: changes without pull requests |
 | any other `-1` | `na` |
-| Branch-Protection on a `branch-protection: managed` repository | `na` (protected by the org ruleset `ospo-managed`, documented in GV.02) |
+| `score` ≥ threshold | `pass` |
+| `score` < threshold | `fail` |
+
+The first three rows are decisions of `scorecard_check` that need no Scorecard data, so they come before the error rows: e.g. Branch-Protection on a managed repository is `na` even if Scorecard could not read the protection.
 
 - `name`, `score`, `reason` and `details` are copied unchanged from Scorecard. `-1` becomes `score: null`, `details: null` becomes `[]`, `date` is converted to UTC.
 - When `scorecard_check` decides the result itself (managed branch protection, topic `docs`/`template`, changes without pull requests), `reason` stays Scorecard's text and the first `details` line explains the decision, e.g. `Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed` or `Warn: scorecard_check: 30 changesets reached the default branch without pull requests`.
 - **Reason text is parsed** only for the changeset count. A reason the parser does not recognise goes to `errors`, so a new Scorecard wording cannot silently turn a `fail` into `na`. The real outputs in `mock_data/` serve as test fixtures.
-- **Observed on real data:** ng-aquila had CI-Tests `-1` ("no pull request found") but 30 changesets in Code-Review, i.e. direct pushes to `main`. yukimi's Branch-Protection is 5 with the current ruleset (no status checks, 1 approval, no code-owner review), so a threshold of 6 needs a stricter ruleset. **(verify)**
+- **Checks written:** every check in `thresholds` of `config/scorecard_check.yaml`. A configured check missing from the output goes to `errors`; a check of the output that is not configured (e.g. a new check in a newer Scorecard version) is ignored and named in the run log.
+- **No usable output:** a repository Scorecard cannot scan (not JSON, timeout, or `checks: null`, which Scorecard returns for an empty repository) gets one `errors` row per configured check.
+- **Observed on real data (7 Nov 2026, first run of `scorecard_check` on allianz):** all 5 active repositories scanned in about 15 seconds, without errors. `ng-aquila` and `ospo` carry the topic `docs`, so CI-Tests (QA.04) is `na` for them; if they are meant to count, the topic must go. Dangerous-Workflow and Token-Permissions are `-1` (`na`) for repositories without workflows.
+- **Observed on real data (earlier):** ng-aquila had CI-Tests `-1` ("no pull request found") but 30 changesets in Code-Review, i.e. direct pushes to `main`. yukimi's Branch-Protection is 5 with the current ruleset (no status checks, 1 approval, no code-owner review), so a threshold of 6 needs a stricter ruleset. **(verify)**
 
 ### 1.10 Aggregation (`compliance_report`)
 
@@ -306,7 +314,7 @@ requirements:
 
 ---
 
-### GV.02 · Protected against unauthorised actions · MUST · ⬜ Open
+### GV.02 · Protected against unauthorised actions · MUST · ✅ Done
 
 > The project's repository, websites and sensitive data MUST be protected against unauthorized actions.
 
@@ -323,9 +331,11 @@ requirements:
 
 **Websites:** no check. The scope statement "GitHub Pages only" is in the implementation text.
 
-**Issue:** listed in the Scorecard issue.
+**Issue:** none, JSON only (1.5).
 
-**New work:** the `scorecard_check` thresholds.
+**Script:** `scorecard_check` (exists, [spec](scorecard_check_spec.md)).
+
+**New work:** done.
 
 ---
 
@@ -415,11 +425,11 @@ requirements:
 
 ---
 
-### QA.04 · Testing procedures implemented and used · MUST · ⬜ Open
+### QA.04 · Testing procedures implemented and used · MUST · ✅ Done
 
 > Procedures for testing MUST be implemented and utilised.
 
-**Implementation:** Every repository with code tests its changes automatically in CI before pull requests are merged. A weekly check opens an issue when CI did not run on recently merged pull requests.
+**Implementation:** Every repository with code tests its changes automatically in CI before pull requests are merged. A monthly check confirms that CI ran on recently merged pull requests.
 
 **Exact check:** `scorecard/ci-tests` ≥ 8. Tests that run in CI are both implemented and utilised. Scorecard "inconclusive" → `na`, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is `fail` (see 1.9).
 
@@ -427,15 +437,15 @@ requirements:
 
 **Script:** `scorecard_check`.
 
-**Issue:** listed in the Scorecard issue.
+**Issue:** none, JSON only (1.5).
 
 **Limits of the check:** Scorecard detects that CI ran, not what it tested. Repositories without recent pull requests are inconclusive and therefore not applicable, so QA.04 says nothing about them until the next change. Whether `DEVELOPMENT.md` describes how to run the tests is not checked in this version.
 
-**New work:** comes with `scorecard_check`.
+**New work:** done (`scorecard_check`).
 
 ---
 
-### QA.05 · Memory safety issues reduced · SHOULD · ⬜ Open
+### QA.05 · Memory safety issues reduced · SHOULD · ✅ Done
 
 > The project SHOULD take measures to reduce or avoid memory safety issues.
 
@@ -451,15 +461,15 @@ requirements:
 
 **Script:** `scorecard_check` (languages, threshold).
 
-**Issue:** listed in the Scorecard issue, only for applicable repositories.
+**Issue:** none, JSON only (1.5).
 
 **Limits of the check:** Scorecard recognises fuzzing mainly through OSS-Fuzz, ClusterFuzzLite and a few language-specific fuzzing frameworks. Whether an Objective-C or Swift project can reach 10 at all **(verify)**; if not, Objective-C comes off the list.
 
-**New work:** the language lookup in `scorecard_check`.
+**New work:** done (`scorecard_check` reads the languages and applies `fuzzing.languages` and `fuzzing.min_share` from its configuration).
 
 ---
 
-### QA.06 · Changes peer-reviewed · SHOULD · ⬜ Open
+### QA.06 · Changes peer-reviewed · SHOULD · ✅ Done
 
 > All changes to the source code SHOULD be peer-reviewed.
 
@@ -471,9 +481,9 @@ requirements:
 
 **Script:** `scorecard_check`.
 
-**Issue:** listed in the Scorecard issue.
+**Issue:** none, JSON only (1.5).
 
-**New work:** the Scorecard threshold, and the policy decision.
+**New work:** the check is done. Still open: the policy decision for single-maintainer projects.
 
 ---
 
@@ -522,7 +532,7 @@ requirements:
 
 ---
 
-### BR.03 · Integrity of distributed assets verifiable · MUST (+ MAY) · ⬜ Open
+### BR.03 · Integrity of distributed assets verifiable · MUST (+ MAY) · ✅ Done
 
 > All assets MUST be distributed in a way that maintains integrity or at least allows its verification. Means to maintain and verify authenticity MAY be deployed.
 
@@ -536,13 +546,13 @@ requirements:
 
 **Script:** `scorecard_check`.
 
-**Issue:** listed in the Scorecard issue.
+**Issue:** none, JSON only (1.5).
 
 **Limits of the check:** packages published to registries (npm, Maven Central) are not covered by Signed-Releases. Registry provenance (e.g. npm provenance) could be a later check.
 
 **Prerequisite:** the OSPO release workflow template. Without it, projects cannot fix the finding.
 
-**New work:** the template, the Scorecard threshold.
+**New work:** the check is done. Still open: the release workflow template, without which projects cannot fix the finding.
 
 ---
 
@@ -598,7 +608,7 @@ requirements:
 
 ---
 
-### VM.01 · Security contact and private reporting · MUST + SHOULD · ⬜ Open
+### VM.01 · Security contact and private reporting · MUST + SHOULD · ✅ Done
 
 > The project documentation MUST contain security contacts for reporting vulnerabilities. There SHOULD be a way to do so privately.
 
@@ -608,11 +618,11 @@ requirements:
 
 **Script:** `scorecard_check`.
 
-**Issue:** listed in the Scorecard issue.
+**Issue:** none, JSON only (1.5).
 
 **SHOULD clause (private reporting):** not assessed in this version (see 1.7). Private vulnerability reporting is still enabled through the `ospo-managed` security configuration. Neither the security configuration nor individual repositories are checked for it.
 
-**New work:** the threshold in `scorecard_check`.
+**New work:** done.
 
 ---
 

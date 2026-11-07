@@ -1,0 +1,30 @@
+# Integration test configuration — targets the GitHub 'ospo-sandbox' organization.
+# Not used in production.
+
+excluded_repos: []
+scorecard_version: v5.6.0
+concurrency: 3
+create_repos_config: scripts/test-config/create_repos.yaml
+not_applicable_topics: [docs, template]
+fuzzing:
+  languages: [C, C++, Objective-C, Objective-C++, Assembly]
+  min_share: 5
+thresholds:
+  Binary-Artifacts: 10
+  Branch-Protection: 6
+  CI-Tests: 8
+  CII-Best-Practices: 5
+  Code-Review: 7
+  Contributors: 3
+  Dangerous-Workflow: 10
+  Dependency-Update-Tool: 10
+  Fuzzing: 10
+  License: 10
+  Maintained: 7
+  Packaging: 10
+  Pinned-Dependencies: 8
+  SAST: 7
+  Security-Policy: 10
+  Signed-Releases: 8
+  Token-Permissions: 8
+  Vulnerabilities: 10

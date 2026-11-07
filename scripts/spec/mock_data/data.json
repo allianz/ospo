@@ -142,7 +142,7 @@
       "config_file": "config/scorecard_check.yaml",
       "config_sha256": "670210fd6b478339b7f953cc4943faadfe1a2a3372b5e336a5c29638522b5d9f",
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
-      "issue_title": "OpenSSF Scorecard Findings",
+      "issue_title": null,
       "source": "scorecard CLI (--format=json --show-details), run per repository in this workflow",
       "scorecard_version": "v5.6.0",
       "counts": {

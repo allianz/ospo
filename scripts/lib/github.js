@@ -137,6 +137,10 @@ export function createGitHub(octokit) {
     listPublishedAdvisories: (org, repo) =>
       octokit.paginate(rest.securityAdvisories.listRepositoryAdvisories, { owner: org, repo, state: 'published', per_page: 100 }),
 
+    // ── Languages ────────────────────────────────────────────────────────────
+    /** Bytes of code per language, as detected by GitHub (e.g. { Go: 51234, C: 1200 }). */
+    listLanguages: async (org, repo) => (await rest.repos.listLanguages({ owner: org, repo })).data,
+
     // ── Releases and contents ────────────────────────────────────────────────
     /** All releases of a repository, including drafts (visible to tokens with push access). */
     listReleases: (org, repo) => octokit.paginate(rest.repos.listReleases, { owner: org, repo, per_page: 100 }),

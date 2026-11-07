@@ -1,0 +1,68 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Scorecard Check Configuration
+#
+# This file configures the scorecard_check script. It runs the OpenSSF
+# Scorecard CLI for every active repository and writes all Scorecard checks
+# (score, reason, details) as JSON, with the thresholds below applied. JSON
+# only: the script opens no issues and changes nothing on GitHub.
+#
+# Parameters:
+#   excluded_repos:        Repository names to skip. Keep this empty: the
+#                          compliance report counts a skipped repository as
+#                          failing these checks.
+#   scorecard_version:     Pinned Scorecard CLI version. The run fails if the
+#                          installed CLI reports another version.
+#   concurrency:           Repositories scanned in parallel. Scorecard makes
+#                          many API calls per repository.
+#   create_repos_config:   create_repos configuration, relative to the repo
+#                          root. Repositories with branch-protection: managed
+#                          are protected by the org ruleset ospo-managed, so
+#                          Branch-Protection is not applicable to them.
+#   not_applicable_topics: Repositories with one of these topics have no
+#                          software to test: CI-Tests is not applicable.
+#   fuzzing.languages:     Non-memory-safe languages (GitHub language names).
+#   fuzzing.min_share:     Fuzzing applies only if one of these languages has
+#                          more than this percentage of the code.
+#   thresholds:            Minimum score (0–10) per Scorecard check to pass.
+#                          Only the checks listed here are written; a check
+#                          Scorecard adds in a new version is ignored until it
+#                          is listed. Comments name the BSI TR-03185
+#                          requirement a check is mapped to.
+#
+# Want to propose a change? Open a pull request and describe your reasoning.
+
+# ──────────────────────────────────────────────────────────────────────────────
+
+excluded_repos: []
+
+scorecard_version: v5.6.0
+
+concurrency: 3
+
+create_repos_config: config/create_repos.yaml
+
+not_applicable_topics: [docs, template]
+
+fuzzing:
+  languages: [C, C++, Objective-C, Objective-C++, Assembly]
+  min_share: 5
+
+thresholds:
+  Binary-Artifacts: 10
+  Branch-Protection: 6       # GV.02
+  CI-Tests: 8                # QA.04
+  CII-Best-Practices: 5
+  Code-Review: 7             # QA.06
+  Contributors: 3
+  Dangerous-Workflow: 10     # GV.02
+  Dependency-Update-Tool: 10
+  Fuzzing: 10                # QA.05
+  License: 10
+  Maintained: 7
+  Packaging: 10
+  Pinned-Dependencies: 8
+  SAST: 7
+  Security-Policy: 10        # VM.01
+  Signed-Releases: 8         # BR.03
+  Token-Permissions: 8       # GV.02
+  Vulnerabilities: 10

@@ -27,6 +27,7 @@ export function createFakeGitHub({
   sbomUrls = {},
   advisories = {},
   releases = {},
+  languages = {},
   files = {},
   failures = {},
   now = () => new Date('2026-01-01T00:00:00Z'),
@@ -44,6 +45,7 @@ export function createFakeGitHub({
     sbomUrls: { ...sbomUrls },
     advisories: clone(advisories),
     releases: clone(releases),
+    languages: clone(languages),
     files: clone(files),
   };
   const calls = [];
@@ -154,6 +156,8 @@ export function createFakeGitHub({
     requestSbomReport: (org, repo) => state.sbomUrls[repo],
 
     listPublishedAdvisories: (org, repo) => clone((state.advisories[repo] ?? []).filter(a => (a.state ?? 'published') === 'published')),
+
+    listLanguages: (org, repo) => clone(state.languages[repo] ?? {}),
 
     listReleases: (org, repo) => clone(state.releases[repo] ?? []),
 

@@ -8,8 +8,8 @@ SCRIPTS := scripts
 JSON_DIR := results
 
 .PHONY: check-token \
-        test_lint_repos test_archive_repos test_create_repos test_license_scan test_by_construction test_advisories_check test_releases_check \
-        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan dry_run_by_construction dry_run_advisories_check dry_run_releases_check \
+        test_lint_repos test_archive_repos test_create_repos test_license_scan test_by_construction test_advisories_check test_releases_check test_scorecard_check \
+        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan dry_run_by_construction dry_run_advisories_check dry_run_releases_check dry_run_scorecard_check \
         test coverage
 
 check-token:
@@ -38,6 +38,10 @@ test_advisories_check: check-token
 test_releases_check: check-token
 	node $(SCRIPTS)/releases_check.js --org ospo-sandbox --config $(SCRIPTS)/test-config/releases_check.yaml --debug --json $(JSON_DIR)/releases_check.json
 
+# Needs the Scorecard CLI (version pinned in the config) on the PATH or in SCORECARD_BIN
+test_scorecard_check: check-token
+	node $(SCRIPTS)/scorecard_check.js --org ospo-sandbox --config $(SCRIPTS)/test-config/scorecard_check.yaml --debug --json $(JSON_DIR)/scorecard.json
+
 # ── Dry runs (allianz) ────────────────────────────────────────────────────────
 
 dry_run_lint_repos: check-token
@@ -60,6 +64,9 @@ dry_run_advisories_check: check-token
 
 dry_run_releases_check: check-token
 	node $(SCRIPTS)/releases_check.js --org allianz --json $(JSON_DIR)/releases_check.json
+
+dry_run_scorecard_check: check-token
+	node $(SCRIPTS)/scorecard_check.js --org allianz --json $(JSON_DIR)/scorecard.json
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 
