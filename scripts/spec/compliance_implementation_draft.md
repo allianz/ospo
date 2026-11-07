@@ -1,6 +1,6 @@
 # DRAFT: BSI TR-03185 Chapter 2 implementation plan
 
-Temporary working document, not meant to be kept. It lists every requirement of BSI TR-03185 v1.1.1 Chapter 2 and how it will be implemented and verified. Items marked **(verify)** are assumptions about GitHub or Scorecard behaviour that must be confirmed before implementation. Checks marked ✅ **Done** are implemented and written to the tool's JSON file (`--json`); all other checks are still to be built.
+Temporary working document, not meant to be kept. It lists every requirement of BSI TR-03185 v1.1.1 Chapter 2 and how it will be implemented and verified. Items marked **(verify)** are assumptions about GitHub or Scorecard behaviour that must be confirmed before implementation. Each requirement heading in Part 2 shows its implementation status: ✅ **Done**, all its checks are implemented and written to the tool's JSON file (`--json`); ⬜ **Open**, at least one check is still to be built; ➖ **Not assessed**, the requirement has no check (1.7).
 
 ---
 
@@ -282,13 +282,13 @@ requirements:
 
 ## Part 2: Requirements
 
-### GV.01 · How to contribute is documented · MUST + SHOULD
+### GV.01 · How to contribute is documented · MUST + SHOULD · ✅ Done
 
 > Information on how to contribute to the project MUST be documented. Information about the expected quality of contributions SHOULD be given.
 
 **Implementation:** Every repository must contain a contribution guide (`CONTRIBUTING` file in the root, `.github` or `docs`). An automated check runs every week and opens an issue in any repository that lacks one, until it is fixed.
 
-- **Check:** `lint/contributing`, a structural check. A file `CONTRIBUTING*` exists in `.`, `.github` or `docs`. ✅ **Done** (`lint_repos`)
+- **Check:** `lint/contributing`, a structural check. A file `CONTRIBUTING*` exists in `.`, `.github` or `docs`.
 - **Script:** `lint_repos` (exists).
 - **Issue:** listed in the lint issue.
 - **Evidence:** the file path found.
@@ -299,7 +299,7 @@ requirements:
 
 ---
 
-### GV.02 · Protected against unauthorised actions · MUST
+### GV.02 · Protected against unauthorised actions · MUST · ⬜ Open
 
 > The project's repository, websites and sensitive data MUST be protected against unauthorized actions.
 
@@ -322,13 +322,13 @@ requirements:
 
 ---
 
-### LE.01 · License stated for all content · MUST
+### LE.01 · License stated for all content · MUST · ✅ Done
 
 > A license MUST be stated for all content made available by the project, including the project's documentation.
 
 **Implementation:** Every repository must contain a license file with an approved license (Apache-2.0, MIT, CC-BY-4.0, CC0-1.0). The license file in the root applies to all content of the repository, including documentation and the Pages website, unless a file states otherwise. A weekly check opens an issue if the license is missing or not approved.
 
-**Exact check:** `lint/license-type`: the SPDX ID detected by GitHub is on the approved list. No detected license (no license file) and `NOASSERTION` fail, so a separate file check is not needed. `lint_repos` keeps `LICENSE*` in `required_files` for its own issue, but that check is not mapped. ✅ **Done** (`lint_repos`)
+**Exact check:** `lint/license-type`: the SPDX ID detected by GitHub is on the approved list. No detected license (no license file) and `NOASSERTION` fail, so a separate file check is not needed. `lint_repos` keeps `LICENSE*` in `required_files` for its own issue, but that check is not mapped.
 
 **Script:** `lint_repos` (exists).
 
@@ -338,7 +338,7 @@ requirements:
 
 ---
 
-### LE.02 · Licenses of all components referenced · MUST
+### LE.02 · Licenses of all components referenced · MUST · ⬜ Open
 
 > A copy of all licenses in use, or references hereto, MUST be provided.
 
@@ -358,7 +358,7 @@ requirements:
 
 ---
 
-### QA.01 · List of third-party components available · MUST
+### QA.01 · List of third-party components available · MUST · ⬜ Open
 
 > A list of third-party components used in the software MUST be available.
 
@@ -376,13 +376,13 @@ requirements:
 
 ---
 
-### QA.02 · Source code publicly readable · MUST
+### QA.02 · Source code publicly readable · MUST · ✅ Done
 
 > All of the project's source code MUST be publicly readable.
 
 **Implementation:** All repositories are created by the provisioning pipeline as public. A weekly check confirms that every repository in scope is public.
 
-**Exact check:** `lint/public`. The visibility of every in-scope repository is `public`. This checks the result directly, so it also catches repositories created or switched to private by an admin. ✅ **Done** (`lint_repos`, JSON only)
+**Exact check:** `lint/public`. The visibility of every in-scope repository is `public`. This checks the result directly, so it also catches repositories created or switched to private by an admin.
 
 **Precondition:** `lint_repos` lists all repositories of the organisation, including private and internal ones. The GitHub App must therefore be installed on all repositories, otherwise a private repository is invisible and cannot fail.
 
@@ -394,13 +394,13 @@ requirements:
 
 ---
 
-### QA.03 · How to report defects is communicated · MUST
+### QA.03 · How to report defects is communicated · MUST · ✅ Done
 
 > The project MUST inform how to report defects.
 
 **Implementation:** Issues are enabled on every repository, and project teams cannot disable them. Security defects are reported privately (VM.01).
 
-**Exact check:** `lint/issues-enabled`, i.e. `has_issues == true`. ✅ **Done** (`lint_repos`, JSON only)
+**Exact check:** `lint/issues-enabled`, i.e. `has_issues == true`.
 
 **Issue:** none, JSON only (1.5). Project teams cannot disable Issues, so there is nothing for them to fix; the result is evidence for the report and audits. If Issues are disabled anyway, `lint_repos` also cannot open its own issue for the repository: it skips it and logs a warning.
 
@@ -408,7 +408,7 @@ requirements:
 
 ---
 
-### QA.04 · Testing procedures implemented and used · MUST
+### QA.04 · Testing procedures implemented and used · MUST · ⬜ Open
 
 > Procedures for testing MUST be implemented and utilised.
 
@@ -428,7 +428,7 @@ requirements:
 
 ---
 
-### QA.05 · Memory safety issues reduced · SHOULD
+### QA.05 · Memory safety issues reduced · SHOULD · ⬜ Open
 
 > The project SHOULD take measures to reduce or avoid memory safety issues.
 
@@ -452,7 +452,7 @@ requirements:
 
 ---
 
-### QA.06 · Changes peer-reviewed · SHOULD
+### QA.06 · Changes peer-reviewed · SHOULD · ⬜ Open
 
 > All changes to the source code SHOULD be peer-reviewed.
 
@@ -470,7 +470,7 @@ requirements:
 
 ---
 
-### BR.01 · Build information public · MUST
+### BR.01 · Build information public · MUST · ⬜ Open (postponed)
 
 > Information on how to build all software assets MUST be publicly available.
 
@@ -496,7 +496,7 @@ requirements:
 
 ---
 
-### BR.02 · Unique, increasing version identifiers · MUST
+### BR.02 · Unique, increasing version identifiers · MUST · ⬜ Open
 
 > All releases and released software assets intended for use MUST be assigned unique, monotonically increasing version identifiers.
 
@@ -517,7 +517,7 @@ requirements:
 
 ---
 
-### BR.03 · Integrity of distributed assets verifiable · MUST (+ MAY)
+### BR.03 · Integrity of distributed assets verifiable · MUST (+ MAY) · ⬜ Open
 
 > All assets MUST be distributed in a way that maintains integrity or at least allows its verification. Means to maintain and verify authenticity MAY be deployed.
 
@@ -541,7 +541,7 @@ requirements:
 
 ---
 
-### BR.04 · Change log per release · MUST
+### BR.04 · Change log per release · MUST · ⬜ Open
 
 > All releases MUST provide a descriptive log of functional and security modifications.
 
@@ -561,7 +561,7 @@ requirements:
 
 ---
 
-### BR.05 · Source packages match the repository · MUST
+### BR.05 · Source packages match the repository · MUST · ⬜ Open
 
 > Released source packages MUST NOT contain any content that is not present in the project's repository or cannot be deterministically generated from it.
 
@@ -583,7 +583,7 @@ requirements:
 
 ---
 
-### BR.06 · Builds reproducible · SHOULD
+### BR.06 · Builds reproducible · SHOULD · ➖ Not assessed
 
 > Builds SHOULD be reproducible.
 
@@ -593,7 +593,7 @@ requirements:
 
 ---
 
-### VM.01 · Security contact and private reporting · MUST + SHOULD
+### VM.01 · Security contact and private reporting · MUST + SHOULD · ⬜ Open
 
 > The project documentation MUST contain security contacts for reporting vulnerabilities. There SHOULD be a way to do so privately.
 
@@ -611,7 +611,7 @@ requirements:
 
 ---
 
-### VM.02 · Vulnerabilities published in reasonable time · MUST
+### VM.02 · Vulnerabilities published in reasonable time · MUST · ⬜ Open
 
 > The project MUST publish information about discovered vulnerabilities within a reasonable period of time.
 
@@ -632,7 +632,7 @@ requirements:
 
 ---
 
-### DE.01 · Discontinuation communicated · SHOULD
+### DE.01 · Discontinuation communicated · SHOULD · ✅ Done
 
 > Discontinuation of the project, parts of it, or specific versions or version ranges SHOULD be communicated adequately.
 
@@ -641,7 +641,7 @@ requirements:
 **What is verified:** that the process covers every repository in scope, not each individual notice. A repository the process does not check could go unmaintained without anyone noticing; a repository it checks is either active or on its way to archival with a notice. Archived repositories are out of scope (1.2) and have no result.
 
 **Exact check**
-- `archive/activity-checked` (`archive_repos`): one result per active repository. `pass` if `archive_repos` read the repository's last activity in this run; the `reason` states the last push and, if one is open, the notice issue and the archival date. An active repository that `archive_repos` skips (`excluded_repos`) gets a `fail` from `compliance_report` (1.10 step 4); one it could not evaluate is listed under `errors`. ✅ **Done** (`archive_repos`)
+- `archive/activity-checked` (`archive_repos`): one result per active repository. `pass` if `archive_repos` read the repository's last activity in this run; the `reason` states the last push and, if one is open, the notice issue and the archival date. An active repository that `archive_repos` skips (`excluded_repos`) gets a `fail` from `compliance_report` (1.10 step 4); one it could not evaluate is listed under `errors`.
 
 **Script:** `archive_repos`: adds `--json` with one `archive/activity-checked` result per repository it evaluated. It needs no history and no new API calls: it already reads the last push of every repository.
 
@@ -653,7 +653,7 @@ requirements:
 
 ---
 
-### DE.02 · Migration paths outlined · MAY
+### DE.02 · Migration paths outlined · MAY · ➖ Not assessed
 
 > If the project, parts of it, or specific versions are discontinued, migration paths MAY be outlined, for example by naming a successor project or a maintained alternative and describing how users can move to it.
 
