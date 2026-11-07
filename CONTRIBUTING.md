@@ -56,10 +56,9 @@ All scripts support `--dry-run` (validate without making changes) and `--debug` 
 
 ## Testing
 
-Use the sandbox environment to test scripts against the `ospo-sandbox` organization:
+Use the sandbox environment to test scripts against the `ospo-sandbox` organization. Run `make` from the repository root:
 
 ```bash
-cd scripts
 make test_create_repos    # Test repo creation
 make test_lint_repos      # Test repo linting
 make test_archive_repos   # Test repo archival

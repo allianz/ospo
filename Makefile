@@ -3,6 +3,8 @@ GITHUB_TOKEN ?= $(shell gh auth token 2>/dev/null)
 export GITHUB_TOKEN
 export GH_TOKEN = $(GITHUB_TOKEN)
 
+SCRIPTS := scripts
+
 .PHONY: check-token \
         test_lint_repos test_archive_repos test_create_repos test_license_scan \
         dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan \
@@ -14,32 +16,32 @@ check-token:
 # ── Integration tests (ospo-sandbox) ─────────────────────────────────────────
 
 test_lint_repos: check-token
-	node lint_repos.js --org ospo-sandbox --config test-config/lint_repos.yaml --debug
+	node $(SCRIPTS)/lint_repos.js --org ospo-sandbox --config $(SCRIPTS)/test-config/lint_repos.yaml --debug
 
 test_archive_repos: check-token
-	node archive_repos.js --org ospo-sandbox --config test-config/archive_repos.yaml --debug
+	node $(SCRIPTS)/archive_repos.js --org ospo-sandbox --config $(SCRIPTS)/test-config/archive_repos.yaml --debug
 
 test_create_repos: check-token
-	node create_repos.js --org ospo-sandbox --config test-config/create_repos.yaml --debug
+	node $(SCRIPTS)/create_repos.js --org ospo-sandbox --config $(SCRIPTS)/test-config/create_repos.yaml --debug
 
 test_license_scan: check-token
-	node license_scan.js --org ospo-sandbox --config test-config/license_scan.yaml --debug
+	node $(SCRIPTS)/license_scan.js --org ospo-sandbox --config $(SCRIPTS)/test-config/license_scan.yaml --debug
 
 # ── Dry runs (allianz) ────────────────────────────────────────────────────────
 
 dry_run_lint_repos: check-token
-	node lint_repos.js --org allianz --dry-run
+	node $(SCRIPTS)/lint_repos.js --org allianz --dry-run
 
 dry_run_archive_repos: check-token
-	node archive_repos.js --org allianz --dry-run
+	node $(SCRIPTS)/archive_repos.js --org allianz --dry-run
 
 dry_run_create_repos: check-token
-	node create_repos.js --org allianz --dry-run
+	node $(SCRIPTS)/create_repos.js --org allianz --dry-run
 
 dry_run_license_scan: check-token
-	node license_scan.js --org allianz --dry-run 
+	node $(SCRIPTS)/license_scan.js --org allianz --dry-run
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 
 test:
-	npm run coverage
+	cd $(SCRIPTS) && npm run coverage

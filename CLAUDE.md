@@ -8,17 +8,16 @@ Allianz OSPO (Open Source Program Office) automation suite for managing GitHub o
 
 ## Commands
 
-### Running Tests (via Makefile in scripts/)
+### Running Tests (via Makefile in the repo root)
 
 ```bash
-cd scripts
 make test_create_repos    # Integration test against ospo-sandbox org
 make test_lint_repos      # Integration test against ospo-sandbox org
 make test_archive_repos   # Integration test against ospo-sandbox org
 make test_license_scan    # Integration test against ospo-sandbox org
 make test                 # Unit tests with coverage report (node --test)
-npm test                  # Unit tests without coverage
-npm run test:update-snapshots   # Regenerate output snapshots after an intended output change
+cd scripts && npm test                         # Unit tests without coverage
+cd scripts && npm run test:update-snapshots     # Regenerate output snapshots after an intended output change
 ```
 
 Unit tests must reach at least 90% line coverage for every script. Add or extend tests with every code change so coverage does not drop below that. `npm run coverage` fails below 90% lines overall; also check the per-file table.
