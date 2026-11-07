@@ -136,5 +136,17 @@ export function createGitHub(octokit) {
     /** The published (public) security advisories of a repository. */
     listPublishedAdvisories: (org, repo) =>
       octokit.paginate(rest.securityAdvisories.listRepositoryAdvisories, { owner: org, repo, state: 'published', per_page: 100 }),
+
+    // ── Releases and contents ────────────────────────────────────────────────
+    /** All releases of a repository, including drafts (visible to tokens with push access). */
+    listReleases: (org, repo) => octokit.paginate(rest.repos.listReleases, { owner: org, repo, per_page: 100 }),
+
+    /** Names of the files in the root directory of the default branch. */
+    listRootFiles: async (org, repo) =>
+      (await rest.repos.getContent({ owner: org, repo, path: '' })).data.filter(e => e.type === 'file').map(e => e.name),
+
+    /** The text of a file on the default branch. */
+    getFileText: async (org, repo, filePath) =>
+      String((await rest.repos.getContent({ owner: org, repo, path: filePath, mediaType: { format: 'raw' } })).data),
   };
 }

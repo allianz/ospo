@@ -17,6 +17,7 @@ make test_archive_repos   # Integration test against ospo-sandbox org
 make test_license_scan    # Integration test against ospo-sandbox org
 make test_by_construction # Integration test against ospo-sandbox org
 make test_advisories_check # Integration test against ospo-sandbox org
+make test_releases_check  # Integration test against ospo-sandbox org
 make test                 # Unit tests with coverage report (node --test)
 cd scripts && npm test                         # Unit tests without coverage
 cd scripts && npm run test:update-snapshots     # Regenerate output snapshots after an intended output change
@@ -35,9 +36,10 @@ node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug
 node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 node scripts/by_construction.js --org <org> [--config <file>] [--debug] [--json <file>]
 node scripts/advisories_check.js --org <org> --json <file> [--config <file>] [--debug]
+node scripts/releases_check.js --org <org> --json <file> [--config <file>] [--debug]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js` is JSON only as well (`--json` is required): it opens no issues and never writes to GitHub.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js` and `releases_check.js` are JSON only as well (`--json` is required): they open no issues and never write to GitHub.
 
 ### Required Tools
 
@@ -54,10 +56,11 @@ Detailed specs for each script — behaviour, config schema, and output format:
 - [`scripts/spec/license_scan_spec.md`](scripts/spec/license_scan_spec.md)
 - [`scripts/spec/by_construction_spec.md`](scripts/spec/by_construction_spec.md)
 - [`scripts/spec/advisories_check_spec.md`](scripts/spec/advisories_check_spec.md)
+- [`scripts/spec/releases_check_spec.md`](scripts/spec/releases_check_spec.md)
 
 ## Architecture
 
-Six JavaScript (ESM) scripts, each driven by a YAML config file, built on shared libraries in `scripts/lib/`:
+Seven JavaScript (ESM) scripts, each driven by a YAML config file, built on shared libraries in `scripts/lib/`:
 
 1. **`scripts/create_repos.js`** — Creates/manages repos and teams, assigns permissions, syncs with Azure AD. Reads `config/create_repos.yaml`.
 2. **`scripts/lint_repos.js`** — Enforces repo compliance (description, topics, license, README, CONTRIBUTING). Reads `config/lint_repos.yaml`.
@@ -65,6 +68,7 @@ Six JavaScript (ESM) scripts, each driven by a YAML config file, built on shared
 4. **`scripts/license_scan.js`** — Scans dependency licenses via the GitHub SBOM API and opens issues for denied licenses. Reads `config/license_scan.yaml`.
 5. **`scripts/by_construction.js`** — Writes the `by-construction/*` checks (GitHub guarantees, e.g. source archives, SBOM availability) as JSON: always `pass`, one per active repository, no issues. Reads `config/by_construction.yaml`.
 6. **`scripts/advisories_check.js`** — Checks that published security advisories were published within `max_days` of their creation (`advisories/published-in-time`). JSON only: no issues, no writes. Reads `config/advisories_check.yaml`.
+7. **`scripts/releases_check.js`** — Checks GitHub releases of the last 12 months: SemVer/CalVer tags increasing within each major line (`releases/versioning`) and release notes in the body or `CHANGELOG*` (`releases/release-notes`); `na` without releases. JSON only: no issues, no writes. Reads `config/releases_check.yaml`.
 
 ### Shared libraries (`scripts/lib/`)
 

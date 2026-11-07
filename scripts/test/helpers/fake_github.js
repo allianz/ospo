@@ -26,6 +26,8 @@ export function createFakeGitHub({
   rulesets = [],
   sbomUrls = {},
   advisories = {},
+  releases = {},
+  files = {},
   failures = {},
   now = () => new Date('2026-01-01T00:00:00Z'),
 } = {}) {
@@ -41,6 +43,8 @@ export function createFakeGitHub({
     rulesets: clone(rulesets),
     sbomUrls: { ...sbomUrls },
     advisories: clone(advisories),
+    releases: clone(releases),
+    files: clone(files),
   };
   const calls = [];
   let nextRepoId = Math.max(1000, ...state.repos.map(r => r.id ?? 0)) + 1;
@@ -150,6 +154,20 @@ export function createFakeGitHub({
     requestSbomReport: (org, repo) => state.sbomUrls[repo],
 
     listPublishedAdvisories: (org, repo) => clone((state.advisories[repo] ?? []).filter(a => (a.state ?? 'published') === 'published')),
+
+    listReleases: (org, repo) => clone(state.releases[repo] ?? []),
+
+    /** `files` maps a repo to { path: text }; root files are paths without '/'. A repo without files answers 404 (empty repository). */
+    listRootFiles: (org, repo) => {
+      if (!state.files[repo]) throw notFound(`No contents in ${repo}`);
+      return Object.keys(state.files[repo]).filter(p => !p.includes('/'));
+    },
+
+    getFileText: (org, repo, filePath) => {
+      const text = state.files[repo]?.[filePath];
+      if (text === undefined) throw notFound(`${filePath} not found in ${repo}`);
+      return text;
+    },
   };
 
   const gh = { calls, state };

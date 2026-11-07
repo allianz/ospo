@@ -496,7 +496,7 @@
       "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
       "issue_title": "Mandatory Repository Configuration",
       "counts": {
-        "results": 63,
+        "results": 45,
         "skipped": 5,
         "errors": 0
       }
@@ -552,6 +552,24 @@
       "counts": {
         "results": 10,
         "skipped": 4,
+        "errors": 0
+      }
+    },
+    {
+      "file": "releases_check.json",
+      "script": "scripts/releases_check.js",
+      "status": "ok",
+      "sha256": "10b09c7b8cbc5e1e3982135365735bbbcccd022c04a772bffb40da54dbef9f76",
+      "tool": "releases_check",
+      "run_at": "2026-11-03T02:00:00Z",
+      "ospo_sha": "869f4bb",
+      "config_file": "config/releases_check.yaml",
+      "config_sha256": "c4e6b6f904f4cf4c5c9af0e3b7f04d95ce00b93d93f20de4e893db6512bad602",
+      "run_url": "https://github.com/allianz/ospo/actions/runs/18734410412",
+      "issue_title": null,
+      "counts": {
+        "results": 18,
+        "skipped": 5,
         "errors": 0
       }
     },
@@ -880,10 +898,10 @@
           "text": "All releases and released software assets intended for use MUST be assigned unique, monotonically increasing version identifiers."
         }
       ],
-      "implementation": "Releases are tagged with SemVer or CalVer. Tags are unique by construction in git. A weekly check confirms that versions increase within each major version line.",
+      "implementation": "Releases are tagged with SemVer or CalVer. Tags are unique by construction in git. A monthly check confirms that versions increase within each major version line.",
       "status": "met-findings",
       "checks": [
-        "lint/versioning"
+        "releases/versioning"
       ],
       "repositories": {
         "applicable": 5,
@@ -933,7 +951,7 @@
       "implementation": "Every GitHub release has release notes. The release template enables generated release notes, grouped by labels such as security.",
       "status": "met-findings",
       "checks": [
-        "lint/release-notes"
+        "releases/release-notes"
       ],
       "repositories": {
         "applicable": 5,
@@ -1258,18 +1276,18 @@
         "short": "The repository is public."
       }
     },
-    "lint/release-notes": {
-      "tool": "lint_repos",
+    "releases/release-notes": {
+      "tool": "releases_check",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#release-notes",
-        "short": "Every release of the last 12 months has release notes of at least 50 characters, or the CHANGELOG mentions the version."
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/releases_check_spec.md#release-notes",
+        "short": "Every release of the repository published in the last 12 months has a release body of at least 50 characters, or a CHANGELOG file in the repository root mentions its version. Not applicable without a release in that period."
       }
     },
-    "lint/versioning": {
-      "tool": "lint_repos",
+    "releases/versioning": {
+      "tool": "releases_check",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#versioning",
-        "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line."
+        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/releases_check_spec.md#versioning",
+        "short": "Every release of the repository published in the last 12 months has a SemVer or CalVer tag (optional \"v\" prefix), and within each major version line the versions increase with the release date. Not applicable without a release in that period."
       }
     },
     "scorecard/branch-protection": {
@@ -1364,16 +1382,6 @@
       "result": "pass"
     },
     {
-      "repo": "pricing-engine",
-      "check": "lint/versioning",
-      "result": "pass"
-    },
-    {
-      "repo": "pricing-engine",
-      "check": "lint/release-notes",
-      "result": "pass"
-    },
-    {
       "repo": "insurance-rule-dsl",
       "check": "lint/license-type",
       "result": "pass"
@@ -1396,16 +1404,6 @@
     {
       "repo": "insurance-rule-dsl",
       "check": "lint/development-file",
-      "result": "pass"
-    },
-    {
-      "repo": "insurance-rule-dsl",
-      "check": "lint/versioning",
-      "result": "pass"
-    },
-    {
-      "repo": "insurance-rule-dsl",
-      "check": "lint/release-notes",
       "result": "pass"
     },
     {
@@ -1434,16 +1432,6 @@
       "result": "pass"
     },
     {
-      "repo": "quote-calculator-demo",
-      "check": "lint/versioning",
-      "result": "na"
-    },
-    {
-      "repo": "quote-calculator-demo",
-      "check": "lint/release-notes",
-      "result": "na"
-    },
-    {
       "repo": "pdf-render-service",
       "check": "lint/license-type",
       "result": "pass"
@@ -1466,16 +1454,6 @@
     {
       "repo": "pdf-render-service",
       "check": "lint/development-file",
-      "result": "fail"
-    },
-    {
-      "repo": "pdf-render-service",
-      "check": "lint/versioning",
-      "result": "pass"
-    },
-    {
-      "repo": "pdf-render-service",
-      "check": "lint/release-notes",
       "result": "fail"
     },
     {
@@ -1504,16 +1482,6 @@
       "result": "na"
     },
     {
-      "repo": "design-guidelines",
-      "check": "lint/versioning",
-      "result": "na"
-    },
-    {
-      "repo": "design-guidelines",
-      "check": "lint/release-notes",
-      "result": "na"
-    },
-    {
       "repo": "mobile-sdk-ios",
       "check": "lint/license-type",
       "result": "pass"
@@ -1536,16 +1504,6 @@
     {
       "repo": "mobile-sdk-ios",
       "check": "lint/development-file",
-      "result": "pass"
-    },
-    {
-      "repo": "mobile-sdk-ios",
-      "check": "lint/versioning",
-      "result": "fail"
-    },
-    {
-      "repo": "mobile-sdk-ios",
-      "check": "lint/release-notes",
       "result": "pass"
     },
     {
@@ -1574,16 +1532,6 @@
       "result": "fail"
     },
     {
-      "repo": "pricing-sandbox",
-      "check": "lint/versioning",
-      "result": "na"
-    },
-    {
-      "repo": "pricing-sandbox",
-      "check": "lint/release-notes",
-      "result": "na"
-    },
-    {
       "repo": "claims-event-schemas",
       "check": "lint/license-type",
       "result": "pass"
@@ -1607,16 +1555,6 @@
       "repo": "claims-event-schemas",
       "check": "lint/development-file",
       "result": "pass"
-    },
-    {
-      "repo": "claims-event-schemas",
-      "check": "lint/versioning",
-      "result": "na"
-    },
-    {
-      "repo": "claims-event-schemas",
-      "check": "lint/release-notes",
-      "result": "na"
     },
     {
       "repo": "kafka-schema-tools",
@@ -1644,16 +1582,6 @@
       "result": "pass"
     },
     {
-      "repo": "kafka-schema-tools",
-      "check": "lint/versioning",
-      "result": "na"
-    },
-    {
-      "repo": "kafka-schema-tools",
-      "check": "lint/release-notes",
-      "result": "na"
-    },
-    {
       "repo": "ng-aquila",
       "check": "lint/license-type",
       "result": "fail"
@@ -1676,16 +1604,6 @@
     {
       "repo": "ng-aquila",
       "check": "lint/development-file",
-      "result": "fail"
-    },
-    {
-      "repo": "ng-aquila",
-      "check": "lint/versioning",
-      "result": "fail"
-    },
-    {
-      "repo": "ng-aquila",
-      "check": "lint/release-notes",
       "result": "fail"
     },
     {
@@ -1837,6 +1755,106 @@
       "repo": "ng-aquila",
       "check": "advisories/published-in-time",
       "result": "pass"
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "releases/versioning",
+      "result": "pass"
+    },
+    {
+      "repo": "pricing-engine",
+      "check": "releases/release-notes",
+      "result": "pass"
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "releases/versioning",
+      "result": "pass"
+    },
+    {
+      "repo": "insurance-rule-dsl",
+      "check": "releases/release-notes",
+      "result": "pass"
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "releases/versioning",
+      "result": "na"
+    },
+    {
+      "repo": "quote-calculator-demo",
+      "check": "releases/release-notes",
+      "result": "na"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "releases/versioning",
+      "result": "pass"
+    },
+    {
+      "repo": "pdf-render-service",
+      "check": "releases/release-notes",
+      "result": "fail"
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "releases/versioning",
+      "result": "na"
+    },
+    {
+      "repo": "design-guidelines",
+      "check": "releases/release-notes",
+      "result": "na"
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "releases/versioning",
+      "result": "fail"
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "check": "releases/release-notes",
+      "result": "pass"
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "releases/versioning",
+      "result": "na"
+    },
+    {
+      "repo": "pricing-sandbox",
+      "check": "releases/release-notes",
+      "result": "na"
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "releases/versioning",
+      "result": "na"
+    },
+    {
+      "repo": "claims-event-schemas",
+      "check": "releases/release-notes",
+      "result": "na"
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "releases/versioning",
+      "result": "na"
+    },
+    {
+      "repo": "kafka-schema-tools",
+      "check": "releases/release-notes",
+      "result": "na"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "releases/versioning",
+      "result": "fail"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "releases/release-notes",
+      "result": "fail"
     },
     {
       "repo": "pricing-engine",
@@ -2476,6 +2494,31 @@
       "tool": "advisories_check",
       "repo": "old-batch-tools",
       "reason": "archived"
+    },
+    {
+      "tool": "releases_check",
+      "repo": ".github",
+      "reason": "organisation configuration repository"
+    },
+    {
+      "tool": "releases_check",
+      "repo": "ospo",
+      "reason": "assessment tooling, reviewed separately"
+    },
+    {
+      "tool": "releases_check",
+      "repo": "ng-aquila",
+      "reason": "excluded_repos in config (license under legal review)"
+    },
+    {
+      "tool": "releases_check",
+      "repo": "legacy-xml-mapper",
+      "reason": "archived"
+    },
+    {
+      "tool": "releases_check",
+      "repo": "old-batch-tools",
+      "reason": "archived"
     }
   ],
   "errors": []
@@ -2508,7 +2551,7 @@ function scaleMock(factor, worst) {
   let seed = 20261103;
   const rnd = () => { seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
   const pick = xs => xs[Math.floor(rnd() * xs.length)];
-  const TOOLS = new Set(['lint_repos', 'license_scan', 'scorecard_check', 'archive_repos', 'advisories_check', 'compliance_report']);
+  const TOOLS = new Set(['lint_repos', 'license_scan', 'scorecard_check', 'archive_repos', 'advisories_check', 'releases_check', 'compliance_report']);
   const templates = [...DATA.scope.active];
   const src = DATA.results.filter(r => TOOLS.has(DATA.catalogue[r.check]?.tool));
 

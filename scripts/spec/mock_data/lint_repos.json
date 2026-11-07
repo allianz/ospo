@@ -47,22 +47,6 @@
         "short": "A file DEVELOPMENT* exists in ., docs or .github, with at least 300 characters. Not applicable to repositories tagged docs or template.",
         "fix": "Add DEVELOPMENT.md (root, docs or .github) with at least 300 characters on how to build and test the project."
       }
-    },
-    "lint/versioning": {
-      "name": "Versioning",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#versioning",
-        "short": "Every release of the last 12 months has a SemVer or CalVer tag, and versions increase with release date within each major line.",
-        "fix": "Tag releases with SemVer or CalVer and make sure versions increase with release date within each major line."
-      }
-    },
-    "lint/release-notes": {
-      "name": "Release Notes",
-      "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#release-notes",
-        "short": "Every release of the last 12 months has release notes of at least 50 characters, or the CHANGELOG mentions the version.",
-        "fix": "Add release notes (at least 50 characters) to each GitHub release, or mention the version in CHANGELOG.md."
-      }
     }
   },
   "skipped": [
@@ -135,26 +119,6 @@
       "details": []
     },
     {
-      "repo": "pricing-engine",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "pass",
-      "score": null,
-      "reason": "3 releases follow semver and increase",
-      "details": [
-        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
-      ]
-    },
-    {
-      "repo": "pricing-engine",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "pass",
-      "score": null,
-      "reason": "All 3 releases have notes (release body)",
-      "details": []
-    },
-    {
       "repo": "insurance-rule-dsl",
       "check": "lint/license-type",
       "name": "License Type",
@@ -197,26 +161,6 @@
       "result": "pass",
       "score": null,
       "reason": "DEVELOPMENT.md found (2140 characters)",
-      "details": []
-    },
-    {
-      "repo": "insurance-rule-dsl",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "pass",
-      "score": null,
-      "reason": "3 releases follow semver and increase",
-      "details": [
-        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
-      ]
-    },
-    {
-      "repo": "insurance-rule-dsl",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "pass",
-      "score": null,
-      "reason": "All 3 releases have notes (release body)",
       "details": []
     },
     {
@@ -265,24 +209,6 @@
       "details": []
     },
     {
-      "repo": "quote-calculator-demo",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
-      "details": []
-    },
-    {
-      "repo": "quote-calculator-demo",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
-      "details": []
-    },
-    {
       "repo": "pdf-render-service",
       "check": "lint/license-type",
       "name": "License Type",
@@ -328,28 +254,6 @@
       "details": []
     },
     {
-      "repo": "pdf-render-service",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "pass",
-      "score": null,
-      "reason": "3 releases follow semver and increase",
-      "details": [
-        "Info: releases checked: v2.3.0, v2.4.0, v2.4.1"
-      ]
-    },
-    {
-      "repo": "pdf-render-service",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "fail",
-      "score": null,
-      "reason": "Release v1.8.0 has no release notes and is not in CHANGELOG",
-      "details": [
-        "Warn: v1.8.0 has no release notes"
-      ]
-    },
-    {
       "repo": "design-guidelines",
       "check": "lint/license-type",
       "name": "License Type",
@@ -392,24 +296,6 @@
       "result": "na",
       "score": null,
       "reason": "topic 'docs' or 'template': nothing to build",
-      "details": []
-    },
-    {
-      "repo": "design-guidelines",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
-      "details": []
-    },
-    {
-      "repo": "design-guidelines",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
       "details": []
     },
     {
@@ -458,26 +344,6 @@
       "details": []
     },
     {
-      "repo": "mobile-sdk-ios",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "fail",
-      "score": null,
-      "reason": "v3.0.9 (2026-08-14) is lower than v3.1.0 (2026-06-02) in major line 3",
-      "details": [
-        "Info: releases checked: v3.1.0, v3.0.9, v3.1.1"
-      ]
-    },
-    {
-      "repo": "mobile-sdk-ios",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "pass",
-      "score": null,
-      "reason": "All 3 releases have notes (release body)",
-      "details": []
-    },
-    {
       "repo": "pricing-sandbox",
       "check": "lint/license-type",
       "name": "License Type",
@@ -520,24 +386,6 @@
       "result": "fail",
       "score": null,
       "reason": "File not found in ., docs, .github",
-      "details": []
-    },
-    {
-      "repo": "pricing-sandbox",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
-      "details": []
-    },
-    {
-      "repo": "pricing-sandbox",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
       "details": []
     },
     {
@@ -586,24 +434,6 @@
       "details": []
     },
     {
-      "repo": "claims-event-schemas",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
-      "details": []
-    },
-    {
-      "repo": "claims-event-schemas",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
-      "details": []
-    },
-    {
       "repo": "kafka-schema-tools",
       "check": "lint/license-type",
       "name": "License Type",
@@ -646,24 +476,6 @@
       "result": "pass",
       "score": null,
       "reason": "DEVELOPMENT.md found (2140 characters)",
-      "details": []
-    },
-    {
-      "repo": "kafka-schema-tools",
-      "check": "lint/versioning",
-      "name": "Versioning",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
-      "details": []
-    },
-    {
-      "repo": "kafka-schema-tools",
-      "check": "lint/release-notes",
-      "name": "Release Notes",
-      "result": "na",
-      "score": null,
-      "reason": "no releases in the last 12 months",
       "details": []
     }
   ]
