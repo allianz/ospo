@@ -4,6 +4,8 @@ export GITHUB_TOKEN
 export GH_TOKEN = $(GITHUB_TOKEN)
 
 SCRIPTS := scripts
+# JSON results of the integration tests (--json); gitignored
+JSON_DIR := results
 
 .PHONY: check-token \
         test_lint_repos test_archive_repos test_create_repos test_license_scan \
@@ -16,16 +18,16 @@ check-token:
 # ── Integration tests (ospo-sandbox) ─────────────────────────────────────────
 
 test_lint_repos: check-token
-	node $(SCRIPTS)/lint_repos.js --org ospo-sandbox --config $(SCRIPTS)/test-config/lint_repos.yaml --debug
+	node $(SCRIPTS)/lint_repos.js --org ospo-sandbox --config $(SCRIPTS)/test-config/lint_repos.yaml --debug --json $(JSON_DIR)/lint_repos.json
 
 test_archive_repos: check-token
-	node $(SCRIPTS)/archive_repos.js --org ospo-sandbox --config $(SCRIPTS)/test-config/archive_repos.yaml --debug
+	node $(SCRIPTS)/archive_repos.js --org ospo-sandbox --config $(SCRIPTS)/test-config/archive_repos.yaml --debug --json $(JSON_DIR)/archive_repos.json
 
 test_create_repos: check-token
 	node $(SCRIPTS)/create_repos.js --org ospo-sandbox --config $(SCRIPTS)/test-config/create_repos.yaml --debug
 
 test_license_scan: check-token
-	node $(SCRIPTS)/license_scan.js --org ospo-sandbox --config $(SCRIPTS)/test-config/license_scan.yaml --debug
+	node $(SCRIPTS)/license_scan.js --org ospo-sandbox --config $(SCRIPTS)/test-config/license_scan.yaml --debug --json $(JSON_DIR)/license_scan.json
 
 # ── Dry runs (allianz) ────────────────────────────────────────────────────────
 

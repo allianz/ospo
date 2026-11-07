@@ -31,6 +31,21 @@ describe('parseCli', () => {
     assert.equal(args.skipCustomRole, false);
   });
 
+  it('returns string flags in camelCase, undefined when absent', () => {
+    const args = parseCli(['--org', 'acme', '--json', 'out/x.json'], { stringFlags: ['json', 'out-dir'] });
+    assert.equal(args.json, 'out/x.json');
+    assert.equal(args.outDir, undefined);
+    assert.equal(parseCli(['--org', 'acme'], { stringFlags: ['json'] }).json, undefined);
+  });
+
+  it('rejects a string flag without a value', () => {
+    assert.throws(() => parseCli(['--org', 'acme', '--json'], { stringFlags: ['json'] }), ScriptError);
+  });
+
+  it('rejects --json when the script does not support it', () => {
+    assert.throws(() => parseCli(['--org', 'acme', '--json', 'x.json']), ScriptError);
+  });
+
   it('requires --org', () => {
     assert.throws(() => parseCli([]), { constructor: ScriptError, message: '--org is required' });
   });

@@ -1,12 +1,14 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 import {
   ISSUE_TITLE,
   OSPO_ARCHIVE_ISSUE_TITLE,
+  buildCatalogue,
+  buildJsonResults,
   buildIssueBody,
   buildOspoArchiveIssueBody,
   loadConfig,
@@ -226,10 +228,10 @@ describe('run', () => {
   ];
   const issues = { 'alpha-expired': [warning(4, '2026-01-01T00:00:00Z')] };
 
-  async function runArchive(argv, fakeOptions = {}, { debug = false } = {}) {
+  async function runArchive(argv, fakeOptions = {}, { debug = false, env } = {}) {
     const gh = createFakeGitHub({ repos, issues, now: () => NOW, ...fakeOptions });
     const logger = createMemoryLogger({ debug });
-    const code = await run({ argv: ['--org', org, '--config', configPath, ...argv], github: gh, logger, now: NOW });
+    const code = await run({ argv: ['--org', org, '--config', configPath, ...argv], github: gh, logger, now: NOW, env });
     return { gh, logger, code };
   }
 
@@ -296,5 +298,64 @@ describe('run', () => {
   it('rejects a missing --org and a missing token', async () => {
     await assert.rejects(() => run({ argv: [] }), /--org is required/);
     await assert.rejects(() => run({ argv: ['--org', org], env: {} }), /GITHUB_TOKEN/);
+  });
+
+  it('--json writes both checks per evaluated repo and lists skipped repos', async t => {
+    const file = path.join(tmpDir, 'out', 'archive_repos.json');
+    const { logger } = await runArchive(['--json', file], { repos: [...repos, { name: 'empty', pushed_at: null }] }, {
+      env: { GITHUB_SHA: 'abc123' },
+    });
+    assert.match(logger.output(), /\nJSON written to .*archive_repos\.json\n$/);
+    const doc = JSON.parse(await readFile(file, 'utf8'));
+    assert.equal(doc.issue_title, ISSUE_TITLE);
+    assert.match(doc.results.find(r => r.repo === 'zeta-stale' && r.check === 'archive/recent-activity').reason, /notice issue created in this run/);
+    assert.ok(doc.results.every(r => r.check in doc.catalogue && r.reason));
+    t.assert.snapshot({ ...doc, config_file: '<config>' });
+  });
+
+  it('--json --dry-run marks the planned archival', async () => {
+    const file = path.join(tmpDir, 'out', 'archive_dry.json');
+    await runArchive(['--dry-run', '--json', file]);
+    const doc = JSON.parse(await readFile(file, 'utf8'));
+    assert.deepEqual(doc.skipped[0], { repo: 'alpha-expired', reason: 'would be archived in this run (dry-run)' });
+  });
+});
+
+describe('JSON output', () => {
+  const catalogue = buildCatalogue({ warnAfter: '1 years', gracePeriod: '60 days', sha: 'abc' });
+
+  it('documents both checks with the configured periods', () => {
+    assert.deepEqual(Object.keys(catalogue), ['archive/recent-activity', 'archive/activity-checked']);
+    assert.match(catalogue['archive/recent-activity'].documentation.short, /last 1 years.*archived 60 days later/);
+    assert.equal(
+      catalogue['archive/activity-checked'].documentation.url,
+      'https://github.com/allianz/ospo/blob/abc/scripts/spec/archive_repos_spec.md#activity-checked',
+    );
+  });
+
+  it('turns evaluated repos into results and the rest into skipped entries', () => {
+    const evaluated = [
+      { repo: 'active', pushedAt: '2026-10-30T10:00:00Z', stale: false },
+      { repo: 'noticed', pushedAt: '2025-01-02T00:00:00Z', stale: true, newIssue: false, issueNumber: 12, daysLeft: 23 },
+      { repo: 'new-notice', pushedAt: '2025-01-03T00:00:00Z', stale: true, newIssue: true, issueNumber: null, daysLeft: 60 },
+      { repo: 'gone', pushedAt: '2024-01-01T00:00:00Z', stale: true, newIssue: false, issueNumber: 3, archived: true },
+    ];
+    const { results, skipped } = buildJsonResults({
+      evaluated, neverPushed: ['empty'], archived: [{ name: 'old' }], excluded: [{ name: 'ospo' }], catalogue, warnAfter: '1 years',
+    });
+    assert.deepEqual(results.map(r => [r.repo, r.check, r.result, r.reason]), [
+      ['active', 'archive/recent-activity', 'pass', 'Last push 2026-10-30, within the last 1 years'],
+      ['active', 'archive/activity-checked', 'pass', 'Last push 2026-10-30'],
+      ['noticed', 'archive/recent-activity', 'fail', 'Last push 2025-01-02, more than 1 years ago; notice issue #12, archival in 23 days'],
+      ['noticed', 'archive/activity-checked', 'pass', 'Last push 2025-01-02; notice issue #12, archival in 23 days'],
+      ['new-notice', 'archive/recent-activity', 'fail', 'Last push 2025-01-03, more than 1 years ago; notice issue created in this run, archival in 60 days'],
+      ['new-notice', 'archive/activity-checked', 'pass', 'Last push 2025-01-03; notice issue created in this run, archival in 60 days'],
+    ]);
+    assert.deepEqual(skipped, [
+      { repo: 'gone', reason: 'archived in this run' },
+      { repo: 'empty', reason: 'no push activity yet' },
+      { repo: 'old', reason: 'archived' },
+      { repo: 'ospo', reason: 'excluded_repos' },
+    ]);
   });
 });

@@ -9,6 +9,7 @@ import { mapWithConcurrency } from './lib/concurrency.js';
 import { defaultConfigPath, loadYaml, repoRoot, requireFields } from './lib/config.js';
 import { createGitHub, createOctokit } from './lib/github.js';
 import { syncIssue } from './lib/issues.js';
+import { buildHeader, buildJsonDocument, checkResult, skippedRepos, specCatalogue, writeJsonReport } from './lib/json_output.js';
 import { createLogger } from './lib/logger.js';
 import { createPlan } from './lib/plan.js';
 import { printHeading, printIssueDryRunSummary, printNameList, printSection } from './lib/report.js';
@@ -17,6 +18,9 @@ import { partitionRepos } from './lib/repos.js';
 export const LINT_CACHE_DIR = path.join(repoRoot, 'lint_cache');
 const CLONE_CONCURRENCY = 5;
 const CLOSE_COMMENT = '_All compliance checks now pass. Closing this issue automatically._';
+export const TOOL = 'lint_repos';
+const SPEC_FILE = 'lint_repos_spec.md';
+const MAX_TOPICS = 5;
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
@@ -31,7 +35,21 @@ export async function loadConfig(configPath) {
     min: config.description_length?.min ?? 30,
     max: config.description_length?.max ?? 150,
   };
+  const ids = new Set();
+  for (const fileSpec of config.required_files) {
+    const id = requiredFileCheckId(fileSpec);
+    if (id === 'lint/' || ids.has(id)) {
+      throw new Error(`required_files pattern '${fileSpec.pattern}' gives no unique check ID (in ${configPath})`);
+    }
+    ids.add(id);
+  }
   return config;
+}
+
+/** Check ID of a required file, from its pattern prefix: CONTRIBUTING* → lint/contributing. */
+export function requiredFileCheckId(fileSpec) {
+  const prefix = fileSpec.pattern.replace(/\*.*$/, '').toLowerCase();
+  return `lint/${prefix.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 }
 
 // ── Check functions ───────────────────────────────────────────────────────────
@@ -47,7 +65,7 @@ export function checkDescription(repo, descriptionLength) {
   if (desc.length > descriptionLength.max) {
     return { passed: false, detail: `Description too long (${desc.length} chars); maximum is ${descriptionLength.max}` };
   }
-  return { passed: true };
+  return { passed: true, detail: `Description has ${desc.length} chars` };
 }
 
 export function checkTopics(repo, allowedTopics) {
@@ -55,8 +73,8 @@ export function checkTopics(repo, allowedTopics) {
   if (topics.length === 0) {
     return { passed: false, detail: 'No topics set' };
   }
-  if (topics.length > 5) {
-    return { passed: false, detail: `Too many topics (${topics.length}); maximum is 5` };
+  if (topics.length > MAX_TOPICS) {
+    return { passed: false, detail: `Too many topics (${topics.length}); maximum is ${MAX_TOPICS}` };
   }
   if (allowedTopics.length > 0) {
     const invalid = topics.filter(t => !allowedTopics.includes(t));
@@ -64,7 +82,7 @@ export function checkTopics(repo, allowedTopics) {
       return { passed: false, detail: `Invalid topic(s): ${invalid.join(', ')}` };
     }
   }
-  return { passed: true };
+  return { passed: true, detail: `Topics: ${topics.join(', ')}` };
 }
 
 export function checkLicense(repo, allowedLicenses) {
@@ -81,7 +99,7 @@ export function checkLicense(repo, allowedLicenses) {
   if (!allowedLicenses.includes(spdxId)) {
     return { passed: false, detail: `'${spdxId}' is not in the approved list` };
   }
-  return { passed: true };
+  return { passed: true, detail: `'${spdxId}' is in the approved list` };
 }
 
 export async function checkRequiredFile(cloneDir, fileSpec) {
@@ -99,13 +117,15 @@ export async function checkRequiredFile(cloneDir, fileSpec) {
     }
     const match = entries.find(f => f.toUpperCase().startsWith(prefix));
     if (!match) continue;
+    const found = searchPath === '.' ? `${match} found` : `${match} found in ${searchPath}`;
     if (min_chars != null) {
       const content = await readFile(path.join(dir, match), 'utf8');
       if (content.length < min_chars) {
         return { passed: false, detail: `File exists but is too short (${content.length} chars; minimum is ${min_chars})` };
       }
+      return { passed: true, detail: `${found} (${content.length} chars)` };
     }
-    return { passed: true };
+    return { passed: true, detail: found };
   }
   return { passed: false, detail: `File not found in ${searchPaths.join(', ')}` };
 }
@@ -113,9 +133,9 @@ export async function checkRequiredFile(cloneDir, fileSpec) {
 /** Checks that only need the repository metadata from the API (also run for archived repos). */
 export function metadataChecks(repo, config) {
   return [
-    { checkName: 'Repository Description', ...checkDescription(repo, config.description_length) },
-    { checkName: 'Repository Topics', ...checkTopics(repo, config.allowed_topics) },
-    { checkName: 'License Type', ...checkLicense(repo, config.allowed_licenses) },
+    { id: 'lint/description', checkName: 'Repository Description', ...checkDescription(repo, config.description_length) },
+    { id: 'lint/topics', checkName: 'Repository Topics', ...checkTopics(repo, config.allowed_topics) },
+    { id: 'lint/license-type', checkName: 'License Type', ...checkLicense(repo, config.allowed_licenses) },
   ];
 }
 
@@ -123,9 +143,58 @@ export function metadataChecks(repo, config) {
 export async function runChecks(repo, config, cloneDir) {
   const checks = metadataChecks(repo, config);
   for (const fileSpec of config.required_files) {
-    checks.push({ checkName: fileSpec.description ?? fileSpec.pattern, ...(await checkRequiredFile(cloneDir, fileSpec)) });
+    checks.push({ id: requiredFileCheckId(fileSpec), checkName: requiredFileName(fileSpec), ...(await checkRequiredFile(cloneDir, fileSpec)) });
   }
   return checks;
+}
+
+const requiredFileName = fileSpec => fileSpec.description ?? fileSpec.pattern;
+
+// ── JSON output ───────────────────────────────────────────────────────────────
+
+/** Catalogue of every check this run performs, with the rule texts built from the configuration. */
+export function buildCatalogue(config, { sha = null, env = {} } = {}) {
+  const entry = specCatalogue(SPEC_FILE, { sha, env });
+  const { min, max } = config.description_length;
+  const approved = config.allowed_topics.length > 0;
+  const licenses = config.allowed_licenses.join(', ');
+  const catalogue = {
+    'lint/description': entry(
+      'Repository Description',
+      `The repository description is set and has ${min} to ${max} characters.`,
+      `Set a description of ${min} to ${max} characters in the About section of the repository.`,
+    ),
+    'lint/topics': entry(
+      'Repository Topics',
+      `The repository has 1 to ${MAX_TOPICS} topics${approved ? ', all from the approved topic list' : ''}.`,
+      `Add 1 to ${MAX_TOPICS} topics${approved ? ' from the approved topic list' : ''} in the About section of the repository.`,
+    ),
+    'lint/license-type': entry(
+      'License Type',
+      `The license GitHub detects is one of ${licenses}. A missing or unidentified license (NOASSERTION) fails.`,
+      `Use one of the approved licenses (${licenses}) with its unmodified license text, so GitHub can detect it.`,
+    ),
+  };
+  for (const fileSpec of config.required_files) {
+    const paths = (fileSpec.search_paths ?? ['.']).join(', ');
+    const size = fileSpec.min_chars != null ? `, with at least ${fileSpec.min_chars} characters` : '';
+    catalogue[requiredFileCheckId(fileSpec)] = entry(
+      requiredFileName(fileSpec),
+      `A file ${fileSpec.pattern} exists in ${paths}${size}.`,
+      `Add a ${fileSpec.pattern} file in ${paths}${size}.`,
+    );
+  }
+  return catalogue;
+}
+
+/** Results of the active repositories and the skipped list (archived and excluded repositories have no results). */
+export function buildJsonResults({ checked, archived, excluded, catalogue }) {
+  return {
+    results: checked.flatMap(({ repo, checks }) =>
+      checks.map(c => checkResult(repo, c.id, catalogue, { passed: c.passed, reason: c.detail })),
+    ),
+    skipped: [...skippedRepos(archived, 'archived'), ...skippedRepos(excluded, 'excluded_repos')],
+  };
 }
 
 // ── Issue body ────────────────────────────────────────────────────────────────
@@ -195,8 +264,8 @@ export function formatResultLine(repoName, failures, isArchived) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export async function run({ argv = [], env = {}, logger, github, git, cacheDir = LINT_CACHE_DIR } = {}) {
-  const { org, configPath, dryRun, debug } = parseCli(argv, { defaultConfigPath: defaultConfigPath('lint_repos') });
+export async function run({ argv = [], env = {}, logger, github, git, cacheDir = LINT_CACHE_DIR, now = new Date() } = {}) {
+  const { org, configPath, dryRun, debug, json } = parseCli(argv, { defaultConfigPath: defaultConfigPath(TOOL), stringFlags: ['json'] });
   const gh = github ?? createGitHub(createOctokit(resolveToken(env)));
   const log = logger ?? createLogger({ debug });
   const config = await loadConfig(configPath);
@@ -214,8 +283,10 @@ export async function run({ argv = [], env = {}, logger, github, git, cacheDir =
 
   printHeading(log, 'Results');
 
+  const checked = [];
   for (const repo of active) {
     const checks = await runChecks(repo, config, path.join(cacheDir, repo.name));
+    checked.push({ repo: repo.name, checks });
     const failures = checks.filter(c => !c.passed);
 
     log.info(formatResultLine(repo.name, failures, false));
@@ -236,6 +307,14 @@ export async function run({ argv = [], env = {}, logger, github, git, cacheDir =
   ));
   printNameList(log, 'Skipped (configuration)', excluded.map(r => r.name));
   printIssueDryRunSummary(log, plan);
+
+  if (json) {
+    const header = await buildHeader({ tool: TOOL, org, configPath, issueTitle: config.issue_title, env, now, git });
+    const catalogue = buildCatalogue(config, { sha: header.ospo_sha, env });
+    const doc = buildJsonDocument(header, { catalogue, ...buildJsonResults({ checked, archived, excluded, catalogue }) });
+    await writeJsonReport(path.resolve(json), doc);
+    log.info(`\nJSON written to ${json}`);
+  }
   return 0;
 }
 

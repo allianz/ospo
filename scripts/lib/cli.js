@@ -9,10 +9,12 @@ const camelCase = flag => flag.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
 
 /**
  * Parses the common CLI flags (--org, --config, --dry-run, --debug) plus any
- * extra boolean flags. Unknown flags and positional arguments are rejected.
- * Extra flags are returned in camelCase (--skip-team-sync → skipTeamSync).
+ * extra boolean `flags` and string-valued `stringFlags` (e.g. --json <file>).
+ * Unknown flags and positional arguments are rejected.
+ * Extra flags are returned in camelCase (--skip-team-sync → skipTeamSync); an
+ * absent string flag is undefined.
  */
-export function parseCli(argv, { defaultConfigPath, flags = [] } = {}) {
+export function parseCli(argv, { defaultConfigPath, flags = [], stringFlags = [] } = {}) {
   const options = {
     org: { type: 'string' },
     config: { type: 'string' },
@@ -20,6 +22,7 @@ export function parseCli(argv, { defaultConfigPath, flags = [] } = {}) {
     debug: { type: 'boolean', default: false },
   };
   for (const flag of flags) options[flag] = { type: 'boolean', default: false };
+  for (const flag of stringFlags) options[flag] = { type: 'string' };
 
   let values;
   try {
@@ -35,7 +38,7 @@ export function parseCli(argv, { defaultConfigPath, flags = [] } = {}) {
     dryRun: values['dry-run'],
     debug: values.debug,
   };
-  for (const flag of flags) result[camelCase(flag)] = values[flag];
+  for (const flag of [...flags, ...stringFlags]) result[camelCase(flag)] = values[flag];
   return result;
 }
 

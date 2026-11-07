@@ -1,11 +1,13 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 import {
   OSPO_LICENSE_ISSUE_TITLE,
+  buildCatalogue,
+  buildJsonResults,
   buildIssueBody,
   buildOspoLicenseIssueBody,
   checkDependencyLicenses,
@@ -269,7 +271,7 @@ describe('run', () => {
     };
   }
 
-  async function runScan(argv, fakeOptions = {}, { debug = false } = {}) {
+  async function runScan(argv, fakeOptions = {}, { debug = false, env = {}, now } = {}) {
     const gh = createFakeGitHub({
       repos,
       issues,
@@ -279,11 +281,12 @@ describe('run', () => {
     const logger = createMemoryLogger({ debug });
     const code = await run({
       argv: ['--org', org, '--config', configPath, ...argv],
-      env: { GITHUB_TOKEN: 'tok' },
+      env: { GITHUB_TOKEN: 'tok', ...env },
       github: gh,
       logger,
       fetch: orgFetch(),
       sleep: noSleep,
+      now,
     });
     return { gh, logger, code };
   }
@@ -360,5 +363,48 @@ describe('run', () => {
 
   it('requires a token for the SBOM download', async () => {
     await assert.rejects(() => run({ argv: ['--org', org, '--config', configPath], env: {} }), /GITHUB_TOKEN/);
+  });
+
+  it('--json writes both checks per active repo, sorted by repo', async t => {
+    const file = path.join(tmpDir, 'out', 'license_scan.json');
+    const { logger } = await runScan(['--dry-run', '--json', file], {}, {
+      env: { GITHUB_SHA: 'abc123' },
+      now: new Date('2026-11-03T02:00:00Z'),
+    });
+    assert.match(logger.output(), /\nJSON written to .*license_scan\.json\n$/);
+    const doc = JSON.parse(await readFile(file, 'utf8'));
+    assert.deepEqual([...new Set(doc.results.map(r => r.repo))], ['clean', 'dirty', 'fixed', 'no-sbom']);
+    assert.ok(doc.results.every(r => r.check in doc.catalogue && r.reason));
+    t.assert.snapshot({ ...doc, config_file: '<config>' });
+  });
+});
+
+describe('JSON output', () => {
+  const catalogue = buildCatalogue({ sha: 'abc' });
+
+  it('documents both checks in the spec', () => {
+    assert.deepEqual(Object.keys(catalogue), ['license/sbom-available', 'license/denied-licenses']);
+    assert.equal(
+      catalogue['license/denied-licenses'].documentation.url,
+      'https://github.com/allianz/ospo/blob/abc/scripts/spec/license_scan_spec.md#dependency-licenses',
+    );
+  });
+
+  it('maps a missing SBOM to fail + na, and violations to details', () => {
+    const scanned = [
+      { repo: 'z', packageCount: 3, violations: [{ name: 'a', version: '1', spdxId: 'GPL-3.0' }, { name: 'b', version: '2', spdxId: 'AGPL-3.0' }] },
+      { repo: 'm', noSbom: true },
+      { repo: 'a', packageCount: 1, violations: [{ name: 'c', version: '3', spdxId: 'GPL-2.0' }] },
+    ];
+    const { results, skipped } = buildJsonResults({ scanned, archived: [{ name: 'old' }], excluded: [{ name: 'ospo' }], catalogue });
+    assert.deepEqual(results.map(r => [r.repo, r.check, r.result, r.reason, r.details]), [
+      ['a', 'license/sbom-available', 'pass', 'SBOM with 1 package', []],
+      ['a', 'license/denied-licenses', 'fail', '1 dependency uses a denied license', ['Warn: c@3 (GPL-2.0)']],
+      ['m', 'license/sbom-available', 'fail', 'No SBOM available (request returned 404)', []],
+      ['m', 'license/denied-licenses', 'na', 'No SBOM available', []],
+      ['z', 'license/sbom-available', 'pass', 'SBOM with 3 packages', []],
+      ['z', 'license/denied-licenses', 'fail', '2 dependencies use a denied license', ['Warn: a@1 (GPL-3.0)', 'Warn: b@2 (AGPL-3.0)']],
+    ]);
+    assert.deepEqual(skipped, [{ repo: 'old', reason: 'archived' }, { repo: 'ospo', reason: 'excluded_repos' }]);
   });
 });

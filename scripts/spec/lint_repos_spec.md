@@ -32,7 +32,7 @@ scripts/
 ## CLI Interface
 
 ```
-node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 ```
 
 | Flag | Default | Description |
@@ -41,6 +41,7 @@ node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 | `--config` | `config/lint_repos.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Run checks but do not create/close issues |
 | `--debug` | false | Print verbose output |
+| `--json` | – | Also write the results to this file as JSON, see [JSON output](#json-output) |
 
 Exit codes: `0` whenever the run completes (lint failures are expected, not errors), `1` on missing `--org`, missing token, or fatal error.
 
@@ -184,7 +185,7 @@ Results
 ✅ third-repo
 ```
 
-Without `--debug`, only the `Results` header and repo lines are printed. The failing check names are listed in brackets for non-compliant repos. Archived repos appear in a separate section after active repos. No files are written to disk.
+Without `--debug`, only the `Results` header and repo lines are printed. The failing check names are listed in brackets for non-compliant repos. Archived repos appear in a separate section after active repos. No files are written to disk, except with `--json`.
 
 Icons: `✅` pass, `❌` fail (active repos); `✔️` pass, `✖️` fail (archived repos — informational only). 
 
@@ -214,3 +215,82 @@ When `--dry-run` is active and there are pending actions, a summary block is app
   ✏️   update  #17  fifth-repo
   ✔️   close   #42  third-repo
 ```
+
+---
+
+## JSON output
+
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([draft, section 1.6](compliance_implementation_draft.md#16-common-json-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
+
+The file has these keys:
+
+| Key | Content |
+|---|---|
+| `tool`, `run_at`, `org` | Script name, start of the run (UTC), organisation |
+| `ospo_sha` | Commit of the scripts: `GITHUB_SHA`, otherwise `HEAD` of the local checkout, otherwise `null` |
+| `config_file`, `config_sha256` | Config path relative to the repo root, and the SHA-256 of the config file |
+| `run_url` | Link to the GitHub Actions run (`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, `GITHUB_RUN_ID`), otherwise `null` |
+| `issue_title` | Title of the per-repository issue |
+| `results` | One row per repository and check: `repo`, `check`, `name`, `result` (`pass`, `fail` or `na`), `score` (always `null`), `reason` (always filled), `details` (list of lines) |
+| `catalogue` | One entry per check ID: `name` and `documentation` (`url` to the heading below, pinned to `ospo_sha`; `short` rule; `fix`) |
+| `skipped` | Repositories without results: `repo` and `reason` |
+| `errors` | Always `[]`: errors abort the run, and then no file is written |
+
+Every check of an active repository is written. Archived repositories are listed in `skipped` with reason `archived` (their metadata checks only appear in the text output), excluded repositories with reason `excluded_repos`.
+
+| Check ID | Name |
+|---|---|
+| `lint/description` | Repository Description |
+| `lint/topics` | Repository Topics |
+| `lint/license-type` | License Type |
+| `lint/<prefix>` | One per `required_files` entry. The ID is the pattern prefix in lower case (`CONTRIBUTING*` → `lint/contributing`), the name is its `description`. Two entries with the same ID are a configuration error |
+
+The `short` and `fix` texts in the catalogue are built from the configuration (lengths, licenses, patterns, search paths).
+
+### Repository Description
+
+The description is set and has `description_length.min` to `description_length.max` characters.
+
+How to fix: set a description of that length in the About section of the repository.
+
+### Repository Topics
+
+The repository has 1 to 5 topics, all from `allowed_topics` (any topic if the list is empty).
+
+How to fix: add 1 to 5 topics from the approved list in the About section of the repository.
+
+### License Type
+
+The license GitHub detects is in `allowed_licenses`. A missing or unidentified license (`NOASSERTION`) fails.
+
+How to fix: use one of the approved licenses with its unmodified license text, so GitHub can detect it.
+
+### Readme File
+
+A file `README*` exists in the root, with at least `min_chars` characters.
+
+How to fix: add a README file with at least that many characters to the root.
+
+### Contributing File
+
+A file `CONTRIBUTING*` exists in `.`, `.github` or `docs`.
+
+How to fix: add a CONTRIBUTING file to one of these directories.
+
+### License File
+
+A file `LICENSE*` exists in the root.
+
+How to fix: add a LICENSE file to the root.
+
+### Notice File
+
+A file `NOTICE*` exists in the root.
+
+How to fix: add a NOTICE file to the root.
+
+### Authors File
+
+A file `AUTHORS*` exists in the root.
+
+How to fix: add an AUTHORS file to the root.

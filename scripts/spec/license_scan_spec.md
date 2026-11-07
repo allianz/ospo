@@ -33,7 +33,7 @@ scripts/
 ## CLI Interface
 
 ```
-node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 ```
 
 | Flag | Default | Description |
@@ -42,6 +42,7 @@ node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
 | `--config` | `config/license_scan.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Run checks but do not create/close issues |
 | `--debug` | false | Print extra per-repo stats (e.g. count of packages with no license info) |
+| `--json` | – | Also write the results to this file as JSON, see [JSON output](#json-output) |
 
 Exit codes: `0` whenever the run completes (violations are expected, not errors), `1` on missing `--org`, missing token, or fatal error.
 
@@ -165,3 +166,42 @@ When `--dry-run` is active and there are pending actions, a summary block is app
   ✏️   update  #17  repo-b
   ✔️   close   #42  repo-c
 ```
+
+---
+
+## JSON output
+
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([draft, section 1.6](compliance_implementation_draft.md#16-common-json-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
+
+The file has these keys:
+
+| Key | Content |
+|---|---|
+| `tool`, `run_at`, `org` | Script name, start of the run (UTC), organisation |
+| `ospo_sha` | Commit of the scripts: `GITHUB_SHA`, otherwise `HEAD` of the local checkout, otherwise `null` |
+| `config_file`, `config_sha256` | Config path relative to the repo root, and the SHA-256 of the config file |
+| `run_url` | Link to the GitHub Actions run (`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, `GITHUB_RUN_ID`), otherwise `null` |
+| `issue_title` | Title of the per-repository issue |
+| `results` | One row per repository and check: `repo`, `check`, `name`, `result` (`pass`, `fail` or `na`), `score` (always `null`), `reason` (always filled), `details` (list of lines) |
+| `catalogue` | One entry per check ID: `name` and `documentation` (`url` to the heading below, pinned to `ospo_sha`; `short` rule; `fix`) |
+| `skipped` | Repositories without results: `repo` and `reason` |
+| `errors` | Always `[]`: errors abort the run, and then no file is written |
+
+Each active repository has two results, sorted by repository name. Archived repositories are listed in `skipped` with reason `archived`, excluded repositories with reason `excluded_repos`. A repository without an SBOM is not skipped in the JSON: it fails `license/sbom-available`, and `license/denied-licenses` is `na`.
+
+| Check ID | Name |
+|---|---|
+| `license/sbom-available` | SBOM Available |
+| `license/denied-licenses` | Dependency Licenses |
+
+### SBOM Available
+
+The dependency graph SBOM can be retrieved for the default branch. A 404 fails; any other failure aborts the run.
+
+How to fix: make sure the dependency graph is enabled and dependencies are declared in a supported manifest or lock file.
+
+### Dependency Licenses
+
+No dependency in the SBOM uses a license from `deny-licenses`. Dependencies without license information are ignored. `details` has one `Warn: package@version (SPDX-ID)` line per violation.
+
+How to fix: replace or remove the dependencies that use a denied license.

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import path from 'node:path';
 import { setTimeout as sleepMs } from 'node:timers/promises';
 
 import { parseCli, resolveToken, runIfMain } from './lib/cli.js';
@@ -7,6 +8,7 @@ import { mapWithConcurrency } from './lib/concurrency.js';
 import { defaultConfigPath, loadYaml, requireFields } from './lib/config.js';
 import { API_VERSION, createGitHub, createOctokit } from './lib/github.js';
 import { syncIssue, syncSummaryIssue } from './lib/issues.js';
+import { buildHeader, buildJsonDocument, checkResult, skippedRepos, specCatalogue, writeJsonReport } from './lib/json_output.js';
 import { createLogger } from './lib/logger.js';
 import { createPlan } from './lib/plan.js';
 import { printHeading, printIssueDryRunSummary, printNameList } from './lib/report.js';
@@ -15,6 +17,8 @@ import { partitionRepos } from './lib/repos.js';
 const CONCURRENCY = 5;
 export const OSPO_LICENSE_ISSUE_TITLE = 'License Violation Summary';
 const CLOSE_COMMENT = '_All dependency license violations have been resolved. Closing this issue automatically._';
+export const TOOL = 'license_scan';
+const SPEC_FILE = 'license_scan_spec.md';
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
@@ -165,10 +169,56 @@ export function formatRepoResult({ repo, summary, violations, pollAttempts, seco
   return lines.join('\n');
 }
 
+// ── JSON output ───────────────────────────────────────────────────────────────
+
+export function buildCatalogue({ sha = null, env = {} } = {}) {
+  const entry = specCatalogue(SPEC_FILE, { sha, env });
+  return {
+    'license/sbom-available': entry(
+      'SBOM Available',
+      'The dependency graph SBOM can be retrieved for the default branch.',
+      'Make sure the dependency graph is enabled and dependencies are declared in a supported manifest or lock file.',
+    ),
+    'license/denied-licenses': entry(
+      'Dependency Licenses',
+      'No dependency in the SBOM uses a license from deny-licenses. Dependencies without license information are ignored.',
+      'Replace or remove the dependencies that use a denied license.',
+    ),
+  };
+}
+
+/**
+ * Results per scanned repository, sorted by name (repositories are scanned concurrently).
+ * `scanned` entries are { repo, packageCount, violations } or { repo, noSbom: true }.
+ */
+export function buildJsonResults({ scanned, archived, excluded, catalogue }) {
+  const results = [...scanned]
+    .sort((a, b) => a.repo.localeCompare(b.repo))
+    .flatMap(({ repo, noSbom, packageCount, violations }) => {
+      if (noSbom) {
+        return [
+          checkResult(repo, 'license/sbom-available', catalogue, { passed: false, reason: 'No SBOM available (request returned 404)' }),
+          checkResult(repo, 'license/denied-licenses', catalogue, { result: 'na', reason: 'No SBOM available' }),
+        ];
+      }
+      const packages = packageCount === 1 ? '1 package' : `${packageCount} packages`;
+      const denied = violations.length === 1 ? '1 dependency uses a denied license' : `${violations.length} dependencies use a denied license`;
+      return [
+        checkResult(repo, 'license/sbom-available', catalogue, { passed: true, reason: `SBOM with ${packages}` }),
+        checkResult(repo, 'license/denied-licenses', catalogue, {
+          passed: violations.length === 0,
+          reason: violations.length === 0 ? `No denied license among ${packages}` : denied,
+          details: violations.map(v => `Warn: ${v.name}@${v.version} (${v.spdxId})`),
+        }),
+      ];
+    });
+  return { results, skipped: [...skippedRepos(archived, 'archived'), ...skippedRepos(excluded, 'excluded_repos')] };
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export async function run({ argv = [], env = {}, logger, github, fetch, sleep } = {}) {
-  const { org, configPath, dryRun, debug } = parseCli(argv, { defaultConfigPath: defaultConfigPath('license_scan') });
+export async function run({ argv = [], env = {}, logger, github, fetch, sleep, git, now = new Date() } = {}) {
+  const { org, configPath, dryRun, debug, json } = parseCli(argv, { defaultConfigPath: defaultConfigPath(TOOL), stringFlags: ['json'] });
   const token = resolveToken(env);
   const gh = github ?? createGitHub(createOctokit(token));
   const log = logger ?? createLogger({ debug });
@@ -184,6 +234,7 @@ export async function run({ argv = [], env = {}, logger, github, fetch, sleep } 
 
   const repoViolations = [];
   const noSbom = [];
+  const scanned = [];
 
   await mapWithConcurrency(active, CONCURRENCY, async repo => {
     const t0 = performance.now();
@@ -193,6 +244,7 @@ export async function run({ argv = [], env = {}, logger, github, fetch, sleep } 
     } catch (err) {
       if (isMissingSbom(err)) {
         noSbom.push(repo.name);
+        scanned.push({ repo: repo.name, noSbom: true });
         return;
       }
       throw err;
@@ -200,6 +252,7 @@ export async function run({ argv = [], env = {}, logger, github, fetch, sleep } 
 
     const violations = checkDependencyLicenses(sbom.packages, config['deny-licenses']);
     if (violations.length > 0) repoViolations.push({ repo: repo.name, violations });
+    scanned.push({ repo: repo.name, packageCount: sbom.packages.length, violations });
 
     await syncIssue(gh, plan, {
       org,
@@ -232,6 +285,14 @@ export async function run({ argv = [], env = {}, logger, github, fetch, sleep } 
   printNameList(log, 'Skipped (configuration)', excluded.map(r => r.name));
   printNameList(log, 'Skipped (no SBOM available)', noSbom);
   printIssueDryRunSummary(log, plan, { subject: 'issue' });
+
+  if (json) {
+    const header = await buildHeader({ tool: TOOL, org, configPath, issueTitle: config.issue_title, env, now, git });
+    const catalogue = buildCatalogue({ sha: header.ospo_sha, env });
+    const doc = buildJsonDocument(header, { catalogue, ...buildJsonResults({ scanned, archived, excluded, catalogue }) });
+    await writeJsonReport(path.resolve(json), doc);
+    log.info(`\nJSON written to ${json}`);
+  }
   return 0;
 }
 

@@ -28,12 +28,12 @@ Tests live in `scripts/test/` (`test/lib/` for the shared libraries). Each tool 
 
 ```bash
 node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--skip-team-sync] [--skip-custom-role]
-node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
-node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
-node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
+node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
+node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec.
 
 ### Required Tools
 
@@ -66,6 +66,7 @@ Four JavaScript (ESM) scripts, each driven by a YAML config file, built on share
 - `issues.js` — `findOpenIssue`, `syncIssue` (create/update/close one issue per repo), `syncSummaryIssue` (the OSPO summary issue in `<org>/ospo`)
 - `plan.js` — dry-run handling: every change goes through `plan.step(label, fn)` or `plan.apply(fn, { planned, done })`; scripts have no `if (dryRun)` branches for changes
 - `logger.js`, `report.js` — output (`info`, `debug`, `step`; headings, skipped lists, dry-run issue summary)
+- `json_output.js` — the common JSON tool file of `--json`: header (`buildHeader`), catalogue entries linked to spec headings (`specCatalogue`), result rows (`checkResult`), `writeJsonReport`
 - `repos.js`, `dates.js`, `concurrency.js` — `partitionRepos`, `parseRelativeDate`, `mapWithConcurrency`
 
 ### Configuration

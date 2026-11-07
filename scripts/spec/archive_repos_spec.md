@@ -39,7 +39,7 @@ scripts/
 ## CLI Interface
 
 ```
-node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 ```
 
 | Flag | Default | Description |
@@ -48,6 +48,7 @@ node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug
 | `--config` | `config/archive_repos.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Simulate execution without creating issues, closing issues, or archiving repos |
 | `--debug` | false | Print verbose output (computed dates, per-repo decisions) |
+| `--json` | – | Also write the results to this file as JSON, see [JSON output](#json-output) |
 
 Exit codes: `0` on success, `1` on missing `--org`, missing token, or fatal error.
 
@@ -224,3 +225,49 @@ Planned changes:
   Would archive repository 'test-org/old-repo'.
   Would close the existing issue in 'test-org/active-repo'.
 ```
+
+---
+
+## JSON output
+
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([draft, section 1.6](compliance_implementation_draft.md#16-common-json-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
+
+The file has these keys:
+
+| Key | Content |
+|---|---|
+| `tool`, `run_at`, `org` | Script name, start of the run (UTC), organisation |
+| `ospo_sha` | Commit of the scripts: `GITHUB_SHA`, otherwise `HEAD` of the local checkout, otherwise `null` |
+| `config_file`, `config_sha256` | Config path relative to the repo root, and the SHA-256 of the config file |
+| `run_url` | Link to the GitHub Actions run (`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, `GITHUB_RUN_ID`), otherwise `null` |
+| `issue_title` | `Inactive Repository Reminder` |
+| `results` | One row per repository and check: `repo`, `check`, `name`, `result` (`pass`, `fail` or `na`), `score` (always `null`), `reason` (always filled), `details` (list of lines) |
+| `catalogue` | One entry per check ID: `name` and `documentation` (`url` to the heading below, pinned to `ospo_sha`; `short` rule; `fix`) |
+| `skipped` | Repositories without results: `repo` and `reason` |
+| `errors` | Always `[]`: errors abort the run, and then no file is written |
+
+Each repository whose last push was evaluated has two results. `skipped` lists, in this order:
+
+| Reason | Repositories |
+|---|---|
+| `archived in this run` (`would be archived in this run (dry-run)` with `--dry-run`) | Archived because the grace period expired |
+| `no push activity yet` | No `pushed_at` |
+| `archived` | Already archived |
+| `excluded_repos` | In `excluded_repos` |
+
+| Check ID | Name |
+|---|---|
+| `archive/recent-activity` | Recent Activity |
+| `archive/activity-checked` | Activity Checked |
+
+### Recent Activity
+
+The repository had a push within `warn_after`. A stale repository fails; the reason gives the last push, the warning issue (existing or created in this run) and the days until archival.
+
+How to fix: push to the repository (an empty commit is enough) if the project is still maintained.
+
+### Activity Checked
+
+`archive_repos` read the last push of the repository in this run. It passes for every repository with a result; a repository that is excluded or never evaluated has no result.
+
+How to fix: OSPO: remove the repository from `excluded_repos` in the archive_repos configuration, or fix the error that stopped the check.

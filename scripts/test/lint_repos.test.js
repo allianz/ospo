@@ -14,6 +14,10 @@ import {
   cloneOrUpdate,
   formatResultLine,
   metadataChecks,
+  requiredFileCheckId,
+  runChecks,
+  buildCatalogue,
+  buildJsonResults,
   run,
 } from '../lint_repos.js';
 import { createFakeGitHub } from './helpers/fake_github.js';
@@ -561,5 +565,121 @@ describe('run', () => {
     const { logger, git } = await runLint([], { repos: [] });
     assert.equal(logger.output(), 'Results\n───────\n');
     assert.deepEqual(git.calls, []);
+  });
+
+  it('--json writes every check of the active repos and lists skipped repos', async t => {
+    const file = path.join(tmpDir, 'out', 'lint_repos.json');
+    const env = { GITHUB_SHA: 'abc123', GITHUB_REPOSITORY: 'allianz/ospo', GITHUB_RUN_ID: '7' };
+    const gh = createFakeGitHub({ repos, issues });
+    const logger = createMemoryLogger();
+    const now = new Date('2026-11-03T02:00:00Z');
+    const argv = ['--org', org, '--config', configPath, '--dry-run', '--json', file];
+    assert.equal(await run({ argv, env, github: gh, logger, git: fakeGit(), cacheDir, now }), 0);
+    assert.match(logger.output(), new RegExp(`\\nJSON written to ${file}\\n$`));
+
+    const doc = JSON.parse(await readFile(file, 'utf8'));
+    assert.equal(doc.ospo_sha, 'abc123');
+    assert.equal(doc.run_url, 'https://github.com/allianz/ospo/actions/runs/7');
+    assert.ok(doc.results.every(r => r.check in doc.catalogue && r.reason));
+    t.assert.snapshot({ ...doc, config_file: '<config>' });
+  });
+
+  it('without --json writes no file and prints no JSON line', async () => {
+    const { logger } = await runLint(['--dry-run']);
+    assert.doesNotMatch(logger.output(), /JSON written/);
+  });
+});
+
+// ── JSON output ───────────────────────────────────────────────────────────────
+
+describe('JSON output', () => {
+  const config = {
+    description_length: { min: 30, max: 150 },
+    allowed_topics: ['api'],
+    allowed_licenses: ['MIT', 'Apache-2.0'],
+    required_files: [
+      { pattern: 'README*', description: 'Readme File', min_chars: 300 },
+      { pattern: 'CONTRIBUTING*', search_paths: ['.', '.github'], description: 'Contributing File' },
+      { pattern: 'NOTICE*' },
+    ],
+  };
+
+  it('derives required-file check IDs from the pattern prefix', () => {
+    assert.equal(requiredFileCheckId({ pattern: 'CONTRIBUTING*' }), 'lint/contributing');
+    assert.equal(requiredFileCheckId({ pattern: 'Code_Of_Conduct*.md' }), 'lint/code-of-conduct');
+  });
+
+  it('loadConfig rejects required files without a unique check ID', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'lint-ids-'));
+    try {
+      const dup = path.join(dir, 'dup.yaml');
+      await writeFile(dup, 'issue_title: T\nrequired_files:\n  - pattern: "README*"\n  - pattern: "readme*.md"\n');
+      await assert.rejects(() => loadConfig(dup), /pattern 'readme\*\.md' gives no unique check ID/);
+      const empty = path.join(dir, 'empty.yaml');
+      await writeFile(empty, 'issue_title: T\nrequired_files:\n  - pattern: "*"\n');
+      await assert.rejects(() => loadConfig(empty), /pattern '\*' gives no unique check ID/);
+    } finally {
+      await rm(dir, { recursive: true });
+    }
+  });
+
+  it('gives every check a reason, also when it passes', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'lint-reasons-'));
+    try {
+      await writeFile(path.join(dir, 'README.md'), 'x'.repeat(300));
+      await mkdir(path.join(dir, '.github'));
+      await writeFile(path.join(dir, '.github', 'CONTRIBUTING.md'), 'c');
+      await writeFile(path.join(dir, 'NOTICE'), 'n');
+      const repo = { description: 'A repository description that is long enough', topics: ['api'], license: { spdx_id: 'MIT' } };
+      const checks = await runChecks(repo, config, dir);
+      assert.deepEqual(checks.map(c => [c.id, c.passed, c.detail]), [
+        ['lint/description', true, 'Description has 44 chars'],
+        ['lint/topics', true, 'Topics: api'],
+        ['lint/license-type', true, "'MIT' is in the approved list"],
+        ['lint/readme', true, 'README.md found (300 chars)'],
+        ['lint/contributing', true, 'CONTRIBUTING.md found in .github'],
+        ['lint/notice', true, 'NOTICE found'],
+      ]);
+    } finally {
+      await rm(dir, { recursive: true });
+    }
+  });
+
+  it('builds the catalogue from the configuration', () => {
+    const catalogue = buildCatalogue(config, { sha: 'abc' });
+    assert.deepEqual(Object.keys(catalogue), [
+      'lint/description', 'lint/topics', 'lint/license-type', 'lint/readme', 'lint/contributing', 'lint/notice',
+    ]);
+    assert.equal(catalogue['lint/description'].documentation.short, 'The repository description is set and has 30 to 150 characters.');
+    assert.equal(catalogue['lint/topics'].documentation.short, 'The repository has 1 to 5 topics, all from the approved topic list.');
+    assert.match(catalogue['lint/license-type'].documentation.fix, /\(MIT, Apache-2\.0\)/);
+    assert.equal(catalogue['lint/readme'].documentation.short, 'A file README* exists in ., with at least 300 characters.');
+    assert.equal(catalogue['lint/contributing'].name, 'Contributing File');
+    assert.equal(catalogue['lint/contributing'].documentation.fix, 'Add a CONTRIBUTING* file in ., .github.');
+    assert.equal(catalogue['lint/notice'].name, 'NOTICE*');
+    assert.equal(
+      catalogue['lint/readme'].documentation.url,
+      'https://github.com/allianz/ospo/blob/abc/scripts/spec/lint_repos_spec.md#readme-file',
+    );
+    const anyTopic = buildCatalogue({ ...config, allowed_topics: [] });
+    assert.equal(anyTopic['lint/topics'].documentation.short, 'The repository has 1 to 5 topics.');
+    assert.equal(anyTopic['lint/topics'].documentation.fix, 'Add 1 to 5 topics in the About section of the repository.');
+  });
+
+  it('turns checks into results and archived/excluded repos into skipped entries', () => {
+    const catalogue = buildCatalogue(config);
+    const checked = [{
+      repo: 'a',
+      checks: [
+        { id: 'lint/description', passed: false, detail: 'No description set' },
+        { id: 'lint/topics', passed: true, detail: 'Topics: api' },
+      ],
+    }];
+    const { results, skipped } = buildJsonResults({ checked, archived: [{ name: 'old' }], excluded: [{ name: '.github' }], catalogue });
+    assert.deepEqual(results.map(r => [r.repo, r.check, r.name, r.result, r.reason]), [
+      ['a', 'lint/description', 'Repository Description', 'fail', 'No description set'],
+      ['a', 'lint/topics', 'Repository Topics', 'pass', 'Topics: api'],
+    ]);
+    assert.deepEqual(skipped, [{ repo: 'old', reason: 'archived' }, { repo: '.github', reason: 'excluded_repos' }]);
   });
 });

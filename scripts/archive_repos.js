@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
+import path from 'node:path';
+
 import { parseCli, resolveToken, runIfMain } from './lib/cli.js';
 import { defaultConfigPath, loadYaml, requireFields } from './lib/config.js';
 import { daysUntil, parseRelativeDate } from './lib/dates.js';
 import { createGitHub, createOctokit } from './lib/github.js';
 import { findOpenIssue, syncSummaryIssue } from './lib/issues.js';
+import { buildHeader, buildJsonDocument, checkResult, skippedRepos, specCatalogue, writeJsonReport } from './lib/json_output.js';
 import { createLogger } from './lib/logger.js';
 import { createPlan } from './lib/plan.js';
 import { byName, partitionRepos } from './lib/repos.js';
@@ -13,6 +16,8 @@ import { byName, partitionRepos } from './lib/repos.js';
 
 export const ISSUE_TITLE = 'Inactive Repository Reminder';
 export const OSPO_ARCHIVE_ISSUE_TITLE = 'Stale Repository Summary';
+export const TOOL = 'archive_repos';
+const SPEC_FILE = 'archive_repos_spec.md';
 
 export function buildIssueBody(gracePeriod) {
   return `Dear Maintainers,
@@ -67,11 +72,14 @@ export async function loadConfig(configPath) {
 /**
  * Warns stale repositories, archives those whose warning is older than the grace period,
  * and closes warnings of repositories that became active again.
- * Returns the repositories in their grace period (`upcoming`) and the next three to be warned.
+ * Returns the repositories in their grace period (`upcoming`), the next three to be warned,
+ * what was found per repository (`evaluated`, for the JSON output) and the repositories without any push (`neverPushed`).
  */
 export async function processRepos({ gh, plan, logger, org, repos, staleCutoff, graceCutoff, gracePeriod, now = new Date() }) {
   const upcoming = [];
   const nextWarnings = [];
+  const evaluated = [];
+  const neverPushed = [];
 
   logger.info('READING REPOSITORIES...');
 
@@ -79,6 +87,7 @@ export async function processRepos({ gh, plan, logger, org, repos, staleCutoff, 
     const fullName = `${org}/${repo.name}`;
     if (!repo.pushed_at) {
       logger.debug(`${fullName} — skipped (no push activity yet)`);
+      neverPushed.push(repo.name);
       continue;
     }
     const pushedAt = new Date(repo.pushed_at);
@@ -89,6 +98,7 @@ export async function processRepos({ gh, plan, logger, org, repos, staleCutoff, 
       logger.debug(`  pushed_at: ${repo.pushed_at} (before ${staleCutoff.toISOString()})`);
 
       let effectiveIssueDate;
+      const entry = { repo: repo.name, pushedAt: repo.pushed_at, stale: true, newIssue: !existingIssue, issueNumber: existingIssue?.number ?? null };
       if (!existingIssue) {
         logger.debug('  No warning issue found.');
         await plan.apply(() => gh.createIssue(org, repo.name, { title: ISSUE_TITLE, body: buildIssueBody(gracePeriod) }), {
@@ -107,11 +117,15 @@ export async function processRepos({ gh, plan, logger, org, repos, staleCutoff, 
           planned: `Would archive repository '${fullName}'.`,
           done: `  Archived the repository '${fullName}'.`,
         });
+        entry.archived = true;
       } else {
-        upcoming.push({ repo: repo.name, daysLeft: daysUntil(graceCutoff, effectiveIssueDate) });
+        entry.daysLeft = daysUntil(graceCutoff, effectiveIssueDate);
+        upcoming.push({ repo: repo.name, daysLeft: entry.daysLeft });
         if (!plan.dryRun) logger.info(`  ${fullName} has remaining grace period.`);
       }
+      evaluated.push(entry);
     } else {
+      evaluated.push({ repo: repo.name, pushedAt: repo.pushed_at, stale: false });
       logger.debug(`${fullName} — pushed_at: ${repo.pushed_at} (not stale)`);
       if (existingIssue) {
         await plan.apply(() => gh.closeIssue(org, repo.name, existingIssue.number), {
@@ -129,7 +143,59 @@ export async function processRepos({ gh, plan, logger, org, repos, staleCutoff, 
   upcoming.sort((a, b) => a.daysLeft - b.daysLeft);
   nextWarnings.sort((a, b) => a.daysUntilWarning - b.daysUntilWarning);
 
-  return { upcoming, nextWarnings: nextWarnings.slice(0, 3) };
+  return { upcoming, nextWarnings: nextWarnings.slice(0, 3), evaluated, neverPushed };
+}
+
+// ── JSON output ──────────────────────────────────────────────────────────────
+
+export function buildCatalogue({ warnAfter, gracePeriod, sha = null, env = {} }) {
+  const entry = specCatalogue(SPEC_FILE, { sha, env });
+  return {
+    'archive/recent-activity': entry(
+      'Recent Activity',
+      `The repository had a push in the last ${warnAfter}. Otherwise it gets a notice issue and is archived ${gracePeriod} later.`,
+      'Push to the repository (an empty commit is enough) if the project is still maintained.',
+    ),
+    'archive/activity-checked': entry(
+      'Activity Checked',
+      'archive_repos read the last push of the repository in this run.',
+      'OSPO: remove the repository from excluded_repos in the archive_repos configuration, or fix the error that stopped the check.',
+    ),
+  };
+}
+
+function noticeText({ newIssue, issueNumber, daysLeft }) {
+  const notice = newIssue ? 'notice issue created in this run' : `notice issue #${issueNumber}`;
+  return `${notice}, archival in ${daysLeft} days`;
+}
+
+/** Results of the evaluated repositories; repositories archived in this run, never pushed, archived or excluded are skipped. */
+export function buildJsonResults({ evaluated, neverPushed, archived, excluded, catalogue, warnAfter, dryRun = false }) {
+  const results = [];
+  const archivedNow = [];
+  for (const e of evaluated) {
+    if (e.archived) {
+      archivedNow.push({ repo: e.repo, reason: dryRun ? 'would be archived in this run (dry-run)' : 'archived in this run' });
+      continue;
+    }
+    const lastPush = `Last push ${e.pushedAt.slice(0, 10)}`;
+    const recent = e.stale
+      ? { passed: false, reason: `${lastPush}, more than ${warnAfter} ago; ${noticeText(e)}` }
+      : { passed: true, reason: `${lastPush}, within the last ${warnAfter}` };
+    results.push(
+      checkResult(e.repo, 'archive/recent-activity', catalogue, recent),
+      checkResult(e.repo, 'archive/activity-checked', catalogue, { passed: true, reason: e.stale ? `${lastPush}; ${noticeText(e)}` : lastPush }),
+    );
+  }
+  return {
+    results,
+    skipped: [
+      ...archivedNow,
+      ...neverPushed.map(repo => ({ repo, reason: 'no push activity yet' })),
+      ...skippedRepos(archived, 'archived'),
+      ...skippedRepos(excluded, 'excluded_repos'),
+    ],
+  };
 }
 
 // ── Output ───────────────────────────────────────────────────────────────────
@@ -155,8 +221,8 @@ export function printSummary(logger, plan, { upcoming, nextWarnings }) {
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
-export async function run({ argv = [], env = {}, logger, github, now = new Date() } = {}) {
-  const { org, configPath, dryRun, debug } = parseCli(argv, { defaultConfigPath: defaultConfigPath('archive_repos') });
+export async function run({ argv = [], env = {}, logger, github, git, now = new Date() } = {}) {
+  const { org, configPath, dryRun, debug, json } = parseCli(argv, { defaultConfigPath: defaultConfigPath(TOOL), stringFlags: ['json'] });
   const gh = github ?? createGitHub(createOctokit(resolveToken(env)));
   const log = logger ?? createLogger({ debug });
   const config = await loadConfig(configPath);
@@ -167,7 +233,7 @@ export async function run({ argv = [], env = {}, logger, github, now = new Date(
   log.debug(`Stale period cutoff: ${staleCutoff.toISOString()}`);
   log.debug(`Grace period cutoff: ${graceCutoff.toISOString()}`);
 
-  const { active, excluded } = partitionRepos(await gh.listOrgRepos(org), config.excluded_repos);
+  const { active, archived, excluded } = partitionRepos(await gh.listOrgRepos(org), config.excluded_repos);
   const candidates = active.sort(byName);
   log.debug(`Repos to process: ${candidates.map(r => r.name).join(', ')}`);
   if (excluded.length > 0) log.debug(`Excluded repos: ${excluded.map(r => r.name).join(', ')}`);
@@ -184,6 +250,17 @@ export async function run({ argv = [], env = {}, logger, github, now = new Date(
   });
 
   printSummary(log, plan, result);
+
+  if (json) {
+    const header = await buildHeader({ tool: TOOL, org, configPath, issueTitle: ISSUE_TITLE, env, now, git });
+    const catalogue = buildCatalogue({ warnAfter: config.warn_after, gracePeriod: config.grace_period, sha: header.ospo_sha, env });
+    const doc = buildJsonDocument(header, {
+      catalogue,
+      ...buildJsonResults({ ...result, archived, excluded, catalogue, warnAfter: config.warn_after, dryRun }),
+    });
+    await writeJsonReport(path.resolve(json), doc);
+    log.info(`\nJSON written to ${json}`);
+  }
   return 0;
 }
 
