@@ -1,7 +1,3 @@
----
-as_of: 2026-11-03
----
-
 ## Key messages
 
 - **The gaps are in individual repositories.** The findings can be fixed by the project teams, mostly with the existing templates and guides.

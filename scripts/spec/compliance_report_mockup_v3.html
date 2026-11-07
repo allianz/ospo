@@ -135,8 +135,6 @@
 
   ul.points { margin: 8px 0 0; padding-left: 18px; }
   ul.points li { margin-bottom: 8px; }
-  .note-age { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
-  .note-age.stale { color: var(--delta-bad); }
   .alert { border: 1px solid var(--critical); border-left-width: 4px; border-radius: 8px; padding: 8px 14px; margin: 0 0 16px; background: var(--surface); }
 
   /* status */
@@ -453,7 +451,6 @@
   "notes": {
     "file": "config/compliance_report_bsi_notes.md",
     "sha256": "183e6a02b1a2f57336ab5c6645b2db43f3b7908c229a0373b71ed5e915dfc3b1",
-    "as_of": "2026-11-03",
     "key_messages": [
       "**The gaps are in individual repositories.** The findings can be fixed by the project teams, mostly with the existing templates and guides.",
       "**One repository under legal review weighs on the results.** `ng-aquila` is skipped by the scanners until its license review is done, so it counts as failing its checks.",
@@ -483,7 +480,7 @@
   },
   "previous_report": {
     "report_id": "OSPO-CR-BSI-2026-10",
-    "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10/bsi-data.json"
+    "data_url": "https://github.com/allianz/ospo/blob/3f2a9c1/reports/bsi-data.json"
   },
   "inputs": [
     {
@@ -2664,7 +2661,6 @@ const SLOTS = Array.from({ length: TREND_MONTHS }, (_, i) => addMonths(HISTORY.a
 const BY_MONTH = Object.fromEntries(HISTORY.map(x => [x.month, x]));
 const trendValues = f => SLOTS.map(m => (BY_MONTH[m] ? f(BY_MONTH[m]) : null) ?? null);
 const fmtDateTime = iso => `${fmtDate(iso)}, ${iso.slice(11, 16)} UTC`;
-const daysBetween = (a, b) => Math.round((Date.parse(b.slice(0, 10)) - Date.parse(a.slice(0, 10))) / 864e5);
 const fmtPct = v => v.toFixed(1) + '%';
 const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
 const shortSha = x => x.length > 12 ? `${x.slice(0, 4)}…${x.slice(-4)}` : x;
@@ -2977,13 +2973,10 @@ const errN = DATA.errors.length;
   // Key messages and Needs attention: hand-written in the notes file (data.json → notes), never generated
   const N = DATA.notes;
   if (N) {
-    const weeks = Math.round(daysBetween(N.as_of, DATA.run_at) / 7);
-    const asOf = `Written for the run of ${fmtDate(N.as_of)}` + (weeks > 0 ? ` (${plural(weeks, 'week')} before this run)` : '');
     for (const [id, items] of [['key-messages', N.key_messages], ['attention', N.needs_attention]]) {
       const card = $(id).closest('.card');
       if (!items?.length) { card.hidden = true; continue; }
       $(id).append(...items.map(t => h('li', {}, inlineMd(t))));
-      card.append(h('p', { class: weeks > 0 ? 'note-age stale' : 'note-age', text: asOf }));
     }
   } else $('notes-grid').hidden = true;
 
