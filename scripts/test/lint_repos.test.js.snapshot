@@ -46,6 +46,24 @@ exports[`run > --json writes every check of the active repos and lists skipped r
       "details": []
     },
     {
+      "repo": "good",
+      "check": "lint/public",
+      "name": "Public Repository",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "good",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
       "repo": "bad",
       "check": "lint/description",
       "name": "Repository Description",
@@ -79,6 +97,78 @@ exports[`run > --json writes every check of the active repos and lists skipped r
       "result": "fail",
       "score": null,
       "reason": "File not found in .",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/public",
+      "name": "Public Repository",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/description",
+      "name": "Repository Description",
+      "result": "fail",
+      "score": null,
+      "reason": "No description set",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/topics",
+      "name": "Repository Topics",
+      "result": "pass",
+      "score": null,
+      "reason": "Topics: api",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "'MIT' is in the approved list",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "pass",
+      "score": null,
+      "reason": "README.md found",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/public",
+      "name": "Public Repository",
+      "result": "fail",
+      "score": null,
+      "reason": "Repository visibility is private",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "fail",
+      "score": null,
+      "reason": "Issues are disabled",
       "details": []
     },
     {
@@ -116,6 +206,24 @@ exports[`run > --json writes every check of the active repos and lists skipped r
       "score": null,
       "reason": "README.md found",
       "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/public",
+      "name": "Public Repository",
+      "result": "pass",
+      "score": null,
+      "reason": "Repository is public",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/issues-enabled",
+      "name": "Issues Enabled",
+      "result": "pass",
+      "score": null,
+      "reason": "Issues are enabled",
+      "details": []
     }
   ],
   "catalogue": {
@@ -143,6 +251,22 @@ exports[`run > --json writes every check of the active repos and lists skipped r
         "fix": "Use one of the approved licenses (MIT) with its unmodified license text, so GitHub can detect it."
       }
     },
+    "lint/public": {
+      "name": "Public Repository",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#public-repository",
+        "short": "The repository is public.",
+        "fix": "Not fixable by the project team: the OSPO makes the repository public or archives it."
+      }
+    },
+    "lint/issues-enabled": {
+      "name": "Issues Enabled",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#issues-enabled",
+        "short": "Issues are enabled for the repository.",
+        "fix": "Not fixable by the project team: the OSPO enables Issues for the repository."
+      }
+    },
     "lint/readme": {
       "name": "README File",
       "documentation": {
@@ -167,5 +291,5 @@ exports[`run > --json writes every check of the active repos and lists skipped r
 `;
 
 exports[`run > dry-run prints results, skipped repos and the planned issue changes 1`] = `
-"Results\\n───────\\n✅ good\\n❌ bad  [Repository Description, Repository Topics, README File]\\n✅ fixed\\n\\nSkipped (archived)\\n──────────────────\\n✖️ old  [License Type]\\n\\nSkipped (configuration)\\n───────────────────────\\n– .github\\n\\n──── Dry-run: 1 would be created, 0 would be updated, 1 would be closed ────\\n  ✉️   create  bad\\n  ✔️   close   #4  fixed\\n"
+"Results\\n───────\\n✅ good\\n❌ bad  [Repository Description, Repository Topics, README File]\\n❌ hidden  [Repository Description]\\n⚠️  hidden: issues are disabled, no issue opened\\n✅ fixed\\n\\nSkipped (archived)\\n──────────────────\\n✖️ old  [License Type]\\n\\nSkipped (configuration)\\n───────────────────────\\n– .github\\n\\n──── Dry-run: 1 would be created, 0 would be updated, 1 would be closed ────\\n  ✉️   create  bad\\n  ✔️   close   #4  fixed\\n"
 `;

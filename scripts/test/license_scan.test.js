@@ -365,7 +365,7 @@ describe('run', () => {
     await assert.rejects(() => run({ argv: ['--org', org, '--config', configPath], env: {} }), /GITHUB_TOKEN/);
   });
 
-  it('--json writes both checks per active repo, sorted by repo', async t => {
+  it('--json writes one check per active repo, sorted by repo', async t => {
     const file = path.join(tmpDir, 'out', 'license_scan.json');
     const { logger } = await runScan(['--dry-run', '--json', file], {}, {
       env: { GITHUB_SHA: 'abc123' },
@@ -382,15 +382,15 @@ describe('run', () => {
 describe('JSON output', () => {
   const catalogue = buildCatalogue({ sha: 'abc' });
 
-  it('documents both checks in the spec', () => {
-    assert.deepEqual(Object.keys(catalogue), ['license/sbom-available', 'license/denied-licenses']);
+  it('documents its only check in the spec (SBOM availability is by construction)', () => {
+    assert.deepEqual(Object.keys(catalogue), ['license/denied-licenses']);
     assert.equal(
       catalogue['license/denied-licenses'].documentation.url,
       'https://github.com/allianz/ospo/blob/abc/scripts/spec/license_scan_spec.md#dependency-licenses',
     );
   });
 
-  it('maps a missing SBOM to fail + na, and violations to details', () => {
+  it('maps a missing SBOM to na, and violations to details', () => {
     const scanned = [
       { repo: 'z', packageCount: 3, violations: [{ name: 'a', version: '1', spdxId: 'GPL-3.0' }, { name: 'b', version: '2', spdxId: 'AGPL-3.0' }] },
       { repo: 'm', noSbom: true },
@@ -398,11 +398,8 @@ describe('JSON output', () => {
     ];
     const { results, skipped } = buildJsonResults({ scanned, archived: [{ name: 'old' }], excluded: [{ name: 'ospo' }], catalogue });
     assert.deepEqual(results.map(r => [r.repo, r.check, r.result, r.reason, r.details]), [
-      ['a', 'license/sbom-available', 'pass', 'SBOM with 1 package', []],
       ['a', 'license/denied-licenses', 'fail', '1 dependency uses a denied license', ['Warn: c@3 (GPL-2.0)']],
-      ['m', 'license/sbom-available', 'fail', 'No SBOM available (request returned 404)', []],
-      ['m', 'license/denied-licenses', 'na', 'No SBOM available', []],
-      ['z', 'license/sbom-available', 'pass', 'SBOM with 3 packages', []],
+      ['m', 'license/denied-licenses', 'na', 'No SBOM available (request returned 404)', []],
       ['z', 'license/denied-licenses', 'fail', '2 dependencies use a denied license', ['Warn: a@1 (GPL-3.0)', 'Warn: b@2 (AGPL-3.0)']],
     ]);
     assert.deepEqual(skipped, [{ repo: 'old', reason: 'archived' }, { repo: 'ospo', reason: 'excluded_repos' }]);

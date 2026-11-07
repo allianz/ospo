@@ -9,10 +9,13 @@ import {
   checkDescription,
   checkTopics,
   checkLicense,
+  checkPublic,
+  checkIssuesEnabled,
   checkRequiredFile,
   buildIssueBody,
   cloneOrUpdate,
   formatResultLine,
+  jsonOnlyChecks,
   metadataChecks,
   requiredFileCheckId,
   runChecks,
@@ -215,6 +218,42 @@ describe('checkLicense', () => {
 });
 
 // ── checkRequiredFile ─────────────────────────────────────────────────────────
+
+describe('checkPublic', () => {
+  it('passes for a public repository', () => {
+    assert.deepEqual(checkPublic({ visibility: 'public' }), { passed: true, detail: 'Repository is public' });
+  });
+
+  it('fails for a private or internal repository and names the visibility', () => {
+    assert.deepEqual(checkPublic({ visibility: 'private' }), { passed: false, detail: 'Repository visibility is private' });
+    assert.deepEqual(checkPublic({ visibility: 'internal' }), { passed: false, detail: 'Repository visibility is internal' });
+  });
+
+  it('fails when the visibility is missing', () => {
+    assert.deepEqual(checkPublic({}), { passed: false, detail: 'Repository visibility is unknown' });
+  });
+});
+
+describe('checkIssuesEnabled', () => {
+  it('passes when issues are enabled', () => {
+    assert.deepEqual(checkIssuesEnabled({ has_issues: true }), { passed: true, detail: 'Issues are enabled' });
+  });
+
+  it('fails when issues are disabled or the field is missing', () => {
+    assert.deepEqual(checkIssuesEnabled({ has_issues: false }), { passed: false, detail: 'Issues are disabled' });
+    assert.deepEqual(checkIssuesEnabled({}), { passed: false, detail: 'Issues are disabled' });
+  });
+});
+
+describe('jsonOnlyChecks', () => {
+  it('returns the public and issues-enabled checks', () => {
+    const checks = jsonOnlyChecks({ visibility: 'private', has_issues: true });
+    assert.deepEqual(checks.map(c => [c.id, c.checkName, c.passed]), [
+      ['lint/public', 'Public Repository', false],
+      ['lint/issues-enabled', 'Issues Enabled', true],
+    ]);
+  });
+});
 
 describe('checkRequiredFile', () => {
   let tmpDir;
@@ -482,10 +521,13 @@ describe('run', () => {
     description: 'A repository description that is long enough',
     topics: ['api'],
     license: { spdx_id: 'MIT' },
+    visibility: 'public',
+    has_issues: true,
   });
   const repos = [
     goodRepo('good'),
     { ...goodRepo('bad'), description: '', topics: [] },
+    { ...goodRepo('hidden'), description: '', visibility: 'private', has_issues: false },
     goodRepo('fixed'),
     goodRepo('.github'),
     { ...goodRepo('old'), archived: true, license: null },
@@ -495,7 +537,7 @@ describe('run', () => {
   before(async () => {
     tmpDir = await mkdtemp(path.join(tmpdir(), 'lint-run-'));
     cacheDir = path.join(tmpDir, 'cache');
-    for (const name of ['good', 'fixed']) {
+    for (const name of ['good', 'fixed', 'hidden']) {
       await mkdir(path.join(cacheDir, name), { recursive: true });
       await writeFile(path.join(cacheDir, name, 'README.md'), 'hello');
     }
@@ -530,7 +572,7 @@ describe('run', () => {
 
   it('updates every active clone and none of the skipped repos', async () => {
     const { git } = await runLint(['--dry-run']);
-    assert.deepEqual(git.calls.filter(c => c[0] === 'fetch').length, 3);
+    assert.deepEqual(git.calls.filter(c => c[0] === 'fetch').length, 4);
     assert.equal(git.calls.some(c => String(c[1]).includes('old') || String(c[1]).includes('.github')), false);
   });
 
@@ -547,6 +589,19 @@ describe('run', () => {
     assert.deepEqual(closed.comments, ['_All compliance checks now pass. Closing this issue automatically._']);
   });
 
+  it('opens no issue in a repo with issues disabled and warns instead', async () => {
+    const { gh, logger } = await runLint([]);
+    assert.equal(gh.calls.some(c => c.args[1] === 'hidden'), false);
+    assert.equal(gh.state.issues.hidden, undefined);
+    assert.match(logger.output(), /❌ hidden {2}\[Repository Description\]\n⚠️ {2}hidden: issues are disabled, no issue opened\n/);
+  });
+
+  it('keeps the JSON-only checks out of issues and result lines', async () => {
+    const { gh, logger } = await runLint([]);
+    assert.doesNotMatch(gh.state.issues.bad[0].body, /Public Repository|Issues Enabled/);
+    assert.doesNotMatch(logger.output(), /Public Repository|Issues Enabled/);
+  });
+
   it('updates an existing issue for a repo that still fails', async () => {
     const { gh } = await runLint(['--dry-run'], { issues: { bad: [{ number: 11, title: 'Mandatory Repository Configuration', state: 'open' }] } });
     assert.deepEqual(gh.writes(), []);
@@ -557,7 +612,7 @@ describe('run', () => {
 
   it('prints failure details with --debug', async () => {
     const { logger } = await runLint(['--dry-run', '--debug'], {}, { debug: true });
-    assert.match(logger.output(), /Cloning 3 repositories \(5 at a time\)/);
+    assert.match(logger.output(), /Cloning 4 repositories \(5 at a time\)/);
     assert.match(logger.output(), /     Repository Topics: No topics set/);
   });
 
@@ -581,6 +636,8 @@ describe('run', () => {
     assert.equal(doc.ospo_sha, 'abc123');
     assert.equal(doc.run_url, 'https://github.com/allianz/ospo/actions/runs/7');
     assert.ok(doc.results.every(r => r.check in doc.catalogue && r.reason));
+    const hidden = doc.results.filter(r => r.repo === 'hidden' && ['lint/public', 'lint/issues-enabled'].includes(r.check));
+    assert.deepEqual(hidden.map(r => [r.check, r.result]), [['lint/public', 'fail'], ['lint/issues-enabled', 'fail']]);
     t.assert.snapshot({ ...doc, config_file: '<config>' });
   });
 
@@ -648,8 +705,16 @@ describe('JSON output', () => {
   it('builds the catalogue from the configuration', () => {
     const catalogue = buildCatalogue(config, { sha: 'abc' });
     assert.deepEqual(Object.keys(catalogue), [
-      'lint/description', 'lint/topics', 'lint/license-type', 'lint/readme', 'lint/contributing', 'lint/notice',
+      'lint/description', 'lint/topics', 'lint/license-type', 'lint/public', 'lint/issues-enabled',
+      'lint/readme', 'lint/contributing', 'lint/notice',
     ]);
+    assert.equal(catalogue['lint/public'].documentation.short, 'The repository is public.');
+    assert.match(catalogue['lint/public'].documentation.fix, /^Not fixable by the project team/);
+    assert.match(catalogue['lint/issues-enabled'].documentation.fix, /^Not fixable by the project team/);
+    assert.equal(
+      catalogue['lint/issues-enabled'].documentation.url,
+      'https://github.com/allianz/ospo/blob/abc/scripts/spec/lint_repos_spec.md#issues-enabled',
+    );
     assert.equal(catalogue['lint/description'].documentation.short, 'The repository description is set and has 30 to 150 characters.');
     assert.equal(catalogue['lint/topics'].documentation.short, 'The repository has 1 to 5 topics, all from the approved topic list.');
     assert.match(catalogue['lint/license-type'].documentation.fix, /\(MIT, Apache-2\.0\)/);

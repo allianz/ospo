@@ -120,8 +120,12 @@ allowed_topics:
 | 2 | **Topics** | GitHub API | Between 1 and 5 topics assigned; all topics must be in `allowed_topics` |
 | 3 | **License type** | GitHub API | The license GitHub detects is in `allowed_licenses`; fails with a clear message if no license is detected or GitHub cannot identify it (`NOASSERTION`, e.g. custom license text) |
 | 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths`; if `min_chars` is set the matched file must also meet that size threshold |
+| 5 | **Public repository** (JSON only) | GitHub API | `visibility` is `public` |
+| 6 | **Issues enabled** (JSON only) | GitHub API | `has_issues` is `true` |
 
-Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the local clone.
+Checks 1, 2, 3, 5 and 6 use only API data (no clone needed). Check 4 requires the local clone.
+
+Checks 5 and 6 are **JSON only**: they are written to the `--json` file, but are not listed in the issue or the result line, and they never cause an issue to be opened. Project teams have no influence on them: the visibility and the Issues setting are controlled centrally by the OSPO, so an issue would ask the team for something it cannot do. The results are evidence for the compliance report and audits only. They are only run for active repositories.
 
 Active repos are shallow-cloned into `lint_cache/` in parallel, at most 5 at a time. Existing clones are updated in place; a clone that fails to update is deleted and re-cloned. Archived repos are not cloned, so they only get checks 1–3.
 
@@ -135,6 +139,7 @@ Active repos are shallow-cloned into `lint_cache/` in parallel, at most 5 at a t
 | Non-compliant | Open issue exists | Update issue body with current check results |
 | Compliant | Open issue exists | Close issue with resolved comment |
 | Compliant | No open issue | No action |
+| Issues disabled (any) | — | No issue action; if a check fails, the warning `⚠️  <repo>: issues are disabled, no issue opened` is printed after its result line |
 | Archived (any) | — | No issue action |
 | Excluded (any) | — | No checks run, no issue action |
 
@@ -185,7 +190,7 @@ Results
 ✅ third-repo
 ```
 
-Without `--debug`, only the `Results` header and repo lines are printed. The failing check names are listed in brackets for non-compliant repos. Archived repos appear in a separate section after active repos. No files are written to disk, except with `--json`.
+Without `--debug`, only the `Results` header and repo lines are printed. The failing check names are listed in brackets for non-compliant repos. The JSON-only checks (5 and 6) never appear in the brackets. A failing repo with issues disabled gets the line `⚠️  <repo>: issues are disabled, no issue opened` below its result line. Archived repos appear in a separate section after active repos. No files are written to disk, except with `--json`.
 
 Icons: `✅` pass, `❌` fail (active repos); `✔️` pass, `✖️` fail (archived repos — informational only). 
 
@@ -243,6 +248,8 @@ Every check of an active repository is written. Archived repositories are listed
 | `lint/description` | Repository Description |
 | `lint/topics` | Repository Topics |
 | `lint/license-type` | License Type |
+| `lint/public` | Public Repository |
+| `lint/issues-enabled` | Issues Enabled |
 | `lint/<prefix>` | One per `required_files` entry. The ID is the pattern prefix in lower case (`CONTRIBUTING*` → `lint/contributing`), the name is its `description`. Two entries with the same ID are a configuration error |
 
 The `short` and `fix` texts in the catalogue are built from the configuration (lengths, licenses, patterns, search paths).
@@ -264,6 +271,18 @@ How to fix: add 1 to 5 topics from the approved list in the About section of the
 The license GitHub detects is in `allowed_licenses`. A missing or unidentified license (`NOASSERTION`) fails.
 
 How to fix: use one of the approved licenses with its unmodified license text, so GitHub can detect it.
+
+### Public Repository
+
+The repository's visibility is `public`. Private and internal repositories fail. JSON only, not listed in the issue: the project team cannot change the visibility.
+
+How to fix: not fixable by the project team: the OSPO makes the repository public or archives it.
+
+### Issues Enabled
+
+Issues are enabled for the repository (`has_issues`). JSON only, not listed in the issue: the project team cannot change the Issues setting.
+
+How to fix: not fixable by the project team: the OSPO enables Issues for the repository.
 
 ### Readme File
 

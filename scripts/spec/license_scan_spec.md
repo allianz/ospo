@@ -187,18 +187,13 @@ The file has these keys:
 | `skipped` | Repositories without results: `repo` and `reason` |
 | `errors` | Always `[]`: errors abort the run, and then no file is written |
 
-Each active repository has two results, sorted by repository name. Archived repositories are listed in `skipped` with reason `archived`, excluded repositories with reason `excluded_repos`. A repository without an SBOM is not skipped in the JSON: it fails `license/sbom-available`, and `license/denied-licenses` is `na`.
+Each active repository has one result, sorted by repository name. Archived repositories are listed in `skipped` with reason `archived`, excluded repositories with reason `excluded_repos`. A repository without an SBOM (404) is not skipped in the JSON: its `license/denied-licenses` result is `na`.
+
+The availability of the SBOM is not a check of this script. The dependency graph is always enabled for public repositories, so the compliance report treats it as `by-construction/sbom-available` ([draft, QA.01](compliance_implementation_draft.md#qa01--list-of-third-party-components-available--must)).
 
 | Check ID | Name |
 |---|---|
-| `license/sbom-available` | SBOM Available |
 | `license/denied-licenses` | Dependency Licenses |
-
-### SBOM Available
-
-The dependency graph SBOM can be retrieved for the default branch. A 404 fails; any other failure aborts the run.
-
-How to fix: make sure the dependency graph is enabled and dependencies are declared in a supported manifest or lock file.
 
 ### Dependency Licenses
 

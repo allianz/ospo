@@ -174,11 +174,6 @@ export function formatRepoResult({ repo, summary, violations, pollAttempts, seco
 export function buildCatalogue({ sha = null, env = {} } = {}) {
   const entry = specCatalogue(SPEC_FILE, { sha, env });
   return {
-    'license/sbom-available': entry(
-      'SBOM Available',
-      'The dependency graph SBOM can be retrieved for the default branch.',
-      'Make sure the dependency graph is enabled and dependencies are declared in a supported manifest or lock file.',
-    ),
     'license/denied-licenses': entry(
       'Dependency Licenses',
       'No dependency in the SBOM uses a license from deny-licenses. Dependencies without license information are ignored.',
@@ -196,15 +191,11 @@ export function buildJsonResults({ scanned, archived, excluded, catalogue }) {
     .sort((a, b) => a.repo.localeCompare(b.repo))
     .flatMap(({ repo, noSbom, packageCount, violations }) => {
       if (noSbom) {
-        return [
-          checkResult(repo, 'license/sbom-available', catalogue, { passed: false, reason: 'No SBOM available (request returned 404)' }),
-          checkResult(repo, 'license/denied-licenses', catalogue, { result: 'na', reason: 'No SBOM available' }),
-        ];
+        return [checkResult(repo, 'license/denied-licenses', catalogue, { result: 'na', reason: 'No SBOM available (request returned 404)' })];
       }
       const packages = packageCount === 1 ? '1 package' : `${packageCount} packages`;
       const denied = violations.length === 1 ? '1 dependency uses a denied license' : `${violations.length} dependencies use a denied license`;
       return [
-        checkResult(repo, 'license/sbom-available', catalogue, { passed: true, reason: `SBOM with ${packages}` }),
         checkResult(repo, 'license/denied-licenses', catalogue, {
           passed: violations.length === 0,
           reason: violations.length === 0 ? `No denied license among ${packages}` : denied,
