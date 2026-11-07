@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import simpleGit from 'simple-git';
+import { simpleGit } from 'simple-git';
 import { readFile, readdir, access, rm } from 'node:fs/promises';
 import path from 'node:path';
 

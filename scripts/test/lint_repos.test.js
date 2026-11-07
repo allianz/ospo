@@ -1,6 +1,6 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readdir, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -430,6 +430,26 @@ describe('cloneOrUpdate', () => {
     const git = fakeGit({ fail: ['reset'] });
     await cloneOrUpdate('empty', path.join(cacheDir, 'empty'), 'org', { git });
     assert.deepEqual(git.calls.map(c => c[0]), ['fetch', 'reset']);
+  });
+
+  it('updates an existing clone with the real simple-git (no network)', async () => {
+    // Guards the simple-git import and API: origin is a local repo, so only the update path runs.
+    const { simpleGit } = await import('simple-git');
+    const origin = path.join(cacheDir, 'origin');
+    await mkdir(origin);
+    const upstream = simpleGit(origin);
+    await upstream.init();
+    await upstream.addConfig('user.email', 'test@example.com').addConfig('user.name', 'Test');
+    await writeFile(path.join(origin, 'README.md'), 'v1');
+    await upstream.add('.').commit('v1');
+
+    const clone = path.join(cacheDir, 'real-clone');
+    await simpleGit().clone(origin, clone);
+    await writeFile(path.join(origin, 'README.md'), 'v2');
+    await upstream.add('.').commit('v2');
+
+    await cloneOrUpdate('real-clone', clone, 'org');
+    assert.equal(await readFile(path.join(clone, 'README.md'), 'utf8'), 'v2');
   });
 
   it('deletes and re-clones when the update fails', async () => {
