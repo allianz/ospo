@@ -25,6 +25,7 @@ export function createFakeGitHub({
   securityConfigRepos = {},
   rulesets = [],
   sbomUrls = {},
+  advisories = {},
   failures = {},
   now = () => new Date('2026-01-01T00:00:00Z'),
 } = {}) {
@@ -39,6 +40,7 @@ export function createFakeGitHub({
     securityConfigRepos: clone(securityConfigRepos),
     rulesets: clone(rulesets),
     sbomUrls: { ...sbomUrls },
+    advisories: clone(advisories),
   };
   const calls = [];
   let nextRepoId = Math.max(1000, ...state.repos.map(r => r.id ?? 0)) + 1;
@@ -146,6 +148,8 @@ export function createFakeGitHub({
     },
 
     requestSbomReport: (org, repo) => state.sbomUrls[repo],
+
+    listPublishedAdvisories: (org, repo) => clone((state.advisories[repo] ?? []).filter(a => (a.state ?? 'published') === 'published')),
   };
 
   const gh = { calls, state };

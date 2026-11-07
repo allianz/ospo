@@ -8,8 +8,8 @@ SCRIPTS := scripts
 JSON_DIR := results
 
 .PHONY: check-token \
-        test_lint_repos test_archive_repos test_create_repos test_license_scan test_by_construction \
-        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan dry_run_by_construction \
+        test_lint_repos test_archive_repos test_create_repos test_license_scan test_by_construction test_advisories_check \
+        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan dry_run_by_construction dry_run_advisories_check \
         test coverage
 
 check-token:
@@ -32,6 +32,9 @@ test_license_scan: check-token
 test_by_construction: check-token
 	node $(SCRIPTS)/by_construction.js --org ospo-sandbox --config $(SCRIPTS)/test-config/by_construction.yaml --debug --json $(JSON_DIR)/by_construction.json
 
+test_advisories_check: check-token
+	node $(SCRIPTS)/advisories_check.js --org ospo-sandbox --config $(SCRIPTS)/test-config/advisories_check.yaml --debug --json $(JSON_DIR)/advisories_check.json
+
 # ── Dry runs (allianz) ────────────────────────────────────────────────────────
 
 dry_run_lint_repos: check-token
@@ -48,6 +51,9 @@ dry_run_license_scan: check-token
 
 dry_run_by_construction: check-token
 	node $(SCRIPTS)/by_construction.js --org allianz --dry-run
+
+dry_run_advisories_check: check-token
+	node $(SCRIPTS)/advisories_check.js --org allianz --json $(JSON_DIR)/advisories_check.json
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 

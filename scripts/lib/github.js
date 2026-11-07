@@ -131,5 +131,10 @@ export function createGitHub(octokit) {
     requestSbomReport: async (org, repo) =>
       (await octokit.request('GET /repos/{owner}/{repo}/dependency-graph/sbom/generate-report', { owner: org, repo }))
         .data?.sbom_url,
+
+    // ── Security advisories ──────────────────────────────────────────────────
+    /** The published (public) security advisories of a repository. */
+    listPublishedAdvisories: (org, repo) =>
+      octokit.paginate(rest.securityAdvisories.listRepositoryAdvisories, { owner: org, repo, state: 'published', per_page: 100 }),
   };
 }

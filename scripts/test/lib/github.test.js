@@ -68,6 +68,7 @@ describe('createGitHub', () => {
     [gh => gh.getOrgRuleset('o', 1), 'GET', '/orgs/o/rulesets/1', undefined, { id: 1 }, { id: 1 }],
     [gh => gh.updateOrgRuleset('o', 1, { name: 'n' }), 'PUT', '/orgs/o/rulesets/1', { name: 'n' }, {}, undefined],
     [gh => gh.requestSbomReport('o', 'r'), 'GET', '/repos/o/r/dependency-graph/sbom/generate-report', undefined, { sbom_url: 'https://u' }, 'https://u'],
+    [gh => gh.listPublishedAdvisories('o', 'r'), 'GET', '/repos/o/r/security-advisories?state=published&per_page=100', undefined, [{ ghsa_id: 'g' }], [{ ghsa_id: 'g' }]],
   ];
 
   for (const [call, method, pathAndQuery, body, data, expected] of cases) {

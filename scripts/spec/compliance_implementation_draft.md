@@ -39,8 +39,8 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `lint_repos.js` | exists, extend | Per-repository checks on repository data and the cloned content |
 | `license_scan.js` | exists, extend | Dependency licenses from the SBOM. SBOM availability itself is by construction (QA.01) |
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
-| `by_construction.js` | **new** | Writes the `by-construction` checks (1.5): one `pass` per check and active repository. Tests nothing. No issues. |
-| `advisories_check.js` | **new** | Checks the published security advisories of every repository (VM.02). Writes results only. No issues. |
+| `by_construction.js` | exists | Writes the `by-construction` checks (1.5): one `pass` per check and active repository. Tests nothing. No issues. |
+| `advisories_check.js` | exists | Checks the published security advisories of every repository (VM.02). Writes the JSON file only. No issues, no writes to GitHub. |
 | `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds and applicability (e.g. languages for fuzzing, QA.05), opens and closes issues (see 1.9) |
 | `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses. Renders HTML and Markdown from `data.json` only |
 
@@ -53,7 +53,7 @@ lint_repos --json               → out/lint_repos.json
 license_scan --json             → out/license_scan.json
 archive_repos --json            → out/archive_repos.json
 by_construction --json          → out/by_construction.json
-advisories_check                → out/advisories_check.json
+advisories_check --json         → out/advisories_check.json
 scorecard_check                 → out/scorecard.json
 compliance_report --config config/compliance_report_bsi.yaml
                                 ← out/*.json + reports/bsi-data.json on main + its notes file
@@ -341,7 +341,7 @@ requirements:
 
 ---
 
-### LE.02 · Licenses of all components referenced · MUST · ⬜ Open
+### LE.02 · Licenses of all components referenced · MUST · ✅ Done
 
 > A copy of all licenses in use, or references hereto, MUST be provided.
 
@@ -349,7 +349,7 @@ requirements:
 
 **By construction:** `by-construction/sbom-available` (1.5), the same check as QA.01. The dependency graph is always enabled for public repositories and cannot be switched off, and every repository in scope is public (QA.02, `lint/public`).
 
-**Script:** none; `compliance_report` writes the results (1.10 step 4).
+**Script:** `by_construction` (exists).
 
 **Limits of the check:** components not declared through a package manager (copied-in code) are not in the SBOM.
 
@@ -361,7 +361,7 @@ requirements:
 
 ---
 
-### QA.01 · List of third-party components available · MUST · ⬜ Open
+### QA.01 · List of third-party components available · MUST · ✅ Done
 
 > A list of third-party components used in the software MUST be available.
 
@@ -562,7 +562,7 @@ requirements:
 
 ---
 
-### BR.05 · Source packages match the repository · MUST · ⬜ Open
+### BR.05 · Source packages match the repository · MUST · ✅ Done
 
 > Released source packages MUST NOT contain any content that is not present in the project's repository or cannot be deterministically generated from it.
 
@@ -612,7 +612,7 @@ requirements:
 
 ---
 
-### VM.02 · Vulnerabilities published in reasonable time · MUST · ⬜ Open
+### VM.02 · Vulnerabilities published in reasonable time · MUST · ✅ Done
 
 > The project MUST publish information about discovered vulnerabilities within a reasonable period of time.
 
@@ -623,13 +623,13 @@ requirements:
 - `fail` if at least one took longer. A late publication therefore counts for 12 months.
 - `reason` names each advisory and its days to publication, e.g. "1 advisory published in the last 12 months: GHSA-7q4x-2m9c-h3vf after 18 days".
 
-**Script:** `advisories_check` (new, separate for now).
+**Script:** `advisories_check` (exists, [spec](advisories_check_spec.md)). JSON only.
 
 **Issue:** none. A failure is a past event that the project team cannot fix any more; it disappears after 12 months.
 
 **Limits of the check:** advisories in `triage` or `draft` and closed ones are not public and are not counted, so an advisory that is never published never fails the check. Whether `created_at` is the time of the private report **(verify)**. Vulnerabilities reported through other channels (e.g. email to the OSPO) are only measured from the moment an advisory is created. The process statement covers this: every report becomes an advisory.
 
-**New work:** the advisories call per repository, the check.
+**New work:** done.
 
 ---
 
