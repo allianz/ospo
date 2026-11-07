@@ -246,11 +246,11 @@ describe('checkIssuesEnabled', () => {
 });
 
 describe('jsonOnlyChecks', () => {
-  it('returns the public and issues-enabled checks', () => {
+  it('returns the public and issues-enabled checks, flagged as JSON only', () => {
     const checks = jsonOnlyChecks({ visibility: 'private', has_issues: true });
-    assert.deepEqual(checks.map(c => [c.id, c.checkName, c.passed]), [
-      ['lint/public', 'Public Repository', false],
-      ['lint/issues-enabled', 'Issues Enabled', true],
+    assert.deepEqual(checks.map(c => [c.id, c.checkName, c.passed, c.jsonOnly]), [
+      ['lint/public', 'Public Repository', false, true],
+      ['lint/issues-enabled', 'Issues Enabled', true, true],
     ]);
   });
 });
@@ -319,6 +319,21 @@ describe('checkRequiredFile', () => {
       assert.equal(r.passed, true);
     } finally {
       await rm(caseDir, { recursive: true });
+    }
+  });
+
+  it('matches any pattern of a list', async () => {
+    const dir = await mkdtemp(path.join(tmpdir(), 'lint-list-'));
+    try {
+      const spec = { pattern: ['DEVELOPMENT*', 'DEVELOPER*'], search_paths: ['.', 'docs'] };
+      assert.deepEqual(await checkRequiredFile(dir, spec), { passed: false, detail: 'File not found in ., docs' });
+      await mkdir(path.join(dir, 'docs'));
+      await writeFile(path.join(dir, 'docs', 'developer-guide.md'), 'x');
+      assert.deepEqual(await checkRequiredFile(dir, spec), { passed: true, detail: 'developer-guide.md found in docs' });
+      await writeFile(path.join(dir, 'DEVELOPMENT.md'), 'x');
+      assert.deepEqual(await checkRequiredFile(dir, spec), { passed: true, detail: 'DEVELOPMENT.md found' });
+    } finally {
+      await rm(dir, { recursive: true });
     }
   });
 
@@ -551,6 +566,9 @@ describe('run', () => {
       'required_files:',
       '  - pattern: "README*"',
       '    description: README File',
+      '  - pattern: ["DEVELOPMENT*", "DEVELOPER*"]',
+      '    description: Development File',
+      '    json_only: true',
     ].join('\n'));
   });
   after(async () => { await rm(tmpDir, { recursive: true }); });
@@ -598,8 +616,15 @@ describe('run', () => {
 
   it('keeps the JSON-only checks out of issues and result lines', async () => {
     const { gh, logger } = await runLint([]);
-    assert.doesNotMatch(gh.state.issues.bad[0].body, /Public Repository|Issues Enabled/);
-    assert.doesNotMatch(logger.output(), /Public Repository|Issues Enabled/);
+    assert.doesNotMatch(gh.state.issues.bad[0].body, /Public Repository|Issues Enabled|Development File/);
+    assert.doesNotMatch(logger.output(), /Public Repository|Issues Enabled|Development File/);
+  });
+
+  it('opens no issue for a repo that only fails a JSON-only file check', async () => {
+    // 'good' has no DEVELOPMENT file, but json_only keeps it compliant for the issue
+    const { gh, logger } = await runLint([]);
+    assert.deepEqual(gh.callsTo('createIssue').map(c => c.args[1]), ['bad']);
+    assert.match(logger.output(), /^✅ good$/m);
   });
 
   it('updates an existing issue for a repo that still fails', async () => {
@@ -638,6 +663,8 @@ describe('run', () => {
     assert.ok(doc.results.every(r => r.check in doc.catalogue && r.reason));
     const hidden = doc.results.filter(r => r.repo === 'hidden' && ['lint/public', 'lint/issues-enabled'].includes(r.check));
     assert.deepEqual(hidden.map(r => [r.check, r.result]), [['lint/public', 'fail'], ['lint/issues-enabled', 'fail']]);
+    const development = doc.results.find(r => r.repo === 'good' && r.check === 'lint/development');
+    assert.equal(development.result, 'fail');
     t.assert.snapshot({ ...doc, config_file: '<config>' });
   });
 
@@ -658,12 +685,15 @@ describe('JSON output', () => {
       { pattern: 'README*', description: 'Readme File', min_chars: 300 },
       { pattern: 'CONTRIBUTING*', search_paths: ['.', '.github'], description: 'Contributing File' },
       { pattern: 'NOTICE*' },
+      { pattern: ['DEVELOPMENT*', 'DEVELOPER*'], search_paths: ['.', 'docs'], description: 'Development File', min_chars: 10, json_only: true },
+      { pattern: ['AUTHORS*', 'MAINTAINERS*'] },
     ],
   };
 
   it('derives required-file check IDs from the pattern prefix', () => {
     assert.equal(requiredFileCheckId({ pattern: 'CONTRIBUTING*' }), 'lint/contributing');
     assert.equal(requiredFileCheckId({ pattern: 'Code_Of_Conduct*.md' }), 'lint/code-of-conduct');
+    assert.equal(requiredFileCheckId({ pattern: ['DEVELOPMENT*', 'DEVELOPER*'] }), 'lint/development');
   });
 
   it('loadConfig rejects required files without a unique check ID', async () => {
@@ -675,6 +705,20 @@ describe('JSON output', () => {
       const empty = path.join(dir, 'empty.yaml');
       await writeFile(empty, 'issue_title: T\nrequired_files:\n  - pattern: "*"\n');
       await assert.rejects(() => loadConfig(empty), /pattern '\*' gives no unique check ID/);
+      const flag = path.join(dir, 'flag.yaml');
+      await writeFile(flag, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOPMENT*"\n    json_only: "yes"\n');
+      await assert.rejects(() => loadConfig(flag), /pattern 'DEVELOPMENT\*': json_only must be true or false/);
+      for (const bad of ['', '\n    pattern: []', '\n    pattern: [1]']) {
+        const file = path.join(dir, 'bad-pattern.yaml');
+        await writeFile(file, `issue_title: T\nrequired_files:\n  - description: X${bad}\n`);
+        await assert.rejects(() => loadConfig(file), /required_files pattern must be a string or a non-empty list of strings/);
+      }
+      const dupList = path.join(dir, 'dup-list.yaml');
+      await writeFile(dupList, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOP*"\n  - pattern: ["DEVELOP*", "DEV*"]\n');
+      await assert.rejects(() => loadConfig(dupList), /pattern 'DEVELOP\* or DEV\*' gives no unique check ID/);
+      const ok = path.join(dir, 'ok.yaml');
+      await writeFile(ok, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOPMENT*"\n    json_only: true\n');
+      assert.equal((await loadConfig(ok)).required_files[0].json_only, true);
     } finally {
       await rm(dir, { recursive: true });
     }
@@ -687,15 +731,27 @@ describe('JSON output', () => {
       await mkdir(path.join(dir, '.github'));
       await writeFile(path.join(dir, '.github', 'CONTRIBUTING.md'), 'c');
       await writeFile(path.join(dir, 'NOTICE'), 'n');
-      const repo = { description: 'A repository description that is long enough', topics: ['api'], license: { spdx_id: 'MIT' } };
+      await mkdir(path.join(dir, 'docs'));
+      await writeFile(path.join(dir, 'docs', 'DEVELOPMENT.md'), 'npm install');
+      const repo = {
+        description: 'A repository description that is long enough',
+        topics: ['api'],
+        license: { spdx_id: 'MIT' },
+        visibility: 'public',
+        has_issues: true,
+      };
       const checks = await runChecks(repo, config, dir);
-      assert.deepEqual(checks.map(c => [c.id, c.passed, c.detail]), [
-        ['lint/description', true, 'Description has 44 chars'],
-        ['lint/topics', true, 'Topics: api'],
-        ['lint/license-type', true, "'MIT' is in the approved list"],
-        ['lint/readme', true, 'README.md found (300 chars)'],
-        ['lint/contributing', true, 'CONTRIBUTING.md found in .github'],
-        ['lint/notice', true, 'NOTICE found'],
+      assert.deepEqual(checks.map(c => [c.id, c.passed, c.detail, c.jsonOnly ?? false]), [
+        ['lint/description', true, 'Description has 44 chars', false],
+        ['lint/topics', true, 'Topics: api', false],
+        ['lint/license-type', true, "'MIT' is in the approved list", false],
+        ['lint/public', true, 'Repository is public', true],
+        ['lint/issues-enabled', true, 'Issues are enabled', true],
+        ['lint/readme', true, 'README.md found (300 chars)', false],
+        ['lint/contributing', true, 'CONTRIBUTING.md found in .github', false],
+        ['lint/notice', true, 'NOTICE found', false],
+        ['lint/development', true, 'DEVELOPMENT.md found in docs (11 chars)', true],
+        ['lint/authors', false, 'File not found in .', false],
       ]);
     } finally {
       await rm(dir, { recursive: true });
@@ -706,8 +762,12 @@ describe('JSON output', () => {
     const catalogue = buildCatalogue(config, { sha: 'abc' });
     assert.deepEqual(Object.keys(catalogue), [
       'lint/description', 'lint/topics', 'lint/license-type', 'lint/public', 'lint/issues-enabled',
-      'lint/readme', 'lint/contributing', 'lint/notice',
+      'lint/readme', 'lint/contributing', 'lint/notice', 'lint/development', 'lint/authors',
     ]);
+    assert.equal(catalogue['lint/authors'].name, 'AUTHORS* or MAINTAINERS*');
+    assert.equal(catalogue['lint/authors'].documentation.fix, 'Add a AUTHORS* or MAINTAINERS* file in ..');
+    assert.equal(catalogue['lint/development'].name, 'Development File');
+    assert.equal(catalogue['lint/development'].documentation.short, 'A file DEVELOPMENT* or DEVELOPER* exists in ., docs, with at least 10 characters.');
     assert.equal(catalogue['lint/public'].documentation.short, 'The repository is public.');
     assert.match(catalogue['lint/public'].documentation.fix, /^Not fixable by the project team/);
     assert.match(catalogue['lint/issues-enabled'].documentation.fix, /^Not fixable by the project team/);

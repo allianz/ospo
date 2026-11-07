@@ -18,8 +18,12 @@
 #                     the spdx_id returned by the GitHub API.
 #   required_files:   Files every repository must contain.
 #                     - pattern:      Case-insensitive prefix glob (e.g. README* matches README.md)
+#                                     or a list of them, any of which may match
 #                     - description:  Check name shown in issue body and output
 #                     - search_paths: Directories to search (default: repo root only)
+#                     - min_chars:    Minimum file size in characters (optional)
+#                     - json_only:    true = reported in the compliance report only,
+#                                     never listed in the issue (optional, default false)
 #   description_length: Minimum and maximum character length for repository descriptions.
 #                     Descriptions outside this range fail the check.
 #   allowed_topics:   Approved topic vocabulary. Every repository must have 1–5 topics,
@@ -57,8 +61,10 @@ allowed_licenses:
   - CC0-1.0
 
 # Files that every repository must contain.
-# - pattern: case-insensitive glob matched against filenames (e.g. README* matches README.md)
+# - pattern: case-insensitive glob matched against filenames (e.g. README* matches README.md),
+#            or a list of globs, any of which may match (the check ID comes from the first)
 # - search_paths: directories to search (default: repo root only)
+# - json_only: true = the file is only reported in the compliance report; no issue is opened for it
 # Adding a new entry here makes that file mandatory for all repositories.
 required_files:
   - pattern: "README*"
@@ -73,6 +79,11 @@ required_files:
     description: "Notice File"
   - pattern: "AUTHORS*"
     description: "Authors File"
+  - pattern: ["DEVELOPMENT*", "DEVELOPER*"]
+    search_paths: [".", "docs", ".github"]
+    description: "Development File"
+    min_chars: 300
+    json_only: true   # BSI TR-03185 BR.01: compliance report only, no issue
 
 # Allowed topics for repositories. New topics can be suggested.
 # Topics are used for filtering and organisation-wide statistics, so a controlled

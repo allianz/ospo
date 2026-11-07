@@ -77,11 +77,14 @@ allowed_licenses:
 
 # File checks run against the local clone. Each entry must match at least one
 # file in the specified search_paths. pattern is a case-insensitive prefix glob
-# (e.g. README* matches README.md). description is used as the check name in
+# (e.g. README* matches README.md); a list of patterns matches a file that fits
+# any of them. description is used as the check name in
 # issue body and output. search_paths defaults to ["."] if omitted.
 # min_chars (optional): if set, the matched file must also be at least this many
 # chars; a file that exists but is smaller fails with "File exists but is too short
 # (<actual> chars; minimum is <min_chars>)".
+# json_only (optional, default false): if true, the check is written to the --json
+# file only; it is never listed in the issue or the result line.
 required_files:
   - pattern: "README*"
     description: "Readme File"
@@ -95,6 +98,11 @@ required_files:
     description: "Notice File"
   - pattern: "AUTHORS*"
     description: "Authors File"
+  - pattern: ["DEVELOPMENT*", "DEVELOPER*"]
+    search_paths: [".", "docs", ".github"]
+    description: "Development File"
+    min_chars: 300
+    json_only: true
 
 # Minimum and maximum character length for repository descriptions (inclusive).
 # Descriptions outside this range fail the check. Defaults: min: 30, max: 150.
@@ -119,13 +127,15 @@ allowed_topics:
 | 1 | **Description** | GitHub API | `description` is non-null, non-empty, and between `description_length.min` and `description_length.max` chars (inclusive) |
 | 2 | **Topics** | GitHub API | Between 1 and 5 topics assigned; all topics must be in `allowed_topics` |
 | 3 | **License type** | GitHub API | The license GitHub detects is in `allowed_licenses`; fails with a clear message if no license is detected or GitHub cannot identify it (`NOASSERTION`, e.g. custom license text) |
-| 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths`; if `min_chars` is set the matched file must also meet that size threshold |
+| 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths`; if `min_chars` is set the matched file must also meet that size threshold. Entries with `json_only: true` are JSON only |
 | 5 | **Public repository** (JSON only) | GitHub API | `visibility` is `public` |
 | 6 | **Issues enabled** (JSON only) | GitHub API | `has_issues` is `true` |
 
 Checks 1, 2, 3, 5 and 6 use only API data (no clone needed). Check 4 requires the local clone.
 
 Checks 5 and 6 are **JSON only**: they are written to the `--json` file, but are not listed in the issue or the result line, and they never cause an issue to be opened. Project teams have no influence on them: the visibility and the Issues setting are controlled centrally by the OSPO, so an issue would ask the team for something it cannot do. The results are evidence for the compliance report and audits only. They are only run for active repositories.
+
+A `required_files` entry with `json_only: true` is JSON only in the same way: the file is reported in the compliance report, but its absence never opens, updates or keeps open an issue. A repository that fails only JSON-only checks counts as compliant for the issue and shows `✅` in the result line. The production configuration uses this for `DEVELOPMENT*` and `DEVELOPER*` (BSI TR-03185 BR.01).
 
 Active repos are shallow-cloned into `lint_cache/` in parallel, at most 5 at a time. Existing clones are updated in place; a clone that fails to update is deleted and re-cloned. Archived repos are not cloned, so they only get checks 1–3.
 
@@ -250,7 +260,7 @@ Every check of an active repository is written. Archived repositories are listed
 | `lint/license-type` | License Type |
 | `lint/public` | Public Repository |
 | `lint/issues-enabled` | Issues Enabled |
-| `lint/<prefix>` | One per `required_files` entry. The ID is the pattern prefix in lower case (`CONTRIBUTING*` → `lint/contributing`), the name is its `description`. Two entries with the same ID are a configuration error |
+| `lint/<prefix>` | One per `required_files` entry, also for `json_only` entries. The ID is the pattern prefix in lower case, from the first pattern of a list (`CONTRIBUTING*` → `lint/contributing`, `["DEVELOPMENT*", "DEVELOPER*"]` → `lint/development`), the name is its `description` (default: the patterns, joined with "or"). Two entries with the same ID are a configuration error |
 
 The `short` and `fix` texts in the catalogue are built from the configuration (lengths, licenses, patterns, search paths).
 
@@ -313,3 +323,9 @@ How to fix: add a NOTICE file to the root.
 A file `AUTHORS*` exists in the root.
 
 How to fix: add an AUTHORS file to the root.
+
+### Development File
+
+A file `DEVELOPMENT*` or `DEVELOPER*` exists in `.`, `docs` or `.github`, with at least `min_chars` characters. JSON only (`json_only: true`): reported in the compliance report, not listed in the issue.
+
+How to fix: add a DEVELOPMENT.md with at least that many characters to one of these directories, describing how to build and test the project.

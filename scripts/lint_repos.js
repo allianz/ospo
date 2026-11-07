@@ -37,18 +37,35 @@ export async function loadConfig(configPath) {
   };
   const ids = new Set();
   for (const fileSpec of config.required_files) {
+    const { pattern } = fileSpec;
+    const valid = typeof pattern === 'string' || (Array.isArray(pattern) && pattern.length > 0 && pattern.every(p => typeof p === 'string'));
+    if (!valid) {
+      throw new Error(`required_files pattern must be a string or a non-empty list of strings (in ${configPath})`);
+    }
     const id = requiredFileCheckId(fileSpec);
     if (id === 'lint/' || ids.has(id)) {
-      throw new Error(`required_files pattern '${fileSpec.pattern}' gives no unique check ID (in ${configPath})`);
+      throw new Error(`required_files pattern '${patternText(fileSpec)}' gives no unique check ID (in ${configPath})`);
     }
     ids.add(id);
+    if (fileSpec.json_only !== undefined && typeof fileSpec.json_only !== 'boolean') {
+      throw new Error(`required_files pattern '${patternText(fileSpec)}': json_only must be true or false (in ${configPath})`);
+    }
   }
   return config;
 }
 
-/** Check ID of a required file, from its pattern prefix: CONTRIBUTING* → lint/contributing. */
+/** The patterns of a required file: `pattern` is one prefix glob or a list of them. */
+export const filePatterns = fileSpec => [fileSpec.pattern].flat();
+
+/** The patterns for people: "DEVELOPMENT* or DEVELOPER*". */
+const patternText = fileSpec => filePatterns(fileSpec).join(' or ');
+
+/** The part of a prefix glob before the first `*`: README* → README. */
+const globPrefix = pattern => pattern.replace(/\*.*$/, '');
+
+/** Check ID of a required file, from the prefix of its (first) pattern: CONTRIBUTING* → lint/contributing. */
 export function requiredFileCheckId(fileSpec) {
-  const prefix = fileSpec.pattern.replace(/\*.*$/, '').toLowerCase();
+  const prefix = globPrefix(filePatterns(fileSpec)[0]).toLowerCase();
   return `lint/${prefix.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 }
 
@@ -117,10 +134,10 @@ export function checkIssuesEnabled(repo) {
 }
 
 export async function checkRequiredFile(cloneDir, fileSpec) {
-  const { pattern, search_paths, min_chars } = fileSpec;
+  const { search_paths, min_chars } = fileSpec;
   const searchPaths = search_paths ?? ['.'];
   // Patterns are always prefix globs (README*, CONTRIBUTING*, LICENSE*) — match case-insensitively
-  const prefix = pattern.replace(/\*.*$/, '').toUpperCase();
+  const prefixes = filePatterns(fileSpec).map(p => globPrefix(p).toUpperCase());
   for (const searchPath of searchPaths) {
     const dir = path.join(cloneDir, searchPath);
     let entries;
@@ -129,7 +146,7 @@ export async function checkRequiredFile(cloneDir, fileSpec) {
     } catch {
       continue; // Directory doesn't exist — try next path
     }
-    const match = entries.find(f => f.toUpperCase().startsWith(prefix));
+    const match = entries.find(f => prefixes.some(prefix => f.toUpperCase().startsWith(prefix)));
     if (!match) continue;
     const found = searchPath === '.' ? `${match} found` : `${match} found in ${searchPath}`;
     if (min_chars != null) {
@@ -154,27 +171,35 @@ export function metadataChecks(repo, config) {
 }
 
 /**
- * Checks that are written to the JSON file only: they are not listed in the issue or the result line.
+ * Checks that are written to the JSON file only (`jsonOnly`): they are not listed in the issue or the result line.
  * Project teams have no influence on them (visibility and issues are controlled centrally),
  * so an issue would be no use to them; the results are evidence for the compliance report and audits.
  */
 export function jsonOnlyChecks(repo) {
   return [
-    { id: 'lint/public', checkName: 'Public Repository', ...checkPublic(repo) },
-    { id: 'lint/issues-enabled', checkName: 'Issues Enabled', ...checkIssuesEnabled(repo) },
+    { id: 'lint/public', checkName: 'Public Repository', jsonOnly: true, ...checkPublic(repo) },
+    { id: 'lint/issues-enabled', checkName: 'Issues Enabled', jsonOnly: true, ...checkIssuesEnabled(repo) },
   ];
 }
 
-/** All checks for an active repository: metadata plus the required files in its clone. */
+/**
+ * All checks for an active repository: metadata, the JSON-only checks and the required files in its clone.
+ * A required file with `json_only: true` is JSON only as well.
+ */
 export async function runChecks(repo, config, cloneDir) {
-  const checks = metadataChecks(repo, config);
+  const checks = [...metadataChecks(repo, config), ...jsonOnlyChecks(repo)];
   for (const fileSpec of config.required_files) {
-    checks.push({ id: requiredFileCheckId(fileSpec), checkName: requiredFileName(fileSpec), ...(await checkRequiredFile(cloneDir, fileSpec)) });
+    checks.push({
+      id: requiredFileCheckId(fileSpec),
+      checkName: requiredFileName(fileSpec),
+      jsonOnly: fileSpec.json_only === true,
+      ...(await checkRequiredFile(cloneDir, fileSpec)),
+    });
   }
   return checks;
 }
 
-const requiredFileName = fileSpec => fileSpec.description ?? fileSpec.pattern;
+const requiredFileName = fileSpec => fileSpec.description ?? patternText(fileSpec);
 
 // ── JSON output ───────────────────────────────────────────────────────────────
 
@@ -216,8 +241,8 @@ export function buildCatalogue(config, { sha = null, env = {} } = {}) {
     const size = fileSpec.min_chars != null ? `, with at least ${fileSpec.min_chars} characters` : '';
     catalogue[requiredFileCheckId(fileSpec)] = entry(
       requiredFileName(fileSpec),
-      `A file ${fileSpec.pattern} exists in ${paths}${size}.`,
-      `Add a ${fileSpec.pattern} file in ${paths}${size}.`,
+      `A file ${patternText(fileSpec)} exists in ${paths}${size}.`,
+      `Add a ${patternText(fileSpec)} file in ${paths}${size}.`,
     );
   }
   return catalogue;
@@ -322,8 +347,9 @@ export async function run({ argv = [], env = {}, logger, github, git, cacheDir =
   const checked = [];
   for (const repo of active) {
     const checks = await runChecks(repo, config, path.join(cacheDir, repo.name));
-    checked.push({ repo: repo.name, checks: [...checks, ...jsonOnlyChecks(repo)] });
-    const failures = checks.filter(c => !c.passed);
+    checked.push({ repo: repo.name, checks });
+    const issueChecks = checks.filter(c => !c.jsonOnly);
+    const failures = issueChecks.filter(c => !c.passed);
 
     log.info(formatResultLine(repo.name, failures, false));
     for (const f of failures) log.debug(`     ${f.checkName}: ${f.detail}`);
@@ -336,7 +362,7 @@ export async function run({ argv = [], env = {}, logger, github, git, cacheDir =
       org,
       repo: repo.name,
       title: config.issue_title,
-      body: buildIssueBody(checks, config.docs_link),
+      body: buildIssueBody(issueChecks, config.docs_link),
       wanted: failures.length > 0,
       closeComment: CLOSE_COMMENT,
     });

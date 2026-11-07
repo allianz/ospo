@@ -5,7 +5,7 @@ exports[`run > --json writes every check of the active repos and lists skipped r
   "org": "test-org",
   "ospo_sha": "abc123",
   "config_file": "<config>",
-  "config_sha256": "fbd48a2f518990ec9adb646a4b04843c624655a5036b83b80eca66a6600bad66",
+  "config_sha256": "61be614d337680b3f71acf1579169990b922e18a0cad9c47d4e392588ce8888b",
   "run_url": "https://github.com/allianz/ospo/actions/runs/7",
   "issue_title": "Mandatory Repository Configuration",
   "results": [
@@ -38,15 +38,6 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     },
     {
       "repo": "good",
-      "check": "lint/readme",
-      "name": "README File",
-      "result": "pass",
-      "score": null,
-      "reason": "README.md found",
-      "details": []
-    },
-    {
-      "repo": "good",
       "check": "lint/public",
       "name": "Public Repository",
       "result": "pass",
@@ -61,6 +52,24 @@ exports[`run > --json writes every check of the active repos and lists skipped r
       "result": "pass",
       "score": null,
       "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "good",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "pass",
+      "score": null,
+      "reason": "README.md found",
+      "details": []
+    },
+    {
+      "repo": "good",
+      "check": "lint/development",
+      "name": "Development File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
       "details": []
     },
     {
@@ -92,15 +101,6 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     },
     {
       "repo": "bad",
-      "check": "lint/readme",
-      "name": "README File",
-      "result": "fail",
-      "score": null,
-      "reason": "File not found in .",
-      "details": []
-    },
-    {
-      "repo": "bad",
       "check": "lint/public",
       "name": "Public Repository",
       "result": "pass",
@@ -115,6 +115,24 @@ exports[`run > --json writes every check of the active repos and lists skipped r
       "result": "pass",
       "score": null,
       "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/development",
+      "name": "Development File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
       "details": []
     },
     {
@@ -146,15 +164,6 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     },
     {
       "repo": "hidden",
-      "check": "lint/readme",
-      "name": "README File",
-      "result": "pass",
-      "score": null,
-      "reason": "README.md found",
-      "details": []
-    },
-    {
-      "repo": "hidden",
       "check": "lint/public",
       "name": "Public Repository",
       "result": "fail",
@@ -169,6 +178,24 @@ exports[`run > --json writes every check of the active repos and lists skipped r
       "result": "fail",
       "score": null,
       "reason": "Issues are disabled",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "pass",
+      "score": null,
+      "reason": "README.md found",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/development",
+      "name": "Development File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
       "details": []
     },
     {
@@ -200,15 +227,6 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     },
     {
       "repo": "fixed",
-      "check": "lint/readme",
-      "name": "README File",
-      "result": "pass",
-      "score": null,
-      "reason": "README.md found",
-      "details": []
-    },
-    {
-      "repo": "fixed",
       "check": "lint/public",
       "name": "Public Repository",
       "result": "pass",
@@ -223,6 +241,24 @@ exports[`run > --json writes every check of the active repos and lists skipped r
       "result": "pass",
       "score": null,
       "reason": "Issues are enabled",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "pass",
+      "score": null,
+      "reason": "README.md found",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/development",
+      "name": "Development File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
       "details": []
     }
   ],
@@ -273,6 +309,14 @@ exports[`run > --json writes every check of the active repos and lists skipped r
         "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#readme-file",
         "short": "A file README* exists in ..",
         "fix": "Add a README* file in .."
+      }
+    },
+    "lint/development": {
+      "name": "Development File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#development-file",
+        "short": "A file DEVELOPMENT* or DEVELOPER* exists in ..",
+        "fix": "Add a DEVELOPMENT* or DEVELOPER* file in .."
       }
     }
   },
