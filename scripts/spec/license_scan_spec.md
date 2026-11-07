@@ -189,7 +189,7 @@ The file has these keys:
 
 Each active repository has one result, sorted by repository name. Archived repositories are listed in `skipped` with reason `archived`, excluded repositories with reason `excluded_repos`. A repository without an SBOM (404) is not skipped in the JSON: its `license/denied-licenses` result is `na`.
 
-The availability of the SBOM is not a check of this script. The dependency graph is always enabled for public repositories, so the compliance report treats it as `by-construction/sbom-available` ([draft](compliance_implementation_draft.md), QA.01).
+The availability of the SBOM is not a check of this script. The dependency graph is always enabled for public repositories, so the script [`by_construction`](by_construction_spec.md) writes it as `by-construction/sbom-available` ([draft](compliance_implementation_draft.md), QA.01).
 
 | Check ID | Name |
 |---|---|

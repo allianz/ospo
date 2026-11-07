@@ -1,0 +1,4 @@
+# Integration test configuration — targets the GitHub 'ospo-sandbox' organization.
+# Not used in production.
+
+excluded_repos: []

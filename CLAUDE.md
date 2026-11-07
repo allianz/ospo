@@ -15,6 +15,7 @@ make test_create_repos    # Integration test against ospo-sandbox org
 make test_lint_repos      # Integration test against ospo-sandbox org
 make test_archive_repos   # Integration test against ospo-sandbox org
 make test_license_scan    # Integration test against ospo-sandbox org
+make test_by_construction # Integration test against ospo-sandbox org
 make test                 # Unit tests with coverage report (node --test)
 cd scripts && npm test                         # Unit tests without coverage
 cd scripts && npm run test:update-snapshots     # Regenerate output snapshots after an intended output change
@@ -31,9 +32,10 @@ node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
+node scripts/by_construction.js --org <org> [--config <file>] [--debug] [--json <file>]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository.
 
 ### Required Tools
 
@@ -48,15 +50,17 @@ Detailed specs for each script — behaviour, config schema, and output format:
 - [`scripts/spec/lint_repos_spec.md`](scripts/spec/lint_repos_spec.md)
 - [`scripts/spec/archive_repos_spec.md`](scripts/spec/archive_repos_spec.md)
 - [`scripts/spec/license_scan_spec.md`](scripts/spec/license_scan_spec.md)
+- [`scripts/spec/by_construction_spec.md`](scripts/spec/by_construction_spec.md)
 
 ## Architecture
 
-Four JavaScript (ESM) scripts, each driven by a YAML config file, built on shared libraries in `scripts/lib/`:
+Five JavaScript (ESM) scripts, each driven by a YAML config file, built on shared libraries in `scripts/lib/`:
 
 1. **`scripts/create_repos.js`** — Creates/manages repos and teams, assigns permissions, syncs with Azure AD. Reads `config/create_repos.yaml`.
 2. **`scripts/lint_repos.js`** — Enforces repo compliance (description, topics, license, README, CONTRIBUTING). Reads `config/lint_repos.yaml`.
 3. **`scripts/archive_repos.js`** — Archives stale repos after a grace period with warning issues. Reads `config/archive_repos.yaml`.
 4. **`scripts/license_scan.js`** — Scans dependency licenses via the GitHub SBOM API and opens issues for denied licenses. Reads `config/license_scan.yaml`.
+5. **`scripts/by_construction.js`** — Writes the `by-construction/*` checks (GitHub guarantees, e.g. source archives, SBOM availability) as JSON: always `pass`, one per active repository, no issues. Reads `config/by_construction.yaml`.
 
 ### Shared libraries (`scripts/lib/`)
 
