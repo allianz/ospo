@@ -340,7 +340,7 @@
   <!-- ─────────────────────────── 2 Requirements ─────────────────────────── -->
   <section id="requirements" class="break">
     <h2><span class="num">2</span>Requirement status</h2>
-    <p class="lead">Every requirement with its status, the share of applicable repositories that pass, and how that share developed over the weekly runs. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. Every repository with the requirements it fails is listed in section 5.</p>
+    <p class="lead">Every requirement with its status, the share of applicable repositories that pass, and how that share developed over the last monthly reports. Each requirement is assessed at its own level only (MUST, SHOULD or MAY). Expand a row to see what the requirement asks for and how it is verified. Every repository with the requirements it fails is listed in section 5.</p>
     <div class="card" style="padding:6px 8px">
       <div class="scroll-x">
       <table id="req-table">
@@ -358,12 +358,12 @@
     <div class="grid-2">
       <div class="card">
         <h3 class="chart-title">Overall compliance</h3>
-        <p class="chart-sub">Share of evaluated checks passed, per weekly run</p>
+        <p class="chart-sub">Share of evaluated checks passed, per monthly report</p>
         <div id="chart-compliance"></div>
       </div>
       <div class="card">
         <h3 class="chart-title">Active repositories with findings</h3>
-        <p class="chart-sub">Active repositories that fail at least one requirement, per weekly run</p>
+        <p class="chart-sub">Active repositories that fail at least one requirement, per monthly report</p>
         <div id="chart-findings"></div>
       </div>
     </div>
@@ -443,7 +443,7 @@
 
 <!-- ═══════════════ Embedded input data (verbatim copies of mock_data/*.json) ═══════════════ -->
 <script type="application/json" id="data.json">{
-  "report_id": "OSPO-CR-BSI-2026-11-03",
+  "report_id": "OSPO-CR-BSI-2026-11",
   "run_at": "2026-11-03T02:00:00Z",
   "org": "allianz",
   "ospo_sha": "869f4bb",
@@ -482,8 +482,8 @@
     }
   },
   "previous_report": {
-    "report_id": "OSPO-CR-BSI-2026-10-27",
-    "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10-27/bsi-data.json"
+    "report_id": "OSPO-CR-BSI-2026-10",
+    "data_url": "https://github.com/allianz/ospo/releases/download/compliance-2026-10/bsi-data.json"
   },
   "inputs": [
     {
@@ -1067,7 +1067,7 @@
   ],
   "history": [
     {
-      "date": "2026-10-06",
+      "month": "2026-06",
       "compliance_pct": 83.5,
       "failing_repositories": 8,
       "coverage": {
@@ -1092,7 +1092,7 @@
       }
     },
     {
-      "date": "2026-10-13",
+      "month": "2026-07",
       "compliance_pct": 84.0,
       "failing_repositories": 8,
       "coverage": {
@@ -1117,7 +1117,7 @@
       }
     },
     {
-      "date": "2026-10-20",
+      "month": "2026-09",
       "compliance_pct": 84.3,
       "failing_repositories": 7,
       "coverage": {
@@ -1142,7 +1142,7 @@
       }
     },
     {
-      "date": "2026-10-27",
+      "month": "2026-10",
       "compliance_pct": 84.8,
       "failing_repositories": 7,
       "coverage": {
@@ -1167,7 +1167,7 @@
       }
     },
     {
-      "date": "2026-11-03",
+      "month": "2026-11",
       "compliance_pct": 80.5,
       "failing_repositories": 7,
       "coverage": {
@@ -2615,7 +2615,7 @@ const FINDINGS_BY_REQ = {};
 for (const f of FINDINGS) for (const q of f.requirements) (FINDINGS_BY_REQ[q] ??= []).push(f);
 const findingsOf = reqId => FINDINGS_BY_REQ[reqId] ?? [];
 const HISTORY = DATA.history;
-const PREV = HISTORY.length > 1 ? HISTORY[HISTORY.length - 2] : null;
+const PREV = HISTORY.length > 1 ? HISTORY[HISTORY.length - 2] : null;   // last measured month before this one
 const ACTIVE = DATA.scope.active, ARCHIVED = DATA.scope.archived;
 const S = DATA.summary;
 
@@ -2654,6 +2654,15 @@ const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov
 const ymd = iso => iso.slice(0, 10).split('-').map(Number);
 const fmtDate = iso => { if (!iso) return '–'; const [y, m, d] = ymd(iso); return `${d} ${MONTHS[m - 1]} ${y}`; };
 const fmtDay = iso => { const [, m, d] = ymd(iso); return `${d} ${MONTHS[m - 1]}`; };
+const fmtMonth = ym => `${MONTHS[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}`;   // '2026-11' → 'Nov 2026'
+const fmtMon = ym => MONTHS[+ym.slice(5, 7) - 1];                            // '2026-11' → 'Nov'
+const addMonths = (ym, k) => { const n = +ym.slice(0, 4) * 12 + +ym.slice(5, 7) - 1 + k; return `${Math.floor(n / 12)}-${String(n % 12 + 1).padStart(2, '0')}`; };
+/* Trends show the last TREND_MONTHS months, one slot per month. A month without a report is null:
+   lines continue through it without a point, bars leave a gap; before the first report the line is flat. */
+const TREND_MONTHS = 6;
+const SLOTS = Array.from({ length: TREND_MONTHS }, (_, i) => addMonths(HISTORY.at(-1).month, i - TREND_MONTHS + 1));
+const BY_MONTH = Object.fromEntries(HISTORY.map(x => [x.month, x]));
+const trendValues = f => SLOTS.map(m => (BY_MONTH[m] ? f(BY_MONTH[m]) : null) ?? null);
 const fmtDateTime = iso => `${fmtDate(iso)}, ${iso.slice(11, 16)} UTC`;
 const daysBetween = (a, b) => Math.round((Date.parse(b.slice(0, 10)) - Date.parse(a.slice(0, 10))) / 864e5);
 const fmtPct = v => v.toFixed(1) + '%';
@@ -2721,8 +2730,9 @@ function dataTable(headers, rows, numericCols = []) {
 
 /* null values (no data in that run) are skipped */
 function sparkline(values, { w = 96, hgt = 24, min, max } = {}) {
-  const pts = values.map((v, i) => [i, v]).filter(([, v]) => v != null);
+  let pts = values.map((v, i) => [i, v]).filter(([, v]) => v != null);
   const vs = pts.map(([, v]) => v);
+  if (pts[0][0] > 0) pts = [[0, pts[0][1]], ...pts];   // flat line before the first report
   const lo = min ?? Math.min(...vs), hi = max ?? Math.max(...vs);
   const span = hi - lo || 1;
   const x = i => 2 + i * (w - 6) / Math.max(1, values.length - 1);
@@ -2737,9 +2747,11 @@ function sparkline(values, { w = 96, hgt = 24, min, max } = {}) {
 /* ═══════════════════════════ Charts ═══════════════════════════ */
 const showLabel = (i, n) => n <= 8 || (n - 1 - i) % 2 === 0;
 
-function lineChart(el, { labels, values, yMin, yMax, yTicks, fmt, name }) {
+function lineChart(el, { labels, full, values, yMin, yMax, yTicks, fmt, name }) {   // values: one per month, null = no report
   const W = 560, H = 250, m = { t: 14, r: 52, b: 30, l: 44 };
-  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', tabindex: 0, 'aria-label': `${name}: ${fmt(values[0])} on ${labels[0]} to ${fmt(values.at(-1))} on ${labels.at(-1)}` });
+  const idx = values.map((v, i) => v == null ? null : i).filter(i => i != null);   // measured months
+  const first = idx[0], li = idx.at(-1);
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', tabindex: 0, 'aria-label': `${name}: ${fmt(values[first])} in ${full[first]} to ${fmt(values[li])} in ${full[li]}` });
   const x = i => m.l + i * (W - m.l - m.r) / Math.max(1, values.length - 1);
   const y = v => m.t + (yMax - v) * (H - m.t - m.b) / (yMax - yMin);
   for (const t of yTicks) {
@@ -2748,38 +2760,42 @@ function lineChart(el, { labels, values, yMin, yMax, yTicks, fmt, name }) {
   }
   s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
   labels.forEach((l, i) => { if (showLabel(i, labels.length)) s('text', { class: 'tick', x: x(i), y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = l; });
-  const pts = values.map((v, i) => `${x(i)},${y(v)}`);
-  s('path', { d: `M${x(0)},${H - m.b} L${pts.join(' L')} L${x(values.length - 1)},${H - m.b} Z`, fill: 'var(--accent-wash)' }, svg);
-  s('path', { d: `M${pts.join(' L')}`, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
-  const li = values.length - 1;
+  // the line runs through months without a report; before the first report it is flat
+  const pts = [...(first > 0 ? [[x(0), y(values[first])]] : []), ...idx.map(i => [x(i), y(values[i])])];
+  const d = pts.map(([px, py]) => `${px},${py}`).join(' L');
+  s('path', { d: `M${pts[0][0]},${H - m.b} L${d} L${pts.at(-1)[0]},${H - m.b} Z`, fill: 'var(--accent-wash)' }, svg);
+  s('path', { d: `M${d}`, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
   s('circle', { cx: x(li), cy: y(values[li]), r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
   s('text', { class: 'vlabel', x: x(li) + 10, y: y(values[li]) + 4 }, svg).textContent = fmt(values[li]);
+  // hover only on months with a report
   const cross = s('line', { x1: 0, x2: 0, y1: m.t, y2: H - m.b, stroke: 'var(--axis)', 'stroke-width': 1, visibility: 'hidden' }, svg);
   const dot = s('circle', { r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' }, svg);
   const hit = s('rect', { x: m.l - 10, y: m.t, width: W - m.l - m.r + 20, height: H - m.t - m.b, fill: 'transparent' }, svg);
   let cur = li;
+  const hide = () => { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); hideTip(); };
   const show = (i, evt) => {
+    if (values[i] == null) return hide();
     cur = i;
     cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
     dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(values[i])); dot.setAttribute('visibility', 'visible');
-    showTip(evt, fmt(values[i]), `${name} · run of ${labels[i]}`);
+    showTip(evt, fmt(values[i]), `${name} · ${full[i]}`);
   };
-  const hide = () => { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); hideTip(); };
   hit.addEventListener('pointermove', evt => {
     const r = svg.getBoundingClientRect();
     const px = (evt.clientX - r.left) * W / r.width;
-    show(Math.max(0, Math.min(li, Math.round((px - m.l) / ((W - m.l - m.r) / Math.max(1, li))))), evt);
+    show(Math.max(0, Math.min(values.length - 1, Math.round((px - m.l) / ((W - m.l - m.r) / Math.max(1, values.length - 1))))), evt);
   });
   hit.addEventListener('pointerleave', hide);
   svg.addEventListener('focus', () => show(cur, { target: dot, type: 'focus' }));
   svg.addEventListener('blur', hide);
-  svg.addEventListener('keydown', evt => {
+  svg.addEventListener('keydown', evt => {   // arrow keys step through the months with a report
     if (evt.key === 'ArrowLeft' || evt.key === 'ArrowRight') {
       evt.preventDefault();
-      show(Math.max(0, Math.min(li, cur + (evt.key === 'ArrowRight' ? 1 : -1))), { target: dot, type: 'focus' });
+      const k = idx.indexOf(cur) + (evt.key === 'ArrowRight' ? 1 : -1);
+      show(idx[Math.max(0, Math.min(idx.length - 1, k))], { target: dot, type: 'focus' });
     }
   });
-  el.append(svg, dataTable(['Run', name], labels.map((l, i) => [l, fmt(values[i])]), [1]));
+  el.append(svg, dataTable(['Month', name], idx.map(i => [full[i], fmt(values[i])]), [1]));
 }
 
 function roundedTop(x, y, w, base, r) {
@@ -2791,9 +2807,11 @@ function roundedRight(x, y, w, hgt, r) {
   return `M${x},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + hgt - r} Q${x + w},${y + hgt} ${x + w - r},${y + hgt} H${x} Z`;
 }
 
-function columnChart(el, { labels, values, yMax, yTicks, name }) {
+function columnChart(el, { labels, full, values, yMax, yTicks, name }) {   // values: one per month, null = no report (gap)
   const W = 560, H = 250, m = { t: 20, r: 16, b: 30, l: 44 };
-  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${name}: ${values[0]} on ${labels[0]} to ${values.at(-1)} on ${labels.at(-1)}` });
+  const idx = values.map((v, i) => v == null ? null : i).filter(i => i != null);
+  const first = idx[0], li = idx.at(-1);
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${name}: ${values[first]} in ${full[first]} to ${values[li]} in ${full[li]}` });
   const band = (W - m.l - m.r) / values.length;
   const bw = Math.min(24, band * 0.62);
   const y = v => m.t + (yMax - v) * (H - m.t - m.b) / yMax;
@@ -2803,17 +2821,18 @@ function columnChart(el, { labels, values, yMax, yTicks, name }) {
   }
   values.forEach((v, i) => {
     const cx = m.l + band * i + band / 2;
-    const bar = s('path', { d: roundedTop(cx - bw / 2, y(v), bw, H - m.b, 4), fill: 'var(--accent)' }, svg);
     if (showLabel(i, values.length)) s('text', { class: 'tick', x: cx, y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = labels[i];
-    if (i === values.length - 1) s('text', { class: 'vlabel', x: cx, y: y(v) - 6, 'text-anchor': 'middle' }, svg).textContent = v;
-    const hit = s('rect', { x: m.l + band * i, y: m.t, width: band, height: H - m.t - m.b, fill: 'transparent', tabindex: 0, 'aria-label': `${labels[i]}: ${v}` }, svg);
-    const on = evt => { bar.setAttribute('opacity', 0.8); showTip(evt, String(v), `${name} · run of ${labels[i]}`); };
+    if (v == null) return;   // no report this month: a gap, no hover
+    const bar = s('path', { d: roundedTop(cx - bw / 2, y(v), bw, H - m.b, 4), fill: 'var(--accent)' }, svg);
+    if (i === li) s('text', { class: 'vlabel', x: cx, y: y(v) - 6, 'text-anchor': 'middle' }, svg).textContent = v;
+    const hit = s('rect', { x: m.l + band * i, y: m.t, width: band, height: H - m.t - m.b, fill: 'transparent', tabindex: 0, 'aria-label': `${full[i]}: ${v}` }, svg);
+    const on = evt => { bar.setAttribute('opacity', 0.8); showTip(evt, String(v), `${name} · ${full[i]}`); };
     const off = () => { bar.removeAttribute('opacity'); hideTip(); };
     hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
     hit.addEventListener('focus', on); hit.addEventListener('blur', off);
   });
   s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
-  el.append(svg, dataTable(['Run', name], labels.map((l, i) => [l, values[i]]), [1]));
+  el.append(svg, dataTable(['Month', name], idx.map(i => [full[i], values[i]]), [1]));
 }
 
 function hbarChart(el, items, name, { filter } = {}) {   // filter(d): repository-table filter; makes each bar a link to section 5
@@ -2898,7 +2917,7 @@ document.title = `${FW.title} Compliance Report · ${ORG} · ${fmtDate(DATA.run_
   const metaRow = (k, v) => meta.append(h('dt', { text: k }), h('dd', {}, v));
   metaRow('Report ID', DATA.report_id);
   metaRow('Status as of', fmtDateTime(DATA.run_at));
-  metaRow('Trend period', `${fmtDate(HISTORY[0].date)} – ${fmtDate(HISTORY.at(-1).date)}`);
+  metaRow('Trend period', `${fmtMonth(SLOTS[0])} – ${fmtMonth(SLOTS.at(-1))} (last ${TREND_MONTHS} months)`);
   metaRow('Previous report', h('a', { href: DATA.previous_report.data_url, text: DATA.previous_report.report_id }));
   metaRow('Scope', plural(ACTIVE.length, 'active repository', 'active repositories'));
   metaRow('Workflow run', h('a', { href: DATA.run_url, text: DATA.run_url.split('/').pop() }));
@@ -2917,11 +2936,11 @@ const errN = DATA.errors.length;
     if (prev == null) return null;
     const d = +(cur - prev).toFixed(1);
     const cls = d === 0 ? 'flat' : (d > 0) === goodWhenUp ? 'good' : 'bad';
-    return h('div', { class: `delta ${cls}` }, `${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${Math.abs(d)}${unit} `, h('span', { text: `vs ${fmtDate(PREV.date)}` }));
+    return h('div', { class: `delta ${cls}` }, `${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${Math.abs(d)}${unit} `, h('span', { text: `vs ${fmtMonth(PREV.month)}` }));
   };
   $('hero-value').append(String(S.compliance_pct), h('small', { text: '%' }));
   $('hero-delta').append(deltaNode(S.compliance_pct, PREV?.compliance_pct, { unit: ' pts' }) ?? '');
-  $('hero-spark').append(sparkline(HISTORY.map(x => x.compliance_pct), { w: 220, hgt: 36 }));
+  $('hero-spark').append(sparkline(trendValues(x => x.compliance_pct), { w: 220, hgt: 36 }));
   $('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results are not counted; an active repository that a tool skipped fails that tool's checks.`;
 
   const withF = new Set(FINDINGS.map(f => f.repo));
@@ -2991,13 +3010,12 @@ function coverageNode(q) {
   }
   return h('span', { class: 'cov-txt', text: 'Not assessed' });
 }
-/* Mini trend: share of applicable repositories that pass, per weekly run (data.json → history[].coverage) */
+/* Mini trend: share of applicable repositories that pass, per monthly report (data.json → history[].coverage) */
 function trendNode(q) {
-  const vs = HISTORY.map(x => x.coverage?.[q.id] ?? null);
-  if (!q.repositories || vs.filter(v => v != null).length < 2) return h('span', { class: 'cov-txt muted', text: '–' });
+  const vs = trendValues(x => x.coverage?.[q.id]);
+  if (!q.repositories || vs.every(v => v == null)) return h('span', { class: 'cov-txt muted', text: '–' });
   const lo = Math.min(...vs.filter(v => v != null));
-  const node = sparkline(vs, { min: Math.max(0, lo - 5), max: 100.5 });
-  return h('span', { title: vs.map((v, i) => `${fmtDay(HISTORY[i].date)}: ${v == null ? 'no data' : fmtPct(v)}`).join('\n') }, node);
+  return sparkline(vs, { min: Math.max(0, lo - 5), max: 100.5 });
 }
 
 /* Group failing findings by check and reason. Scorecard checks form one group per check (the histogram shows the scores); numbers in other reasons are masked so "1 user…" and "3 users…" group together. */
@@ -3040,7 +3058,7 @@ function renderCard(q) {
 
 {
   const tbody = document.querySelector('#req-table tbody');
-  $('req-trend-h').textContent = `${HISTORY.length}-week trend`;
+  $('req-trend-h').textContent = `${TREND_MONTHS}-month trend`;
   let lastCh = null;
   for (const q of DATA.requirements) {
     const ch = q.chapter;
@@ -3063,14 +3081,15 @@ function renderCard(q) {
 
 /* ═══════════════════════════ 3 Trends ═══════════════════════════ */
 {
-  $('trends-lead').textContent = `${plural(HISTORY.length, 'weekly run')} from ${fmtDate(HISTORY[0].date)} to ${fmtDate(HISTORY.at(-1).date)}, carried forward in data.json → history.`;
-  const labels = HISTORY.map(x => fmtDay(x.date));
-  const cv = HISTORY.map(x => x.compliance_pct);
-  const ct = niceTicks(Math.floor(Math.min(...cv)) - 1, Math.min(100, Math.ceil(Math.max(...cv)) + 1));
-  lineChart($('chart-compliance'), { labels, values: cv, yMin: ct[0], yMax: ct.at(-1), yTicks: ct, fmt: v => fmtPct(v), name: 'Overall compliance' });
-  const fv = HISTORY.map(x => x.failing_repositories);
-  const ft = niceTicks(0, Math.max(...fv) * 1.15, 3);
-  columnChart($('chart-findings'), { labels, values: fv, yMax: ft.at(-1), yTicks: ft, name: 'Active repositories with findings' });
+  const measured = SLOTS.filter(m => BY_MONTH[m]).length;
+  $('trends-lead').textContent = `Last ${TREND_MONTHS} months (${fmtMonth(SLOTS[0])} – ${fmtMonth(SLOTS.at(-1))}), one value per monthly report: ${plural(measured, 'report')}. A month without a report has no point and no bar. Carried forward in data.json → history.`;
+  const labels = SLOTS.map(fmtMon), full = SLOTS.map(fmtMonth);
+  const cv = trendValues(x => x.compliance_pct), cvm = cv.filter(v => v != null);
+  const ct = niceTicks(Math.floor(Math.min(...cvm)) - 1, Math.min(100, Math.ceil(Math.max(...cvm)) + 1));
+  lineChart($('chart-compliance'), { labels, full, values: cv, yMin: ct[0], yMax: ct.at(-1), yTicks: ct, fmt: v => fmtPct(v), name: 'Overall compliance' });
+  const fv = trendValues(x => x.failing_repositories);
+  const ft = niceTicks(0, Math.max(...fv.filter(v => v != null)) * 1.15, 3);
+  columnChart($('chart-findings'), { labels, full, values: fv, yMax: ft.at(-1), yTicks: ft, name: 'Active repositories with findings' });
 }
 
 /* ═══════════════════════════ 4 Findings ═══════════════════════════ */

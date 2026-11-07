@@ -35,7 +35,7 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 
 | Script | Status | Role |
 |---|---|---|
-| `create_repos.js` | exists | Preventive: provisions repositories, teams, security configuration, ruleset targets. Not part of the weekly compliance run. |
+| `create_repos.js` | exists | Preventive: provisions repositories, teams, security configuration, ruleset targets. Not part of the compliance run. |
 | `lint_repos.js` | exists, extend | Per-repository checks on repository data and the cloned content |
 | `license_scan.js` | exists, extend | SBOM retrieval and dependency licenses |
 | `archive_repos.js` | exists, extend | Inactivity notices and archival |
@@ -43,9 +43,9 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `scorecard_check.js` | **new** | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds and applicability (e.g. languages for fuzzing, QA.05), opens and closes issues (see 1.9) |
 | `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses. Renders HTML and Markdown from `data.json` only |
 
-### 1.4 Weekly workflow
+### 1.4 Monthly workflow
 
-One workflow, `compliance.yaml`, runs every week and replaces the separate schedules of `lint_repos`, `license_scan` and `archive_repos`. It runs all tools one after another in one job. Each tool writes its JSON file into a local directory `out/`; then `compliance_report` aggregates them:
+One workflow, `compliance.yaml`, runs once a month (scheduled, and by manual dispatch). It runs all tools one after another in one job. Each tool writes its JSON file into a local directory `out/`; then `compliance_report` aggregates them:
 
 ```
 lint_repos --json               → out/lint_repos.json
@@ -59,13 +59,15 @@ compliance_report --config config/compliance_report_bsi.yaml
 compliance_report --config config/compliance_report_allianz.yaml
                                 ← out/*.json + previous allianz-data.json + its notes file
                                 → out/allianz-data.json, out/allianz-report.html, out/allianz-report.md
-release compliance-YYYY-MM-DD   ← the files of every report, all tool files (once)
+release compliance-YYYY-MM      ← the files of every report, all tool files (once)
 ```
 
 - **One run, several reports.** The tools run once; each report configuration (1.8) turns the same tool files into its own report. The release of a run holds all reports, so they always rest on the same evidence. Asset names start with the report's `key`.
 
+- **At most one report per month.** The release is named after the month (`compliance-2026-11`). A rerun in the same month replaces it: delete the release first (`gh release delete compliance-2026-11 --cleanup-tag --yes`), then dispatch the workflow again.
+- **The tools run in two places.** As part of `compliance.yaml`, once a month with `--json`, for the report. And on their own schedules as today, for issues and notices (`lint_repos` twice a week, `license_scan` and `archive_repos` weekly; `scorecard_check` gets its own schedule too), so project teams get feedback within days. Both runs use the same code and configuration; only the run in `compliance.yaml` writes the JSON file. Issues are updated by both, which is harmless because each tool keeps one issue per repository.
 - Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10).
-- `compliance_report` downloads `<key>-data.json` of its own report from the previous release, which carries the trend history. Each report has its own history. The checking scripts never read a previous run.
+- `compliance_report` downloads `<key>-data.json` of its own report from the previous release, which carries the trend history. The previous release is the newest `compliance-*` release of an earlier month; a release of the current month is never read. Each report has its own history. The checking scripts never read a previous run.
 - The tool files are published in the release as evidence. The report itself is rendered from `data.json` only.
 
 ### 1.5 Check IDs, issues and labels
@@ -145,7 +147,8 @@ Each requirement is assessed once, at its own level: a MUST requirement on its M
 
 - **Findings count repositories.** A repository has a finding for a requirement if it fails at least one applicable check of that requirement. Every number in the report counts repositories (per requirement, or active repositories with at least one finding), never failing checks: which checks implement a requirement is an implementation detail, and one missing file can fail several checks. Failing checks are shown only as the explanation next to a repository.
 
-- **Trend:** each run appends to `data.json` → `history` the overall compliance, the number of active repositories with findings (`failing_repositories`) and, per requirement, the share of applicable repositories that pass (`coverage`). Each value is computed from that run's own results; a missed run is a gap, not a wrong value.
+- **Trend:** each report writes one entry per month to `data.json` → `history` (`month: "2026-11"`): the overall compliance, the number of active repositories with findings (`failing_repositories`) and, per requirement, the share of applicable repositories that pass (`coverage`). Each value is computed from that run's own results. Whether the run was early or late in the month does not matter. `history` keeps every month; nothing is made up for months without a report.
+- **Trend display:** the report shows the last 6 months, one slot per month, ending with the current month. A month without a report has no point and no hover: the line continues through it, the bar chart has a gap. Before the first report the line is flat, so the first report already shows a horizontal line with one point and a single bar. Only the charts in section 3 have a hover with the values; the sparklines in the summary and per requirement have none.
 
 - **No finding age:** the report does not compute how long a finding has been open. A "failing since" date would have to be carried forward from run to run, and it would silently reset on a missed run, a renamed repository or check, or a check that flaps. The live issues on GitHub show a finding's history.
 
@@ -160,7 +163,7 @@ One configuration file per report. Every file and file name is set in the config
 
 ```yaml
 # config/compliance_report_bsi.yaml
-key: bsi                     # prefix of asset names (bsi-data.json, …) and of the report ID (OSPO-CR-BSI-2026-11-03)
+key: bsi                     # prefix of asset names (bsi-data.json, …) and of the report ID (OSPO-CR-BSI-2026-11)
 framework:                   # requirement set, copied into data.json → framework
   id: bsi-tr-03185
   title: BSI TR-03185 Chapter 2
@@ -215,7 +218,7 @@ as_of: 2026-11-03            # the run the text was written for
 
 ### 1.9 Scorecard conversion (`scorecard_check`)
 
-**Source:** the Scorecard CLI, `scorecard --repo=github.com/<org>/<repo> --format=json --show-details`, run for every in-scope repository in the weekly workflow, with a pinned version. The public API (`api.scorecard.dev`) only has results for repositories that run the Scorecard Action with `publish_results`; on 4 Nov 2026 that was 1 of 5 active allianz repositories. The CLI output is identical to the API response except `date` (local time) and an extra `metadata: null` (see `mock_data/scorecard_*_real_yukimi.json`).
+**Source:** the Scorecard CLI, `scorecard --repo=github.com/<org>/<repo> --format=json --show-details`, run for every in-scope repository in the compliance workflow, with a pinned version. The public API (`api.scorecard.dev`) only has results for repositories that run the Scorecard Action with `publish_results`; on 4 Nov 2026 that was 1 of 5 active allianz repositories. The CLI output is identical to the API response except `date` (local time) and an extra `metadata: null` (see `mock_data/scorecard_*_real_yukimi.json`).
 
 **Conversion per check** (match by `name`, not by position):
 
@@ -252,7 +255,7 @@ as_of: 2026-11-03            # the run the text was written for
    - `scope`: active and archived repositories;
    - `requirements`: the mapped checks, status and coverage per requirement (1.7);
    - `summary`: checks evaluated and passed, compliance %, requirements by status, active repositories with findings (`failing_repositories`).
-6. **Carry forward** from `<key>-data.json` of the previous release: `history` (this run is appended). Nothing else is read from the previous run.
+6. **Carry forward** from `<key>-data.json` of the previous release (1.4): `history`. This run's entry is added for its month. Nothing else is read from the previous run.
 7. **Read the notes file** named by `notes:` (1.8), if configured: `notes` gets `file`, `sha256`, `as_of`, `key_messages` and `needs_attention` (each a list of inline-Markdown strings). Missing file: `notes: null`. Invalid file: `notes: null` and an entry in `errors` with `tool: compliance_report`.
 8. **Write** `<key>-data.json`, then render `<key>-report.html` and `<key>-report.md` from it. The data-health banner at the top of the summary is generated and appears only when an input is `missing` or `invalid` or `errors` is not empty.
 
@@ -260,7 +263,7 @@ as_of: 2026-11-03            # the run the text was written for
 
 | Key | Content | Step |
 |---|---|---|
-| `report_id`, `run_at`, `org`, `ospo_sha`, `run_url` | This run; `report_id` is `OSPO-CR-<KEY>-<date>` | – |
+| `report_id`, `run_at`, `org`, `ospo_sha`, `run_url` | This run; `report_id` is `OSPO-CR-<KEY>-<YYYY-MM>` | – |
 | `report_config`, `config_sha256` | Path and hash of the report configuration, which pin the mapping that produced the statuses | – |
 | `framework` | Copied from the report configuration | – |
 | `previous_report` | The `data.json` that `history` was read from | 6 |
