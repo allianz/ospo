@@ -79,7 +79,7 @@ Active repositories: 3 (archived: 1, excluded: 0)
   pricing-engine: 1 advisory published in the last 12 months: GHSA-7q4x-2m9c-h3vf after 18 days
 Late publications: 1 repository
 
-JSON written to out/advisories_check.json
+JSON written to results/advisories_check.json
 ```
 
 Only repositories with advisories in the lookback window are listed. If none was late, the summary line is `All advisories published in time.` A repository whose advisories return 404 is listed with the reason of its `errors` entry, and a line `Not readable (in errors): N repositories` follows. With `--debug`, a line `Advisories published since <date>, at most <max_days> days after creation` follows the first line, and every repository is listed.

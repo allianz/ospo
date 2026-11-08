@@ -103,7 +103,7 @@ Scanned repositories: 3
 Findings: 1 repository
 Errors: 2 repositories
 
-JSON written to out/scorecard.json
+JSON written to results/scorecard.json
 ```
 
 A scan can take minutes per repository, so the progress is printed while it runs: one line per repository as soon as its scan has finished, in the order they finish, with Scorecard's overall score (or `not scanned`). An empty line separates it from the results. Failing checks are listed with score and threshold, one line per repository and check; a `fail` decided by scorecard_check (no score) shows its decision instead. Then one line per repository that could not be scanned and per check in `errors`. If none fails, the summary line is `No findings.`. With `--debug`, a line `Managed branch protection: N repositories (from <create_repos_config>)` follows the version, and passing (`License 10: license file detected`) and not applicable checks (`CI-Tests na: not applicable, topic 'docs'`) are listed too.

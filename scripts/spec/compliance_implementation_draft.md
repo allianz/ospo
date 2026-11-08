@@ -47,34 +47,34 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 
 ### 1.4 Monthly workflow
 
-One workflow, `.github/workflows/compliance_report.yaml`, produces the reports. It runs on the 1st of every month at 03:00 UTC (scheduled), by manual dispatch, and when a notes file changes in the report PR. It runs all tools one after another in one job. Each tool writes its JSON file into a fresh local directory `out/`; then `compliance_report` aggregates them, and the run commits the result to the report PR:
+One workflow, `.github/workflows/compliance_report.yaml`, produces the reports. It runs on the 1st of every month at 03:00 UTC (scheduled), by manual dispatch, and when a notes file changes in the report PR. It runs all tools one after another in one job. Each tool writes its JSON file into a fresh local directory `results/`; then `compliance_report` aggregates them, and the run commits the result to the report PR:
 
 ```
-lint_repos --json               → out/lint_repos.json
-license_scan --json             → out/license_scan.json
-archive_repos --json            → out/archive_repos.json
-by_construction --json          → out/by_construction.json
-advisories_check --json         → out/advisories_check.json
-releases_check --json           → out/releases_check.json
-scorecard_check --json          → out/scorecard.json
+lint_repos --json               → results/lint_repos.json
+license_scan --json             → results/license_scan.json
+archive_repos --json            → results/archive_repos.json
+by_construction --json          → results/by_construction.json
+advisories_check --json         → results/advisories_check.json
+releases_check --json           → results/releases_check.json
+scorecard_check --json          → results/scorecard.json
 compliance_report --config config/compliance_report_bsi.yaml
-                                ← out/*.json + latest earlier reports/<YYYY-MM>/bsi-data.json + its notes file
+                                ← results/*.json + latest earlier reports/<YYYY-MM>/bsi-data.json + its notes file
                                 → reports/2026-11/bsi-data.json, reports/2026-11/bsi-report.html
 compliance_report --config config/compliance_report_allianz.yaml
-                                ← out/*.json + latest earlier reports/<YYYY-MM>/allianz-data.json + its notes file
+                                ← results/*.json + latest earlier reports/<YYYY-MM>/allianz-data.json + its notes file
                                 → reports/2026-11/allianz-data.json, reports/2026-11/allianz-report.html
 commit reports/2026-11/         → branch compliance-report, PR opened if none is open
 ```
 
-- **Locally and in the workflow: `make create_reports`.** It runs the tool steps above into a fresh `out/` (each with a leading `-`, like `continue-on-error`) and then `compliance_report` once per `config/compliance_report_*.yaml`. It targets `allianz` and passes `--dry-run` to the tools that write to GitHub (`lint_repos`, `license_scan`, `archive_repos`). The workflow calls it unchanged, so the report run only reads: it opens no issues and archives nothing. With `--dry-run`, a repository that `archive_repos` would archive stays active and gets its results.
-- **One run, several reports.** The tools run once; each report configuration (1.8) turns the same tool files into its own report. One commit holds all reports of the month, so they always rest on the same evidence. Each month has its own folder `reports/<YYYY-MM>/` (sorted by name); file names start with the report's `key`. The tool files stay in `out/` and are not committed: `data.json` pins each one by its `sha256` in `inputs`.
+- **Locally and in the workflow: `make create_reports`.** It runs the tool steps above into a fresh `results/` (each with a leading `-`, like `continue-on-error`) and then `compliance_report` once per `config/compliance_report_*.yaml`. It targets `allianz` and passes `--dry-run` to the tools that write to GitHub (`lint_repos`, `license_scan`, `archive_repos`). The workflow calls it unchanged, so the report run only reads: it opens no issues and archives nothing. With `--dry-run`, a repository that `archive_repos` would archive stays active and gets its results.
+- **One run, several reports.** The tools run once; each report configuration (1.8) turns the same tool files into its own report. One commit holds all reports of the month, so they always rest on the same evidence. Each month has its own folder `reports/<YYYY-MM>/` (sorted by name); file names start with the report's `key`. The tool files stay in `results/` and are not committed: `data.json` pins each one by its `sha256` in `inputs`.
 - **Published by pull request.** The run checks out the branch `compliance-report` if it exists and merges `main` into it (current scripts, merged reports; the notes edits of the open PR are kept), otherwise it creates the branch from `main`. A merge conflict fails the run. It commits the month folder `reports/<YYYY-MM>/` as the App's bot user and pushes with the GitHub App token; a push or PR with `GITHUB_TOKEN` would trigger no workflows. The tool files, the log and the reports are also uploaded as the run's artifact `compliance-report-<YYYY-MM>` (90 days), which is the easiest way to open the HTML. If no PR is open for the branch, it opens one. The OSPO reviews the PR, edits the notes files on the branch (1.8) and merges. The ruleset `ospo-managed` requires an approval: the App is the author, and an OSPO member approves. The merged commit on `main` is the published report. There is no release. The App needs `contents: write` and `pull_requests: write` on `ospo`, and the branch is deleted after the merge (repository setting "Automatically delete head branches"). Whether the ruleset requires signed commits or status checks that the App's commits cannot meet **(verify)**.
 - **Why a pull request.** The default branch of `ospo` is protected by the ruleset like every other managed repository (GV.02). A direct push would need a bypass, and it would fail `ospo` on its own Code-Review and CI-Tests checks (QA.04, QA.06; see 1.9). The monthly merge also keeps the repository active: GitHub disables scheduled workflows in a public repository after 60 days without activity.
 - **Editing the notes reruns everything.** `compliance_report.yaml` also runs on `pull_request` with `paths: config/compliance_report_*_notes.md`, only for the report PR of this repository (`github.head_ref == 'compliance-report'`). It runs all tools again, so the PR always shows the latest run. GitHub applies the path filter to the whole PR diff, so the workflow's own push would trigger it again: a guard step skips the run when the head commit changes only `reports/`.
 - **Rerun:** dispatch the workflow. It adds a commit to the open PR, or opens a new PR if none is open. It merges `main` into the branch first, so it always uses the current scripts and reports.
 - **Usually one report per month.** Every merge publishes a report. If two are merged in the same month, the later one replaces that month's entry in `history` (1.10 step 6).
 - **The tools run in two places.** As part of `compliance_report.yaml`, once a month with `--json --dry-run`, for the report. And on their own schedules as today, for issues, notices and archiving (`lint_repos` twice a week, `license_scan` and `archive_repos` weekly), so project teams get feedback within days. The JSON-only tools (`by_construction`, `advisories_check`, `releases_check`, `scorecard_check`) open no issues and run only in `compliance_report.yaml`. Both runs use the same code and configuration; only the report run writes the JSON file, and only the scheduled runs write to GitHub.
-- Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10). Because `out/` starts empty, a failed tool leaves no file, never last month's.
+- Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10). Because `results/` starts empty, a failed tool leaves no file, never last month's.
 - `compliance_report` reads the `data.json` of its own report in the latest month folder before the current month, from the local `reports/` folder; it carries the trend history. The run's checkout of the report branch comes from `main`, so only merged reports enter the history (update the branch from `main` before a rerun if `main` changed). Each report has its own history. The checking scripts never read a previous run.
 - The tool files are not committed; `data.json` pins them by `sha256`. The report itself is rendered from `data.json` only.
 
@@ -92,7 +92,7 @@ commit reports/2026-11/         → branch compliance-report, PR opened if none 
   | `scorecard/` | `scorecard_check` |
   | `by-construction/` | `by_construction`, see below |
 
-- **`by-construction` checks test nothing.** The small script `by_construction` ([spec](by_construction_spec.md)) only lists the repositories of the organisation; its checks always pass. They stand for guarantees GitHub gives by design, e.g. `by-construction/source-archives`: the source archives of a release are generated by GitHub from the tag, so they always match the repository content (BR.05). Likewise `by-construction/sbom-available`: the dependency graph, and with it the SBOM, is always enabled for public repositories (LE.02, QA.01). It writes one `pass` per check and active repository into `out/by_construction.json`, like every other tool file, so that such a requirement has statuses, coverage and a card like every other requirement. The rule text of each check starts with "Not a test; always passes", and the report shows it under "How it is verified". It adds passing results to the compliance %.
+- **`by-construction` checks test nothing.** The small script `by_construction` ([spec](by_construction_spec.md)) only lists the repositories of the organisation; its checks always pass. They stand for guarantees GitHub gives by design, e.g. `by-construction/source-archives`: the source archives of a release are generated by GitHub from the tag, so they always match the repository content (BR.05). Likewise `by-construction/sbom-available`: the dependency graph, and with it the SBOM, is always enabled for public repositories (LE.02, QA.01). It writes one `pass` per check and active repository into `results/by_construction.json`, like every other tool file, so that such a requirement has statuses, coverage and a card like every other requirement. The rule text of each check starts with "Not a test; always passes", and the report shows it under "How it is verified". It adds passing results to the compliance %.
 - **Requirement mapping** exists in one place only: the report configuration (1.8), one per report. Each report maps the same check IDs to its own requirements. The scripts know nothing about requirement IDs.
 - **JSON-only checks:** a check on something project teams have no influence on gets no issue: it writes results to the JSON file, but is not listed in the tool's issue and never opens one. Its results are evidence for the report and audits only, and the report shows them like every other check. This applies to `lint/public` (teams cannot change the visibility) and `lint/issues-enabled` (teams cannot disable Issues). A check can also be JSON only by decision: `lint/development` (BR.01) is something teams can fix, but it is tracked in the report only, without an issue (`json_only: true` in `config/lint_repos.yaml`). Likewise `releases/versioning` (BR.02) and `releases/release-notes` (BR.04): `releases_check` opens no issues at all. The same holds for all `scorecard/*` checks (GV.02, QA.04–QA.06, BR.03, VM.01): `scorecard_check` opens no issues; the Scorecard documentation linked in the catalogue explains remediation. The `by-construction` checks (e.g. `by-construction/sbom-available`: teams cannot remove the SBOM) open no issues anyway. The `fix` of a JSON-only check names the OSPO as the one who acts.
 - **Issues:** each tool keeps one issue per repository, as `lint_repos` and `license_scan` do today. That issue lists all failing checks of that tool; it is the project team's to-do list for that tool. Issues are a convenience for the project teams. The report does not read them, and they do not affect any status: a team may close an issue without fixing the finding, and the tool opens it again on the next run. There are no labels.
@@ -184,7 +184,7 @@ framework:                   # requirement set, copied into data.json → framew
   url: https://www.bsi.bund.de/dok/TR-03185-en
   chapters: { GV: Governance, LE: Legal, QA: Quality, BR: Build and release, VM: Vulnerability management, DE: Decommissioning }
 
-inputs:                      # tool files expected in out/ (see 1.10)
+inputs:                      # tool files expected in results/ (see 1.10)
   - { file: lint_repos.json,    script: scripts/lint_repos.js }
   - { file: license_scan.json,  script: scripts/license_scan.js }
   - { file: archive_repos.json, script: scripts/archive_repos.js }
@@ -255,7 +255,7 @@ The first three rows are decisions of `scorecard_check` that need no Scorecard d
 
 ### 1.10 Aggregation (`compliance_report`)
 
-`compliance_report` turns the tool files in `out/` into one self-contained `data.json`. The HTML and Markdown reports are rendered from `data.json` only and never read a tool file, so every number in the report can be traced to `data.json`. The tool files are pinned by their `sha256` in `inputs`; they are not committed (1.4).
+`compliance_report` turns the tool files in `results/` into one self-contained `data.json`. The HTML and Markdown reports are rendered from `data.json` only and never read a tool file, so every number in the report can be traced to `data.json`. The tool files are pinned by their `sha256` in `inputs`; they are not committed (1.4).
 
 **Rule: `data.json` contains only what the report shows or the next run needs.** Everything else (e.g. `reason` and `details` of repository checks, `fix` for checks that have an issue) stays in the tool files and in the issues, which are written from them. If the report starts to show a field, it is added to `data.json` at the same time.
 

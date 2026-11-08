@@ -34,7 +34,7 @@ node scripts/compliance_report.js --org <org> --config <file> --dir <dir> [--rep
 |---|---|---|
 | `--org` | required | Organisation of the run. A tool file of another organisation is invalid |
 | `--config` | required | Report configuration, e.g. `config/compliance_report_bsi.yaml`. There is no default: one run per report |
-| `--dir` | required | Directory with the tool files (`out/` in `make create_reports`). Only read |
+| `--dir` | required | Directory with the tool files (`results/` in `make create_reports`). Only read |
 | `--reports` | `reports/` of the repo | Reports directory. `data.json` and the HTML report are written to `<reports>/<YYYY-MM>/` |
 | `--dry-run` | false | Accepted like in every script. Has no effect: the script makes no changes on GitHub |
 | `--debug` | false | Also print every requirement with its status and counts |
@@ -232,7 +232,7 @@ reports/                  committed by pull request, never emptied
     bsi-report.html
   2026-12/
     …
-out/                      tool files of the run (gitignored), emptied by make create_reports
+results/                  tool files of the run (gitignored), emptied by make create_reports
 ```
 
 - The month folder is the month of `run_at` (UTC), `YYYY-MM`, so the folders sort by name.
@@ -267,13 +267,13 @@ Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 c
 
 ## Make target
 
-`make create_reports` runs every tool with `--json` into a fresh `out/`, then this script once per `config/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`:
+`make create_reports` runs every tool with `--json` into a fresh `results/`, then this script once per `config/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`:
 
 | Variable | Default | Meaning |
 |---|---|---|
 | `ORG` | `allianz` | Organisation |
 | `CONFIG_DIR` | `config` | Tool configurations (`scripts/test-config` for the sandbox) |
-| `REPORT_DIR` | `out` | Directory of the tool files, emptied first (gitignored) |
+| `JSON_DIR` | `results` | Directory of the tool files, emptied first (gitignored). The same directory the `test_*` targets write to |
 | `REPORTS_DIR` | `reports` | Reports directory (`--reports`), never emptied |
 | `DRY_RUN` | `--dry-run` | Passed to `lint_repos`, `license_scan` and `archive_repos`, the tools that write to GitHub. The monthly workflow keeps the default; `DRY_RUN=` runs them for real, for manual use only |
 

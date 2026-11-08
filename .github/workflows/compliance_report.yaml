@@ -121,7 +121,7 @@ jobs:
         run: |
           set -o pipefail
           echo "month=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
-          # Next to out/, not in it: make create_reports empties out/ first. Uploaded below, also on failure.
+          # Next to results/, not in it: make create_reports empties results/ first. Uploaded below, also on failure.
           log=create_reports.log
           GITHUB_SHA=$(git rev-parse HEAD) make create_reports 2>&1 | tee "$log"
           # compliance_report's own warnings (missing or invalid tool files, tool errors) as annotations
@@ -143,7 +143,7 @@ jobs:
           name: compliance-report-${{ steps.reports.outputs.month }}
           path: |
             create_reports.log
-            out/
+            results/
             reports/${{ steps.reports.outputs.month }}/
           retention-days: 90
           if-no-files-found: ignore

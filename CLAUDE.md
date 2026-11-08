@@ -19,7 +19,7 @@ make test_by_construction # Integration test against ospo-sandbox org
 make test_advisories_check # Integration test against ospo-sandbox org
 make test_releases_check  # Integration test against ospo-sandbox org
 make test_scorecard_check # Integration test against ospo-sandbox org (needs the Scorecard CLI)
-make create_reports       # All tools --json into out/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/compliance_report_*.yaml
+make create_reports       # All tools --json into results/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/compliance_report_*.yaml
                           # (allianz, --dry-run, also in CI; ORG=ospo-sandbox CONFIG_DIR=scripts/test-config for the sandbox)
 make test                 # Unit tests with coverage report (node --test)
 cd scripts && npm test                         # Unit tests without coverage
@@ -44,7 +44,7 @@ node scripts/scorecard_check.js --org <org> --json <file> [--config <file>] [--d
 node scripts/compliance_report.js --org <org> --config <report.yaml> --dir <dir> [--reports <dir>] [--debug]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js`, `releases_check.js` and `scorecard_check.js` are JSON only as well (`--json` is required): they open no issues and never write to GitHub. `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `out/` are not). A Markdown report is not implemented yet.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js`, `releases_check.js` and `scorecard_check.js` are JSON only as well (`--json` is required): they open no issues and never write to GitHub. `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). A Markdown report is not implemented yet.
 
 ### Required Tools
 
@@ -96,6 +96,10 @@ Nine JavaScript (ESM) scripts, each driven by a YAML config file, built on share
 
 - **Production configs**: `config/` directory
 - **Test configs**: `scripts/test-config/` directory (targets `ospo-sandbox` org)
+
+### Output folders
+
+- `results/` (Makefile `JSON_DIR`, gitignored) is the only folder for tool files (`--json`), used by every Make target and the workflows. `reports/` holds the committed reports (`<YYYY-MM>/<key>-data.json`, `<key>-report.html`). Before adding a new output folder or Makefile variable for a path, check whether an existing one already serves the purpose, and reuse it.
 
 ### CI/CD (GitHub Actions)
 

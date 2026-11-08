@@ -81,7 +81,7 @@ Active repositories: 4 (archived: 1, excluded: 1)
 Releasing repositories: 3
 Findings: 2 repositories
 
-JSON written to out/releases_check.json
+JSON written to results/releases_check.json
 ```
 
 Only failing checks are listed, one line per repository and check. If none fails, the summary line is `All releases versioned and documented.` A repository whose releases return 404 is listed with the reason of its `errors` entries, and a line `Not readable (in errors): N repositories` follows. With `--debug`, a line `Releases published since <date>, release notes of at least <min_notes_chars> characters` follows the first line, passing checks are listed too, and so are the repositories without releases (`No release in the last 12 months`).
