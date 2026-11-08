@@ -228,7 +228,7 @@ requirements:
 
 ### 1.9 Scorecard conversion (`scorecard_check`)
 
-**Source:** the Scorecard CLI, `scorecard --repo=github.com/<org>/<repo> --format=json --show-details`, run for every in-scope repository in the compliance workflow, with a pinned version (`scorecard_version` in `config/scorecard_check.yaml`; the run fails on another version). Full rules: [`scorecard_check_spec.md`](scorecard_check_spec.md). The public API (`api.scorecard.dev`) only has results for repositories that run the Scorecard Action with `publish_results`; on 4 Nov 2026 that was 1 of 5 active allianz repositories. The CLI output is identical to the API response except `date` (local time) and an extra `metadata: null` (see `mock_data/scorecard_*_real_yukimi.json`).
+**Source:** the Scorecard CLI, `scorecard --repo=github.com/<org>/<repo> --format=json --show-details`, run for every in-scope repository in the compliance workflow, with a pinned version (`scorecard_version` in `config/scorecard_check.yaml`; the run fails on another version). Full rules: [`scorecard_check_spec.md`](scorecard_check_spec.md). The public API (`api.scorecard.dev`) only has results for repositories that run the Scorecard Action with `publish_results`; on 4 Nov 2026 that was 1 of 5 active allianz repositories. The CLI output is identical to the API response except `date` (local time) and an extra `metadata: null` (the real CLI output of allianz/yukimi is the test fixture `scripts/test/fixtures/scorecard_cli_real_yukimi.json`).
 
 **Conversion per check** (match by `name`, not by position; the first matching row decides):
 
@@ -247,7 +247,7 @@ The first three rows are decisions of `scorecard_check` that need no Scorecard d
 
 - `name`, `score`, `reason` and `details` are copied unchanged from Scorecard. `-1` becomes `score: null`, `details: null` becomes `[]`, `date` is converted to UTC.
 - When `scorecard_check` decides the result itself (managed branch protection, topic `docs`/`template`, changes without pull requests), `reason` stays Scorecard's text and the first `details` line explains the decision, e.g. `Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed` or `Warn: scorecard_check: 30 changesets reached the default branch without pull requests`.
-- **Reason text is parsed** only for the changeset count. A reason the parser does not recognise goes to `errors`, so a new Scorecard wording cannot silently turn a `fail` into `na`. The real outputs in `mock_data/` serve as test fixtures.
+- **Reason text is parsed** only for the changeset count. A reason the parser does not recognise goes to `errors`, so a new Scorecard wording cannot silently turn a `fail` into `na`. The real output in `scripts/test/fixtures/` serves as test fixture.
 - **Checks written:** every check in `thresholds` of `config/scorecard_check.yaml`. A configured check missing from the output goes to `errors`; a check of the output that is not configured (e.g. a new check in a newer Scorecard version) is ignored and named in the run log.
 - **No usable output:** a repository Scorecard cannot scan (not JSON, timeout, or `checks: null`, which Scorecard returns for an empty repository) gets one `errors` row per configured check.
 - **Observed on real data (7 Nov 2026, first run of `scorecard_check` on allianz):** all 5 active repositories scanned in about 15 seconds, without errors. `ng-aquila` and `ospo` carry the topic `docs`, so CI-Tests (QA.04) is `na` for them; if they are meant to count, the topic must go. Dangerous-Workflow and Token-Permissions are `-1` (`na`) for repositories without workflows.
@@ -372,7 +372,6 @@ The first three rows are decisions of `scorecard_check` that need no Scorecard d
 
 **New work:** done (`by_construction`).
 
-> Differs from the mock-up: LE.02 becomes "Met" by construction (SBOM availability). The `NOASSERTION` share is not reported.
 
 ---
 
@@ -595,7 +594,6 @@ The first three rows are decisions of `scorecard_check` that need no Scorecard d
 
 **New work:** done (`by_construction`).
 
-> Differs from the mock-up: the mock-up used Scorecard Binary-Artifacts. That check finds binaries *in the repository*, which is a different question, so it is dropped here.
 
 ---
 

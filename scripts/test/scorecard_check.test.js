@@ -21,7 +21,7 @@ const FUZZING = { languages: ['C', 'C++', 'Objective-C', 'Objective-C++', 'Assem
 const NOT_FUZZED = { applies: false, line: 'Info: scorecard_check: not applicable, no non-memory-safe language (C) above 5%' };
 
 /** Real, unmodified Scorecard CLI output (allianz/yukimi, v5.6.0). */
-const fixture = JSON.parse(await readFile(path.join(repoRoot, 'scripts/spec/mock_data/scorecard_cli_real_yukimi.json'), 'utf8'));
+const fixture = JSON.parse(await readFile(path.join(repoRoot, 'scripts/test/fixtures/scorecard_cli_real_yukimi.json'), 'utf8'));
 const ALL_THRESHOLDS = Object.fromEntries(fixture.checks.map(c => [c.name, 8]));
 
 /** The fixture with some checks changed: `{ 'CI-Tests': { score: -1, reason: '…' } }`; `null` removes a check. */

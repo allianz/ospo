@@ -493,10 +493,8 @@ describe('parseNotes', () => {
     });
   });
 
-  it('accepts empty sections and the mock notes file', async () => {
+  it('accepts empty sections', () => {
     assert.deepEqual(parseNotes('## Key messages\n\n## Needs attention\n'), { key_messages: [], needs_attention: [] });
-    const mock = parseNotes(await readFile(path.join(repoRoot, 'scripts/spec/mock_data/compliance_report_bsi_notes.md'), 'utf8'));
-    assert.deepEqual([mock.key_messages.length, mock.needs_attention.length], [4, 3]);
   });
 
   const invalid = [
