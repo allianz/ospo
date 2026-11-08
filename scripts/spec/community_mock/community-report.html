@@ -391,7 +391,7 @@
       <div class="filter-count" id="p-count"></div>
       <div class="scroll-x">
         <table id="projects-table">
-          <thead><tr><th>Project</th><th>Stats</th><th class="num">Stars</th><th id="p-trend-h">Trend</th></tr></thead>
+          <thead><tr><th>Project</th><th>Stats</th><th class="num">Stars</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -759,20 +759,18 @@ function projectBody(r) {
 {
   $('projects-lead').textContent = `Every project with its stats; green numbers are the growth in ${fmtMonthLong(DATA.period.month)}. ` +
     'Expand a project for all numbers and its trends over the last 12 months. Numbers in brackets are external.';
-  $('p-trend-h').textContent = `Stars, ${TREND_MONTHS} months`;
   const tbody = $('projects-table').tBodies[0];
   const rows = REPOS.map(r => {
     const g = starGrowth(r);
     const det = h('details', { class: 'req' }, h('summary', {}, h('span', { class: 'name', text: r.repo })));
-    const cell = h('td', { colspan: 4 });
+    const cell = h('td', { colspan: 3 });
     const card = h('tr', { class: 'card-row', hidden: '' }, cell);
     // details are built on first open
     det.addEventListener('toggle', () => { if (det.open && !cell.firstChild) cell.append(h('div', { class: 'rcard' }, projectBody(r))); card.hidden = !det.open; });
     const row = h('tr', {},
       h('td', {}, det, h('div', { class: 'desc', text: r.description })),
       h('td', {}, statsOf(r)),
-      h('td', { class: 'num stars' }, h('b', { text: num(r.stars) }), g > 0 ? h('span', { class: 'd', text: `+${num(g)} in ${fmtMon(DATA.period.month)}` }) : null),
-      h('td', {}, sparkline(trend(x => x.repositories?.[r.repo]?.stars ?? null), { flatStart: false })));
+      h('td', { class: 'num stars' }, h('b', { text: num(r.stars) }), g > 0 ? h('span', { class: 'd', text: `+${num(g)} in ${fmtMon(DATA.period.month)}` }) : null));
     return { r, det, els: [row, card] };
   });
   const SORT = {
