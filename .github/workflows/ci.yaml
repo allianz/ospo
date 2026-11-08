@@ -2,7 +2,11 @@
 name: CI
 on:
   workflow_dispatch: null
-  pull_request: null
+  pull_request:
+    paths:
+      - 'scripts/**'
+      - 'Makefile'
+      - '.github/workflows/ci.yaml'
 permissions:
   contents: read
 

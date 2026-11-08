@@ -113,7 +113,7 @@ Ten JavaScript (ESM) scripts, each driven by a YAML config file (except `scoreca
 - `archive_repos.yaml` — Scheduled weekly (Sun midnight)
 - `license_scan.yaml` — Scheduled weekly (Mon midnight)
 - `compliance_report.yaml` — Monthly (1st, 03:00 UTC) and on edits of `config/report/compliance_report_*_notes.md` in the report PR: `make create_reports` (tools with `--dry-run`, so it never writes issues or archives), commits `reports/<YYYY-MM>/` to the branch `compliance-report` (merging `main` into it) and opens the PR; tool files and reports are uploaded as artifact
-- `ci.yaml` — On every pull request: `make test` (unit tests with the coverage thresholds)
+- `ci.yaml` — On pull requests that change `scripts/`, the `Makefile` or the workflow itself: `make test` (unit tests with the coverage thresholds)
 - All workflows support manual dispatch
 - Authentication via GitHub App tokens (`ALLIANZ_APP_ID`, `ALLIANZ_PRIVATE_KEY`)
 
