@@ -73,7 +73,25 @@ describe('createGitHub', () => {
     [gh => gh.listReleases('o', 'r'), 'GET', '/repos/o/r/releases?per_page=100', undefined, [{ tag_name: 'v1.0.0' }], [{ tag_name: 'v1.0.0' }]],
     [gh => gh.listRootFiles('o', 'r'), 'GET', '/repos/o/r/contents', undefined, [{ name: 'CHANGELOG.md', type: 'file' }, { name: 'docs', type: 'dir' }], ['CHANGELOG.md']],
     [gh => gh.getFileText('o', 'r', 'CHANGELOG.md'), 'GET', '/repos/o/r/contents/CHANGELOG.md', undefined, '## 1.0.0', '## 1.0.0'],
+    [gh => gh.listOrgMembers('o'), 'GET', '/orgs/o/members?per_page=100', undefined, [{ login: 'ana' }], ['ana']],
+    [gh => gh.getContributorStats('o', 'r'), 'GET', '/repos/o/r/stats/contributors', undefined, [{ total: 1 }], { status: 200, data: [{ total: 1 }] }],
+    [gh => gh.listIssuesSince('o', 'r', '2026-10-01T00:00:00Z'), 'GET', '/repos/o/r/issues?state=all&since=2026-10-01T00%3A00%3A00Z&per_page=100', undefined, [{ number: 1 }], [{ number: 1 }]],
+    [gh => gh.getTrafficViews('o', 'r'), 'GET', '/repos/o/r/traffic/views?per=day', undefined, { count: 3, uniques: 1, views: [] }, { count: 3, uniques: 1, views: [] }],
+    [gh => gh.getTrafficClones('o', 'r'), 'GET', '/repos/o/r/traffic/clones?per=day', undefined, { count: 2, uniques: 1, clones: [] }, { count: 2, uniques: 1, clones: [] }],
   ];
+
+  it('getContributorStats returns the status while GitHub computes the statistics', async () => {
+    const { gh } = recordingOctokit(() => ({ status: 202, data: {} }));
+    assert.deepEqual(await gh.getContributorStats('o', 'r'), { status: 202, data: [] });
+  });
+
+  it('listPullsUpdatedSince stops paging at the first pull request updated before the date', async () => {
+    const since = '2026-10-01T00:00:00Z';
+    const { gh, requests } = recordingOctokit(() => ({ data: [{ number: 2, updated_at: '2026-10-05T00:00:00Z' }, { number: 1, updated_at: '2026-09-30T00:00:00Z' }] }));
+    assert.deepEqual((await gh.listPullsUpdatedSince('o', 'r', since)).map(p => p.number), [2]);
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].url, 'https://api.github.com/repos/o/r/pulls?state=all&sort=updated&direction=desc&per_page=100');
+  });
 
   for (const [call, method, pathAndQuery, body, data, expected] of cases) {
     it(`${method} ${pathAndQuery}`, async () => {

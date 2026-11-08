@@ -430,7 +430,6 @@ const $ = id => document.getElementById(id);
 const DATA = JSON.parse($('data.json').textContent);
 const ORG = DATA.org, T = DATA.totals, G = DATA.growth, REPOS = DATA.repositories;
 const HISTORY = DATA.history;
-const PREV = HISTORY.length > 1 ? HISTORY.at(-2) : null;
 
 /* ═══════════════════════════ Helpers (as in scorecard_report.html) ═══════════════════════════ */
 const NS = 'http://www.w3.org/2000/svg';
@@ -463,6 +462,7 @@ const addMonths = (ym, k) => { const n = +ym.slice(0, 4) * 12 + +ym.slice(5, 7) 
 const num = v => v == null ? '–' : Number(v).toLocaleString('en');
 const plural = (n, one, many = one + 's') => `${num(n)} ${n === 1 ? one : many}`;
 const sum2 = x => x ? x.internal + x.external : null;
+const noData = el => el.append(h('p', { class: 'small muted', text: 'No data.' }));
 const repoUrl = repo => `https://github.com/${ORG}/${repo}`;
 const runLink = url => url ? h('a', { href: url, text: url.split('/').pop() }) : h('span', { class: 'muted', text: 'local run' });
 
@@ -470,6 +470,9 @@ const runLink = url => url ? h('a', { href: url, text: url.split('/').pop() }) :
 const TREND_MONTHS = 6;
 const SLOTS = Array.from({ length: TREND_MONTHS }, (_, i) => addMonths(DATA.period.month, i - TREND_MONTHS + 1));
 const BY_PERIOD = Object.fromEntries(HISTORY.map(x => [x.period, x]));
+/* The month before (not simply the entry before): a month without a report gives no change "this month" */
+const PREV = BY_PERIOD[addMonths(DATA.period.month, -1)] ?? null;
+const ACTIVE_WITHIN = DATA.levels.active_within ?? '90 days';
 const trend = f => SLOTS.map(m => (BY_PERIOD[m] ? f(BY_PERIOD[m]) : null) ?? null);
 const LABELS = SLOTS.map(fmtMon), FULL = SLOTS.map(fmtMonth);
 const PREV_LABEL = fmtMon(addMonths(DATA.period.month, -1)), EARLIER_LABEL = fmtMon(addMonths(DATA.period.month, -TREND_MONTHS));
@@ -544,6 +547,7 @@ const showLabel = (i, n) => n <= 8 || (n - 1 - i) % 2 === 0;
 function lineChart(el, { values, name, W = 560, H = 240, flatStart = true, detail }) {   // detail(i): extra tooltip line   // flatStart: a flat line before the first value
   const m = { t: 14, r: 56, b: 30, l: 52 };
   const idx = values.map((v, i) => v == null ? null : i).filter(i => i != null);
+  if (!idx.length) return noData(el);
   const first = idx[0], li = idx.at(-1);
   const vs = idx.map(i => values[i]);
   const ticks = niceTicks(Math.min(...vs) * 0.9, Math.max(...vs, Math.min(...vs) + 4));
@@ -602,6 +606,7 @@ function stackedColumns(el, { values, name, W = 560, H = 240 }) {   // values: o
   const m = { t: 22, r: 16, b: 30, l: 44 };
   const tot = values.map(v => v == null ? null : v.internal + v.external);
   const idx = tot.map((v, i) => v == null ? null : i).filter(i => i != null);
+  if (!idx.length) return noData(el);
   const li = idx.at(-1);
   const ticks = niceTicks(0, Math.max(1, ...idx.map(i => tot[i])));
   const yMax = ticks.at(-1);
@@ -659,13 +664,16 @@ $('subtitle').textContent = `${fmtMonthLong(DATA.period.month)} · open source p
 /* ═══════════════════════════ 1 At a glance ═══════════════════════════ */
 {
   const nc = T.new_contributors, tr = T.traffic;
-  const pct = g => g.six_months_ago ? Math.round((g.value / g.six_months_ago - 1) * 100) : null;
+  const pct = g => g.six_months_ago && g.value != null ? Math.round((g.value / g.six_months_ago - 1) * 100) : null;
   const vg = pct(G.visitors), sg = pct(G.stars);
-  $('glance-lead').textContent =
-    `In the 14 days before the run, ${num(tr.visitors)} people visited the ${plural(T.public_projects, 'open source project')} of ${ORG} and ${num(tr.cloners)} cloned them` +
-    (vg != null ? `: ${vg}% more visitors than ${TREND_MONTHS} months ago.` : '.') +
-    ` In ${fmtMonthLong(DATA.period.month)}, ${plural(nc.external, 'person', 'people')} from outside Allianz made their first contribution and ${plural(T.releases, 'release')} were published.` +
-    (sg != null ? ` Stars grew by ${sg}% in ${TREND_MONTHS} months.` : '');
+  const more = p => p >= 0 ? `${p}% more` : `${-p}% fewer`;
+  $('glance-lead').textContent = DATA.input.status !== 'ok'
+    ? `No numbers for ${fmtMonthLong(DATA.period.month)}: ${DATA.input.file} is ${DATA.input.status}. The trends show the earlier months.`
+    : (tr ? `In the 14 days before the run, ${num(tr.visitors)} people visited the ${plural(T.public_projects, 'open source project')} of ${ORG} and ${num(tr.cloners)} cloned them` +
+        (vg != null ? `: ${more(vg)} visitors than ${TREND_MONTHS} months ago.` : '.')
+      : `The traffic of the ${plural(T.public_projects, 'open source project')} of ${ORG} could not be read.`) +
+      ` In ${fmtMonthLong(DATA.period.month)}, ${plural(nc?.external, 'person', 'people')} from outside Allianz made their first contribution and ${plural(T.releases, 'release')} ${T.releases === 1 ? 'was' : 'were'} published.` +
+      (sg != null && sg > 0 ? ` Stars grew by ${sg}% in ${TREND_MONTHS} months.` : '');
 
   const kpi = (key, label, sub, f, hero = false) => {
     const g = G[key];
@@ -677,10 +685,10 @@ $('subtitle').textContent = `${fmtMonthLong(DATA.period.month)} · open source p
       h('div', { class: hero ? 'note' : 'sub', text: sub }));
   };
   $('kpis').append(
-    kpi('stars', 'Stars', `Stars of all ${plural(T.public_projects, 'public project')} (${num(T.new_projects)} new, ${num(T.active_projects)} active in the last 90 days). ${num(T.forks)} forks.`, x => x.totals.stars, true),
-    kpi('visitors', 'Unique visitors', `Last 14 days · ${num(T.traffic.views)} page views`, x => x.totals.traffic?.visitors),
-    kpi('cloners', 'Unique cloners', `Last 14 days · ${num(T.traffic.clones)} clones`, x => x.totals.traffic?.cloners),
-    kpi('external_contributors', 'External contributors', `All-time, of ${num(G.contributors.value)} contributors · ${num(nc.external)} new in ${fmtMon(DATA.period.month)}`, x => x.totals.contributors.external),
+    kpi('stars', 'Stars', `Stars of all ${plural(T.public_projects, 'public project')} (${num(T.new_projects)} new, ${num(T.active_projects)} active in the last ${ACTIVE_WITHIN}). ${num(T.forks)} forks.`, x => x.totals.stars, true),
+    kpi('visitors', 'Unique visitors', `Last 14 days · ${num(T.traffic?.views)} page views`, x => x.totals.traffic?.visitors),
+    kpi('cloners', 'Unique cloners', `Last 14 days · ${num(T.traffic?.clones)} clones`, x => x.totals.traffic?.cloners),
+    kpi('external_contributors', 'External contributors', `All-time, of ${num(G.contributors.value)} contributors · ${num(nc?.external)} new in ${fmtMon(DATA.period.month)}`, x => x.totals.contributors?.external),
     kpi('releases', 'Releases', `Published in ${fmtMon(DATA.period.month)}`, x => x.totals.releases),
   );
 
@@ -697,6 +705,7 @@ $('subtitle').textContent = `${fmtMonthLong(DATA.period.month)} · open source p
 /* ═══════════════════════════ 2 Highlights ═══════════════════════════ */
 {
   const list = $('highlight-list');
+  if (!DATA.highlights.length) list.append(h('li', {}, h('span', { class: 'ico', 'aria-hidden': 'true', text: '·' }), h('div', { class: 'muted', text: DATA.input.status === 'ok' ? 'Nothing new this month.' : 'No data this month.' })));
   for (const x of DATA.highlights) {
     const body = h('div', {}, x.repo ? [h('a', { href: repoUrl(x.repo), text: x.repo, style: 'font-weight:600' }), ' '] : null, x.text);
     if (x.kind === 'releases') body.append(h('div', { class: 'rel' }, DATA.releases.map(r => `${r.repo} ${r.tag}`).join(' · ')));
@@ -707,7 +716,9 @@ $('subtitle').textContent = `${fmtMonthLong(DATA.period.month)} · open source p
 /* ═══════════════════════════ 3 Growth ═══════════════════════════ */
 {
   const v = G.visitors, c = G.contributors;
-  $('growth-lead').textContent = `The last ${TREND_MONTHS} months. Unique visitors grew from ${num(v.six_months_ago)} to ${num(v.value)}, contributors from ${num(c.six_months_ago)} to ${num(c.value)}. ` +
+  const change = (what, g) => g.six_months_ago != null && g.value != null ? `${what} ${g.value >= g.six_months_ago ? 'grew' : 'went'} from ${num(g.six_months_ago)} to ${num(g.value)}` : null;
+  const changes = [change('Unique visitors', v), change('contributors', c)].filter(Boolean);
+  $('growth-lead').textContent = `The last ${TREND_MONTHS} months.` + (changes.length ? ` ${changes.join(', ')}.` : '') + ' ' +
     'Traffic is the 14-day value GitHub returns at each monthly run, so one point per month.';
   const tr = f => i => { const x = BY_PERIOD[SLOTS[i]]?.totals.traffic; return x ? f(x) : ''; };
   lineChart($('c-stars'), { values: trend(x => x.totals.stars), name: 'Stars' });
@@ -727,14 +738,14 @@ function statsOf(r) {
   const p = prevOf(r.repo), c = sum2(r.contributors);
   return h('div', { class: 'chips' },
     r.new_project ? h('span', { class: 'chip', title: 'Published this month' }, h('span', { class: 'ico', 'aria-hidden': 'true', text: '🆕' }), 'New project') : null,
-    stat('👥', c, `contributors · ${num(r.contributors.external)} external`, sum2(r.new_contributors), `All-time; +${num(sum2(r.new_contributors))} new in ${fmtMon(DATA.period.month)}`),
-    stat('🚀', r.releases.total, r.releases.total === 1 ? 'release' : 'releases', r.releases.period, `All-time; ${num(r.releases.period)} in ${fmtMon(DATA.period.month)}`),
+    stat('👥', c, `contributors · ${num(r.contributors?.external)} external`, sum2(r.new_contributors), `All-time; +${num(sum2(r.new_contributors))} new in ${fmtMon(DATA.period.month)}`),
+    stat('🚀', r.releases?.total, r.releases?.total === 1 ? 'release' : 'releases', r.releases?.period, `All-time; ${num(r.releases?.period)} in ${fmtMon(DATA.period.month)}`),
     stat('🍴', r.forks, r.forks === 1 ? 'fork' : 'forks', p ? r.forks - p.forks : null, 'All-time'),
-    r.active ? h('span', { class: 'chip', title: 'A commit in the last 90 days' }, h('span', { class: 'ico', 'aria-hidden': 'true', text: '🔥' }), 'Active') : null);
+    r.active ? h('span', { class: 'chip', title: `A push in the last ${ACTIVE_WITHIN}` }, h('span', { class: 'ico', 'aria-hidden': 'true', text: '🔥' }), 'Active') : null);
 }
 const prevStars = repo => prevOf(repo)?.stars;
 const starGrowth = r => { const p = prevStars(r.repo); return p == null ? null : r.stars - p; };
-const split = x => [num(sum2(x)), ' ', h('span', { class: 'ext small', text: `(${num(x.external)} ext.)` })];
+const split = x => x ? [num(sum2(x)), ' ', h('span', { class: 'ext small', text: `(${num(x.external)} ext.)` })] : [h('span', { class: 'muted', text: 'no data' })];
 const fact = (title, period, rows, extra) => h('div', { class: 'fact' }, h('h4', { text: title }), h('div', { class: 'period', text: period }),
   h('dl', {}, rows.flatMap(([k, v]) => [h('dt', { text: k }), h('dd', {}, v)])), extra ?? null);
 
@@ -748,7 +759,7 @@ function projectBody(r) {
       ['Stars', num(r.stars)],
       ['Forks', num(r.forks)],
       ['Contributors', split(r.contributors)],
-      ['Releases', num(r.releases.total)],
+      ['Releases', num(r.releases?.total)],
       ['Release downloads', num(r.release_downloads)],
       ['Published', fmtDate(r.created_at)],
     ]),
@@ -756,10 +767,10 @@ function projectBody(r) {
       ['New contributors', split(r.new_contributors)],
       ['Active contributors', split(r.active_contributors)],
       ['Commits', num(r.commits)],
-      ['PRs merged', split(r.prs.merged)],
-      ['Issues opened / closed', `${num(sum2(r.issues.opened))} / ${num(sum2(r.issues.closed))}`],
-      ['Releases', num(r.releases.period)],
-    ], r.releases.tags.length ? h('div', { class: 'tags' }, '🚀 ', r.releases.tags.join(', ')) : null),
+      ['PRs merged', split(r.prs?.merged)],
+      ['Issues opened / closed', `${num(sum2(r.issues?.opened))} / ${num(sum2(r.issues?.closed))}`],
+      ['Releases', num(r.releases?.period)],
+    ], r.releases?.tags.length ? h('div', { class: 'tags' }, '🚀 ', r.releases.tags.join(', ')) : null),
     fact('Last 14 days', r.traffic ? `${fmtDate(r.traffic.from)} – ${fmtDate(r.traffic.to)}` : 'GitHub keeps traffic for 14 days', r.traffic ? [
       ['Views', num(r.traffic.views)],
       ['Unique visitors', num(r.traffic.visitors)],
@@ -799,7 +810,7 @@ function projectBody(r) {
     return { r, det, els: [row, card] };
   });
   const SORT = {
-    contributors: (a, b) => sum2(b.r.contributors) - sum2(a.r.contributors) || a.r.repo.localeCompare(b.r.repo),
+    contributors: (a, b) => (sum2(b.r.contributors) ?? -1) - (sum2(a.r.contributors) ?? -1) || a.r.repo.localeCompare(b.r.repo),
     stars: (a, b) => b.r.stars - a.r.stars || a.r.repo.localeCompare(b.r.repo),
     growth: (a, b) => (starGrowth(b.r) ?? -1) - (starGrowth(a.r) ?? -1) || a.r.repo.localeCompare(b.r.repo),
     repo: (a, b) => a.r.repo.localeCompare(b.r.repo),
@@ -850,10 +861,13 @@ function projectBody(r) {
   def('Internal / external', `Internal: member of the GitHub organisation ${ORG} at the time of the run. External: every other GitHub user. Bots are not counted.`);
   def('Contributors', 'Commit authors on the default branch with a GitHub account, counted once across all projects. New: the first commit of the person in any project falls in the month.');
   def('Visitors and clones', 'GitHub keeps traffic for 14 days only: the numbers cover the last 14 days before the run, not the whole month. The trends show this 14-day value once per month. Unique visitors and cloners are summed over the projects, so a person visiting two projects counts twice. Clones include CI pipelines.');
-  def('Active', 'A commit on the default branch in the last 90 days before the end of the month.');
+  def('Active', `A push to the project in the last ${ACTIVE_WITHIN} before the end of the month.`);
   def('Missing data', DATA.errors.length ? DATA.errors.map(e => `${e.repo}: ${e.reason}`).join('; ') : 'none');
-  $('integrity').textContent = `${DATA.report_id} · generated from community.json of ${fmtDateTime(DATA.run_at)} · ospo ${(DATA.ospo_sha ?? 'unknown').slice(0, 7)}`;
+  const source = DATA.input.run_at ? `generated from ${DATA.input.file} of ${fmtDateTime(DATA.input.run_at)}` : `${DATA.input.file} ${DATA.input.status}`;
+  $('integrity').textContent = `${DATA.report_id} · ${source} · ospo ${(DATA.ospo_sha ?? 'unknown').slice(0, 7)}`;
 }
+
+document.documentElement.dataset.render = 'ok';
 </script>
 </body>
 </html>

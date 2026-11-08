@@ -1,0 +1,3 @@
+exports[`run > writes community-data.json and logs the headline numbers 1`] = `
+"Report: Open Source Community (OSPO-CM-2026-11)\\nInput: community.json ok (3 repositories, 1 skipped, 1 error)\\nPeriod: October 2026\\nStars: 163 (previous 140) · Unique visitors: 200 (previous 150) · Contributors: 11 (previous 9)\\nMilestones: 4 held, 2 new: stars-150, contributors-10\\nHighlights: 6\\nHistory: 4 months (previous report: OSPO-CM-2026-10)\\nWarning: data health: 1 error (no data)\\n\\nJSON written to <reports>/2026-11/community-data.json\\nHTML written to <reports>/2026-11/community-report.html\\n"
+`;

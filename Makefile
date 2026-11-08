@@ -19,8 +19,8 @@ DRY_RUN ?= --dry-run
 REPORT_CONFIGS := $(wildcard config/compliance_report_*.yaml)
 
 .PHONY: check-token \
-        test_lint_repos test_archive_repos test_create_repos test_license_scan test_by_construction test_advisories_check test_releases_check test_scorecard_check \
-        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan dry_run_by_construction dry_run_advisories_check dry_run_releases_check dry_run_scorecard_check \
+        test_lint_repos test_archive_repos test_create_repos test_license_scan test_by_construction test_advisories_check test_releases_check test_scorecard_check test_community_metrics \
+        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan dry_run_by_construction dry_run_advisories_check dry_run_releases_check dry_run_scorecard_check dry_run_community_metrics \
         create_reports test coverage
 
 check-token:
@@ -53,6 +53,9 @@ test_releases_check: check-token
 test_scorecard_check: check-token
 	node $(SCRIPTS)/scorecard_check.js --org ospo-sandbox --config $(SCRIPTS)/test-config/scorecard_check.yaml --debug --json $(JSON_DIR)/scorecard.json
 
+test_community_metrics: check-token
+	node $(SCRIPTS)/community_metrics.js --org ospo-sandbox --config $(SCRIPTS)/test-config/community_metrics.yaml --debug --json $(JSON_DIR)/community.json
+
 # ── Dry runs (allianz) ────────────────────────────────────────────────────────
 
 dry_run_lint_repos: check-token
@@ -79,11 +82,15 @@ dry_run_releases_check: check-token
 dry_run_scorecard_check: check-token
 	node $(SCRIPTS)/scorecard_check.js --org allianz --json $(JSON_DIR)/scorecard.json
 
+dry_run_community_metrics: check-token
+	node $(SCRIPTS)/community_metrics.js --org allianz --json $(JSON_DIR)/community.json
+
 # ── Compliance reports ────────────────────────────────────────────────────────
 
 # Runs every tool with --json into a fresh $(JSON_DIR), then aggregates them once per report
 # configuration into $(REPORTS_DIR)/<YYYY-MM>/<key>-data.json and <key>-report.html, and builds the
-# Scorecard report from scorecard.json (scorecard-data.json, scorecard-report.html). A failing
+# Scorecard report from scorecard.json (scorecard-data.json, scorecard-report.html) and the community
+# report from community.json (community-data.json, community-report.html). A failing
 # tool (leading -) leaves no file: the report shows "no data" for its checks. The Scorecard CLI
 # must be installed (see test_scorecard_check).
 #   make create_reports                                              # allianz, dry-run
@@ -97,11 +104,13 @@ create_reports: check-token
 	-node $(SCRIPTS)/advisories_check.js --org $(ORG) --config $(CONFIG_DIR)/advisories_check.yaml --json $(JSON_DIR)/advisories_check.json
 	-node $(SCRIPTS)/releases_check.js --org $(ORG) --config $(CONFIG_DIR)/releases_check.yaml --json $(JSON_DIR)/releases_check.json
 	-node $(SCRIPTS)/scorecard_check.js --org $(ORG) --config $(CONFIG_DIR)/scorecard_check.yaml --json $(JSON_DIR)/scorecard.json
+	-node $(SCRIPTS)/community_metrics.js --org $(ORG) --config $(CONFIG_DIR)/community_metrics.yaml --json $(JSON_DIR)/community.json
 	@for c in $(REPORT_CONFIGS); do \
 	  echo "node $(SCRIPTS)/compliance_report.js --org $(ORG) --config $$c --dir $(JSON_DIR) --reports $(REPORTS_DIR)"; \
 	  node $(SCRIPTS)/compliance_report.js --org $(ORG) --config $$c --dir $(JSON_DIR) --reports $(REPORTS_DIR) || exit 1; \
 	done
 	node $(SCRIPTS)/scorecard_report.js --org $(ORG) --dir $(JSON_DIR) --reports $(REPORTS_DIR)
+	node $(SCRIPTS)/community_report.js --org $(ORG) --dir $(JSON_DIR) --reports $(REPORTS_DIR)
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 

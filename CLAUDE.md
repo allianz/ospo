@@ -19,8 +19,10 @@ make test_by_construction # Integration test against ospo-sandbox org
 make test_advisories_check # Integration test against ospo-sandbox org
 make test_releases_check  # Integration test against ospo-sandbox org
 make test_scorecard_check # Integration test against ospo-sandbox org (needs the Scorecard CLI)
+make test_community_metrics # Integration test against ospo-sandbox org
 make create_reports       # All tools --json into results/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/compliance_report_*.yaml
                           # and scorecard-data.json + scorecard-report.html from results/scorecard.json
+                          # and community-data.json + community-report.html from results/community.json
                           # (allianz, --dry-run, also in CI; ORG=ospo-sandbox CONFIG_DIR=scripts/test-config for the sandbox)
 make test                 # Unit tests with coverage report (node --test)
 cd scripts && npm test                         # Unit tests without coverage
@@ -44,9 +46,11 @@ node scripts/releases_check.js --org <org> --json <file> [--config <file>] [--de
 node scripts/scorecard_check.js --org <org> --json <file> [--config <file>] [--debug]
 node scripts/compliance_report.js --org <org> --config <report.yaml> --dir <dir> [--reports <dir>] [--debug]
 node scripts/scorecard_report.js --org <org> --dir <dir> [--reports <dir>] [--debug]
+node scripts/community_metrics.js --org <org> --json <file> [--config <file>] [--debug]
+node scripts/community_report.js --org <org> --dir <dir> [--reports <dir>] [--debug]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js`, `releases_check.js` and `scorecard_check.js` are JSON only as well (`--json` is required): they open no issues and never write to GitHub. `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). `scorecard_report.js` works the same way for `<dir>/scorecard.json` alone (no config) and writes `scorecard-data.json` and `scorecard-report.html` into the same month folder. A Markdown report is not implemented yet.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js`, `releases_check.js` and `scorecard_check.js` are JSON only as well (`--json` is required): they open no issues and never write to GitHub. `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). `scorecard_report.js` works the same way for `<dir>/scorecard.json` alone (no config) and writes `scorecard-data.json` and `scorecard-report.html` into the same month folder. `community_metrics.js` is JSON only too: it collects the community numbers of the previous calendar month (counts only, no logins) into `community.json`, which `community_report.js` turns into `community-data.json` and `community-report.html` in the same way. A Markdown report is not implemented yet.
 
 ### Required Tools
 
@@ -68,10 +72,12 @@ Detailed specs for each script — behaviour, config schema, and output format:
 - [`scripts/spec/scorecard_check_spec.md`](scripts/spec/scorecard_check_spec.md)
 - [`scripts/spec/compliance_report_spec.md`](scripts/spec/compliance_report_spec.md)
 - [`scripts/spec/scorecard_report_spec.md`](scripts/spec/scorecard_report_spec.md)
+- [`scripts/spec/community_metrics_spec.md`](scripts/spec/community_metrics_spec.md)
+- [`scripts/spec/community_report_spec.md`](scripts/spec/community_report_spec.md)
 
 ## Architecture
 
-Ten JavaScript (ESM) scripts, each driven by a YAML config file (except `scorecard_report.js`), built on shared libraries in `scripts/lib/`:
+Twelve JavaScript (ESM) scripts, each driven by a YAML config file (except `scorecard_report.js` and `community_report.js`), built on shared libraries in `scripts/lib/`:
 
 1. **`scripts/create_repos.js`** — Creates/manages repos and teams, assigns permissions, syncs with Azure AD. Reads `config/create_repos.yaml`.
 2. **`scripts/lint_repos.js`** — Enforces repo compliance (description, topics, license, README, CONTRIBUTING). Reads `config/lint_repos.yaml`.
@@ -83,6 +89,8 @@ Ten JavaScript (ESM) scripts, each driven by a YAML config file (except `scoreca
 8. **`scripts/scorecard_check.js`** — Runs the OpenSSF Scorecard CLI per active repository and writes all Scorecard checks (`scorecard/<check>`, score, reason and details unchanged) with thresholds and applicability applied (managed branch protection from `config/create_repos.yaml`, `docs`/`template` topics for CI-Tests, languages for Fuzzing), plus a `repositories` block with the overall score per repository. JSON only: no issues, no writes. Reads `config/scorecard_check.yaml`.
 9. **`scripts/compliance_report.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/compliance_report_<key>.yaml`, which holds the requirement texts and the only check → requirement mapping): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest earlier month folder in the local `reports/`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
 10. **`scripts/scorecard_report.js`** — The OpenSSF Scorecard report: turns `scorecard.json` (all checks plus the overall score per repository) into `reports/<YYYY-MM>/scorecard-data.json` with summary and a score `history` carried forward from the previous month, and renders `scorecard-report.html` (template `scripts/templates/scorecard_report.html`: heatmap repository × check, details, trend). No config, no GitHub calls.
+11. **`scripts/community_metrics.js`** — Collects the community metrics of the previous calendar month per public repository (stars, forks, contributors internal/external, commits, PRs, issues, releases, 14-day traffic) and the totals of the organisation (people counted once across repositories, in memory only). Counts only, no logins in the file. JSON only: no issues, no writes. Reads `config/community_metrics.yaml`.
+12. **`scripts/community_report.js`** — The community report: turns `community.json` into `reports/<YYYY-MM>/community-data.json` with growth (vs the month before and 6 months before), milestones and highlights, carries the `history` forward, and renders `community-report.html` (template `scripts/templates/community_report.html`). No config, no GitHub calls.
 
 ### Shared libraries (`scripts/lib/`)
 
@@ -93,8 +101,8 @@ Ten JavaScript (ESM) scripts, each driven by a YAML config file (except `scoreca
 - `plan.js` — dry-run handling: every change goes through `plan.step(label, fn)` or `plan.apply(fn, { planned, done })`; scripts have no `if (dryRun)` branches for changes
 - `logger.js`, `report.js` — output (`info`, `debug`, `step`; headings, skipped lists, dry-run issue summary)
 - `json_output.js` — the common JSON tool file of `--json`: header (`buildHeader`), catalogue entries linked to spec headings (`specCatalogue`), result rows (`checkResult`), `writeJsonReport`; helpers `sha256`, `blobUrl`, `repoRelative`, `isoSeconds`
-- `report_html.js` — `renderHtml(data, template, title?)`: embeds `data.json` (escaped) and the title into a template (`scripts/templates/compliance_report.html` or `scorecard_report.html`)
-- `report_files.js` — shared by both report scripts: `readToolFile`/`validateToolFile` (tool file status `ok`/`missing`/`invalid`), `readPreviousReport`, `mergeHistory`, `DEFAULT_REPORTS_PATH`
+- `report_html.js` — `renderHtml(data, template, title?)`: embeds `data.json` (escaped) and the title into a template (`scripts/templates/compliance_report.html`, `scorecard_report.html` or `community_report.html`)
+- `report_files.js` — shared by the report scripts: `readToolFile`/`validateToolFile` (tool file status `ok`/`missing`/`invalid`), `readPreviousReport`, `mergeHistory`, `DEFAULT_REPORTS_PATH`
 - `repos.js`, `dates.js`, `concurrency.js` — `partitionRepos`, `parseRelativeDate`, `mapWithConcurrency`
 
 ### Configuration

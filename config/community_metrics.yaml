@@ -1,0 +1,38 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Community Metrics Configuration
+#
+# This file configures the community_metrics script. It collects the metrics of
+# the previous calendar month for every public repository (stars, forks,
+# contributors, commits, pull requests, issues, releases, traffic) for the
+# community report. Read-only: the script opens no issues and changes nothing
+# on GitHub. The file it writes holds counts only, no logins.
+#
+# Parameters:
+#   excluded_repos:  Repository names to leave out of the community report.
+#   bots:            Logins of bots without the [bot] suffix (service accounts).
+#                    Bots are never counted.
+#   active_within:   A project is active with a push within this period before
+#                    the end of the month. Format: "<N> day(s)|month(s)|year(s)"
+#   milestones:      Levels per metric (positive integers, increasing). The
+#                    report celebrates each level the organisation reaches.
+#                    Metrics: visitors (unique visitors of the last 14 days,
+#                    summed over the projects), stars, public_projects,
+#                    contributors, external_contributors. A metric left out
+#                    keeps its default levels.
+#
+# Want to propose a change? Open a pull request and describe your reasoning.
+
+# ──────────────────────────────────────────────────────────────────────────────
+
+excluded_repos: [".github"]
+
+bots: []
+
+active_within: "90 days"
+
+milestones:
+  visitors: [1000, 2500, 5000, 10000]
+  stars: [1000, 2500, 5000, 10000]
+  public_projects: [25, 50, 100]
+  contributors: [100, 200, 500, 1000]
+  external_contributors: [10, 25, 50, 100]

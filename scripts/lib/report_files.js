@@ -1,4 +1,4 @@
-// Files shared by the report scripts (compliance_report, scorecard_report): reading and validating
+// Files shared by the report scripts (compliance_report, scorecard_report, community_report): reading and validating
 // the tool files of a run, and the reports folder with one subfolder per month that carries the
 // history from one report to the next. See spec/compliance_report_spec.md and spec/scorecard_report_spec.md.
 

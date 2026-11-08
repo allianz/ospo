@@ -29,6 +29,11 @@ export function createFakeGitHub({
   releases = {},
   languages = {},
   files = {},
+  members = [],
+  contributorStats = {},
+  pendingStats = {},
+  pulls = {},
+  traffic = {},
   failures = {},
   now = () => new Date('2026-01-01T00:00:00Z'),
 } = {}) {
@@ -47,6 +52,11 @@ export function createFakeGitHub({
     releases: clone(releases),
     languages: clone(languages),
     files: clone(files),
+    members: [...members],
+    contributorStats: clone(contributorStats),
+    pendingStats: { ...pendingStats },
+    pulls: clone(pulls),
+    traffic: clone(traffic),
   };
   const calls = [];
   let nextRepoId = Math.max(1000, ...state.repos.map(r => r.id ?? 0)) + 1;
@@ -172,6 +182,29 @@ export function createFakeGitHub({
       if (text === undefined) throw notFound(`${filePath} not found in ${repo}`);
       return text;
     },
+
+    listOrgMembers: () => [...state.members],
+
+    /** `contributorStats` maps a repo to the stats list (none: 204, empty repository); `pendingStats[repo]` answers 202 that many times first. */
+    getContributorStats: (org, repo) => {
+      if (state.pendingStats[repo] > 0) {
+        state.pendingStats[repo]--;
+        return { status: 202, data: [] };
+      }
+      const stats = state.contributorStats[repo];
+      return stats ? { status: 200, data: clone(stats) } : { status: 204, data: [] };
+    },
+
+    /** The issues of `issues[repo]` (pull requests among them have `pull_request`) updated since `since`. */
+    listIssuesSince: (org, repo, since) => clone(issuesOf(repo).filter(i => (i.updated_at ?? i.created_at) >= since)),
+
+    listPullsUpdatedSince: (org, repo, since) =>
+      clone((state.pulls[repo] ?? []).filter(p => p.updated_at >= since).sort((a, b) => b.updated_at.localeCompare(a.updated_at))),
+
+    /** `traffic` maps a repo to { views, clones } as GitHub returns them; none: no traffic. */
+    getTrafficViews: (org, repo) => clone(state.traffic[repo]?.views ?? { count: 0, uniques: 0, views: [] }),
+
+    getTrafficClones: (org, repo) => clone(state.traffic[repo]?.clones ?? { count: 0, uniques: 0, clones: [] }),
   };
 
   const gh = { calls, state };

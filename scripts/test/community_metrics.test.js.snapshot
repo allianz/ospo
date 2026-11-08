@@ -1,0 +1,310 @@
+exports[`run > writes the metrics of the previous month without logins and never writes to GitHub 1`] = `
+"Period: October 2026 (2026-10-01 – 2026-10-31)\\nRepositories: 3 in scope (skipped: 1 private, 1 archived, 1 fork, 1 excluded)\\nStars: 163 · Forks: 19 · Contributors: 4 (external 2)\\nOctober: 1 new contributor (external 1), 6 active, 17 commits, 2 PRs merged, 3 releases\\nUnique visitors: 87 · Unique cloners: 12 (last 14 days)\\nNot complete (in errors): 1 repository\\n  gamma contributors: Contributor statistics not ready after 3 attempts (GitHub is still computing them)\\n  gamma traffic: Traffic not readable (request returned 403: missing permission)\\n\\nJSON written to <json>\\n"
+`;
+
+exports[`run > writes the metrics of the previous month without logins and never writes to GitHub 2`] = `
+{
+  "tool": "community_metrics",
+  "run_at": "2026-11-01T03:00:00Z",
+  "org": "test-org",
+  "ospo_sha": "abc123",
+  "config_file": "<config>",
+  "config_sha256": "<sha>",
+  "run_url": null,
+  "issue_title": null,
+  "results": [],
+  "catalogue": {},
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "excluded_repos"
+    },
+    {
+      "repo": "old",
+      "reason": "archived"
+    },
+    {
+      "repo": "secret",
+      "reason": "private"
+    },
+    {
+      "repo": "upstream-copy",
+      "reason": "fork"
+    }
+  ],
+  "errors": [
+    {
+      "repo": "gamma",
+      "metric": "contributors",
+      "reason": "Contributor statistics not ready after 3 attempts (GitHub is still computing them)"
+    },
+    {
+      "repo": "gamma",
+      "metric": "traffic",
+      "reason": "Traffic not readable (request returned 403: missing permission)"
+    }
+  ],
+  "period": {
+    "month": "2026-10",
+    "from": "2026-10-01T00:00:00Z",
+    "to": "2026-11-01T00:00:00Z"
+  },
+  "levels": {
+    "milestones": {
+      "visitors": [
+        1000,
+        2500,
+        5000,
+        10000
+      ],
+      "stars": [
+        1000,
+        2500,
+        5000,
+        10000
+      ],
+      "public_projects": [
+        25,
+        50,
+        100
+      ],
+      "contributors": [
+        100,
+        200,
+        500,
+        1000
+      ],
+      "external_contributors": [
+        10,
+        25,
+        50,
+        100
+      ]
+    },
+    "active_within": "90 days"
+  },
+  "totals": {
+    "public_projects": 3,
+    "new_projects": 1,
+    "active_projects": 2,
+    "stars": 163,
+    "forks": 19,
+    "contributors": {
+      "internal": 2,
+      "external": 2
+    },
+    "new_contributors": {
+      "internal": 0,
+      "external": 1
+    },
+    "active_contributors": {
+      "internal": 2,
+      "external": 4
+    },
+    "commits": 17,
+    "prs_merged": {
+      "internal": 1,
+      "external": 1
+    },
+    "releases": 3,
+    "release_downloads": 58,
+    "traffic": {
+      "views": 320,
+      "visitors": 87,
+      "clones": 40,
+      "cloners": 12
+    }
+  },
+  "repositories": [
+    {
+      "repo": "alpha",
+      "description": "alpha project",
+      "created_at": "2024-05-01T10:00:00Z",
+      "pushed_at": "2026-10-20T16:00:00Z",
+      "stars": 120,
+      "forks": 14,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 2,
+        "external": 1
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 1,
+        "external": 3
+      },
+      "commits": 10,
+      "prs": {
+        "opened": {
+          "internal": 1,
+          "external": 2
+        },
+        "merged": {
+          "internal": 1,
+          "external": 1
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 0,
+          "external": 1
+        },
+        "closed": {
+          "internal": 1,
+          "external": 0
+        }
+      },
+      "releases": {
+        "period": 2,
+        "total": 3,
+        "tags": [
+          "v1.1.0",
+          "v1.2.0"
+        ]
+      },
+      "release_downloads": 58,
+      "traffic": {
+        "views": 300,
+        "visitors": 80,
+        "clones": 40,
+        "cloners": 12,
+        "from": "2026-10-18",
+        "to": "2026-10-19"
+      }
+    },
+    {
+      "repo": "beta",
+      "description": "",
+      "created_at": "2026-10-10T09:00:00Z",
+      "pushed_at": "2026-10-20T16:00:00Z",
+      "stars": 3,
+      "forks": 0,
+      "new_project": true,
+      "active": true,
+      "contributors": {
+        "internal": 1,
+        "external": 1
+      },
+      "new_contributors": {
+        "internal": 1,
+        "external": 1
+      },
+      "active_contributors": {
+        "internal": 1,
+        "external": 1
+      },
+      "commits": 7,
+      "prs": {
+        "opened": {
+          "internal": 0,
+          "external": 0
+        },
+        "merged": {
+          "internal": 0,
+          "external": 0
+        },
+        "closed_unmerged": {
+          "internal": 0,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 0,
+          "external": 0
+        },
+        "closed": {
+          "internal": 0,
+          "external": 0
+        }
+      },
+      "releases": {
+        "period": 1,
+        "total": 1,
+        "tags": [
+          "v0.1.0"
+        ]
+      },
+      "release_downloads": 0,
+      "traffic": {
+        "views": 20,
+        "visitors": 7,
+        "clones": 0,
+        "cloners": 0,
+        "from": "2026-10-28",
+        "to": "2026-10-28"
+      }
+    },
+    {
+      "repo": "gamma",
+      "description": "gamma project",
+      "created_at": "2024-05-01T10:00:00Z",
+      "pushed_at": "2026-06-01T00:00:00Z",
+      "stars": 40,
+      "forks": 5,
+      "new_project": false,
+      "active": false,
+      "contributors": null,
+      "new_contributors": null,
+      "active_contributors": null,
+      "commits": null,
+      "prs": {
+        "opened": {
+          "internal": 0,
+          "external": 0
+        },
+        "merged": {
+          "internal": 0,
+          "external": 0
+        },
+        "closed_unmerged": {
+          "internal": 0,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 0,
+          "external": 0
+        },
+        "closed": {
+          "internal": 0,
+          "external": 0
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 0,
+        "tags": []
+      },
+      "release_downloads": 0,
+      "traffic": null
+    }
+  ],
+  "releases": [
+    {
+      "repo": "alpha",
+      "tag": "v1.1.0",
+      "date": "2026-10-02"
+    },
+    {
+      "repo": "alpha",
+      "tag": "v1.2.0",
+      "date": "2026-10-20"
+    },
+    {
+      "repo": "beta",
+      "tag": "v0.1.0",
+      "date": "2026-10-28"
+    }
+  ]
+}
+`;

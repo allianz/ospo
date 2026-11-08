@@ -1,0 +1,12 @@
+# Integration test configuration — targets the GitHub 'ospo-sandbox' organization.
+# Not used in production.
+
+excluded_repos: [".github", "ospo"]
+bots: []
+active_within: "90 days"
+milestones:
+  visitors: [10, 100]
+  stars: [1, 10]
+  public_projects: [5, 10]
+  contributors: [1, 5]
+  external_contributors: [1, 5]

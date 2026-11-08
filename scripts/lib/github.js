@@ -152,5 +152,41 @@ export function createGitHub(octokit) {
     /** The text of a file on the default branch. */
     getFileText: async (org, repo, filePath) =>
       String((await rest.repos.getContent({ owner: org, repo, path: filePath, mediaType: { format: 'raw' } })).data),
+
+    // ── Community metrics ────────────────────────────────────────────────────
+    /** Logins of the organisation's members (all members with Members: read, otherwise the public ones). */
+    listOrgMembers: async org =>
+      (await octokit.paginate(rest.orgs.listMembers, { org, per_page: 100 })).map(m => m.login),
+
+    /**
+     * Weekly commit statistics per author: `{ status, data }`. Status 202 means GitHub is still
+     * computing them (ask again later), 204 an empty repository.
+     */
+    getContributorStats: async (org, repo) => {
+      const { status, data } = await octokit.request('GET /repos/{owner}/{repo}/stats/contributors', { owner: org, repo });
+      return { status, data: Array.isArray(data) ? data : [] };
+    },
+
+    /** Issues and pull requests updated since `since` (ISO date), open and closed. */
+    listIssuesSince: (org, repo, since) =>
+      octokit.paginate(rest.issues.listForRepo, { owner: org, repo, state: 'all', since, per_page: 100 }),
+
+    /** Pull requests updated since `since` (ISO date), newest update first; stops paging at the first older one. */
+    listPullsUpdatedSince: (org, repo, since) =>
+      octokit.paginate(
+        rest.pulls.list,
+        { owner: org, repo, state: 'all', sort: 'updated', direction: 'desc', per_page: 100 },
+        (response, done) => {
+          const pulls = response.data.filter(p => p.updated_at >= since);
+          if (pulls.length < response.data.length) done();
+          return pulls;
+        },
+      ),
+
+    /** Views of the last 14 days: `{ count, uniques, views: [{ timestamp, count, uniques }] }`. */
+    getTrafficViews: async (org, repo) => (await rest.repos.getViews({ owner: org, repo, per: 'day' })).data,
+
+    /** Clones of the last 14 days: `{ count, uniques, clones: [{ timestamp, count, uniques }] }`. */
+    getTrafficClones: async (org, repo) => (await rest.repos.getClones({ owner: org, repo, per: 'day' })).data,
   };
 }
