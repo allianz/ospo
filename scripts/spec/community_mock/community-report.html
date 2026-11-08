@@ -368,7 +368,7 @@
     <div class="grid-2">
       <div class="card"><h3 class="chart-title">Stars</h3><p class="chart-sub">Stars of all projects at the end of each month</p><div id="c-stars"></div></div>
       <div class="card"><h3 class="chart-title">Unique visitors</h3><p class="chart-sub">People who viewed a project page in the 14 days before each monthly run</p><div id="c-visitors"></div></div>
-      <div class="card"><h3 class="chart-title">Contributors</h3><p class="chart-sub">People with at least one commit in any project, all-time, each counted once</p><div id="c-contributors"></div></div>
+      <div class="card"><h3 class="chart-title">Contributors</h3><p class="chart-sub">People with a commit in any project, all-time, counted once</p><div id="c-contributors"></div></div>
       <div class="card"><h3 class="chart-title">Merged pull requests</h3><p class="chart-sub">Pull requests merged in the month, by author</p><div id="c-prs"></div></div>
     </div>
   </section>
@@ -712,7 +712,7 @@ $('subtitle').textContent = `${fmtMonthLong(DATA.period.month)} · open source p
   const tr = f => i => { const x = BY_PERIOD[SLOTS[i]]?.totals.traffic; return x ? f(x) : ''; };
   lineChart($('c-stars'), { values: trend(x => x.totals.stars), name: 'Stars' });
   lineChart($('c-visitors'), { values: trend(x => x.totals.traffic?.visitors), name: 'Unique visitors', detail: tr(x => `${num(x.views)} page views`) });
-  lineChart($('c-contributors'), { values: trend(x => x.totals.contributors?.total), name: 'Contributors', detail: i => { const c = BY_PERIOD[SLOTS[i]]?.totals.contributors; return c ? `${num(c.external)} external, ${num(c.internal)} internal` : ''; } });
+  stackedColumns($('c-contributors'), { values: trend(x => x.totals.contributors), name: 'Contributors' });
   stackedColumns($('c-prs'), { values: trend(x => x.totals.prs_merged), name: 'Merged pull requests' });
 }
 
