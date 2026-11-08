@@ -1,0 +1,4824 @@
+{
+  "report_id": "OSPO-CM-2026-11",
+  "run_at": "2026-11-01T03:12:44Z",
+  "org": "allianz",
+  "ospo_sha": "b06cb46f0c2d4e9a8b7c6d5e4f3a2b1c0d9e8f7a",
+  "run_url": null,
+  "mock": true,
+  "previous_report": {
+    "report_id": "OSPO-CM-2026-10",
+    "data_url": "https://github.com/allianz/ospo/blob/main/reports/2026-10/community-data.json"
+  },
+  "input": {
+    "file": "community.json",
+    "script": "community_metrics",
+    "status": "ok"
+  },
+  "period": {
+    "month": "2026-10",
+    "from": "2026-10-01T00:00:00Z",
+    "to": "2026-11-01T00:00:00Z"
+  },
+  "levels": {
+    "badges": {
+      "stars": [
+        10,
+        50,
+        100,
+        500,
+        1000
+      ],
+      "forks": [
+        10,
+        50,
+        100
+      ],
+      "external_contributors": [
+        1,
+        5,
+        10,
+        25
+      ],
+      "releases": [
+        1,
+        10,
+        50
+      ]
+    },
+    "milestones": {
+      "stars": [
+        1000,
+        2500,
+        5000,
+        10000
+      ],
+      "public_projects": [
+        10,
+        25,
+        50,
+        100
+      ],
+      "contributors": [
+        100,
+        200,
+        500,
+        1000
+      ],
+      "external_contributors": [
+        50,
+        100,
+        250,
+        500
+      ]
+    }
+  },
+  "totals": {
+    "stars": 3185,
+    "forks": 534,
+    "public_projects": 14,
+    "contributors": {
+      "internal": 108,
+      "external": 95,
+      "total": 203
+    },
+    "new_contributors": {
+      "internal": 3,
+      "external": 3
+    },
+    "prs_merged": {
+      "internal": 84,
+      "external": 29
+    },
+    "releases": 7,
+    "commits": 411,
+    "active_contributors": {
+      "internal": 31,
+      "external": 16
+    },
+    "new_projects": 1,
+    "active_projects": 12
+  },
+  "growth": {
+    "stars": {
+      "value": 3185,
+      "previous": 3030,
+      "year_ago": 1978
+    },
+    "public_projects": {
+      "value": 14,
+      "previous": 13,
+      "year_ago": 10
+    },
+    "external_contributors": {
+      "value": 95,
+      "previous": 92,
+      "year_ago": 52
+    },
+    "contributors": {
+      "value": 203,
+      "previous": 196,
+      "year_ago": 111
+    },
+    "prs_merged": {
+      "value": 113,
+      "previous": 109,
+      "year_ago": 69
+    },
+    "releases": {
+      "value": 7,
+      "previous": 6,
+      "year_ago": 5
+    }
+  },
+  "repositories": [
+    {
+      "repo": "claims-engine",
+      "description": "Rules engine for insurance claims handling",
+      "created_at": "2025-10-19T09:12:00Z",
+      "pushed_at": "2026-10-23T16:40:00Z",
+      "stars": 1099,
+      "forks": 176,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 18,
+        "external": 35
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 2
+      },
+      "active_contributors": {
+        "internal": 2,
+        "external": 5
+      },
+      "commits": 72,
+      "prs": {
+        "opened": {
+          "internal": 9,
+          "external": 10
+        },
+        "merged": {
+          "internal": 9,
+          "external": 9
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 1
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 5,
+          "external": 7
+        },
+        "closed": {
+          "internal": 3,
+          "external": 4
+        }
+      },
+      "releases": {
+        "period": 1,
+        "total": 19,
+        "tags": [
+          "v3.1.0"
+        ]
+      },
+      "release_downloads": 5327,
+      "traffic": {
+        "views": 5700,
+        "visitors": 1062,
+        "clones": 808,
+        "cloners": 101,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "stars-100",
+        "stars-500",
+        "stars-1000",
+        "forks-10",
+        "forks-50",
+        "forks-100",
+        "external_contributors-1",
+        "external_contributors-5",
+        "external_contributors-10",
+        "external_contributors-25",
+        "releases-1",
+        "releases-10"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "releases-50",
+          "value": 19,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "repo": "design-tokens",
+      "description": "Design tokens and themes for web and mobile",
+      "created_at": "2025-10-24T09:12:00Z",
+      "pushed_at": "2026-10-15T16:40:00Z",
+      "stars": 665,
+      "forks": 82,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 12,
+        "external": 23
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 1,
+        "external": 1
+      },
+      "commits": 33,
+      "prs": {
+        "opened": {
+          "internal": 6,
+          "external": 5
+        },
+        "merged": {
+          "internal": 5,
+          "external": 3
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 2
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 3,
+          "external": 8
+        },
+        "closed": {
+          "internal": 6,
+          "external": 4
+        }
+      },
+      "releases": {
+        "period": 2,
+        "total": 59,
+        "tags": [
+          "v4.2.0",
+          "v1.3.1"
+        ]
+      },
+      "release_downloads": 4623,
+      "traffic": {
+        "views": 4746,
+        "visitors": 701,
+        "clones": 773,
+        "cloners": 67,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "stars-100",
+        "stars-500",
+        "forks-10",
+        "forks-50",
+        "external_contributors-1",
+        "external_contributors-5",
+        "external_contributors-10",
+        "releases-1",
+        "releases-10",
+        "releases-50"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-1000",
+          "value": 665,
+          "level": 1000
+        },
+        {
+          "badge": "external_contributors-25",
+          "value": 23,
+          "level": 25
+        }
+      ]
+    },
+    {
+      "repo": "policy-sdk-java",
+      "description": "Java SDK for the policy administration APIs",
+      "created_at": "2025-10-27T09:12:00Z",
+      "pushed_at": "2026-10-19T16:40:00Z",
+      "stars": 319,
+      "forks": 65,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 18,
+        "external": 8
+      },
+      "new_contributors": {
+        "internal": 1,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 2,
+        "external": 0
+      },
+      "commits": 31,
+      "prs": {
+        "opened": {
+          "internal": 10,
+          "external": 2
+        },
+        "merged": {
+          "internal": 9,
+          "external": 2
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 2
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 6,
+          "external": 4
+        },
+        "closed": {
+          "internal": 5,
+          "external": 1
+        }
+      },
+      "releases": {
+        "period": 1,
+        "total": 21,
+        "tags": [
+          "v2.5.0"
+        ]
+      },
+      "release_downloads": 3017,
+      "traffic": {
+        "views": 1100,
+        "visitors": 399,
+        "clones": 143,
+        "cloners": 109,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "stars-100",
+        "forks-10",
+        "forks-50",
+        "external_contributors-1",
+        "external_contributors-5",
+        "releases-1",
+        "releases-10"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-500",
+          "value": 319,
+          "level": 500
+        },
+        {
+          "badge": "external_contributors-10",
+          "value": 8,
+          "level": 10
+        },
+        {
+          "badge": "releases-50",
+          "value": 21,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "repo": "k8s-operator-kit",
+      "description": "Building blocks for Kubernetes operators",
+      "created_at": "2025-10-24T09:12:00Z",
+      "pushed_at": "2026-10-16T16:40:00Z",
+      "stars": 327,
+      "forks": 72,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 10,
+        "external": 11
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 5,
+        "external": 2
+      },
+      "commits": 33,
+      "prs": {
+        "opened": {
+          "internal": 8,
+          "external": 2
+        },
+        "merged": {
+          "internal": 5,
+          "external": 1
+        },
+        "closed_unmerged": {
+          "internal": 0,
+          "external": 1
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 4,
+          "external": 1
+        },
+        "closed": {
+          "internal": 6,
+          "external": 2
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 27,
+        "tags": []
+      },
+      "release_downloads": 5022,
+      "traffic": {
+        "views": 2408,
+        "visitors": 367,
+        "clones": 775,
+        "cloners": 84,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "stars-100",
+        "forks-10",
+        "forks-50",
+        "external_contributors-1",
+        "external_contributors-5",
+        "external_contributors-10",
+        "releases-1",
+        "releases-10"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-500",
+          "value": 327,
+          "level": 500
+        },
+        {
+          "badge": "external_contributors-25",
+          "value": 11,
+          "level": 25
+        },
+        {
+          "badge": "releases-50",
+          "value": 27,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "repo": "pdf-render-service",
+      "description": "HTML to PDF rendering as a service",
+      "created_at": "2025-10-02T09:12:00Z",
+      "pushed_at": "2026-10-17T16:40:00Z",
+      "stars": 111,
+      "forks": 28,
+      "new_project": false,
+      "active": false,
+      "contributors": {
+        "internal": 13,
+        "external": 3
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 5,
+        "external": 2
+      },
+      "commits": 48,
+      "prs": {
+        "opened": {
+          "internal": 7,
+          "external": 3
+        },
+        "merged": {
+          "internal": 7,
+          "external": 2
+        },
+        "closed_unmerged": {
+          "internal": 0,
+          "external": 1
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 2,
+          "external": 8
+        },
+        "closed": {
+          "internal": 1,
+          "external": 4
+        }
+      },
+      "releases": {
+        "period": 1,
+        "total": 19,
+        "tags": [
+          "v3.0.0"
+        ]
+      },
+      "release_downloads": 4816,
+      "traffic": {
+        "views": 900,
+        "visitors": 121,
+        "clones": 550,
+        "cloners": 12,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "stars-100",
+        "forks-10",
+        "external_contributors-1",
+        "releases-1",
+        "releases-10"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-500",
+          "value": 111,
+          "level": 500
+        },
+        {
+          "badge": "external_contributors-5",
+          "value": 3,
+          "level": 5
+        },
+        {
+          "badge": "releases-50",
+          "value": 19,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "repo": "data-anonymizer",
+      "description": "Anonymise production data for test environments",
+      "created_at": "2025-10-05T09:12:00Z",
+      "pushed_at": "2026-10-20T16:40:00Z",
+      "stars": 115,
+      "forks": 19,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 4,
+        "external": 5
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 1,
+        "external": 2
+      },
+      "commits": 18,
+      "prs": {
+        "opened": {
+          "internal": 5,
+          "external": 2
+        },
+        "merged": {
+          "internal": 4,
+          "external": 2
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 2,
+          "external": 5
+        },
+        "closed": {
+          "internal": 4,
+          "external": 1
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 7,
+        "tags": []
+      },
+      "release_downloads": 4885,
+      "traffic": {
+        "views": 752,
+        "visitors": 151,
+        "clones": 89,
+        "cloners": 21,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "stars-100",
+        "forks-10",
+        "external_contributors-1",
+        "external_contributors-5",
+        "releases-1"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-500",
+          "value": 115,
+          "level": 500
+        },
+        {
+          "badge": "external_contributors-10",
+          "value": 5,
+          "level": 10
+        },
+        {
+          "badge": "releases-10",
+          "value": 7,
+          "level": 10
+        }
+      ]
+    },
+    {
+      "repo": "terraform-modules",
+      "description": "Reusable Terraform modules for cloud landing zones",
+      "created_at": "2025-10-14T09:12:00Z",
+      "pushed_at": "2026-10-21T16:40:00Z",
+      "stars": 60,
+      "forks": 19,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 11,
+        "external": 2
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 1
+      },
+      "active_contributors": {
+        "internal": 2,
+        "external": 2
+      },
+      "commits": 38,
+      "prs": {
+        "opened": {
+          "internal": 8,
+          "external": 2
+        },
+        "merged": {
+          "internal": 6,
+          "external": 2
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 2
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 5,
+          "external": 7
+        },
+        "closed": {
+          "internal": 5,
+          "external": 5
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 34,
+        "tags": []
+      },
+      "release_downloads": 4145,
+      "traffic": {
+        "views": 345,
+        "visitors": 156,
+        "clones": 162,
+        "cloners": 37,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "forks-10",
+        "external_contributors-1",
+        "releases-1",
+        "releases-10"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-100",
+          "value": 60,
+          "level": 100
+        },
+        {
+          "badge": "external_contributors-5",
+          "value": 2,
+          "level": 5
+        },
+        {
+          "badge": "releases-50",
+          "value": 34,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "repo": "mobile-sdk-ios",
+      "description": "iOS SDK for the customer app platform",
+      "created_at": "2025-10-21T09:12:00Z",
+      "pushed_at": "2026-10-21T16:40:00Z",
+      "stars": 54,
+      "forks": 7,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 6,
+        "external": 3
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 1,
+        "external": 2
+      },
+      "commits": 24,
+      "prs": {
+        "opened": {
+          "internal": 8,
+          "external": 3
+        },
+        "merged": {
+          "internal": 5,
+          "external": 2
+        },
+        "closed_unmerged": {
+          "internal": 0,
+          "external": 2
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 3,
+          "external": 8
+        },
+        "closed": {
+          "internal": 6,
+          "external": 1
+        }
+      },
+      "releases": {
+        "period": 1,
+        "total": 14,
+        "tags": [
+          "v2.12.0"
+        ]
+      },
+      "release_downloads": 4234,
+      "traffic": null,
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "external_contributors-1",
+        "releases-1",
+        "releases-10"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-100",
+          "value": 54,
+          "level": 100
+        },
+        {
+          "badge": "external_contributors-5",
+          "value": 3,
+          "level": 5
+        },
+        {
+          "badge": "releases-50",
+          "value": 14,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "repo": "mobile-sdk-android",
+      "description": "Android SDK for the customer app platform",
+      "created_at": "2025-10-27T09:12:00Z",
+      "pushed_at": "2026-10-17T16:40:00Z",
+      "stars": 49,
+      "forks": 7,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 9,
+        "external": 1
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 2,
+        "external": 1
+      },
+      "commits": 38,
+      "prs": {
+        "opened": {
+          "internal": 8,
+          "external": 3
+        },
+        "merged": {
+          "internal": 7,
+          "external": 1
+        },
+        "closed_unmerged": {
+          "internal": 0,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 1,
+          "external": 0
+        },
+        "closed": {
+          "internal": 3,
+          "external": 0
+        }
+      },
+      "releases": {
+        "period": 1,
+        "total": 14,
+        "tags": [
+          "v3.2.0"
+        ]
+      },
+      "release_downloads": 4314,
+      "traffic": {
+        "views": 445,
+        "visitors": 127,
+        "clones": 47,
+        "cloners": 15,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "external_contributors-1",
+        "releases-1",
+        "releases-10"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-50",
+          "value": 49,
+          "level": 50
+        },
+        {
+          "badge": "external_contributors-5",
+          "value": 1,
+          "level": 5
+        },
+        {
+          "badge": "releases-50",
+          "value": 14,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "repo": "api-guidelines",
+      "description": "REST API design guidelines and linter rules",
+      "created_at": "2025-10-19T09:12:00Z",
+      "pushed_at": "2026-10-25T16:40:00Z",
+      "stars": 78,
+      "forks": 16,
+      "new_project": false,
+      "active": false,
+      "contributors": {
+        "internal": 8,
+        "external": 5
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 2,
+        "external": 3
+      },
+      "commits": 41,
+      "prs": {
+        "opened": {
+          "internal": 9,
+          "external": 5
+        },
+        "merged": {
+          "internal": 7,
+          "external": 3
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 4,
+          "external": 7
+        },
+        "closed": {
+          "internal": 4,
+          "external": 3
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 3,
+        "tags": []
+      },
+      "release_downloads": 4461,
+      "traffic": {
+        "views": 510,
+        "visitors": 161,
+        "clones": 177,
+        "cloners": 41,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "forks-10",
+        "external_contributors-1",
+        "external_contributors-5",
+        "releases-1"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-100",
+          "value": 78,
+          "level": 100
+        },
+        {
+          "badge": "external_contributors-10",
+          "value": 5,
+          "level": 10
+        },
+        {
+          "badge": "releases-10",
+          "value": 3,
+          "level": 10
+        }
+      ]
+    },
+    {
+      "repo": "risk-model-toolkit",
+      "description": "Python toolkit for actuarial risk models",
+      "created_at": "2026-01-21T09:12:00Z",
+      "pushed_at": "2026-10-20T16:40:00Z",
+      "stars": 134,
+      "forks": 21,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 9,
+        "external": 3
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 1,
+        "external": 1
+      },
+      "commits": 23,
+      "prs": {
+        "opened": {
+          "internal": 7,
+          "external": 2
+        },
+        "merged": {
+          "internal": 7,
+          "external": 2
+        },
+        "closed_unmerged": {
+          "internal": 0,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 5,
+          "external": 5
+        },
+        "closed": {
+          "internal": 1,
+          "external": 0
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 11,
+        "tags": []
+      },
+      "release_downloads": 4615,
+      "traffic": {
+        "views": 1041,
+        "visitors": 159,
+        "clones": 494,
+        "cloners": 118,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "stars-100",
+        "forks-10",
+        "external_contributors-1",
+        "releases-1",
+        "releases-10"
+      ],
+      "new_badges": [],
+      "next_badges": [
+        {
+          "badge": "stars-500",
+          "value": 134,
+          "level": 500
+        },
+        {
+          "badge": "external_contributors-5",
+          "value": 3,
+          "level": 5
+        },
+        {
+          "badge": "releases-50",
+          "value": 11,
+          "level": 50
+        }
+      ]
+    },
+    {
+      "repo": "geo-hazard-maps",
+      "description": "Natural hazard map layers and tile server",
+      "created_at": "2026-04-13T09:12:00Z",
+      "pushed_at": "2026-10-28T16:40:00Z",
+      "stars": 75,
+      "forks": 10,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 4,
+        "external": 1
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 1,
+        "external": 1
+      },
+      "commits": 20,
+      "prs": {
+        "opened": {
+          "internal": 6,
+          "external": 2
+        },
+        "merged": {
+          "internal": 5,
+          "external": 0
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 5,
+          "external": 7
+        },
+        "closed": {
+          "internal": 2,
+          "external": 0
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 9,
+        "tags": []
+      },
+      "release_downloads": 904,
+      "traffic": {
+        "views": 295,
+        "visitors": 144,
+        "clones": 864,
+        "cloners": 91,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "forks-10",
+        "external_contributors-1",
+        "releases-1"
+      ],
+      "new_badges": [
+        "forks-10"
+      ],
+      "next_badges": [
+        {
+          "badge": "stars-100",
+          "value": 75,
+          "level": 100
+        },
+        {
+          "badge": "external_contributors-5",
+          "value": 1,
+          "level": 5
+        },
+        {
+          "badge": "releases-10",
+          "value": 9,
+          "level": 10
+        }
+      ]
+    },
+    {
+      "repo": "event-bus-connectors",
+      "description": "Connectors between Kafka and core insurance systems",
+      "created_at": "2026-07-10T09:12:00Z",
+      "pushed_at": "2026-10-15T16:40:00Z",
+      "stars": 64,
+      "forks": 6,
+      "new_project": false,
+      "active": true,
+      "contributors": {
+        "internal": 6,
+        "external": 1
+      },
+      "new_contributors": {
+        "internal": 0,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 4,
+        "external": 1
+      },
+      "commits": 30,
+      "prs": {
+        "opened": {
+          "internal": 7,
+          "external": 1
+        },
+        "merged": {
+          "internal": 5,
+          "external": 0
+        },
+        "closed_unmerged": {
+          "internal": 1,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 5,
+          "external": 0
+        },
+        "closed": {
+          "internal": 1,
+          "external": 1
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 4,
+        "tags": []
+      },
+      "release_downloads": 919,
+      "traffic": {
+        "views": 528,
+        "visitors": 166,
+        "clones": 858,
+        "cloners": 44,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "stars-10",
+        "stars-50",
+        "external_contributors-1",
+        "releases-1"
+      ],
+      "new_badges": [
+        "stars-50"
+      ],
+      "next_badges": [
+        {
+          "badge": "stars-100",
+          "value": 64,
+          "level": 100
+        },
+        {
+          "badge": "external_contributors-5",
+          "value": 1,
+          "level": 5
+        },
+        {
+          "badge": "releases-10",
+          "value": 4,
+          "level": 10
+        }
+      ]
+    },
+    {
+      "repo": "chatbot-starter",
+      "description": "Starter kit for conversational assistants",
+      "created_at": "2026-10-15T09:12:00Z",
+      "pushed_at": "2026-10-22T16:40:00Z",
+      "stars": 35,
+      "forks": 6,
+      "new_project": true,
+      "active": true,
+      "contributors": {
+        "internal": 4,
+        "external": 0
+      },
+      "new_contributors": {
+        "internal": 2,
+        "external": 0
+      },
+      "active_contributors": {
+        "internal": 4,
+        "external": 0
+      },
+      "commits": 18,
+      "prs": {
+        "opened": {
+          "internal": 3,
+          "external": 2
+        },
+        "merged": {
+          "internal": 3,
+          "external": 0
+        },
+        "closed_unmerged": {
+          "internal": 0,
+          "external": 0
+        }
+      },
+      "issues": {
+        "opened": {
+          "internal": 2,
+          "external": 0
+        },
+        "closed": {
+          "internal": 1,
+          "external": 1
+        }
+      },
+      "releases": {
+        "period": 0,
+        "total": 0,
+        "tags": []
+      },
+      "release_downloads": 1996,
+      "traffic": {
+        "views": 204,
+        "visitors": 118,
+        "clones": 583,
+        "cloners": 95,
+        "from": "2026-10-18",
+        "to": "2026-10-31"
+      },
+      "badges": [
+        "new",
+        "stars-10"
+      ],
+      "new_badges": [
+        "new",
+        "stars-10"
+      ],
+      "next_badges": [
+        {
+          "badge": "stars-50",
+          "value": 35,
+          "level": 50
+        },
+        {
+          "badge": "external_contributors-1",
+          "value": 0,
+          "level": 1
+        },
+        {
+          "badge": "releases-1",
+          "value": 0,
+          "level": 1
+        }
+      ]
+    }
+  ],
+  "milestones": [
+    "stars-1000",
+    "stars-2500",
+    "public_projects-10",
+    "contributors-100",
+    "contributors-200",
+    "external_contributors-50"
+  ],
+  "new_milestones": [
+    "contributors-200"
+  ],
+  "highlights": [
+    {
+      "kind": "milestone",
+      "icon": "🎉",
+      "text": "The organisation passed 200 contributors."
+    },
+    {
+      "kind": "new",
+      "icon": "🆕",
+      "repo": "chatbot-starter",
+      "text": "was published: Starter kit for conversational assistants."
+    },
+    {
+      "kind": "badge",
+      "icon": "⭐",
+      "repo": "event-bus-connectors",
+      "badge": "stars-50",
+      "text": "reached 50 stars."
+    },
+    {
+      "kind": "badge",
+      "icon": "⭐",
+      "repo": "chatbot-starter",
+      "badge": "stars-10",
+      "text": "reached 10 stars."
+    },
+    {
+      "kind": "badge",
+      "icon": "🍴",
+      "repo": "geo-hazard-maps",
+      "badge": "forks-10",
+      "text": "was forked 10 times."
+    },
+    {
+      "kind": "welcome",
+      "icon": "👋",
+      "text": "6 people made their first contribution, 3 of them from outside Allianz."
+    },
+    {
+      "kind": "releases",
+      "icon": "🚀",
+      "text": "7 releases in October."
+    }
+  ],
+  "releases": [
+    {
+      "repo": "mobile-sdk-ios",
+      "tag": "v2.12.0",
+      "date": "2026-10-05"
+    },
+    {
+      "repo": "design-tokens",
+      "tag": "v1.3.1",
+      "date": "2026-10-11"
+    },
+    {
+      "repo": "claims-engine",
+      "tag": "v3.1.0",
+      "date": "2026-10-15"
+    },
+    {
+      "repo": "mobile-sdk-android",
+      "tag": "v3.2.0",
+      "date": "2026-10-16"
+    },
+    {
+      "repo": "design-tokens",
+      "tag": "v4.2.0",
+      "date": "2026-10-20"
+    },
+    {
+      "repo": "pdf-render-service",
+      "tag": "v3.0.0",
+      "date": "2026-10-21"
+    },
+    {
+      "repo": "policy-sdk-java",
+      "tag": "v2.5.0",
+      "date": "2026-10-23"
+    }
+  ],
+  "history": [
+    {
+      "month": "2025-11",
+      "period": "2025-10",
+      "totals": {
+        "stars": 1978,
+        "forks": 336,
+        "public_projects": 10,
+        "contributors": {
+          "internal": 59,
+          "external": 52,
+          "total": 111
+        },
+        "new_contributors": {
+          "internal": 3,
+          "external": 1
+        },
+        "prs_merged": {
+          "internal": 46,
+          "external": 23
+        },
+        "releases": 5,
+        "commits": 233,
+        "active_contributors": {
+          "internal": 23,
+          "external": 9
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 782,
+          "forks": 126,
+          "contributors": {
+            "internal": 15,
+            "external": 18
+          },
+          "releases_total": 10,
+          "release_downloads": 2290,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 434,
+          "forks": 53,
+          "contributors": {
+            "internal": 9,
+            "external": 11
+          },
+          "releases_total": 43,
+          "release_downloads": 1396,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 222,
+          "forks": 44,
+          "contributors": {
+            "internal": 11,
+            "external": 6
+          },
+          "releases_total": 17,
+          "release_downloads": 1290,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 186,
+          "forks": 41,
+          "contributors": {
+            "internal": 6,
+            "external": 7
+          },
+          "releases_total": 19,
+          "release_downloads": 2441,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 97,
+          "forks": 25,
+          "contributors": {
+            "internal": 5,
+            "external": 3
+          },
+          "releases_total": 10,
+          "release_downloads": 1222,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 75,
+          "forks": 12,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 4,
+          "release_downloads": 3315,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 45,
+          "forks": 14,
+          "contributors": {
+            "internal": 8,
+            "external": 1
+          },
+          "releases_total": 28,
+          "release_downloads": 2103,
+          "badges": [
+            "stars-10",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 39,
+          "forks": 5,
+          "contributors": {
+            "internal": 5,
+            "external": 1
+          },
+          "releases_total": 7,
+          "release_downloads": 1446,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 36,
+          "forks": 4,
+          "contributors": {
+            "internal": 5,
+            "external": 1
+          },
+          "releases_total": 6,
+          "release_downloads": 1477,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 62,
+          "forks": 12,
+          "contributors": {
+            "internal": 4,
+            "external": 4
+          },
+          "releases_total": 2,
+          "release_downloads": 3325,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2025-12",
+      "period": "2025-11",
+      "totals": {
+        "stars": 2036,
+        "forks": 352,
+        "public_projects": 10,
+        "contributors": {
+          "internal": 61,
+          "external": 56,
+          "total": 117
+        },
+        "new_contributors": {
+          "internal": 3,
+          "external": 5
+        },
+        "prs_merged": {
+          "internal": 48,
+          "external": 25
+        },
+        "releases": 3,
+        "commits": 282,
+        "active_contributors": {
+          "internal": 18,
+          "external": 20
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 802,
+          "forks": 129,
+          "contributors": {
+            "internal": 15,
+            "external": 21
+          },
+          "releases_total": 10,
+          "release_downloads": 2325,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 452,
+          "forks": 56,
+          "contributors": {
+            "internal": 9,
+            "external": 11
+          },
+          "releases_total": 44,
+          "release_downloads": 1541,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 227,
+          "forks": 45,
+          "contributors": {
+            "internal": 11,
+            "external": 7
+          },
+          "releases_total": 17,
+          "release_downloads": 1350,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 193,
+          "forks": 43,
+          "contributors": {
+            "internal": 7,
+            "external": 7
+          },
+          "releases_total": 20,
+          "release_downloads": 2668,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 98,
+          "forks": 27,
+          "contributors": {
+            "internal": 6,
+            "external": 3
+          },
+          "releases_total": 10,
+          "release_downloads": 1338,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 78,
+          "forks": 14,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 4,
+          "release_downloads": 3406,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 46,
+          "forks": 16,
+          "contributors": {
+            "internal": 8,
+            "external": 1
+          },
+          "releases_total": 29,
+          "release_downloads": 2476,
+          "badges": [
+            "stars-10",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 40,
+          "forks": 5,
+          "contributors": {
+            "internal": 5,
+            "external": 2
+          },
+          "releases_total": 7,
+          "release_downloads": 1465,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 37,
+          "forks": 5,
+          "contributors": {
+            "internal": 6,
+            "external": 1
+          },
+          "releases_total": 6,
+          "release_downloads": 1589,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 63,
+          "forks": 12,
+          "contributors": {
+            "internal": 4,
+            "external": 4
+          },
+          "releases_total": 2,
+          "release_downloads": 3422,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-01",
+      "period": "2025-12",
+      "totals": {
+        "stars": 2097,
+        "forks": 358,
+        "public_projects": 10,
+        "contributors": {
+          "internal": 64,
+          "external": 59,
+          "total": 123
+        },
+        "new_contributors": {
+          "internal": 3,
+          "external": 3
+        },
+        "prs_merged": {
+          "internal": 52,
+          "external": 23
+        },
+        "releases": 6,
+        "commits": 273,
+        "active_contributors": {
+          "internal": 28,
+          "external": 17
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 829,
+          "forks": 133,
+          "contributors": {
+            "internal": 15,
+            "external": 21
+          },
+          "releases_total": 11,
+          "release_downloads": 2638,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 464,
+          "forks": 56,
+          "contributors": {
+            "internal": 9,
+            "external": 13
+          },
+          "releases_total": 45,
+          "release_downloads": 1749,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 231,
+          "forks": 48,
+          "contributors": {
+            "internal": 12,
+            "external": 7
+          },
+          "releases_total": 17,
+          "release_downloads": 1416,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 204,
+          "forks": 45,
+          "contributors": {
+            "internal": 7,
+            "external": 8
+          },
+          "releases_total": 21,
+          "release_downloads": 3004,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 99,
+          "forks": 26,
+          "contributors": {
+            "internal": 7,
+            "external": 3
+          },
+          "releases_total": 10,
+          "release_downloads": 1454,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 80,
+          "forks": 14,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 5,
+          "release_downloads": 3550,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 47,
+          "forks": 15,
+          "contributors": {
+            "internal": 8,
+            "external": 1
+          },
+          "releases_total": 30,
+          "release_downloads": 2621,
+          "badges": [
+            "stars-10",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 41,
+          "forks": 4,
+          "contributors": {
+            "internal": 5,
+            "external": 2
+          },
+          "releases_total": 7,
+          "release_downloads": 1515,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 38,
+          "forks": 4,
+          "contributors": {
+            "internal": 6,
+            "external": 1
+          },
+          "releases_total": 7,
+          "release_downloads": 1825,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 64,
+          "forks": 13,
+          "contributors": {
+            "internal": 5,
+            "external": 4
+          },
+          "releases_total": 2,
+          "release_downloads": 3466,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-02",
+      "period": "2026-01",
+      "totals": {
+        "stars": 2199,
+        "forks": 374,
+        "public_projects": 11,
+        "contributors": {
+          "internal": 71,
+          "external": 62,
+          "total": 133
+        },
+        "new_contributors": {
+          "internal": 5,
+          "external": 3
+        },
+        "prs_merged": {
+          "internal": 51,
+          "external": 28
+        },
+        "releases": 7,
+        "commits": 328,
+        "active_contributors": {
+          "internal": 18,
+          "external": 12
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 852,
+          "forks": 137,
+          "contributors": {
+            "internal": 15,
+            "external": 21
+          },
+          "releases_total": 12,
+          "release_downloads": 3060,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 487,
+          "forks": 60,
+          "contributors": {
+            "internal": 9,
+            "external": 15
+          },
+          "releases_total": 47,
+          "release_downloads": 2016,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 239,
+          "forks": 48,
+          "contributors": {
+            "internal": 13,
+            "external": 7
+          },
+          "releases_total": 17,
+          "release_downloads": 1531,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 211,
+          "forks": 46,
+          "contributors": {
+            "internal": 7,
+            "external": 9
+          },
+          "releases_total": 22,
+          "release_downloads": 3228,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 100,
+          "forks": 25,
+          "contributors": {
+            "internal": 7,
+            "external": 3
+          },
+          "releases_total": 11,
+          "release_downloads": 1822,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 84,
+          "forks": 14,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 5,
+          "release_downloads": 3638,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 48,
+          "forks": 16,
+          "contributors": {
+            "internal": 9,
+            "external": 1
+          },
+          "releases_total": 30,
+          "release_downloads": 2691,
+          "badges": [
+            "stars-10",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 42,
+          "forks": 6,
+          "contributors": {
+            "internal": 5,
+            "external": 2
+          },
+          "releases_total": 8,
+          "release_downloads": 1852,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 39,
+          "forks": 5,
+          "contributors": {
+            "internal": 6,
+            "external": 1
+          },
+          "releases_total": 7,
+          "release_downloads": 1942,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 65,
+          "forks": 13,
+          "contributors": {
+            "internal": 5,
+            "external": 4
+          },
+          "releases_total": 3,
+          "release_downloads": 3841,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 32,
+          "forks": 4,
+          "contributors": {
+            "internal": 6,
+            "external": 0
+          },
+          "releases_total": 8,
+          "release_downloads": 3427,
+          "badges": [
+            "new",
+            "stars-10",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-03",
+      "period": "2026-02",
+      "totals": {
+        "stars": 2279,
+        "forks": 391,
+        "public_projects": 11,
+        "contributors": {
+          "internal": 72,
+          "external": 68,
+          "total": 140
+        },
+        "new_contributors": {
+          "internal": 2,
+          "external": 6
+        },
+        "prs_merged": {
+          "internal": 53,
+          "external": 28
+        },
+        "releases": 6,
+        "commits": 289,
+        "active_contributors": {
+          "internal": 23,
+          "external": 15
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 871,
+          "forks": 141,
+          "contributors": {
+            "internal": 15,
+            "external": 24
+          },
+          "releases_total": 13,
+          "release_downloads": 3350,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 508,
+          "forks": 61,
+          "contributors": {
+            "internal": 9,
+            "external": 17
+          },
+          "releases_total": 48,
+          "release_downloads": 2383,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 247,
+          "forks": 50,
+          "contributors": {
+            "internal": 13,
+            "external": 7
+          },
+          "releases_total": 17,
+          "release_downloads": 1639,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 223,
+          "forks": 50,
+          "contributors": {
+            "internal": 8,
+            "external": 9
+          },
+          "releases_total": 22,
+          "release_downloads": 3300,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 101,
+          "forks": 27,
+          "contributors": {
+            "internal": 8,
+            "external": 3
+          },
+          "releases_total": 12,
+          "release_downloads": 2292,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 88,
+          "forks": 15,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 5,
+          "release_downloads": 3716,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 49,
+          "forks": 17,
+          "contributors": {
+            "internal": 9,
+            "external": 1
+          },
+          "releases_total": 31,
+          "release_downloads": 2872,
+          "badges": [
+            "stars-10",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 43,
+          "forks": 4,
+          "contributors": {
+            "internal": 5,
+            "external": 2
+          },
+          "releases_total": 9,
+          "release_downloads": 2278,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 40,
+          "forks": 6,
+          "contributors": {
+            "internal": 6,
+            "external": 1
+          },
+          "releases_total": 7,
+          "release_downloads": 2004,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 66,
+          "forks": 14,
+          "contributors": {
+            "internal": 5,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 3930,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 43,
+          "forks": 6,
+          "contributors": {
+            "internal": 6,
+            "external": 0
+          },
+          "releases_total": 9,
+          "release_downloads": 3697,
+          "badges": [
+            "stars-10",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-04",
+      "period": "2026-03",
+      "totals": {
+        "stars": 2371,
+        "forks": 401,
+        "public_projects": 11,
+        "contributors": {
+          "internal": 76,
+          "external": 70,
+          "total": 146
+        },
+        "new_contributors": {
+          "internal": 5,
+          "external": 2
+        },
+        "prs_merged": {
+          "internal": 59,
+          "external": 23
+        },
+        "releases": 9,
+        "commits": 315,
+        "active_contributors": {
+          "internal": 18,
+          "external": 11
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 905,
+          "forks": 146,
+          "contributors": {
+            "internal": 15,
+            "external": 25
+          },
+          "releases_total": 14,
+          "release_downloads": 3553,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "external_contributors-25",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 527,
+          "forks": 63,
+          "contributors": {
+            "internal": 9,
+            "external": 17
+          },
+          "releases_total": 49,
+          "release_downloads": 2547,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 254,
+          "forks": 52,
+          "contributors": {
+            "internal": 14,
+            "external": 8
+          },
+          "releases_total": 18,
+          "release_downloads": 1938,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 233,
+          "forks": 52,
+          "contributors": {
+            "internal": 8,
+            "external": 9
+          },
+          "releases_total": 23,
+          "release_downloads": 3637,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 103,
+          "forks": 26,
+          "contributors": {
+            "internal": 9,
+            "external": 3
+          },
+          "releases_total": 13,
+          "release_downloads": 2743,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 90,
+          "forks": 14,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 6,
+          "release_downloads": 4058,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 50,
+          "forks": 16,
+          "contributors": {
+            "internal": 10,
+            "external": 1
+          },
+          "releases_total": 31,
+          "release_downloads": 2903,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 44,
+          "forks": 5,
+          "contributors": {
+            "internal": 5,
+            "external": 2
+          },
+          "releases_total": 10,
+          "release_downloads": 2682,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 41,
+          "forks": 6,
+          "contributors": {
+            "internal": 7,
+            "external": 1
+          },
+          "releases_total": 8,
+          "release_downloads": 2441,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 67,
+          "forks": 13,
+          "contributors": {
+            "internal": 5,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 4049,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 57,
+          "forks": 8,
+          "contributors": {
+            "internal": 7,
+            "external": 0
+          },
+          "releases_total": 10,
+          "release_downloads": 3937,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "releases-1",
+            "releases-10"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-05",
+      "period": "2026-04",
+      "totals": {
+        "stars": 2471,
+        "forks": 419,
+        "public_projects": 12,
+        "contributors": {
+          "internal": 84,
+          "external": 71,
+          "total": 155
+        },
+        "new_contributors": {
+          "internal": 7,
+          "external": 1
+        },
+        "prs_merged": {
+          "internal": 62,
+          "external": 22
+        },
+        "releases": 8,
+        "commits": 294,
+        "active_contributors": {
+          "internal": 18,
+          "external": 9
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 923,
+          "forks": 148,
+          "contributors": {
+            "internal": 16,
+            "external": 25
+          },
+          "releases_total": 15,
+          "release_downloads": 3825,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "external_contributors-25",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 552,
+          "forks": 66,
+          "contributors": {
+            "internal": 9,
+            "external": 18
+          },
+          "releases_total": 50,
+          "release_downloads": 2635,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10",
+            "releases-50"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 260,
+          "forks": 52,
+          "contributors": {
+            "internal": 15,
+            "external": 8
+          },
+          "releases_total": 18,
+          "release_downloads": 1958,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 247,
+          "forks": 55,
+          "contributors": {
+            "internal": 8,
+            "external": 9
+          },
+          "releases_total": 24,
+          "release_downloads": 3893,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 104,
+          "forks": 27,
+          "contributors": {
+            "internal": 10,
+            "external": 3
+          },
+          "releases_total": 14,
+          "release_downloads": 3065,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 93,
+          "forks": 16,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 6,
+          "release_downloads": 4072,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 51,
+          "forks": 17,
+          "contributors": {
+            "internal": 10,
+            "external": 1
+          },
+          "releases_total": 32,
+          "release_downloads": 3318,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 45,
+          "forks": 5,
+          "contributors": {
+            "internal": 5,
+            "external": 2
+          },
+          "releases_total": 11,
+          "release_downloads": 3031,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 43,
+          "forks": 6,
+          "contributors": {
+            "internal": 8,
+            "external": 1
+          },
+          "releases_total": 9,
+          "release_downloads": 2857,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 68,
+          "forks": 12,
+          "contributors": {
+            "internal": 6,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 4071,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 64,
+          "forks": 11,
+          "contributors": {
+            "internal": 7,
+            "external": 0
+          },
+          "releases_total": 11,
+          "release_downloads": 4079,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "geo-hazard-maps": {
+          "stars": 21,
+          "forks": 4,
+          "contributors": {
+            "internal": 4,
+            "external": 0
+          },
+          "releases_total": 9,
+          "release_downloads": 582,
+          "badges": [
+            "new",
+            "stars-10",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-06",
+      "period": "2026-05",
+      "totals": {
+        "stars": 2572,
+        "forks": 436,
+        "public_projects": 12,
+        "contributors": {
+          "internal": 87,
+          "external": 74,
+          "total": 161
+        },
+        "new_contributors": {
+          "internal": 4,
+          "external": 4
+        },
+        "prs_merged": {
+          "internal": 55,
+          "external": 26
+        },
+        "releases": 5,
+        "commits": 281,
+        "active_contributors": {
+          "internal": 26,
+          "external": 18
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 946,
+          "forks": 153,
+          "contributors": {
+            "internal": 16,
+            "external": 25
+          },
+          "releases_total": 16,
+          "release_downloads": 3980,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "external_contributors-25",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 579,
+          "forks": 69,
+          "contributors": {
+            "internal": 10,
+            "external": 20
+          },
+          "releases_total": 51,
+          "release_downloads": 2925,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10",
+            "releases-50"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 269,
+          "forks": 54,
+          "contributors": {
+            "internal": 15,
+            "external": 8
+          },
+          "releases_total": 19,
+          "release_downloads": 2147,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 255,
+          "forks": 58,
+          "contributors": {
+            "internal": 8,
+            "external": 10
+          },
+          "releases_total": 24,
+          "release_downloads": 3932,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 105,
+          "forks": 27,
+          "contributors": {
+            "internal": 11,
+            "external": 3
+          },
+          "releases_total": 15,
+          "release_downloads": 3450,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 96,
+          "forks": 16,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 6,
+          "release_downloads": 4125,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 53,
+          "forks": 18,
+          "contributors": {
+            "internal": 10,
+            "external": 1
+          },
+          "releases_total": 32,
+          "release_downloads": 3427,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 46,
+          "forks": 7,
+          "contributors": {
+            "internal": 5,
+            "external": 2
+          },
+          "releases_total": 11,
+          "release_downloads": 3099,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 44,
+          "forks": 5,
+          "contributors": {
+            "internal": 8,
+            "external": 1
+          },
+          "releases_total": 10,
+          "release_downloads": 3127,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 70,
+          "forks": 13,
+          "contributors": {
+            "internal": 7,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 4172,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 78,
+          "forks": 13,
+          "contributors": {
+            "internal": 8,
+            "external": 1
+          },
+          "releases_total": 11,
+          "release_downloads": 4199,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "geo-hazard-maps": {
+          "stars": 31,
+          "forks": 3,
+          "contributors": {
+            "internal": 4,
+            "external": 0
+          },
+          "releases_total": 9,
+          "release_downloads": 597,
+          "badges": [
+            "stars-10",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "stars-2500",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-07",
+      "period": "2026-06",
+      "totals": {
+        "stars": 2669,
+        "forks": 450,
+        "public_projects": 12,
+        "contributors": {
+          "internal": 89,
+          "external": 78,
+          "total": 167
+        },
+        "new_contributors": {
+          "internal": 3,
+          "external": 4
+        },
+        "prs_merged": {
+          "internal": 62,
+          "external": 27
+        },
+        "releases": 7,
+        "commits": 377,
+        "active_contributors": {
+          "internal": 30,
+          "external": 20
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 979,
+          "forks": 158,
+          "contributors": {
+            "internal": 16,
+            "external": 25
+          },
+          "releases_total": 17,
+          "release_downloads": 4201,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "external_contributors-25",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 593,
+          "forks": 71,
+          "contributors": {
+            "internal": 11,
+            "external": 22
+          },
+          "releases_total": 53,
+          "release_downloads": 3624,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10",
+            "releases-50"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 278,
+          "forks": 58,
+          "contributors": {
+            "internal": 16,
+            "external": 8
+          },
+          "releases_total": 19,
+          "release_downloads": 2207,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 270,
+          "forks": 60,
+          "contributors": {
+            "internal": 9,
+            "external": 10
+          },
+          "releases_total": 25,
+          "release_downloads": 4166,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 106,
+          "forks": 28,
+          "contributors": {
+            "internal": 11,
+            "external": 3
+          },
+          "releases_total": 15,
+          "release_downloads": 3489,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 101,
+          "forks": 16,
+          "contributors": {
+            "internal": 4,
+            "external": 3
+          },
+          "releases_total": 6,
+          "release_downloads": 4239,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 54,
+          "forks": 17,
+          "contributors": {
+            "internal": 10,
+            "external": 1
+          },
+          "releases_total": 33,
+          "release_downloads": 3634,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 47,
+          "forks": 6,
+          "contributors": {
+            "internal": 5,
+            "external": 3
+          },
+          "releases_total": 12,
+          "release_downloads": 3391,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 45,
+          "forks": 7,
+          "contributors": {
+            "internal": 8,
+            "external": 1
+          },
+          "releases_total": 11,
+          "release_downloads": 3530,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 71,
+          "forks": 13,
+          "contributors": {
+            "internal": 7,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 4182,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 86,
+          "forks": 12,
+          "contributors": {
+            "internal": 8,
+            "external": 1
+          },
+          "releases_total": 11,
+          "release_downloads": 4292,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "geo-hazard-maps": {
+          "stars": 39,
+          "forks": 4,
+          "contributors": {
+            "internal": 4,
+            "external": 1
+          },
+          "releases_total": 9,
+          "release_downloads": 685,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "stars-2500",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-08",
+      "period": "2026-07",
+      "totals": {
+        "stars": 2802,
+        "forks": 475,
+        "public_projects": 13,
+        "contributors": {
+          "internal": 98,
+          "external": 83,
+          "total": 181
+        },
+        "new_contributors": {
+          "internal": 8,
+          "external": 5
+        },
+        "prs_merged": {
+          "internal": 81,
+          "external": 29
+        },
+        "releases": 6,
+        "commits": 418,
+        "active_contributors": {
+          "internal": 25,
+          "external": 19
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 1013,
+          "forks": 164,
+          "contributors": {
+            "internal": 17,
+            "external": 27
+          },
+          "releases_total": 17,
+          "release_downloads": 4318,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "stars-1000",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "external_contributors-25",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 615,
+          "forks": 76,
+          "contributors": {
+            "internal": 12,
+            "external": 23
+          },
+          "releases_total": 55,
+          "release_downloads": 3948,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10",
+            "releases-50"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 289,
+          "forks": 60,
+          "contributors": {
+            "internal": 17,
+            "external": 8
+          },
+          "releases_total": 19,
+          "release_downloads": 2314,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 281,
+          "forks": 62,
+          "contributors": {
+            "internal": 10,
+            "external": 10
+          },
+          "releases_total": 26,
+          "release_downloads": 4410,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 107,
+          "forks": 28,
+          "contributors": {
+            "internal": 12,
+            "external": 3
+          },
+          "releases_total": 16,
+          "release_downloads": 3870,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 105,
+          "forks": 17,
+          "contributors": {
+            "internal": 4,
+            "external": 4
+          },
+          "releases_total": 7,
+          "release_downloads": 4640,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 55,
+          "forks": 17,
+          "contributors": {
+            "internal": 10,
+            "external": 1
+          },
+          "releases_total": 33,
+          "release_downloads": 3694,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 49,
+          "forks": 5,
+          "contributors": {
+            "internal": 5,
+            "external": 3
+          },
+          "releases_total": 12,
+          "release_downloads": 3423,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 46,
+          "forks": 7,
+          "contributors": {
+            "internal": 9,
+            "external": 1
+          },
+          "releases_total": 12,
+          "release_downloads": 3708,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 72,
+          "forks": 13,
+          "contributors": {
+            "internal": 7,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 4235,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 97,
+          "forks": 16,
+          "contributors": {
+            "internal": 8,
+            "external": 2
+          },
+          "releases_total": 11,
+          "release_downloads": 4406,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "geo-hazard-maps": {
+          "stars": 48,
+          "forks": 5,
+          "contributors": {
+            "internal": 4,
+            "external": 1
+          },
+          "releases_total": 9,
+          "release_downloads": 702,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "event-bus-connectors": {
+          "stars": 25,
+          "forks": 5,
+          "contributors": {
+            "internal": 5,
+            "external": 0
+          },
+          "releases_total": 4,
+          "release_downloads": 736,
+          "badges": [
+            "new",
+            "stars-10",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "stars-2500",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-09",
+      "period": "2026-08",
+      "totals": {
+        "stars": 2918,
+        "forks": 488,
+        "public_projects": 13,
+        "contributors": {
+          "internal": 103,
+          "external": 88,
+          "total": 191
+        },
+        "new_contributors": {
+          "internal": 6,
+          "external": 6
+        },
+        "prs_merged": {
+          "internal": 71,
+          "external": 35
+        },
+        "releases": 4,
+        "commits": 403,
+        "active_contributors": {
+          "internal": 33,
+          "external": 23
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 1051,
+          "forks": 168,
+          "contributors": {
+            "internal": 17,
+            "external": 30
+          },
+          "releases_total": 17,
+          "release_downloads": 4419,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "stars-1000",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "external_contributors-25",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 632,
+          "forks": 76,
+          "contributors": {
+            "internal": 12,
+            "external": 23
+          },
+          "releases_total": 56,
+          "release_downloads": 4114,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10",
+            "releases-50"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 300,
+          "forks": 60,
+          "contributors": {
+            "internal": 17,
+            "external": 8
+          },
+          "releases_total": 20,
+          "release_downloads": 2600,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 295,
+          "forks": 65,
+          "contributors": {
+            "internal": 10,
+            "external": 11
+          },
+          "releases_total": 26,
+          "release_downloads": 4432,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 109,
+          "forks": 29,
+          "contributors": {
+            "internal": 13,
+            "external": 3
+          },
+          "releases_total": 17,
+          "release_downloads": 4264,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 108,
+          "forks": 17,
+          "contributors": {
+            "internal": 4,
+            "external": 5
+          },
+          "releases_total": 7,
+          "release_downloads": 4753,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 57,
+          "forks": 19,
+          "contributors": {
+            "internal": 11,
+            "external": 1
+          },
+          "releases_total": 33,
+          "release_downloads": 3713,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 50,
+          "forks": 6,
+          "contributors": {
+            "internal": 6,
+            "external": 3
+          },
+          "releases_total": 12,
+          "release_downloads": 3533,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 47,
+          "forks": 7,
+          "contributors": {
+            "internal": 9,
+            "external": 1
+          },
+          "releases_total": 13,
+          "release_downloads": 3910,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 74,
+          "forks": 14,
+          "contributors": {
+            "internal": 8,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 4276,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 105,
+          "forks": 16,
+          "contributors": {
+            "internal": 9,
+            "external": 2
+          },
+          "releases_total": 11,
+          "release_downloads": 4432,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "geo-hazard-maps": {
+          "stars": 56,
+          "forks": 8,
+          "contributors": {
+            "internal": 4,
+            "external": 1
+          },
+          "releases_total": 9,
+          "release_downloads": 736,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "event-bus-connectors": {
+          "stars": 34,
+          "forks": 3,
+          "contributors": {
+            "internal": 6,
+            "external": 1
+          },
+          "releases_total": 4,
+          "release_downloads": 780,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "stars-2500",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-10",
+      "period": "2026-09",
+      "totals": {
+        "stars": 3030,
+        "forks": 508,
+        "public_projects": 13,
+        "contributors": {
+          "internal": 104,
+          "external": 92,
+          "total": 196
+        },
+        "new_contributors": {
+          "internal": 1,
+          "external": 4
+        },
+        "prs_merged": {
+          "internal": 76,
+          "external": 33
+        },
+        "releases": 6,
+        "commits": 443,
+        "active_contributors": {
+          "internal": 28,
+          "external": 18
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 1075,
+          "forks": 173,
+          "contributors": {
+            "internal": 18,
+            "external": 33
+          },
+          "releases_total": 18,
+          "release_downloads": 4829,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "stars-1000",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "external_contributors-25",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 649,
+          "forks": 80,
+          "contributors": {
+            "internal": 12,
+            "external": 23
+          },
+          "releases_total": 57,
+          "release_downloads": 4468,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10",
+            "releases-50"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 309,
+          "forks": 64,
+          "contributors": {
+            "internal": 17,
+            "external": 8
+          },
+          "releases_total": 20,
+          "release_downloads": 2718,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 309,
+          "forks": 68,
+          "contributors": {
+            "internal": 10,
+            "external": 11
+          },
+          "releases_total": 27,
+          "release_downloads": 4915,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 110,
+          "forks": 29,
+          "contributors": {
+            "internal": 13,
+            "external": 3
+          },
+          "releases_total": 18,
+          "release_downloads": 4485,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 111,
+          "forks": 17,
+          "contributors": {
+            "internal": 4,
+            "external": 5
+          },
+          "releases_total": 7,
+          "release_downloads": 4766,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 58,
+          "forks": 17,
+          "contributors": {
+            "internal": 11,
+            "external": 1
+          },
+          "releases_total": 34,
+          "release_downloads": 4132,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 52,
+          "forks": 5,
+          "contributors": {
+            "internal": 6,
+            "external": 3
+          },
+          "releases_total": 13,
+          "release_downloads": 3912,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 48,
+          "forks": 7,
+          "contributors": {
+            "internal": 9,
+            "external": 1
+          },
+          "releases_total": 13,
+          "release_downloads": 3924,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 76,
+          "forks": 14,
+          "contributors": {
+            "internal": 8,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 4350,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 119,
+          "forks": 19,
+          "contributors": {
+            "internal": 9,
+            "external": 3
+          },
+          "releases_total": 11,
+          "release_downloads": 4531,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "geo-hazard-maps": {
+          "stars": 66,
+          "forks": 8,
+          "contributors": {
+            "internal": 4,
+            "external": 1
+          },
+          "releases_total": 9,
+          "release_downloads": 844,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "event-bus-connectors": {
+          "stars": 48,
+          "forks": 7,
+          "contributors": {
+            "internal": 6,
+            "external": 1
+          },
+          "releases_total": 4,
+          "release_downloads": 818,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "stars-2500",
+        "public_projects-10",
+        "contributors-100",
+        "external_contributors-50"
+      ]
+    },
+    {
+      "month": "2026-11",
+      "period": "2026-10",
+      "totals": {
+        "stars": 3185,
+        "forks": 534,
+        "public_projects": 14,
+        "contributors": {
+          "internal": 108,
+          "external": 95,
+          "total": 203
+        },
+        "new_contributors": {
+          "internal": 3,
+          "external": 3
+        },
+        "prs_merged": {
+          "internal": 84,
+          "external": 29
+        },
+        "releases": 7,
+        "commits": 411,
+        "active_contributors": {
+          "internal": 31,
+          "external": 16
+        }
+      },
+      "repositories": {
+        "claims-engine": {
+          "stars": 1099,
+          "forks": 176,
+          "contributors": {
+            "internal": 18,
+            "external": 35
+          },
+          "releases_total": 19,
+          "release_downloads": 5327,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "stars-1000",
+            "forks-10",
+            "forks-50",
+            "forks-100",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "external_contributors-25",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "design-tokens": {
+          "stars": 665,
+          "forks": 82,
+          "contributors": {
+            "internal": 12,
+            "external": 23
+          },
+          "releases_total": 59,
+          "release_downloads": 4623,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "stars-500",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10",
+            "releases-50"
+          ]
+        },
+        "policy-sdk-java": {
+          "stars": 319,
+          "forks": 65,
+          "contributors": {
+            "internal": 18,
+            "external": 8
+          },
+          "releases_total": 21,
+          "release_downloads": 3017,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "k8s-operator-kit": {
+          "stars": 327,
+          "forks": 72,
+          "contributors": {
+            "internal": 10,
+            "external": 11
+          },
+          "releases_total": 27,
+          "release_downloads": 5022,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "forks-50",
+            "external_contributors-1",
+            "external_contributors-5",
+            "external_contributors-10",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "pdf-render-service": {
+          "stars": 111,
+          "forks": 28,
+          "contributors": {
+            "internal": 13,
+            "external": 3
+          },
+          "releases_total": 19,
+          "release_downloads": 4816,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "data-anonymizer": {
+          "stars": 115,
+          "forks": 19,
+          "contributors": {
+            "internal": 4,
+            "external": 5
+          },
+          "releases_total": 7,
+          "release_downloads": 4885,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "terraform-modules": {
+          "stars": 60,
+          "forks": 19,
+          "contributors": {
+            "internal": 11,
+            "external": 2
+          },
+          "releases_total": 34,
+          "release_downloads": 4145,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-ios": {
+          "stars": 54,
+          "forks": 7,
+          "contributors": {
+            "internal": 6,
+            "external": 3
+          },
+          "releases_total": 14,
+          "release_downloads": 4234,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 49,
+          "forks": 7,
+          "contributors": {
+            "internal": 9,
+            "external": 1
+          },
+          "releases_total": 14,
+          "release_downloads": 4314,
+          "badges": [
+            "stars-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "api-guidelines": {
+          "stars": 78,
+          "forks": 16,
+          "contributors": {
+            "internal": 8,
+            "external": 5
+          },
+          "releases_total": 3,
+          "release_downloads": 4461,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "external_contributors-5",
+            "releases-1"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 134,
+          "forks": 21,
+          "contributors": {
+            "internal": 9,
+            "external": 3
+          },
+          "releases_total": 11,
+          "release_downloads": 4615,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "stars-100",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1",
+            "releases-10"
+          ]
+        },
+        "geo-hazard-maps": {
+          "stars": 75,
+          "forks": 10,
+          "contributors": {
+            "internal": 4,
+            "external": 1
+          },
+          "releases_total": 9,
+          "release_downloads": 904,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "forks-10",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "event-bus-connectors": {
+          "stars": 64,
+          "forks": 6,
+          "contributors": {
+            "internal": 6,
+            "external": 1
+          },
+          "releases_total": 4,
+          "release_downloads": 919,
+          "badges": [
+            "stars-10",
+            "stars-50",
+            "external_contributors-1",
+            "releases-1"
+          ]
+        },
+        "chatbot-starter": {
+          "stars": 35,
+          "forks": 6,
+          "contributors": {
+            "internal": 4,
+            "external": 0
+          },
+          "releases_total": 0,
+          "release_downloads": 1996,
+          "badges": [
+            "new",
+            "stars-10"
+          ]
+        }
+      },
+      "milestones": [
+        "stars-1000",
+        "stars-2500",
+        "public_projects-10",
+        "contributors-100",
+        "contributors-200",
+        "external_contributors-50"
+      ]
+    }
+  ],
+  "skipped": [
+    {
+      "repo": ".github",
+      "reason": "excluded_repos"
+    },
+    {
+      "repo": "ospo",
+      "reason": "excluded_repos"
+    },
+    {
+      "repo": "legacy-portal",
+      "reason": "archived"
+    },
+    {
+      "repo": "openssl-fork",
+      "reason": "fork"
+    }
+  ],
+  "errors": [
+    {
+      "repo": "mobile-sdk-ios",
+      "metric": "traffic",
+      "reason": "Traffic not readable (request returned 403: missing Administration permission)"
+    }
+  ]
+}

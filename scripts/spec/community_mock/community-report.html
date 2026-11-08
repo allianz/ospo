@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Source Community Report · allianz · 2026-11</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --accent-wash: rgba(42,120,214,0.10);
+    --track: #cde2fb;
+    --good: #0ca30c;
+    --good-2: #077a07;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --neutral: #898781;
+    --delta-good: #006300;
+    --delta-bad: #b42f2f;
+    --ord-1: #86b6ef; --ord-1-ink: #0b0b0b;
+    --ord-2: #2a78d6; --ord-2-ink: #ffffff;
+    --ord-3: #104281; --ord-3-ink: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #f0efec;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-wash: rgba(57,135,229,0.12);
+      --track: #184f95;
+      --good-2: #0a8a0a;
+      --delta-good: #0ca30c;
+      --delta-bad: #e66767;
+      --ord-1: #184f95; --ord-1-ink: #ffffff;
+      --ord-2: #3987e5; --ord-2-ink: #ffffff;
+      --ord-3: #9ec5f4; --ord-3-ink: #0b0b0b;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .page { max-width: 1120px; margin: 0 auto; padding: 24px 24px 64px; }
+
+
+  header.report {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--grid);
+    margin-bottom: 28px;
+  }
+  .brand { font-size: 13px; color: var(--ink-2); letter-spacing: 0.02em; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 6px 0 4px; font-weight: 650; }
+  .subtitle { color: var(--ink-2); margin: 0; }
+  dl.meta {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2px 16px;
+    margin: 0;
+    font-size: 13px;
+  }
+  dl.meta dt { color: var(--muted); }
+  dl.meta dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+  nav.toc { font-size: 13px; color: var(--ink-2); margin: -12px 0 28px; }
+  nav.toc a { margin-right: 14px; white-space: nowrap; }
+
+  section { margin-bottom: 36px; }
+  h2 { font-size: 19px; margin: 0 0 4px; font-weight: 650; }
+  h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px; }
+  .lead { color: var(--ink-2); margin: 0 0 16px; max-width: 760px; }
+  h3 { font-size: 15px; margin: 0 0 4px; font-weight: 600; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-hero { display: grid; grid-template-columns: 1.15fr 2fr; gap: 16px; margin-bottom: 16px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tiles > :last-child:nth-child(odd) { grid-column: 1 / -1; }   /* odd number of tiles: the last one spans the row */
+  @media (max-width: 860px) { .grid-2, .grid-hero, .tiles { grid-template-columns: 1fr; } header.report { grid-template-columns: 1fr; } }
+
+  .hero .label, .tile .label { color: var(--ink-2); font-size: 13px; }
+  .hero .value { font-size: 56px; font-weight: 650; line-height: 1.05; margin: 6px 0 4px; }
+  .hero .value small { font-size: 28px; font-weight: 600; }
+  .hero .note { color: var(--ink-2); font-size: 13px; margin-top: 10px; }
+  .tile .value { font-size: 28px; font-weight: 650; line-height: 1.2; margin-top: 2px; }
+  .tile .value small { font-size: 15px; color: var(--ink-2); font-weight: 500; }
+  .tile .sub { font-size: 12px; color: var(--muted); }
+  .delta { font-size: 13px; font-weight: 600; }
+  .delta.good { color: var(--delta-good); }
+  .delta.bad { color: var(--delta-bad); }
+  .delta.flat { color: var(--ink-2); }
+  .delta span { color: var(--muted); font-weight: 400; }
+  .tile { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .tile .spark { margin-top: 4px; }
+
+  ul.points { margin: 8px 0 0; padding-left: 18px; }
+  ul.points li { margin-bottom: 8px; }
+  .alert { border: 1px solid var(--critical); border-left-width: 4px; border-radius: 8px; padding: 8px 14px; margin: 0 0 16px; background: var(--surface); }
+
+  /* status */
+  .status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; }
+  .status .ico {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex: none;
+  }
+  .status .ico.ring { background: transparent !important; border: 1.5px solid var(--muted); color: var(--muted) !important; }
+  .status .ico.ring-good { background: transparent !important; border: 1.5px solid var(--good); color: var(--good) !important; }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 8px 10px; border-bottom: 1px solid var(--axis); white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  .chapter-row td { background: var(--page); font-weight: 600; color: var(--ink-2); padding-top: 12px; }
+  .id { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .nowrap { white-space: nowrap; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .level { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-2); border: 1px solid var(--axis); border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
+  details.req > summary { cursor: pointer; list-style: none; }
+  details.req > summary::-webkit-details-marker { display: none; }
+  details.req > summary::before { content: "▸"; color: var(--muted); display: inline-block; width: 14px; transition: transform .15s; }
+  details.req[open] > summary::before { transform: rotate(90deg); }
+  tr.card-row > td { background: var(--page); padding: 4px 10px 18px; }
+  tr.card-row[hidden] { display: none; }
+  .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: grid; gap: 16px; min-width: 0; }
+  .rcard h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .rcard p { margin: 0; max-width: 820px; }
+  .tr-clauses { display: grid; gap: 6px; max-width: 820px; }
+  .tr-clause { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
+  .tr-clause .level { justify-self: start; }
+  .links { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .links a { margin-right: 4px; }
+  .rcard table { font-size: 12.5px; }
+  .rcard td, .rcard th { padding: 6px 8px; }
+  .cov { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
+  .meter { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
+  .meter > div { height: 100%; background: var(--accent); border-radius: 3px; }
+  .cov .txt, .cov-txt { font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; }
+  .cov .txt b { color: var(--ink); font-weight: 600; }
+  .tag { display: inline-block; font-size: 12px; border: 1px solid var(--grid); border-radius: 4px; padding: 0 5px; margin: 0 4px 2px 0; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  a.tag:hover { border-color: var(--accent); text-decoration: none; }
+  pre.det { margin: 4px 0 0; font: 11.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); white-space: pre-wrap; }
+
+  /* charts */
+  svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+  svg.chart:focus { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .grid-line { stroke: var(--grid); stroke-width: 1; }
+  .axis-line { stroke: var(--axis); stroke-width: 1; }
+  .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .vlabel { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .clabel { fill: var(--ink-2); font-size: 12px; }
+  .chart-title { margin-bottom: 2px; }
+  .chart-sub { color: var(--ink-2); font-size: 13px; margin: 0 0 10px; }
+
+  .segbar { display: flex; gap: 2px; height: 28px; margin: 8px 0 8px; }
+  .segbar > * {
+    border-radius: 4px; display: flex; align-items: center; padding: 0 8px;
+    font-size: 12px; font-weight: 600; white-space: nowrap; overflow: visible; min-width: 0; cursor: default;
+  }
+  .segbar > a { cursor: pointer; text-decoration: none; }
+  .segbar > *:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .segbar > *:hover { filter: brightness(1.07); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); }
+  .legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .seg-row { margin-bottom: 14px; }
+  .seg-row .seg-label { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; }
+  .seg-row .seg-label b { color: var(--ink); font-weight: 600; }
+
+  details.datatable { margin-top: 10px; font-size: 12px; }
+  details.datatable > summary, details.more > summary { color: var(--accent); cursor: pointer; font-size: 12.5px; }
+  details.datatable table, details.more table { margin-top: 6px; }
+
+  .scroll-x { overflow-x: auto; }
+  /* narrow windows: let headers and coverage wrap so the tables need less width; .scroll-x catches the rest */
+  @media (max-width: 860px) {
+    th { white-space: normal; }
+    .cov { grid-template-columns: minmax(60px, 90px); white-space: normal; gap: 4px; }
+    .cov .txt { white-space: normal; }
+  }
+
+  #tip {
+    position: fixed; z-index: 10; pointer-events: none;
+    background: var(--surface); border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px;
+    display: grid; gap: 1px; max-width: 320px;
+  }
+  #tip strong { font-size: 14px; color: var(--ink); }
+  #tip span { color: var(--ink-2); white-space: pre-line; }
+  #tip[hidden] { display: none; }
+
+  .integrity { font-size: 12px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 12px; margin-top: 28px; font-variant-numeric: tabular-nums; }
+  code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); }
+
+  @media print {
+    :root { color-scheme: light; }
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: #fff; font-size: 11.5px; }
+    .page { max-width: none; padding: 0; }
+    nav.toc, details.datatable, #tip { display: none !important; }
+    .card { break-inside: avoid; }
+    section.break { break-before: page; }
+    tr { break-inside: avoid; }
+    details.req > summary::before { content: ""; width: 0; }
+    tr.card-row { break-inside: auto; }
+    a { color: inherit; }
+  }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; padding: 4px 10px 10px; font-size: 12.5px; color: var(--ink-2); }
+  .filters label { display: grid; gap: 2px; }
+  .filters label.chk { display: flex; align-items: center; gap: 6px; padding-bottom: 5px; }
+  .filters select, .filters input[type=search], .filters button {
+    font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--axis); border-radius: 6px; padding: 4px 8px; max-width: 280px;
+  }
+  .filters button { cursor: pointer; }
+  .filter-count { font-size: 12.5px; color: var(--muted); padding: 0 10px 6px; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--ink); }
+  th .arrow { color: var(--accent); margin-left: 3px; }
+  .pager-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding: 10px 10px 4px; }
+  .pager { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12.5px; color: var(--muted); }
+  .pager-size { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+  .pager-size select { font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 6px; padding: 3px 6px; }
+  .pager button { font: inherit; font-size: 12.5px; min-width: 30px; color: var(--ink-2); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 3px 8px; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .pager button[aria-current="page"] { color: var(--surface); background: var(--accent); border-color: var(--accent); }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
+  .pager button:disabled[aria-current="page"] { color: var(--ink-2); background: none; border-color: var(--axis); }
+  .pager .gap { padding: 0 2px; }
+  .showall { margin: 8px 10px; font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  ul.sub { margin: 4px 0 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-2); }
+  ul.sub li { margin-bottom: 2px; }
+  .rcard tfoot td { border-bottom: none; padding-top: 8px; }
+  .why { white-space: nowrap; }
+  @media print {
+    .filters, .filter-count, .showall, .pager-bar { display: none !important; }
+    .scroll-x { overflow: visible; }
+  }
+  noscript p { border: 1px solid var(--critical); border-radius: 8px; padding: 8px 14px; }
+  /* Community report: internal / external as categorical slots 1 and 2 (validated light and dark) */
+  :root { --ext: #2a78d6; --int: #eb6834; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --ext: #3987e5; --int: #d95926; } }
+  .mock { border: 1px dashed var(--warning); border-radius: 8px; padding: 8px 14px; margin: 0 0 20px; font-size: 13px; color: var(--ink-2); background: var(--surface); }
+  .kpis { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 16px; }
+  .kpis .hero { grid-row: span 2; justify-content: start; gap: 10px; }
+  .kpis .hero .value { font-size: 56px; line-height: 1.05; margin: 8px 0 2px; }
+  .kpis .hero .note { margin-top: auto; }
+  .notice { border: 1px solid var(--border); border-left: 4px solid var(--muted); border-radius: 8px; padding: 8px 14px; margin: 0 0 16px; background: var(--surface); font-size: 13px; color: var(--ink-2); }
+  table.compact { font-size: 12.5px; }
+  table.compact th, table.compact td { padding: 8px 6px; }
+  table.compact th { white-space: normal; vertical-align: bottom; }
+  @media (max-width: 860px) { .kpis { grid-template-columns: 1fr; } .kpis .hero { grid-row: auto; } }
+  .deltas { display: flex; flex-wrap: wrap; gap: 2px 14px; }
+  ul.highlights { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  ul.highlights li { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: baseline; padding: 8px 4px; border-bottom: 1px solid var(--grid); }
+  ul.highlights li:last-child { border-bottom: none; }
+  ul.highlights .ico { font-size: 18px; line-height: 1; }
+  ul.highlights .rel { color: var(--ink-2); font-size: 12.5px; margin-top: 2px; }
+  .badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+  .pcard { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; display: grid; gap: 10px; align-content: start; }
+  .pcard.has-new { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .pcard .name { font-weight: 650; font-size: 15px; }
+  .pcard .desc { color: var(--ink-2); font-size: 12.5px; margin-top: 1px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; border: 1px solid var(--grid); border-radius: 999px; padding: 2px 10px 2px 8px; white-space: nowrap; background: var(--page); }
+  .chip.new { border-color: var(--accent); background: var(--accent-wash); font-weight: 600; }
+  .chip .newtag { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; color: var(--accent); }
+  .next { display: grid; gap: 6px; }
+  .next .row { display: grid; grid-template-columns: 1fr 90px 64px; gap: 10px; align-items: center; font-size: 12.5px; color: var(--ink-2); }
+  .next .togo { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .legend .sw.ext { background: var(--ext); } .legend .sw.int { background: var(--int); }
+  td .d { font-size: 11.5px; color: var(--delta-good); font-weight: 600; margin-left: 4px; }
+  td .ext { color: var(--muted); font-size: 11.5px; }
+  dl.defs { display: grid; grid-template-columns: 180px 1fr; gap: 8px 16px; margin: 0; font-size: 13px; }
+  dl.defs dt { font-weight: 600; } dl.defs dd { margin: 0; color: var(--ink-2); }
+  @media print { .pcard, ul.highlights li { break-inside: avoid; } .chip, .meter { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<div id="tip" hidden></div>
+<div class="page">
+
+  <noscript><p>This report is rendered from the embedded data.json and needs JavaScript.</p></noscript>
+  <div class="alert" id="render-error" role="alert" hidden></div>
+  <div class="mock" id="mock" hidden><b>Mock report.</b> All numbers and projects are made up, to show the layout of the community report.</div>
+
+  <header class="report">
+    <div>
+      <div class="brand">Open Source Program Office</div>
+      <h1 id="title"></h1>
+      <p class="subtitle" id="subtitle"></p>
+    </div>
+    <dl class="meta" id="meta"></dl>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <a href="#glance">1 At a glance</a>
+    <a href="#highlights">2 Highlights</a>
+    <a href="#growth">3 Growth</a>
+    <a href="#badges">4 Badges</a>
+    <a href="#projects">5 Projects</a>
+    <a href="#method">A Scope &amp; method</a>
+  </nav>
+
+  <!-- ─────────────────────────── 1 At a glance ─────────────────────────── -->
+  <section id="glance">
+    <h2><span class="num">1</span>At a glance</h2>
+    <p class="lead" id="glance-lead"></p>
+    <div class="alert" id="data-alert" role="alert" hidden></div>
+    <div class="notice" id="data-note" hidden></div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <!-- ─────────────────────────── 2 Highlights ─────────────────────────── -->
+  <section id="highlights">
+    <h2><span class="num">2</span>Highlights of the month</h2>
+    <p class="lead">Milestones of the organisation, new projects and the badges projects earned this month.</p>
+    <div class="card"><ul class="highlights" id="highlight-list"></ul></div>
+  </section>
+
+  <!-- ─────────────────────────── 3 Growth ─────────────────────────── -->
+  <section id="growth" class="break">
+    <h2><span class="num">3</span>Growth</h2>
+    <p class="lead" id="growth-lead"></p>
+    <div class="grid-2">
+      <div class="card"><h3 class="chart-title">Stars</h3><p class="chart-sub">Stars of all projects at the end of each month</p><div id="c-stars"></div></div>
+      <div class="card"><h3 class="chart-title">Contributors</h3><p class="chart-sub">People with at least one commit, all-time, counted once</p><div id="c-contributors"></div></div>
+      <div class="card"><h3 class="chart-title">New contributors</h3><p class="chart-sub">People who made their first contribution in the month</p><div id="c-new"></div></div>
+      <div class="card"><h3 class="chart-title">Merged pull requests</h3><p class="chart-sub">Pull requests merged in the month, by author</p><div id="c-prs"></div></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 4 Badges ─────────────────────────── -->
+  <section id="badges" class="break">
+    <h2><span class="num">4</span>Badges</h2>
+    <p class="lead">Every project with the badges it holds. Badges earned this month are marked <b>new</b>; projects with a new badge come first. Below, the next badges within reach.</p>
+    <div class="badge-grid" id="badge-grid"></div>
+  </section>
+
+  <!-- ─────────────────────────── 5 Projects ─────────────────────────── -->
+  <section id="projects" class="break">
+    <h2><span class="num">5</span>Projects</h2>
+    <p class="lead" id="projects-lead"></p>
+    <div class="card" style="padding:10px 8px 6px">
+      <div class="scroll-x">
+        <table id="projects-table" class="compact"><thead></thead><tbody></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── A Scope & method ─────────────────────────── -->
+  <section id="method" class="break">
+    <h2><span class="num">A</span>Scope &amp; method</h2>
+    <p class="lead">Every number comes from the GitHub REST API, collected by community_metrics once a month. The files hold counts only: no person is named.</p>
+    <div class="card"><dl class="defs" id="defs"></dl></div>
+  </section>
+
+  <div class="integrity" id="integrity"></div>
+</div>
+
+<!-- data.json of this report, embedded by scripts/community_report.js (lib/report_html.js) -->
+<script type="application/json" id="data.json">{"report_id":"OSPO-CM-2026-11","run_at":"2026-11-01T03:12:44Z","org":"allianz","ospo_sha":"b06cb46f0c2d4e9a8b7c6d5e4f3a2b1c0d9e8f7a","run_url":null,"mock":true,"previous_report":{"report_id":"OSPO-CM-2026-10","data_url":"https://github.com/allianz/ospo/blob/main/reports/2026-10/community-data.json"},"input":{"file":"community.json","script":"community_metrics","status":"ok"},"period":{"month":"2026-10","from":"2026-10-01T00:00:00Z","to":"2026-11-01T00:00:00Z"},"levels":{"badges":{"stars":[10,50,100,500,1000],"forks":[10,50,100],"external_contributors":[1,5,10,25],"releases":[1,10,50]},"milestones":{"stars":[1000,2500,5000,10000],"public_projects":[10,25,50,100],"contributors":[100,200,500,1000],"external_contributors":[50,100,250,500]}},"totals":{"stars":3185,"forks":534,"public_projects":14,"contributors":{"internal":108,"external":95,"total":203},"new_contributors":{"internal":3,"external":3},"prs_merged":{"internal":84,"external":29},"releases":7,"commits":411,"active_contributors":{"internal":31,"external":16},"new_projects":1,"active_projects":12},"growth":{"stars":{"value":3185,"previous":3030,"year_ago":1978},"public_projects":{"value":14,"previous":13,"year_ago":10},"external_contributors":{"value":95,"previous":92,"year_ago":52},"contributors":{"value":203,"previous":196,"year_ago":111},"prs_merged":{"value":113,"previous":109,"year_ago":69},"releases":{"value":7,"previous":6,"year_ago":5}},"repositories":[{"repo":"claims-engine","description":"Rules engine for insurance claims handling","created_at":"2025-10-19T09:12:00Z","pushed_at":"2026-10-23T16:40:00Z","stars":1099,"forks":176,"new_project":false,"active":true,"contributors":{"internal":18,"external":35},"new_contributors":{"internal":0,"external":2},"active_contributors":{"internal":2,"external":5},"commits":72,"prs":{"opened":{"internal":9,"external":10},"merged":{"internal":9,"external":9},"closed_unmerged":{"internal":1,"external":1}},"issues":{"opened":{"internal":5,"external":7},"closed":{"internal":3,"external":4}},"releases":{"period":1,"total":19,"tags":["v3.1.0"]},"release_downloads":5327,"traffic":{"views":5700,"visitors":1062,"clones":808,"cloners":101,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","stars-100","stars-500","stars-1000","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"],"new_badges":[],"next_badges":[{"badge":"releases-50","value":19,"level":50}]},{"repo":"design-tokens","description":"Design tokens and themes for web and mobile","created_at":"2025-10-24T09:12:00Z","pushed_at":"2026-10-15T16:40:00Z","stars":665,"forks":82,"new_project":false,"active":true,"contributors":{"internal":12,"external":23},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":1,"external":1},"commits":33,"prs":{"opened":{"internal":6,"external":5},"merged":{"internal":5,"external":3},"closed_unmerged":{"internal":1,"external":2}},"issues":{"opened":{"internal":3,"external":8},"closed":{"internal":6,"external":4}},"releases":{"period":2,"total":59,"tags":["v4.2.0","v1.3.1"]},"release_downloads":4623,"traffic":{"views":4746,"visitors":701,"clones":773,"cloners":67,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10","releases-50"],"new_badges":[],"next_badges":[{"badge":"stars-1000","value":665,"level":1000},{"badge":"external_contributors-25","value":23,"level":25}]},{"repo":"policy-sdk-java","description":"Java SDK for the policy administration APIs","created_at":"2025-10-27T09:12:00Z","pushed_at":"2026-10-19T16:40:00Z","stars":319,"forks":65,"new_project":false,"active":true,"contributors":{"internal":18,"external":8},"new_contributors":{"internal":1,"external":0},"active_contributors":{"internal":2,"external":0},"commits":31,"prs":{"opened":{"internal":10,"external":2},"merged":{"internal":9,"external":2},"closed_unmerged":{"internal":1,"external":2}},"issues":{"opened":{"internal":6,"external":4},"closed":{"internal":5,"external":1}},"releases":{"period":1,"total":21,"tags":["v2.5.0"]},"release_downloads":3017,"traffic":{"views":1100,"visitors":399,"clones":143,"cloners":109,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"],"new_badges":[],"next_badges":[{"badge":"stars-500","value":319,"level":500},{"badge":"external_contributors-10","value":8,"level":10},{"badge":"releases-50","value":21,"level":50}]},{"repo":"k8s-operator-kit","description":"Building blocks for Kubernetes operators","created_at":"2025-10-24T09:12:00Z","pushed_at":"2026-10-16T16:40:00Z","stars":327,"forks":72,"new_project":false,"active":true,"contributors":{"internal":10,"external":11},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":5,"external":2},"commits":33,"prs":{"opened":{"internal":8,"external":2},"merged":{"internal":5,"external":1},"closed_unmerged":{"internal":0,"external":1}},"issues":{"opened":{"internal":4,"external":1},"closed":{"internal":6,"external":2}},"releases":{"period":0,"total":27,"tags":[]},"release_downloads":5022,"traffic":{"views":2408,"visitors":367,"clones":775,"cloners":84,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"],"new_badges":[],"next_badges":[{"badge":"stars-500","value":327,"level":500},{"badge":"external_contributors-25","value":11,"level":25},{"badge":"releases-50","value":27,"level":50}]},{"repo":"pdf-render-service","description":"HTML to PDF rendering as a service","created_at":"2025-10-02T09:12:00Z","pushed_at":"2026-10-17T16:40:00Z","stars":111,"forks":28,"new_project":false,"active":false,"contributors":{"internal":13,"external":3},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":5,"external":2},"commits":48,"prs":{"opened":{"internal":7,"external":3},"merged":{"internal":7,"external":2},"closed_unmerged":{"internal":0,"external":1}},"issues":{"opened":{"internal":2,"external":8},"closed":{"internal":1,"external":4}},"releases":{"period":1,"total":19,"tags":["v3.0.0"]},"release_downloads":4816,"traffic":{"views":900,"visitors":121,"clones":550,"cloners":12,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"],"new_badges":[],"next_badges":[{"badge":"stars-500","value":111,"level":500},{"badge":"external_contributors-5","value":3,"level":5},{"badge":"releases-50","value":19,"level":50}]},{"repo":"data-anonymizer","description":"Anonymise production data for test environments","created_at":"2025-10-05T09:12:00Z","pushed_at":"2026-10-20T16:40:00Z","stars":115,"forks":19,"new_project":false,"active":true,"contributors":{"internal":4,"external":5},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":1,"external":2},"commits":18,"prs":{"opened":{"internal":5,"external":2},"merged":{"internal":4,"external":2},"closed_unmerged":{"internal":1,"external":0}},"issues":{"opened":{"internal":2,"external":5},"closed":{"internal":4,"external":1}},"releases":{"period":0,"total":7,"tags":[]},"release_downloads":4885,"traffic":{"views":752,"visitors":151,"clones":89,"cloners":21,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1"],"new_badges":[],"next_badges":[{"badge":"stars-500","value":115,"level":500},{"badge":"external_contributors-10","value":5,"level":10},{"badge":"releases-10","value":7,"level":10}]},{"repo":"terraform-modules","description":"Reusable Terraform modules for cloud landing zones","created_at":"2025-10-14T09:12:00Z","pushed_at":"2026-10-21T16:40:00Z","stars":60,"forks":19,"new_project":false,"active":true,"contributors":{"internal":11,"external":2},"new_contributors":{"internal":0,"external":1},"active_contributors":{"internal":2,"external":2},"commits":38,"prs":{"opened":{"internal":8,"external":2},"merged":{"internal":6,"external":2},"closed_unmerged":{"internal":1,"external":2}},"issues":{"opened":{"internal":5,"external":7},"closed":{"internal":5,"external":5}},"releases":{"period":0,"total":34,"tags":[]},"release_downloads":4145,"traffic":{"views":345,"visitors":156,"clones":162,"cloners":37,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"],"new_badges":[],"next_badges":[{"badge":"stars-100","value":60,"level":100},{"badge":"external_contributors-5","value":2,"level":5},{"badge":"releases-50","value":34,"level":50}]},{"repo":"mobile-sdk-ios","description":"iOS SDK for the customer app platform","created_at":"2025-10-21T09:12:00Z","pushed_at":"2026-10-21T16:40:00Z","stars":54,"forks":7,"new_project":false,"active":true,"contributors":{"internal":6,"external":3},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":1,"external":2},"commits":24,"prs":{"opened":{"internal":8,"external":3},"merged":{"internal":5,"external":2},"closed_unmerged":{"internal":0,"external":2}},"issues":{"opened":{"internal":3,"external":8},"closed":{"internal":6,"external":1}},"releases":{"period":1,"total":14,"tags":["v2.12.0"]},"release_downloads":4234,"traffic":null,"badges":["stars-10","stars-50","external_contributors-1","releases-1","releases-10"],"new_badges":[],"next_badges":[{"badge":"stars-100","value":54,"level":100},{"badge":"external_contributors-5","value":3,"level":5},{"badge":"releases-50","value":14,"level":50}]},{"repo":"mobile-sdk-android","description":"Android SDK for the customer app platform","created_at":"2025-10-27T09:12:00Z","pushed_at":"2026-10-17T16:40:00Z","stars":49,"forks":7,"new_project":false,"active":true,"contributors":{"internal":9,"external":1},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":2,"external":1},"commits":38,"prs":{"opened":{"internal":8,"external":3},"merged":{"internal":7,"external":1},"closed_unmerged":{"internal":0,"external":0}},"issues":{"opened":{"internal":1,"external":0},"closed":{"internal":3,"external":0}},"releases":{"period":1,"total":14,"tags":["v3.2.0"]},"release_downloads":4314,"traffic":{"views":445,"visitors":127,"clones":47,"cloners":15,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","external_contributors-1","releases-1","releases-10"],"new_badges":[],"next_badges":[{"badge":"stars-50","value":49,"level":50},{"badge":"external_contributors-5","value":1,"level":5},{"badge":"releases-50","value":14,"level":50}]},{"repo":"api-guidelines","description":"REST API design guidelines and linter rules","created_at":"2025-10-19T09:12:00Z","pushed_at":"2026-10-25T16:40:00Z","stars":78,"forks":16,"new_project":false,"active":false,"contributors":{"internal":8,"external":5},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":2,"external":3},"commits":41,"prs":{"opened":{"internal":9,"external":5},"merged":{"internal":7,"external":3},"closed_unmerged":{"internal":1,"external":0}},"issues":{"opened":{"internal":4,"external":7},"closed":{"internal":4,"external":3}},"releases":{"period":0,"total":3,"tags":[]},"release_downloads":4461,"traffic":{"views":510,"visitors":161,"clones":177,"cloners":41,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"],"new_badges":[],"next_badges":[{"badge":"stars-100","value":78,"level":100},{"badge":"external_contributors-10","value":5,"level":10},{"badge":"releases-10","value":3,"level":10}]},{"repo":"risk-model-toolkit","description":"Python toolkit for actuarial risk models","created_at":"2026-01-21T09:12:00Z","pushed_at":"2026-10-20T16:40:00Z","stars":134,"forks":21,"new_project":false,"active":true,"contributors":{"internal":9,"external":3},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":1,"external":1},"commits":23,"prs":{"opened":{"internal":7,"external":2},"merged":{"internal":7,"external":2},"closed_unmerged":{"internal":0,"external":0}},"issues":{"opened":{"internal":5,"external":5},"closed":{"internal":1,"external":0}},"releases":{"period":0,"total":11,"tags":[]},"release_downloads":4615,"traffic":{"views":1041,"visitors":159,"clones":494,"cloners":118,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"],"new_badges":[],"next_badges":[{"badge":"stars-500","value":134,"level":500},{"badge":"external_contributors-5","value":3,"level":5},{"badge":"releases-50","value":11,"level":50}]},{"repo":"geo-hazard-maps","description":"Natural hazard map layers and tile server","created_at":"2026-04-13T09:12:00Z","pushed_at":"2026-10-28T16:40:00Z","stars":75,"forks":10,"new_project":false,"active":true,"contributors":{"internal":4,"external":1},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":1,"external":1},"commits":20,"prs":{"opened":{"internal":6,"external":2},"merged":{"internal":5,"external":0},"closed_unmerged":{"internal":1,"external":0}},"issues":{"opened":{"internal":5,"external":7},"closed":{"internal":2,"external":0}},"releases":{"period":0,"total":9,"tags":[]},"release_downloads":904,"traffic":{"views":295,"visitors":144,"clones":864,"cloners":91,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"],"new_badges":["forks-10"],"next_badges":[{"badge":"stars-100","value":75,"level":100},{"badge":"external_contributors-5","value":1,"level":5},{"badge":"releases-10","value":9,"level":10}]},{"repo":"event-bus-connectors","description":"Connectors between Kafka and core insurance systems","created_at":"2026-07-10T09:12:00Z","pushed_at":"2026-10-15T16:40:00Z","stars":64,"forks":6,"new_project":false,"active":true,"contributors":{"internal":6,"external":1},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":4,"external":1},"commits":30,"prs":{"opened":{"internal":7,"external":1},"merged":{"internal":5,"external":0},"closed_unmerged":{"internal":1,"external":0}},"issues":{"opened":{"internal":5,"external":0},"closed":{"internal":1,"external":1}},"releases":{"period":0,"total":4,"tags":[]},"release_downloads":919,"traffic":{"views":528,"visitors":166,"clones":858,"cloners":44,"from":"2026-10-18","to":"2026-10-31"},"badges":["stars-10","stars-50","external_contributors-1","releases-1"],"new_badges":["stars-50"],"next_badges":[{"badge":"stars-100","value":64,"level":100},{"badge":"external_contributors-5","value":1,"level":5},{"badge":"releases-10","value":4,"level":10}]},{"repo":"chatbot-starter","description":"Starter kit for conversational assistants","created_at":"2026-10-15T09:12:00Z","pushed_at":"2026-10-22T16:40:00Z","stars":35,"forks":6,"new_project":true,"active":true,"contributors":{"internal":4,"external":0},"new_contributors":{"internal":2,"external":0},"active_contributors":{"internal":4,"external":0},"commits":18,"prs":{"opened":{"internal":3,"external":2},"merged":{"internal":3,"external":0},"closed_unmerged":{"internal":0,"external":0}},"issues":{"opened":{"internal":2,"external":0},"closed":{"internal":1,"external":1}},"releases":{"period":0,"total":0,"tags":[]},"release_downloads":1996,"traffic":{"views":204,"visitors":118,"clones":583,"cloners":95,"from":"2026-10-18","to":"2026-10-31"},"badges":["new","stars-10"],"new_badges":["new","stars-10"],"next_badges":[{"badge":"stars-50","value":35,"level":50},{"badge":"external_contributors-1","value":0,"level":1},{"badge":"releases-1","value":0,"level":1}]}],"milestones":["stars-1000","stars-2500","public_projects-10","contributors-100","contributors-200","external_contributors-50"],"new_milestones":["contributors-200"],"highlights":[{"kind":"milestone","icon":"🎉","text":"The organisation passed 200 contributors."},{"kind":"new","icon":"🆕","repo":"chatbot-starter","text":"was published: Starter kit for conversational assistants."},{"kind":"badge","icon":"⭐","repo":"event-bus-connectors","badge":"stars-50","text":"reached 50 stars."},{"kind":"badge","icon":"⭐","repo":"chatbot-starter","badge":"stars-10","text":"reached 10 stars."},{"kind":"badge","icon":"🍴","repo":"geo-hazard-maps","badge":"forks-10","text":"was forked 10 times."},{"kind":"welcome","icon":"👋","text":"6 people made their first contribution, 3 of them from outside Allianz."},{"kind":"releases","icon":"🚀","text":"7 releases in October."}],"releases":[{"repo":"mobile-sdk-ios","tag":"v2.12.0","date":"2026-10-05"},{"repo":"design-tokens","tag":"v1.3.1","date":"2026-10-11"},{"repo":"claims-engine","tag":"v3.1.0","date":"2026-10-15"},{"repo":"mobile-sdk-android","tag":"v3.2.0","date":"2026-10-16"},{"repo":"design-tokens","tag":"v4.2.0","date":"2026-10-20"},{"repo":"pdf-render-service","tag":"v3.0.0","date":"2026-10-21"},{"repo":"policy-sdk-java","tag":"v2.5.0","date":"2026-10-23"}],"history":[{"month":"2025-11","period":"2025-10","totals":{"stars":1978,"forks":336,"public_projects":10,"contributors":{"internal":59,"external":52,"total":111},"new_contributors":{"internal":3,"external":1},"prs_merged":{"internal":46,"external":23},"releases":5,"commits":233,"active_contributors":{"internal":23,"external":9}},"repositories":{"claims-engine":{"stars":782,"forks":126,"contributors":{"internal":15,"external":18},"releases_total":10,"release_downloads":2290,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"design-tokens":{"stars":434,"forks":53,"contributors":{"internal":9,"external":11},"releases_total":43,"release_downloads":1396,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"policy-sdk-java":{"stars":222,"forks":44,"contributors":{"internal":11,"external":6},"releases_total":17,"release_downloads":1290,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":186,"forks":41,"contributors":{"internal":6,"external":7},"releases_total":19,"release_downloads":2441,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"pdf-render-service":{"stars":97,"forks":25,"contributors":{"internal":5,"external":3},"releases_total":10,"release_downloads":1222,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":75,"forks":12,"contributors":{"internal":4,"external":3},"releases_total":4,"release_downloads":3315,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":45,"forks":14,"contributors":{"internal":8,"external":1},"releases_total":28,"release_downloads":2103,"badges":["stars-10","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":39,"forks":5,"contributors":{"internal":5,"external":1},"releases_total":7,"release_downloads":1446,"badges":["stars-10","external_contributors-1","releases-1"]},"mobile-sdk-android":{"stars":36,"forks":4,"contributors":{"internal":5,"external":1},"releases_total":6,"release_downloads":1477,"badges":["stars-10","external_contributors-1","releases-1"]},"api-guidelines":{"stars":62,"forks":12,"contributors":{"internal":4,"external":4},"releases_total":2,"release_downloads":3325,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]}},"milestones":["stars-1000","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2025-12","period":"2025-11","totals":{"stars":2036,"forks":352,"public_projects":10,"contributors":{"internal":61,"external":56,"total":117},"new_contributors":{"internal":3,"external":5},"prs_merged":{"internal":48,"external":25},"releases":3,"commits":282,"active_contributors":{"internal":18,"external":20}},"repositories":{"claims-engine":{"stars":802,"forks":129,"contributors":{"internal":15,"external":21},"releases_total":10,"release_downloads":2325,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"design-tokens":{"stars":452,"forks":56,"contributors":{"internal":9,"external":11},"releases_total":44,"release_downloads":1541,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"policy-sdk-java":{"stars":227,"forks":45,"contributors":{"internal":11,"external":7},"releases_total":17,"release_downloads":1350,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":193,"forks":43,"contributors":{"internal":7,"external":7},"releases_total":20,"release_downloads":2668,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"pdf-render-service":{"stars":98,"forks":27,"contributors":{"internal":6,"external":3},"releases_total":10,"release_downloads":1338,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":78,"forks":14,"contributors":{"internal":4,"external":3},"releases_total":4,"release_downloads":3406,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":46,"forks":16,"contributors":{"internal":8,"external":1},"releases_total":29,"release_downloads":2476,"badges":["stars-10","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":40,"forks":5,"contributors":{"internal":5,"external":2},"releases_total":7,"release_downloads":1465,"badges":["stars-10","external_contributors-1","releases-1"]},"mobile-sdk-android":{"stars":37,"forks":5,"contributors":{"internal":6,"external":1},"releases_total":6,"release_downloads":1589,"badges":["stars-10","external_contributors-1","releases-1"]},"api-guidelines":{"stars":63,"forks":12,"contributors":{"internal":4,"external":4},"releases_total":2,"release_downloads":3422,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]}},"milestones":["stars-1000","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-01","period":"2025-12","totals":{"stars":2097,"forks":358,"public_projects":10,"contributors":{"internal":64,"external":59,"total":123},"new_contributors":{"internal":3,"external":3},"prs_merged":{"internal":52,"external":23},"releases":6,"commits":273,"active_contributors":{"internal":28,"external":17}},"repositories":{"claims-engine":{"stars":829,"forks":133,"contributors":{"internal":15,"external":21},"releases_total":11,"release_downloads":2638,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"design-tokens":{"stars":464,"forks":56,"contributors":{"internal":9,"external":13},"releases_total":45,"release_downloads":1749,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"policy-sdk-java":{"stars":231,"forks":48,"contributors":{"internal":12,"external":7},"releases_total":17,"release_downloads":1416,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":204,"forks":45,"contributors":{"internal":7,"external":8},"releases_total":21,"release_downloads":3004,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"pdf-render-service":{"stars":99,"forks":26,"contributors":{"internal":7,"external":3},"releases_total":10,"release_downloads":1454,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":80,"forks":14,"contributors":{"internal":4,"external":3},"releases_total":5,"release_downloads":3550,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":47,"forks":15,"contributors":{"internal":8,"external":1},"releases_total":30,"release_downloads":2621,"badges":["stars-10","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":41,"forks":4,"contributors":{"internal":5,"external":2},"releases_total":7,"release_downloads":1515,"badges":["stars-10","external_contributors-1","releases-1"]},"mobile-sdk-android":{"stars":38,"forks":4,"contributors":{"internal":6,"external":1},"releases_total":7,"release_downloads":1825,"badges":["stars-10","external_contributors-1","releases-1"]},"api-guidelines":{"stars":64,"forks":13,"contributors":{"internal":5,"external":4},"releases_total":2,"release_downloads":3466,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]}},"milestones":["stars-1000","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-02","period":"2026-01","totals":{"stars":2199,"forks":374,"public_projects":11,"contributors":{"internal":71,"external":62,"total":133},"new_contributors":{"internal":5,"external":3},"prs_merged":{"internal":51,"external":28},"releases":7,"commits":328,"active_contributors":{"internal":18,"external":12}},"repositories":{"claims-engine":{"stars":852,"forks":137,"contributors":{"internal":15,"external":21},"releases_total":12,"release_downloads":3060,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"design-tokens":{"stars":487,"forks":60,"contributors":{"internal":9,"external":15},"releases_total":47,"release_downloads":2016,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"policy-sdk-java":{"stars":239,"forks":48,"contributors":{"internal":13,"external":7},"releases_total":17,"release_downloads":1531,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":211,"forks":46,"contributors":{"internal":7,"external":9},"releases_total":22,"release_downloads":3228,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"pdf-render-service":{"stars":100,"forks":25,"contributors":{"internal":7,"external":3},"releases_total":11,"release_downloads":1822,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":84,"forks":14,"contributors":{"internal":4,"external":3},"releases_total":5,"release_downloads":3638,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":48,"forks":16,"contributors":{"internal":9,"external":1},"releases_total":30,"release_downloads":2691,"badges":["stars-10","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":42,"forks":6,"contributors":{"internal":5,"external":2},"releases_total":8,"release_downloads":1852,"badges":["stars-10","external_contributors-1","releases-1"]},"mobile-sdk-android":{"stars":39,"forks":5,"contributors":{"internal":6,"external":1},"releases_total":7,"release_downloads":1942,"badges":["stars-10","external_contributors-1","releases-1"]},"api-guidelines":{"stars":65,"forks":13,"contributors":{"internal":5,"external":4},"releases_total":3,"release_downloads":3841,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"risk-model-toolkit":{"stars":32,"forks":4,"contributors":{"internal":6,"external":0},"releases_total":8,"release_downloads":3427,"badges":["new","stars-10","releases-1"]}},"milestones":["stars-1000","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-03","period":"2026-02","totals":{"stars":2279,"forks":391,"public_projects":11,"contributors":{"internal":72,"external":68,"total":140},"new_contributors":{"internal":2,"external":6},"prs_merged":{"internal":53,"external":28},"releases":6,"commits":289,"active_contributors":{"internal":23,"external":15}},"repositories":{"claims-engine":{"stars":871,"forks":141,"contributors":{"internal":15,"external":24},"releases_total":13,"release_downloads":3350,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"design-tokens":{"stars":508,"forks":61,"contributors":{"internal":9,"external":17},"releases_total":48,"release_downloads":2383,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"policy-sdk-java":{"stars":247,"forks":50,"contributors":{"internal":13,"external":7},"releases_total":17,"release_downloads":1639,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":223,"forks":50,"contributors":{"internal":8,"external":9},"releases_total":22,"release_downloads":3300,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"pdf-render-service":{"stars":101,"forks":27,"contributors":{"internal":8,"external":3},"releases_total":12,"release_downloads":2292,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":88,"forks":15,"contributors":{"internal":4,"external":3},"releases_total":5,"release_downloads":3716,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":49,"forks":17,"contributors":{"internal":9,"external":1},"releases_total":31,"release_downloads":2872,"badges":["stars-10","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":43,"forks":4,"contributors":{"internal":5,"external":2},"releases_total":9,"release_downloads":2278,"badges":["stars-10","external_contributors-1","releases-1"]},"mobile-sdk-android":{"stars":40,"forks":6,"contributors":{"internal":6,"external":1},"releases_total":7,"release_downloads":2004,"badges":["stars-10","external_contributors-1","releases-1"]},"api-guidelines":{"stars":66,"forks":14,"contributors":{"internal":5,"external":5},"releases_total":3,"release_downloads":3930,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":43,"forks":6,"contributors":{"internal":6,"external":0},"releases_total":9,"release_downloads":3697,"badges":["stars-10","releases-1"]}},"milestones":["stars-1000","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-04","period":"2026-03","totals":{"stars":2371,"forks":401,"public_projects":11,"contributors":{"internal":76,"external":70,"total":146},"new_contributors":{"internal":5,"external":2},"prs_merged":{"internal":59,"external":23},"releases":9,"commits":315,"active_contributors":{"internal":18,"external":11}},"repositories":{"claims-engine":{"stars":905,"forks":146,"contributors":{"internal":15,"external":25},"releases_total":14,"release_downloads":3553,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"]},"design-tokens":{"stars":527,"forks":63,"contributors":{"internal":9,"external":17},"releases_total":49,"release_downloads":2547,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"policy-sdk-java":{"stars":254,"forks":52,"contributors":{"internal":14,"external":8},"releases_total":18,"release_downloads":1938,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":233,"forks":52,"contributors":{"internal":8,"external":9},"releases_total":23,"release_downloads":3637,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"pdf-render-service":{"stars":103,"forks":26,"contributors":{"internal":9,"external":3},"releases_total":13,"release_downloads":2743,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":90,"forks":14,"contributors":{"internal":4,"external":3},"releases_total":6,"release_downloads":4058,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":50,"forks":16,"contributors":{"internal":10,"external":1},"releases_total":31,"release_downloads":2903,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":44,"forks":5,"contributors":{"internal":5,"external":2},"releases_total":10,"release_downloads":2682,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-android":{"stars":41,"forks":6,"contributors":{"internal":7,"external":1},"releases_total":8,"release_downloads":2441,"badges":["stars-10","external_contributors-1","releases-1"]},"api-guidelines":{"stars":67,"forks":13,"contributors":{"internal":5,"external":5},"releases_total":3,"release_downloads":4049,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":57,"forks":8,"contributors":{"internal":7,"external":0},"releases_total":10,"release_downloads":3937,"badges":["stars-10","stars-50","releases-1","releases-10"]}},"milestones":["stars-1000","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-05","period":"2026-04","totals":{"stars":2471,"forks":419,"public_projects":12,"contributors":{"internal":84,"external":71,"total":155},"new_contributors":{"internal":7,"external":1},"prs_merged":{"internal":62,"external":22},"releases":8,"commits":294,"active_contributors":{"internal":18,"external":9}},"repositories":{"claims-engine":{"stars":923,"forks":148,"contributors":{"internal":16,"external":25},"releases_total":15,"release_downloads":3825,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"]},"design-tokens":{"stars":552,"forks":66,"contributors":{"internal":9,"external":18},"releases_total":50,"release_downloads":2635,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10","releases-50"]},"policy-sdk-java":{"stars":260,"forks":52,"contributors":{"internal":15,"external":8},"releases_total":18,"release_downloads":1958,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":247,"forks":55,"contributors":{"internal":8,"external":9},"releases_total":24,"release_downloads":3893,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"pdf-render-service":{"stars":104,"forks":27,"contributors":{"internal":10,"external":3},"releases_total":14,"release_downloads":3065,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":93,"forks":16,"contributors":{"internal":4,"external":3},"releases_total":6,"release_downloads":4072,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":51,"forks":17,"contributors":{"internal":10,"external":1},"releases_total":32,"release_downloads":3318,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":45,"forks":5,"contributors":{"internal":5,"external":2},"releases_total":11,"release_downloads":3031,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-android":{"stars":43,"forks":6,"contributors":{"internal":8,"external":1},"releases_total":9,"release_downloads":2857,"badges":["stars-10","external_contributors-1","releases-1"]},"api-guidelines":{"stars":68,"forks":12,"contributors":{"internal":6,"external":5},"releases_total":3,"release_downloads":4071,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":64,"forks":11,"contributors":{"internal":7,"external":0},"releases_total":11,"release_downloads":4079,"badges":["stars-10","stars-50","forks-10","releases-1","releases-10"]},"geo-hazard-maps":{"stars":21,"forks":4,"contributors":{"internal":4,"external":0},"releases_total":9,"release_downloads":582,"badges":["new","stars-10","releases-1"]}},"milestones":["stars-1000","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-06","period":"2026-05","totals":{"stars":2572,"forks":436,"public_projects":12,"contributors":{"internal":87,"external":74,"total":161},"new_contributors":{"internal":4,"external":4},"prs_merged":{"internal":55,"external":26},"releases":5,"commits":281,"active_contributors":{"internal":26,"external":18}},"repositories":{"claims-engine":{"stars":946,"forks":153,"contributors":{"internal":16,"external":25},"releases_total":16,"release_downloads":3980,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"]},"design-tokens":{"stars":579,"forks":69,"contributors":{"internal":10,"external":20},"releases_total":51,"release_downloads":2925,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10","releases-50"]},"policy-sdk-java":{"stars":269,"forks":54,"contributors":{"internal":15,"external":8},"releases_total":19,"release_downloads":2147,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":255,"forks":58,"contributors":{"internal":8,"external":10},"releases_total":24,"release_downloads":3932,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"pdf-render-service":{"stars":105,"forks":27,"contributors":{"internal":11,"external":3},"releases_total":15,"release_downloads":3450,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":96,"forks":16,"contributors":{"internal":4,"external":3},"releases_total":6,"release_downloads":4125,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":53,"forks":18,"contributors":{"internal":10,"external":1},"releases_total":32,"release_downloads":3427,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":46,"forks":7,"contributors":{"internal":5,"external":2},"releases_total":11,"release_downloads":3099,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-android":{"stars":44,"forks":5,"contributors":{"internal":8,"external":1},"releases_total":10,"release_downloads":3127,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"api-guidelines":{"stars":70,"forks":13,"contributors":{"internal":7,"external":5},"releases_total":3,"release_downloads":4172,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":78,"forks":13,"contributors":{"internal":8,"external":1},"releases_total":11,"release_downloads":4199,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"geo-hazard-maps":{"stars":31,"forks":3,"contributors":{"internal":4,"external":0},"releases_total":9,"release_downloads":597,"badges":["stars-10","releases-1"]}},"milestones":["stars-1000","stars-2500","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-07","period":"2026-06","totals":{"stars":2669,"forks":450,"public_projects":12,"contributors":{"internal":89,"external":78,"total":167},"new_contributors":{"internal":3,"external":4},"prs_merged":{"internal":62,"external":27},"releases":7,"commits":377,"active_contributors":{"internal":30,"external":20}},"repositories":{"claims-engine":{"stars":979,"forks":158,"contributors":{"internal":16,"external":25},"releases_total":17,"release_downloads":4201,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"]},"design-tokens":{"stars":593,"forks":71,"contributors":{"internal":11,"external":22},"releases_total":53,"release_downloads":3624,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10","releases-50"]},"policy-sdk-java":{"stars":278,"forks":58,"contributors":{"internal":16,"external":8},"releases_total":19,"release_downloads":2207,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":270,"forks":60,"contributors":{"internal":9,"external":10},"releases_total":25,"release_downloads":4166,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"pdf-render-service":{"stars":106,"forks":28,"contributors":{"internal":11,"external":3},"releases_total":15,"release_downloads":3489,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":101,"forks":16,"contributors":{"internal":4,"external":3},"releases_total":6,"release_downloads":4239,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":54,"forks":17,"contributors":{"internal":10,"external":1},"releases_total":33,"release_downloads":3634,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":47,"forks":6,"contributors":{"internal":5,"external":3},"releases_total":12,"release_downloads":3391,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-android":{"stars":45,"forks":7,"contributors":{"internal":8,"external":1},"releases_total":11,"release_downloads":3530,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"api-guidelines":{"stars":71,"forks":13,"contributors":{"internal":7,"external":5},"releases_total":3,"release_downloads":4182,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":86,"forks":12,"contributors":{"internal":8,"external":1},"releases_total":11,"release_downloads":4292,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"geo-hazard-maps":{"stars":39,"forks":4,"contributors":{"internal":4,"external":1},"releases_total":9,"release_downloads":685,"badges":["stars-10","external_contributors-1","releases-1"]}},"milestones":["stars-1000","stars-2500","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-08","period":"2026-07","totals":{"stars":2802,"forks":475,"public_projects":13,"contributors":{"internal":98,"external":83,"total":181},"new_contributors":{"internal":8,"external":5},"prs_merged":{"internal":81,"external":29},"releases":6,"commits":418,"active_contributors":{"internal":25,"external":19}},"repositories":{"claims-engine":{"stars":1013,"forks":164,"contributors":{"internal":17,"external":27},"releases_total":17,"release_downloads":4318,"badges":["stars-10","stars-50","stars-100","stars-500","stars-1000","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"]},"design-tokens":{"stars":615,"forks":76,"contributors":{"internal":12,"external":23},"releases_total":55,"release_downloads":3948,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10","releases-50"]},"policy-sdk-java":{"stars":289,"forks":60,"contributors":{"internal":17,"external":8},"releases_total":19,"release_downloads":2314,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":281,"forks":62,"contributors":{"internal":10,"external":10},"releases_total":26,"release_downloads":4410,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"pdf-render-service":{"stars":107,"forks":28,"contributors":{"internal":12,"external":3},"releases_total":16,"release_downloads":3870,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":105,"forks":17,"contributors":{"internal":4,"external":4},"releases_total":7,"release_downloads":4640,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1"]},"terraform-modules":{"stars":55,"forks":17,"contributors":{"internal":10,"external":1},"releases_total":33,"release_downloads":3694,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":49,"forks":5,"contributors":{"internal":5,"external":3},"releases_total":12,"release_downloads":3423,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-android":{"stars":46,"forks":7,"contributors":{"internal":9,"external":1},"releases_total":12,"release_downloads":3708,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"api-guidelines":{"stars":72,"forks":13,"contributors":{"internal":7,"external":5},"releases_total":3,"release_downloads":4235,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":97,"forks":16,"contributors":{"internal":8,"external":2},"releases_total":11,"release_downloads":4406,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"geo-hazard-maps":{"stars":48,"forks":5,"contributors":{"internal":4,"external":1},"releases_total":9,"release_downloads":702,"badges":["stars-10","external_contributors-1","releases-1"]},"event-bus-connectors":{"stars":25,"forks":5,"contributors":{"internal":5,"external":0},"releases_total":4,"release_downloads":736,"badges":["new","stars-10","releases-1"]}},"milestones":["stars-1000","stars-2500","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-09","period":"2026-08","totals":{"stars":2918,"forks":488,"public_projects":13,"contributors":{"internal":103,"external":88,"total":191},"new_contributors":{"internal":6,"external":6},"prs_merged":{"internal":71,"external":35},"releases":4,"commits":403,"active_contributors":{"internal":33,"external":23}},"repositories":{"claims-engine":{"stars":1051,"forks":168,"contributors":{"internal":17,"external":30},"releases_total":17,"release_downloads":4419,"badges":["stars-10","stars-50","stars-100","stars-500","stars-1000","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"]},"design-tokens":{"stars":632,"forks":76,"contributors":{"internal":12,"external":23},"releases_total":56,"release_downloads":4114,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10","releases-50"]},"policy-sdk-java":{"stars":300,"forks":60,"contributors":{"internal":17,"external":8},"releases_total":20,"release_downloads":2600,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":295,"forks":65,"contributors":{"internal":10,"external":11},"releases_total":26,"release_downloads":4432,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"pdf-render-service":{"stars":109,"forks":29,"contributors":{"internal":13,"external":3},"releases_total":17,"release_downloads":4264,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":108,"forks":17,"contributors":{"internal":4,"external":5},"releases_total":7,"release_downloads":4753,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"terraform-modules":{"stars":57,"forks":19,"contributors":{"internal":11,"external":1},"releases_total":33,"release_downloads":3713,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":50,"forks":6,"contributors":{"internal":6,"external":3},"releases_total":12,"release_downloads":3533,"badges":["stars-10","stars-50","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-android":{"stars":47,"forks":7,"contributors":{"internal":9,"external":1},"releases_total":13,"release_downloads":3910,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"api-guidelines":{"stars":74,"forks":14,"contributors":{"internal":8,"external":5},"releases_total":3,"release_downloads":4276,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":105,"forks":16,"contributors":{"internal":9,"external":2},"releases_total":11,"release_downloads":4432,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"geo-hazard-maps":{"stars":56,"forks":8,"contributors":{"internal":4,"external":1},"releases_total":9,"release_downloads":736,"badges":["stars-10","stars-50","external_contributors-1","releases-1"]},"event-bus-connectors":{"stars":34,"forks":3,"contributors":{"internal":6,"external":1},"releases_total":4,"release_downloads":780,"badges":["stars-10","external_contributors-1","releases-1"]}},"milestones":["stars-1000","stars-2500","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-10","period":"2026-09","totals":{"stars":3030,"forks":508,"public_projects":13,"contributors":{"internal":104,"external":92,"total":196},"new_contributors":{"internal":1,"external":4},"prs_merged":{"internal":76,"external":33},"releases":6,"commits":443,"active_contributors":{"internal":28,"external":18}},"repositories":{"claims-engine":{"stars":1075,"forks":173,"contributors":{"internal":18,"external":33},"releases_total":18,"release_downloads":4829,"badges":["stars-10","stars-50","stars-100","stars-500","stars-1000","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"]},"design-tokens":{"stars":649,"forks":80,"contributors":{"internal":12,"external":23},"releases_total":57,"release_downloads":4468,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10","releases-50"]},"policy-sdk-java":{"stars":309,"forks":64,"contributors":{"internal":17,"external":8},"releases_total":20,"release_downloads":2718,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":309,"forks":68,"contributors":{"internal":10,"external":11},"releases_total":27,"release_downloads":4915,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"pdf-render-service":{"stars":110,"forks":29,"contributors":{"internal":13,"external":3},"releases_total":18,"release_downloads":4485,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":111,"forks":17,"contributors":{"internal":4,"external":5},"releases_total":7,"release_downloads":4766,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"terraform-modules":{"stars":58,"forks":17,"contributors":{"internal":11,"external":1},"releases_total":34,"release_downloads":4132,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":52,"forks":5,"contributors":{"internal":6,"external":3},"releases_total":13,"release_downloads":3912,"badges":["stars-10","stars-50","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-android":{"stars":48,"forks":7,"contributors":{"internal":9,"external":1},"releases_total":13,"release_downloads":3924,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"api-guidelines":{"stars":76,"forks":14,"contributors":{"internal":8,"external":5},"releases_total":3,"release_downloads":4350,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":119,"forks":19,"contributors":{"internal":9,"external":3},"releases_total":11,"release_downloads":4531,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"geo-hazard-maps":{"stars":66,"forks":8,"contributors":{"internal":4,"external":1},"releases_total":9,"release_downloads":844,"badges":["stars-10","stars-50","external_contributors-1","releases-1"]},"event-bus-connectors":{"stars":48,"forks":7,"contributors":{"internal":6,"external":1},"releases_total":4,"release_downloads":818,"badges":["stars-10","external_contributors-1","releases-1"]}},"milestones":["stars-1000","stars-2500","public_projects-10","contributors-100","external_contributors-50"]},{"month":"2026-11","period":"2026-10","totals":{"stars":3185,"forks":534,"public_projects":14,"contributors":{"internal":108,"external":95,"total":203},"new_contributors":{"internal":3,"external":3},"prs_merged":{"internal":84,"external":29},"releases":7,"commits":411,"active_contributors":{"internal":31,"external":16}},"repositories":{"claims-engine":{"stars":1099,"forks":176,"contributors":{"internal":18,"external":35},"releases_total":19,"release_downloads":5327,"badges":["stars-10","stars-50","stars-100","stars-500","stars-1000","forks-10","forks-50","forks-100","external_contributors-1","external_contributors-5","external_contributors-10","external_contributors-25","releases-1","releases-10"]},"design-tokens":{"stars":665,"forks":82,"contributors":{"internal":12,"external":23},"releases_total":59,"release_downloads":4623,"badges":["stars-10","stars-50","stars-100","stars-500","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10","releases-50"]},"policy-sdk-java":{"stars":319,"forks":65,"contributors":{"internal":18,"external":8},"releases_total":21,"release_downloads":3017,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","releases-1","releases-10"]},"k8s-operator-kit":{"stars":327,"forks":72,"contributors":{"internal":10,"external":11},"releases_total":27,"release_downloads":5022,"badges":["stars-10","stars-50","stars-100","forks-10","forks-50","external_contributors-1","external_contributors-5","external_contributors-10","releases-1","releases-10"]},"pdf-render-service":{"stars":111,"forks":28,"contributors":{"internal":13,"external":3},"releases_total":19,"release_downloads":4816,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"data-anonymizer":{"stars":115,"forks":19,"contributors":{"internal":4,"external":5},"releases_total":7,"release_downloads":4885,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"terraform-modules":{"stars":60,"forks":19,"contributors":{"internal":11,"external":2},"releases_total":34,"release_downloads":4145,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-ios":{"stars":54,"forks":7,"contributors":{"internal":6,"external":3},"releases_total":14,"release_downloads":4234,"badges":["stars-10","stars-50","external_contributors-1","releases-1","releases-10"]},"mobile-sdk-android":{"stars":49,"forks":7,"contributors":{"internal":9,"external":1},"releases_total":14,"release_downloads":4314,"badges":["stars-10","external_contributors-1","releases-1","releases-10"]},"api-guidelines":{"stars":78,"forks":16,"contributors":{"internal":8,"external":5},"releases_total":3,"release_downloads":4461,"badges":["stars-10","stars-50","forks-10","external_contributors-1","external_contributors-5","releases-1"]},"risk-model-toolkit":{"stars":134,"forks":21,"contributors":{"internal":9,"external":3},"releases_total":11,"release_downloads":4615,"badges":["stars-10","stars-50","stars-100","forks-10","external_contributors-1","releases-1","releases-10"]},"geo-hazard-maps":{"stars":75,"forks":10,"contributors":{"internal":4,"external":1},"releases_total":9,"release_downloads":904,"badges":["stars-10","stars-50","forks-10","external_contributors-1","releases-1"]},"event-bus-connectors":{"stars":64,"forks":6,"contributors":{"internal":6,"external":1},"releases_total":4,"release_downloads":919,"badges":["stars-10","stars-50","external_contributors-1","releases-1"]},"chatbot-starter":{"stars":35,"forks":6,"contributors":{"internal":4,"external":0},"releases_total":0,"release_downloads":1996,"badges":["new","stars-10"]}},"milestones":["stars-1000","stars-2500","public_projects-10","contributors-100","contributors-200","external_contributors-50"]}],"skipped":[{"repo":".github","reason":"excluded_repos"},{"repo":"ospo","reason":"excluded_repos"},{"repo":"legacy-portal","reason":"archived"},{"repo":"openssl-fork","reason":"fork"}],"errors":[{"repo":"mobile-sdk-ios","metric":"traffic","reason":"Traffic not readable (request returned 403: missing Administration permission)"}]}</script>
+<script>
+/* Render guard: an error while rendering is shown on the page instead of leaving it blank. */
+addEventListener('error', e => {
+  document.documentElement.dataset.render = 'error';
+  const box = document.getElementById('render-error');
+  box.textContent = `The report could not be rendered: ${e.message}`;
+  box.hidden = false;
+});
+</script>
+
+<script>
+/* ═══════════════════════════ Load data ═══════════════════════════ */
+const $ = id => document.getElementById(id);
+const DATA = JSON.parse($('data.json').textContent);
+const ORG = DATA.org, T = DATA.totals, G = DATA.growth, REPOS = DATA.repositories, LEVELS = DATA.levels.badges;
+const HISTORY = DATA.history;
+const PREV = HISTORY.length > 1 ? HISTORY.at(-2) : null;
+
+/* ═══════════════════════════ Helpers (as in scorecard_report.html) ═══════════════════════════ */
+const NS = 'http://www.w3.org/2000/svg';
+function s(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function h(tag, attrs = {}, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'style') e.style.cssText = v;
+    else e.setAttribute(k, v);
+  }
+  for (const c of children.flat(Infinity)) if (c != null && c !== false) e.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  return e;
+}
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const fmtDate = iso => { if (!iso) return '–'; const [y, m, d] = iso.slice(0, 10).split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const fmtDateTime = iso => `${fmtDate(iso)}, ${iso.slice(11, 16)} UTC`;
+const fmtMonth = ym => `${MONTHS[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}`;
+const fmtMonthLong = ym => `${MONTHS_LONG[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}`;
+const fmtMon = ym => MONTHS[+ym.slice(5, 7) - 1];
+const addMonths = (ym, k) => { const n = +ym.slice(0, 4) * 12 + +ym.slice(5, 7) - 1 + k; return `${Math.floor(n / 12)}-${String(n % 12 + 1).padStart(2, '0')}`; };
+const num = v => v == null ? '–' : Number(v).toLocaleString('en');
+const plural = (n, one, many = one + 's') => `${num(n)} ${n === 1 ? one : many}`;
+const sum2 = x => x ? x.internal + x.external : null;
+const repoUrl = repo => `https://github.com/${ORG}/${repo}`;
+const runLink = url => url ? h('a', { href: url, text: url.split('/').pop() }) : h('span', { class: 'muted', text: 'local run' });
+
+/* Trends: the last 12 periods, one slot per month; a month without a report is null (a gap) */
+const TREND_MONTHS = 12;
+const SLOTS = Array.from({ length: TREND_MONTHS }, (_, i) => addMonths(DATA.period.month, i - TREND_MONTHS + 1));
+const BY_PERIOD = Object.fromEntries(HISTORY.map(x => [x.period, x]));
+const trend = f => SLOTS.map(m => (BY_PERIOD[m] ? f(BY_PERIOD[m]) : null) ?? null);
+const LABELS = SLOTS.map(fmtMon), FULL = SLOTS.map(fmtMonth);
+const PREV_LABEL = fmtMon(addMonths(DATA.period.month, -1)), YEAR_LABEL = fmtMonth(addMonths(DATA.period.month, -12));
+
+const tip = $('tip');
+function showTip(evt, value, label) {
+  tip.replaceChildren(h('strong', { text: value }), h('span', { text: label }));
+  tip.hidden = false;
+  let x, y;
+  if (evt && evt.clientX != null && evt.type !== 'focus') { x = evt.clientX; y = evt.clientY; }
+  else { const r = evt.target.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top; }
+  const w = tip.offsetWidth, hgt = tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(x + 14, innerWidth - w - 8)) + 'px';
+  tip.style.top = (y - hgt - 12 < 0 ? y + 16 : y - hgt - 12) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+
+function dataTable(headers, rows, numericCols = []) {
+  const t = h('table');
+  t.append(h('thead', {}, h('tr', {}, ...headers.map((x, i) => h('th', { class: numericCols.includes(i) ? 'num' : '', text: x })))));
+  t.append(h('tbody', {}, ...rows.map(r => h('tr', {}, ...r.map((c, i) => h('td', { class: numericCols.includes(i) ? 'num' : '', text: c }))))));
+  return h('details', { class: 'datatable' }, h('summary', { text: 'Show data table' }), t);
+}
+
+function sparkline(values, { w = 120, hgt = 28 } = {}) {
+  let pts = values.map((v, i) => [i, v]).filter(([, v]) => v != null);
+  if (!pts.length) return h('span', { class: 'muted', text: '–' });
+  const vs = pts.map(([, v]) => v);
+  if (pts[0][0] > 0) pts = [[0, pts[0][1]], ...pts];
+  const lo = Math.min(...vs), hi = Math.max(...vs), span = hi - lo || 1;
+  const x = i => 2 + i * (w - 6) / Math.max(1, values.length - 1);
+  const y = v => hgt - 4 - (v - lo) * (hgt - 8) / span;
+  const svg = s('svg', { width: w, height: hgt, viewBox: `0 0 ${w} ${hgt}`, 'aria-hidden': 'true' });
+  s('polyline', { points: pts.map(([i, v]) => `${x(i)},${y(v)}`).join(' '), fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  const [li, lv] = pts.at(-1);
+  s('circle', { cx: x(li), cy: y(lv), r: 3, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
+  return svg;
+}
+
+function niceTicks(lo, hi, count = 4) {
+  const raw = Math.max(1e-9, (hi - lo) / count);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map(k => k * mag).find(st => st >= raw);
+  const a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step;
+  const ticks = [];
+  for (let t = a; t <= b + 1e-9; t += step) ticks.push(+t.toFixed(6));
+  return ticks;
+}
+const showLabel = (i, n) => n <= 8 || (n - 1 - i) % 2 === 0;
+
+function lineChart(el, { values, name }) {
+  const W = 560, H = 240, m = { t: 14, r: 56, b: 30, l: 52 };
+  const idx = values.map((v, i) => v == null ? null : i).filter(i => i != null);
+  const first = idx[0], li = idx.at(-1);
+  const vs = idx.map(i => values[i]);
+  const ticks = niceTicks(Math.min(...vs) * 0.9, Math.max(...vs));
+  const yMin = ticks[0], yMax = ticks.at(-1);
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', tabindex: 0, 'aria-label': `${name}: ${num(values[first])} in ${FULL[first]} to ${num(values[li])} in ${FULL[li]}` });
+  const x = i => m.l + i * (W - m.l - m.r) / Math.max(1, values.length - 1);
+  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / (yMax - yMin);
+  for (const t of ticks) {
+    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
+    s('text', { class: 'tick', x: m.l - 8, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = num(t);
+  }
+  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
+  LABELS.forEach((l, i) => { if (showLabel(i, LABELS.length)) s('text', { class: 'tick', x: x(i), y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = l; });
+  const pts = [...(first > 0 ? [[x(0), y(values[first])]] : []), ...idx.map(i => [x(i), y(values[i])])];
+  const d = pts.map(([px, py]) => `${px},${py}`).join(' L');
+  s('path', { d: `M${pts[0][0]},${H - m.b} L${d} L${pts.at(-1)[0]},${H - m.b} Z`, fill: 'var(--accent-wash)' }, svg);
+  s('path', { d: `M${d}`, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  s('circle', { cx: x(li), cy: y(values[li]), r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+  s('text', { class: 'vlabel', x: x(li) + 10, y: y(values[li]) + 4 }, svg).textContent = num(values[li]);
+  const cross = s('line', { y1: m.t, y2: H - m.b, stroke: 'var(--axis)', 'stroke-width': 1, visibility: 'hidden' }, svg);
+  const dot = s('circle', { r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' }, svg);
+  const hit = s('rect', { x: m.l - 10, y: m.t, width: W - m.l - m.r + 20, height: H - m.t - m.b, fill: 'transparent' }, svg);
+  let cur = li;
+  const hide = () => { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); hideTip(); };
+  const show = (i, evt) => {
+    if (values[i] == null) return hide();
+    cur = i;
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(values[i])); dot.setAttribute('visibility', 'visible');
+    showTip(evt, num(values[i]), `${name} · ${FULL[i]}`);
+  };
+  hit.addEventListener('pointermove', evt => {
+    const r = svg.getBoundingClientRect();
+    const px = (evt.clientX - r.left) * W / r.width;
+    show(Math.max(0, Math.min(values.length - 1, Math.round((px - m.l) / ((W - m.l - m.r) / Math.max(1, values.length - 1))))), evt);
+  });
+  hit.addEventListener('pointerleave', hide);
+  svg.addEventListener('focus', () => show(cur, { target: dot, type: 'focus' }));
+  svg.addEventListener('blur', hide);
+  svg.addEventListener('keydown', evt => {
+    if (evt.key !== 'ArrowLeft' && evt.key !== 'ArrowRight') return;
+    evt.preventDefault();
+    const k = idx.indexOf(cur) + (evt.key === 'ArrowRight' ? 1 : -1);
+    show(idx[Math.max(0, Math.min(idx.length - 1, k))], { target: dot, type: 'focus' });
+  });
+  el.append(svg, dataTable(['Month', name], idx.map(i => [FULL[i], num(values[i])]), [1]));
+}
+
+function roundedTop(x, y, w, base, r) {
+  r = Math.min(r, w / 2, base - y);
+  return `M${x},${base} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${base} Z`;
+}
+
+/* Stacked columns external (bottom, slot 1) + internal (top, slot 2); 2px surface gap between segments */
+function stackedColumns(el, { values, name }) {   // values: one {internal, external} per month, null = no report
+  const W = 560, H = 240, m = { t: 22, r: 16, b: 30, l: 44 };
+  const tot = values.map(v => v == null ? null : v.internal + v.external);
+  const idx = tot.map((v, i) => v == null ? null : i).filter(i => i != null);
+  const li = idx.at(-1);
+  const ticks = niceTicks(0, Math.max(1, ...idx.map(i => tot[i])));
+  const yMax = ticks.at(-1);
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${name}: ${num(tot[li])} in ${FULL[li]}, ${num(values[li].external)} external` });
+  const band = (W - m.l - m.r) / values.length, bw = Math.min(26, band * 0.62);
+  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / yMax;
+  for (const t of ticks) {
+    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
+    s('text', { class: 'tick', x: m.l - 8, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = num(t);
+  }
+  values.forEach((v, i) => {
+    const cx = m.l + band * i + band / 2;
+    if (showLabel(i, values.length)) s('text', { class: 'tick', x: cx, y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = LABELS[i];
+    if (v == null) return;
+    const base = H - m.b, yExt = y(v.external), yTop = y(v.external + v.internal);
+    const segs = [];
+    if (v.external) segs.push(s('path', { d: v.internal ? `M${cx - bw / 2},${base} V${yExt} H${cx + bw / 2} V${base} Z` : roundedTop(cx - bw / 2, yExt, bw, base, 4), fill: 'var(--ext)' }, svg));
+    if (v.internal) segs.push(s('path', { d: roundedTop(cx - bw / 2, yTop, bw, yExt - (v.external ? 2 : 0), 4), fill: 'var(--int)' }, svg));
+    if (i === li) s('text', { class: 'vlabel', x: cx, y: yTop - 6, 'text-anchor': 'middle' }, svg).textContent = num(tot[i]);
+    const hit = s('rect', { x: m.l + band * i, y: m.t, width: band, height: H - m.t - m.b, fill: 'transparent', tabindex: 0, 'aria-label': `${FULL[i]}: ${num(tot[i])}, external ${num(v.external)}, internal ${num(v.internal)}` }, svg);
+    const on = evt => { segs.forEach(p => p.setAttribute('opacity', 0.8)); showTip(evt, num(tot[i]), `${name} · ${FULL[i]}\nExternal ${num(v.external)} · Internal ${num(v.internal)}`); };
+    const off = () => { segs.forEach(p => p.removeAttribute('opacity')); hideTip(); };
+    hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
+    hit.addEventListener('focus', on); hit.addEventListener('blur', off);
+  });
+  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
+  const legend = h('div', { class: 'legend', style: 'margin-bottom:6px' },
+    h('span', {}, h('span', { class: 'sw ext' }), 'External'), h('span', {}, h('span', { class: 'sw int' }), 'Internal (org members)'));
+  el.append(legend, svg, dataTable(['Month', 'External', 'Internal', 'Total'], idx.map(i => [FULL[i], num(values[i].external), num(values[i].internal), num(tot[i])]), [1, 2, 3]));
+}
+
+/* Change: ▲ when growing. Shown neutral (not red) when shrinking: the report is about growth, not findings */
+function deltaNode(cur, prev, label) {
+  if (cur == null || prev == null) return h('span', { class: 'delta flat' }, '– ', h('span', { text: `vs ${label}` }));
+  const d = cur - prev;
+  return h('span', { class: `delta ${d > 0 ? 'good' : 'flat'}` }, `${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${num(Math.abs(d))} `, h('span', { text: `vs ${label}` }));
+}
+
+/* ═══════════════════════════ Header ═══════════════════════════ */
+if (DATA.mock) $('mock').hidden = false;
+$('title').append('Open Source Community', h('br'), 'Report');
+$('subtitle').textContent = `${fmtMonthLong(DATA.period.month)} · open source projects published under github.com/${ORG}`;
+{
+  const meta = $('meta');
+  const row = (k, v) => meta.append(h('dt', { text: k }), h('dd', {}, v));
+  row('Report ID', DATA.report_id);
+  row('Period', `${fmtDate(DATA.period.from)} – ${fmtDate(new Date(Date.parse(DATA.period.to) - 864e5).toISOString())}`);
+  row('Status as of', fmtDateTime(DATA.run_at));
+  row('Trend period', `${fmtMonth(SLOTS[0])} – ${fmtMonth(SLOTS.at(-1))}`);
+  row('Previous report', DATA.previous_report ? h('a', { href: DATA.previous_report.data_url, text: DATA.previous_report.report_id }) : 'none (first report)');
+  row('Scope', plural(T.public_projects, 'public project'));
+  row('Workflow run', runLink(DATA.run_url));
+}
+
+/* ═══════════════════════════ 1 At a glance ═══════════════════════════ */
+{
+  const nc = T.new_contributors, prs = T.prs_merged;
+  const yearGrowth = G.stars.year_ago ? Math.round((G.stars.value / G.stars.year_ago - 1) * 100) : null;
+  $('glance-lead').textContent =
+    `In ${fmtMonthLong(DATA.period.month)}, ${plural(sum2(nc), 'person', 'people')} made their first contribution to ${plural(T.public_projects, 'open source project')} of ${ORG}` +
+    ` (${num(nc.external)} from outside Allianz), ${num(sum2(prs))} pull requests were merged and ${plural(T.releases, 'release')} published.` +
+    (yearGrowth != null ? ` Stars grew by ${yearGrowth}% in 12 months.` : '');
+
+  const kpi = (key, label, sub, f, hero = false) => {
+    const g = G[key];
+    return h('div', { class: 'card tile' + (hero ? ' hero' : '') },
+      h('div', { class: 'label', text: label }),
+      h('div', { class: 'value', text: num(g.value) }),
+      h('div', { class: 'deltas' }, deltaNode(g.value, g.previous, PREV_LABEL), deltaNode(g.value, g.year_ago, YEAR_LABEL)),
+      h('div', { class: 'spark' }, sparkline(trend(f), hero ? { w: 380, hgt: 120 } : {})),
+      h('div', { class: hero ? 'note' : 'sub', text: sub }));
+  };
+  $('kpis').append(
+    kpi('stars', 'Stars', `Stars of all ${num(T.public_projects)} projects. ${num(T.forks)} forks.`, x => x.totals.stars, true),
+    kpi('public_projects', 'Public projects', `${num(T.new_projects)} new, ${num(T.active_projects)} active in the last 90 days`, x => x.totals.public_projects),
+    kpi('external_contributors', 'External contributors', `All-time, of ${num(G.contributors.value)} contributors`, x => x.totals.contributors.external),
+    kpi('prs_merged', 'Merged pull requests', `In ${fmtMon(DATA.period.month)}, ${num(prs.external)} by external authors`, x => sum2(x.totals.prs_merged)),
+    kpi('releases', 'Releases', `Published in ${fmtMon(DATA.period.month)}`, x => x.totals.releases),
+  );
+
+  if (DATA.input.status !== 'ok') {
+    $('data-alert').append(h('b', { text: 'No data. ' }), `${DATA.input.file} is ${DATA.input.status}: the numbers of this month are missing.`);
+    $('data-alert').hidden = false;
+  }
+  if (DATA.errors.length) {
+    $('data-note').append(h('b', { text: 'Note: ' }), `some numbers could not be read: ${DATA.errors.map(e => `${e.metric} of ${e.repo}`).join(', ')}. They are shown as "no data" (see A).`);
+    $('data-note').hidden = false;
+  }
+}
+
+/* ═══════════════════════════ 2 Highlights ═══════════════════════════ */
+{
+  const list = $('highlight-list');
+  for (const x of DATA.highlights) {
+    const body = h('div', {}, x.repo ? [h('a', { href: repoUrl(x.repo), text: x.repo, style: 'font-weight:600' }), ' '] : null, x.text);
+    if (x.kind === 'releases') body.append(h('div', { class: 'rel' }, DATA.releases.map(r => `${r.repo} ${r.tag}`).join(' · ')));
+    list.append(h('li', {}, h('span', { class: 'ico', 'aria-hidden': 'true', text: x.icon }), body));
+  }
+}
+
+/* ═══════════════════════════ 3 Growth ═══════════════════════════ */
+{
+  const c = G.contributors;
+  $('growth-lead').textContent = `The last 12 months. Contributors grew from ${num(c.year_ago)} to ${num(c.value)}, external contributors from ${num(G.external_contributors.year_ago)} to ${num(G.external_contributors.value)}.`;
+  lineChart($('c-stars'), { values: trend(x => x.totals.stars), name: 'Stars' });
+  stackedColumns($('c-contributors'), { values: trend(x => x.totals.contributors), name: 'Contributors' });
+  stackedColumns($('c-new'), { values: trend(x => x.totals.new_contributors), name: 'New contributors' });
+  stackedColumns($('c-prs'), { values: trend(x => x.totals.prs_merged), name: 'Merged pull requests' });
+}
+
+/* ═══════════════════════════ 4 Badges ═══════════════════════════ */
+const levelOf = b => +b.split('-').pop();
+const familyOf = b => b === 'new' ? 'new' : b.replace(/-\d+$/, '');
+const BADGE = {
+  new: () => ['🆕', 'New project'],
+  active: () => ['🔥', 'Active'],
+  stars: l => ['⭐', `${num(l)} stars`],
+  forks: l => ['🍴', `${num(l)} forks`],
+  external_contributors: l => l === 1 ? ['🌍', 'Open community'] : ['👥', `${l} external contributors`],
+  releases: l => l === 1 ? ['🚀', 'First release'] : ['🚀', `${l} releases`],
+};
+function chip(id, isNew) {
+  const fam = familyOf(id), [ico, text] = BADGE[fam](levelOf(id));
+  return h('span', { class: 'chip' + (isNew ? ' new' : ''), title: isNew ? 'Earned this month' : null }, h('span', { 'aria-hidden': 'true', text: ico }), text, isNew ? h('span', { class: 'newtag', text: 'NEW' }) : null);
+}
+{
+  const grid = $('badge-grid');
+  const sorted = [...REPOS].sort((a, b) => (b.new_badges.length > 0) - (a.new_badges.length > 0) || a.repo.localeCompare(b.repo));
+  for (const r of sorted) {
+    // the wall shows the highest level per family; a new badge is shown even when it is a lower level than another new one
+    const best = {};
+    for (const b of r.badges) { const f = familyOf(b); if (!best[f] || levelOf(b) > levelOf(best[f])) best[f] = b; }
+    const ids = ['new', 'stars', 'external_contributors', 'releases', 'forks'].map(f => best[f]).filter(Boolean);
+    const chips = ids.map(b => chip(b, r.new_badges.includes(b)));
+    if (r.active) chips.push(chip('active', false));
+    const next = r.next_badges.slice(0, 2).map(n => {
+      const [ico, text] = BADGE[familyOf(n.badge)](levelOf(n.badge));
+      const togo = n.level - n.value;
+      return h('div', { class: 'row' },
+        h('span', { text: `${ico} ${text}` }),
+        h('div', { class: 'meter', role: 'img', 'aria-label': `${num(n.value)} of ${num(n.level)}` }, h('div', { style: `width:${Math.round(100 * n.value / n.level)}%` })),
+        h('span', { class: 'togo' }, h('b', { style: 'color:var(--ink)', text: num(togo) }), ' to go'));
+    });
+    grid.append(h('div', { class: 'pcard' + (r.new_badges.length ? ' has-new' : '') },
+      h('div', {}, h('a', { class: 'name', href: repoUrl(r.repo), text: r.repo }), h('div', { class: 'desc', text: r.description })),
+      h('div', { class: 'chips' }, chips),
+      next.length ? h('div', { class: 'next' }, h('div', { class: 'small muted', text: 'Next badges' }), next) : null));
+  }
+}
+
+/* ═══════════════════════════ 5 Projects ═══════════════════════════ */
+{
+  const prevStars = repo => PREV?.repositories?.[repo]?.stars;
+  const COLS = [
+    { key: 'repo', label: 'Project', val: r => r.repo, cell: r => h('a', { href: repoUrl(r.repo), text: r.repo, style: 'font-weight:600' }) },
+    { key: 'stars', label: 'Stars', num: true, val: r => r.stars, cell: r => { const p = prevStars(r.repo), d = p == null ? null : r.stars - p; return [num(r.stars), d > 0 ? h('span', { class: 'd', text: `+${num(d)}` }) : null]; } },
+    { key: 'forks', label: 'Forks', num: true, val: r => r.forks },
+    { key: 'contributors', label: 'Contributors', title: 'All-time; in brackets: external', num: true, val: r => sum2(r.contributors), cell: r => [num(sum2(r.contributors)), ' ', h('span', { class: 'ext', text: `(${num(r.contributors.external)})` })] },
+    { key: 'new', label: 'New', title: 'New contributors this month; in brackets: external', num: true, val: r => sum2(r.new_contributors), cell: r => [num(sum2(r.new_contributors)), ' ', h('span', { class: 'ext', text: `(${num(r.new_contributors.external)})` })] },
+    { key: 'active', label: 'Active', title: 'Active contributors this month', num: true, val: r => sum2(r.active_contributors) },
+    { key: 'commits', label: 'Commits', num: true, val: r => r.commits },
+    { key: 'prs', label: 'PRs merged', title: 'In brackets: external', num: true, val: r => sum2(r.prs.merged), cell: r => [num(sum2(r.prs.merged)), ' ', h('span', { class: 'ext', text: `(${num(r.prs.merged.external)})` })] },
+    { key: 'issues', label: 'Issues', title: 'Opened / closed this month', num: true, val: r => sum2(r.issues.opened), cell: r => `${num(sum2(r.issues.opened))} / ${num(sum2(r.issues.closed))}` },
+    { key: 'releases', label: 'Releases', title: 'This month / all-time', num: true, val: r => r.releases.total, cell: r => `${num(r.releases.period)} / ${num(r.releases.total)}` },
+    { key: 'views', label: 'Views', title: 'Last 14 days; in brackets: unique visitors', num: true, val: r => r.traffic?.views ?? -1, cell: r => r.traffic ? [num(r.traffic.views), ' ', h('span', { class: 'ext', text: `(${num(r.traffic.visitors)})` })] : h('span', { class: 'muted', text: 'no data' }) },
+    { key: 'clones', label: 'Clones', title: 'Last 14 days; in brackets: unique cloners', num: true, val: r => r.traffic?.clones ?? -1, cell: r => r.traffic ? [num(r.traffic.clones), ' ', h('span', { class: 'ext', text: `(${num(r.traffic.cloners)})` })] : h('span', { class: 'muted', text: 'no data' }) },
+    { key: 'downloads', label: 'Down­loads', title: 'Release assets, all-time', num: true, val: r => r.release_downloads },
+  ];
+  $('projects-lead').textContent = `All metrics per project. Numbers in brackets are the external part (or unique people for traffic). Month values are ${fmtMonthLong(DATA.period.month)}; views and clones are the last 14 days. Click a column to sort.`;
+  let sortKey = 'repo', asc = true;
+  const thead = $('projects-table').tHead, tbody = $('projects-table').tBodies[0];
+  const render = () => {
+    const col = COLS.find(c => c.key === sortKey);
+    const rows = [...REPOS].sort((a, b) => { const x = col.val(a), y = col.val(b); const c = typeof x === 'string' ? x.localeCompare(y) : x - y; return asc ? c : -c; });
+    thead.replaceChildren(h('tr', {}, COLS.map(c => h('th', { class: 'sortable' + (c.num ? ' num' : ''), title: c.title ?? null, 'aria-sort': c.key === sortKey ? (asc ? 'ascending' : 'descending') : null, onclick: null },
+      c.label, c.key === sortKey ? h('span', { class: 'arrow', text: asc ? '▲' : '▼' }) : null))));
+    [...thead.rows[0].cells].forEach((th, i) => th.addEventListener('click', () => { const k = COLS[i].key; asc = k === sortKey ? !asc : k === 'repo'; sortKey = k; render(); }));
+    tbody.replaceChildren(...rows.map(r => h('tr', {}, COLS.map(c => h('td', { class: c.num ? 'num nowrap' : 'nowrap' }, c.cell ? c.cell(r) : num(c.val(r)))))));
+  };
+  render();
+}
+
+/* ═══════════════════════════ A Scope & method ═══════════════════════════ */
+{
+  const d = $('defs');
+  const def = (k, ...v) => d.append(h('dt', { text: k }), h('dd', {}, ...v));
+  def('Projects in scope', `${plural(T.public_projects, 'public repository', 'public repositories')} of ${ORG}, not archived, not forks.`);
+  def('Not included', DATA.skipped.length ? DATA.skipped.map(x => `${x.repo} (${x.reason})`).join(', ') : 'none');
+  def('Period', `${fmtMonthLong(DATA.period.month)} (UTC). Commits and contributors follow GitHub's weekly statistics: a week counts in the month in which it starts.`);
+  def('Internal / external', `Internal: member of the GitHub organisation ${ORG} at the time of the run. External: every other GitHub user. Bots are not counted.`);
+  def('Contributors', 'Commit authors on the default branch with a GitHub account, counted once across all projects. New: the first commit of the person in any project falls in the month.');
+  def('Views and clones', 'GitHub keeps traffic for 14 days only: the numbers cover the last 14 days before the run, not the whole month.');
+  def('Badges', 'A project holds a badge while its number reaches the level; a badge is new when the project did not hold it in the previous report. Levels: ',
+    Object.entries(LEVELS).map(([k, v]) => `${k.replace(/_/g, ' ')} ${v.map(num).join(' / ')}`).join('; '), '.');
+  def('Missing data', DATA.errors.length ? DATA.errors.map(e => `${e.repo}: ${e.reason}`).join('; ') : 'none');
+  $('integrity').textContent = `${DATA.report_id} · generated from community.json of ${fmtDateTime(DATA.run_at)} · ospo ${(DATA.ospo_sha ?? 'unknown').slice(0, 7)}`;
+}
+</script>
+</body>
+</html>
