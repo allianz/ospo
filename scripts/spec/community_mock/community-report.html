@@ -715,18 +715,10 @@ const fact = (title, period, rows, extra) => h('div', { class: 'fact' }, h('h4',
 
 function projectBody(r) {
   const body = h('div', { class: 'pbody' });
-  // three boxes, each with its period: the month, all-time at the run, and the 14 days of traffic GitHub returns
+  // three boxes, each with its period, longest first: all-time at the run, the month, and the 14 days of traffic GitHub returns
   const asOf = fmtDate(DATA.run_at);
   const monthEnd = fmtDate(new Date(Date.parse(DATA.period.to) - 864e5).toISOString());
   body.append(h('div', { class: 'facts' },
-    fact(fmtMonthLong(DATA.period.month), `${fmtDate(DATA.period.from)} – ${monthEnd}`, [
-      ['New contributors', split(r.new_contributors)],
-      ['Active contributors', split(r.active_contributors)],
-      ['Commits', num(r.commits)],
-      ['PRs merged', split(r.prs.merged)],
-      ['Issues opened / closed', `${num(sum2(r.issues.opened))} / ${num(sum2(r.issues.closed))}`],
-      ['Releases', num(r.releases.period)],
-    ], r.releases.tags.length ? h('div', { class: 'tags' }, '🚀 ', r.releases.tags.join(', ')) : null),
     fact('All-time', `as of ${asOf}`, [
       ['Stars', num(r.stars)],
       ['Forks', num(r.forks)],
@@ -735,6 +727,14 @@ function projectBody(r) {
       ['Release downloads', num(r.release_downloads)],
       ['Published', fmtDate(r.created_at)],
     ]),
+    fact('Last month', `${fmtDate(DATA.period.from)} – ${monthEnd}`, [
+      ['New contributors', split(r.new_contributors)],
+      ['Active contributors', split(r.active_contributors)],
+      ['Commits', num(r.commits)],
+      ['PRs merged', split(r.prs.merged)],
+      ['Issues opened / closed', `${num(sum2(r.issues.opened))} / ${num(sum2(r.issues.closed))}`],
+      ['Releases', num(r.releases.period)],
+    ], r.releases.tags.length ? h('div', { class: 'tags' }, '🚀 ', r.releases.tags.join(', ')) : null),
     fact('Last 14 days', r.traffic ? `${fmtDate(r.traffic.from)} – ${fmtDate(r.traffic.to)}` : 'GitHub keeps traffic for 14 days', r.traffic ? [
       ['Views', num(r.traffic.views)],
       ['Unique visitors', num(r.traffic.visitors)],
