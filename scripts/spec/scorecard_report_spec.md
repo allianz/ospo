@@ -127,10 +127,8 @@ HTML written to reports/2026-11/scorecard-report.html
 |---|---|
 | Header | Report ID, status date, Scorecard version (linked to its commit), trend period, previous report, scope, workflow run (or "local run") |
 | 1 Summary | Data-health box (input missing or invalid, `errors`), average overall score with change against the previous history entry and sparkline, repositories scanned, repositories with findings, failing checks, lowest score, bar chart of the overall score per repository |
-| 2 Repositories | Every scanned repository with overall score, 6-month sparkline, change against the previous report ("new" without one), failing checks with score and threshold, scanned commit. Sortable and filterable |
-| 3 Checks | Heatmap repository × check: score in five bins of one hue, a red frame for `fail`, `–` for not applicable, `?` for no data, overall score as last column; hover shows the reason. Below, one row per check: rule, threshold, pass, fail, not applicable, no data, average score |
-| 4 Details | Per repository, expandable: every check with score, threshold, result, reason and detail lines (`scorecard_check:` decisions highlighted), failing checks first, plus its errors |
-| 5 Trend | Average overall score and repositories scanned over the last 6 months, one slot per month; a month without a report is a gap |
+| 2 Trend | Average overall score and repositories scanned over the last 6 months, one slot per month; a month without a report is a gap |
+| 3 Repositories | Every repository with a score, a result or an error: overall score ("not scanned" without one), 6-month sparkline, change against the previous report ("new" without one), failing checks with score and threshold (and the number of errors), scanned commit. Sortable, filterable and paged (25, 50 or 100 rows); not scanned repositories sort last. Each row expands to every check with score, threshold, result, reason and detail lines (`scorecard_check:` decisions highlighted), failing checks first, plus its errors; a failing-check tag opens it. Printing shows every repository expanded |
 | A Scope and method | Active, scanned, not scanned (with reason) and archived repositories; how score, overall score, pass/fail, not applicable and no data are decided, linked to the scorecard_check configuration and spec; the tool run (or "File missing" / "File invalid" with the problems); errors |
 
 Printing expands every repository and shows all of them. Links to the ospo repository are pinned to `ospo_sha`; commits are shown with 7 characters.

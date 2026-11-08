@@ -269,62 +269,11 @@
     .scroll-x { overflow: visible; }
   }
   noscript p { border: 1px solid var(--critical); border-radius: 8px; padding: 8px 14px; }
-  /* Scorecard report: overall score ramp for the heatmap (one hue, binned, validated as ordinal) */
-  :root {
-    --seq-1: #86b6ef; --seq-1-ink: #0b0b0b;
-    --seq-2: #5598e7; --seq-2-ink: #0b0b0b;
-    --seq-3: #2a78d6; --seq-3-ink: #ffffff;
-    --seq-4: #1c5cab; --seq-4-ink: #ffffff;
-    --seq-5: #0d366b; --seq-5-ink: #ffffff;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:where(:not([data-theme="light"])) {
-      --seq-1: #184f95; --seq-1-ink: #ffffff;
-      --seq-2: #256abf; --seq-2-ink: #ffffff;
-      --seq-3: #3987e5; --seq-3-ink: #0b0b0b;
-      --seq-4: #6da7ec; --seq-4-ink: #0b0b0b;
-      --seq-5: #b7d3f6; --seq-5-ink: #0b0b0b;
-    }
-  }
-  table.heat { width: auto; border-collapse: separate; border-spacing: 2px; }
-  table.heat th { padding: 4px 6px; border: none; }
-  table.heat th.col { vertical-align: bottom; padding: 4px 0; }
-  table.heat th.col > span { writing-mode: vertical-rl; transform: rotate(180deg); display: inline-block; white-space: nowrap; font-weight: 600; }
-  table.heat th.thr { font-weight: 400; color: var(--muted); font-size: 11px; text-align: center; padding: 0 0 4px; }
-  table.heat th.row { text-align: right; font-weight: 500; color: var(--ink); padding-right: 10px; }
-  table.heat td.cell {
-    width: 34px; min-width: 34px; height: 28px; padding: 0; border: none; border-radius: 4px;
-    text-align: center; vertical-align: middle; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums;
-    cursor: default; position: relative;
-  }
-  table.heat td.cell.fail { box-shadow: inset 0 0 0 2px var(--critical); }
-  table.heat td.cell.fail::after { content: ""; position: absolute; top: 2px; right: 2px; border: 5px solid transparent; border-top-color: var(--critical); border-right-color: var(--critical); border-top-right-radius: 2px; }
-  table.heat td.cell.na { color: var(--muted); background: transparent; box-shadow: inset 0 0 0 1px var(--grid); font-weight: 400; }
-  table.heat td.cell.nodata { color: var(--muted); background: repeating-linear-gradient(135deg, var(--grid) 0 3px, transparent 3px 7px); font-weight: 400; }
-  table.heat td.cell:hover { filter: brightness(1.08); }
-  .heat-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; font-size: 12px; color: var(--ink-2); margin: 10px 4px 0; }
-  .heat-legend .ramp { display: inline-flex; gap: 2px; vertical-align: middle; margin: 0 4px; }
-  .heat-legend .ramp span { display: inline-block; width: 26px; height: 14px; border-radius: 3px; font-size: 10px; line-height: 14px; text-align: center; }
-  .heat-legend .sw { display: inline-block; width: 16px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
   .score { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
   .score .txt { font-variant-numeric: tabular-nums; color: var(--ink-2); }
   .score .txt b { color: var(--ink); font-weight: 600; }
-  details.repo { border-bottom: 1px solid var(--grid); }
-  details.repo:last-child { border-bottom: none; }
-  details.repo > summary { cursor: pointer; list-style: none; padding: 10px; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
-  details.repo > summary::-webkit-details-marker { display: none; }
-  details.repo > summary::before { content: "▸"; color: var(--muted); display: inline-block; width: 14px; transition: transform .15s; }
-  details.repo[open] > summary::before { transform: rotate(90deg); }
-  details.repo > summary .name { font-weight: 600; }
-  details.repo > .body { padding: 0 10px 14px 24px; }
-  details.repo table { font-size: 12.5px; }
-  details.repo td, details.repo th { padding: 6px 8px; }
   pre.det .ospo { color: var(--ink); font-weight: 600; }
   pre.det .warn { color: var(--delta-bad); }
-  @media print {
-    details.repo > summary::before { content: ""; width: 0; }
-    table.heat td.cell { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  }
 </style>
 </head>
 <body>
@@ -345,10 +294,8 @@
 
   <nav class="toc" aria-label="Contents">
     <a href="#summary">1 Summary</a>
-    <a href="#repositories">2 Repositories</a>
-    <a href="#checks">3 Checks</a>
-    <a href="#details">4 Details</a>
-    <a href="#trend">5 Trend</a>
+    <a href="#trend">2 Trend</a>
+    <a href="#repositories">3 Repositories</a>
     <a href="#method">A Scope &amp; method</a>
   </nav>
 
@@ -374,62 +321,9 @@
     </div>
   </section>
 
-  <!-- ─────────────────────────── 2 Repositories ─────────────────────────── -->
-  <section id="repositories" class="break">
-    <h2><span class="num">2</span>Repositories</h2>
-    <p class="lead">Every scanned repository with its overall score, how it developed over the last monthly reports, and the checks below the OSPO threshold. The overall score is Scorecard's own risk-weighted average of its checks; the thresholds do not change it.</p>
-    <div class="card" style="padding:10px 8px 6px">
-      <div class="filters">
-        <label>Sort by <select id="r-sort">
-          <option value="score-asc">Lowest score first</option>
-          <option value="score-desc">Highest score first</option>
-          <option value="failing">Most failing checks</option>
-          <option value="repo">Repository name (A–Z)</option>
-        </select></label>
-        <label>Repository <input id="r-repo" type="search" placeholder="name contains…"></label>
-      </div>
-      <div class="filter-count" id="r-count"></div>
-      <div class="scroll-x">
-      <table id="repos-table">
-        <thead><tr>
-          <th>Repository</th><th>Score</th><th id="r-trend-h">Trend</th><th class="num">Change</th><th>Failing checks</th><th>Scanned commit</th>
-        </tr></thead>
-        <tbody></tbody>
-      </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── 3 Checks ─────────────────────────── -->
-  <section id="checks" class="break">
-    <h2><span class="num">3</span>Checks</h2>
-    <p class="lead">The score of every Scorecard check per repository. A red frame marks a score below the OSPO threshold (fail). Hover a cell for Scorecard's reason; section 4 lists the details.</p>
-    <div class="card" style="padding:14px 12px 10px">
-      <div class="scroll-x" id="heatmap"></div>
-      <div class="heat-legend" id="heat-legend"></div>
-    </div>
-    <div class="card" style="margin-top:16px;padding:14px 8px 6px">
-      <h3 style="padding:0 10px">Results per check</h3>
-      <p class="chart-sub" style="padding:0 10px">Threshold: minimum score to pass. Not applicable: Scorecard returned no score (−1), or scorecard_check decided the check does not apply (see A).</p>
-      <div class="scroll-x">
-        <table id="check-table">
-          <thead><tr><th>Check</th><th>What it checks</th><th class="num">Threshold</th><th class="num">Pass</th><th class="num">Fail</th><th class="num">Not applicable</th><th class="num">No data</th><th class="num">Average score</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─────────────────────────── 4 Details ─────────────────────────── -->
-  <section id="details" class="break">
-    <h2><span class="num">4</span>Details</h2>
-    <p class="lead">Per repository, every check with score, threshold, result, Scorecard's reason and its detail lines. Failing checks come first. Lines starting with <code>scorecard_check:</code> are decisions of the OSPO tool, not of Scorecard.</p>
-    <div class="card" style="padding:4px 8px" id="details-list"></div>
-  </section>
-
-  <!-- ─────────────────────────── 5 Trend ─────────────────────────── -->
+  <!-- ─────────────────────────── 2 Trend ─────────────────────────── -->
   <section id="trend">
-    <h2><span class="num">5</span>Trend</h2>
+    <h2><span class="num">2</span>Trend</h2>
     <p class="lead" id="trend-lead"></p>
     <div class="grid-2">
       <div class="card">
@@ -441,6 +335,37 @@
         <h3 class="chart-title">Repositories scanned</h3>
         <p class="chart-sub">Repositories with an overall score, per monthly report</p>
         <div id="chart-scanned"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 3 Repositories ─────────────────────────── -->
+  <section id="repositories" class="break">
+    <h2><span class="num">3</span>Repositories</h2>
+    <p class="lead">Every repository with its overall score, how it developed over the last monthly reports, and the checks below the OSPO threshold. The overall score is Scorecard's own risk-weighted average of its checks; the thresholds do not change it. Expand a repository for every check with score, threshold, result, Scorecard's reason and its detail lines, failing checks first. Lines starting with <code>scorecard_check:</code> are decisions of the OSPO tool, not of Scorecard.</p>
+    <div class="card" style="padding:10px 8px 6px">
+      <div class="filters">
+        <label>Sort by <select id="r-sort">
+          <option value="score-asc">Lowest score first</option>
+          <option value="score-desc">Highest score first</option>
+          <option value="failing">Most failing checks</option>
+          <option value="repo">Repository name (A–Z)</option>
+        </select></label>
+        <label>Repository <input id="r-repo" type="search" placeholder="name contains…"></label>
+        <button type="button" id="r-expand">Expand all</button>
+      </div>
+      <div class="filter-count" id="r-count"></div>
+      <div class="scroll-x">
+      <table id="repos-table">
+        <thead><tr>
+          <th>Repository</th><th>Score</th><th id="r-trend-h">Trend</th><th class="num">Change</th><th>Failing checks</th><th>Scanned commit</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <div class="pager-bar">
+        <nav class="pager" id="r-pager" aria-label="Repository table pages"></nav>
+        <label class="pager-size">Rows per page <select id="r-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label>
       </div>
     </div>
   </section>
@@ -495,11 +420,9 @@ const HISTORY = DATA.history;
 const PREV = HISTORY.length > 1 ? HISTORY[HISTORY.length - 2] : null;   // last report before this one
 const ACTIVE = DATA.scope.active, ARCHIVED = DATA.scope.archived;
 const S = DATA.summary;
-const RESULT_KEY = new Map(DATA.results.map(r => [r.repo + '|' + r.check, r]));
-const resultOf = (repo, check) => RESULT_KEY.get(repo + '|' + check);
 const failingOf = repo => DATA.results.filter(r => r.repo === repo && r.result === 'fail');
 const errorsOf = repo => DATA.errors.filter(e => e.repo === repo);
-/* Rows of the heatmap and section 4: every active repository with a score, a result or an error */
+/* Rows of the repository table: every active repository with a score, a result or an error */
 const ROWS = [...new Set([...REPOS.map(r => r.repo), ...DATA.results.map(r => r.repo), ...DATA.errors.map(e => e.repo).filter(Boolean)])].sort((a, b) => a.localeCompare(b));
 const NOT_SCANNED = ACTIVE.filter(r => !(r in SCORE_OF));
 
@@ -509,10 +432,6 @@ const STATUS = {
   'na':     { label: 'Not applicable', color: 'transparent',     glyph: '–', ink: 'var(--muted)', ring: 'ring' },
   'nodata': { label: 'No data',        color: 'var(--neutral)',  glyph: '?', ink: '#fff' },
 };
-/* Score bins of the heatmap: one hue, darker means a higher score (ordinal ramp --seq-1 … --seq-5) */
-const BINS = [{ label: '0–1', lo: 0 }, { label: '2–3', lo: 2 }, { label: '4–5', lo: 4 }, { label: '6–7', lo: 6 }, { label: '8–10', lo: 8 }];
-const binOf = score => BINS.reduce((k, b, i) => (score >= b.lo ? i + 1 : k), 1);
-const binStyle = score => `background:var(--seq-${binOf(score)});color:var(--seq-${binOf(score)}-ink)`;
 const fmtScore = v => v == null ? '–' : Number.isInteger(v) ? String(v) : v.toFixed(1);
 const nameOf = check => CAT[check]?.name ?? check.replace(/^scorecard\//, '');
 const repoUrl = repo => `https://github.com/${ORG}/${repo}`;
@@ -578,6 +497,27 @@ function statusPill(key, label) {
   const st = STATUS[key];
   const ico = h('span', { class: 'ico' + (st.ring ? ' ' + st.ring : ''), style: `background:${st.color};color:${st.ink}`, 'aria-hidden': 'true', text: st.glyph });
   return h('span', { class: 'status' }, ico, label ?? st.label);
+}
+
+const uniq = xs => [...new Set(xs)];
+/* Page buttons: previous, first, a window around the current page, last, next (as in compliance_report.html) */
+function renderPager(el, page, pages, go) {
+  el.replaceChildren();
+  const single = pages <= 1;  // one page only: show the pager greyed out
+  const btn = (label, p, opts = {}) => {
+    if (single) opts.disabled = true;
+    const b = h('button', { type: 'button', text: label, 'aria-label': opts.aria ?? `Page ${p}`, 'aria-current': opts.current ? 'page' : null, disabled: opts.disabled ? '' : null });
+    if (!opts.disabled && !opts.current) b.addEventListener('click', () => go(p));
+    return b;
+  };
+  el.append(btn('‹ Previous', page - 1, { aria: 'Previous page', disabled: page === 1 }));
+  const nums = uniq([1, page - 2, page - 1, page, page + 1, page + 2, pages].filter(p => p >= 1 && p <= pages)).sort((a, b) => a - b);
+  nums.forEach((p, i) => {
+    if (i && p - nums[i - 1] > 1) el.append(h('span', { class: 'gap', text: '…' }));
+    el.append(btn(String(p), p, { current: p === page }));
+  });
+  el.append(btn('Next ›', page + 1, { aria: 'Next page', disabled: page === pages }));
+  el.append(h('span', { style: 'margin-left:8px', text: `Page ${page} of ${pages}` }));
 }
 
 function dataTable(headers, rows, numericCols = []) {
@@ -798,167 +738,7 @@ $('subtitle').textContent = `Open source projects published under github.com/${O
   }
 }
 
-/* ═══════════════════════════ 2 Repositories ═══════════════════════════ */
-const RL = { sort: 'score-asc', repo: '' };
-const RL_SORT = {
-  'score-asc': (a, b) => a.score - b.score,
-  'score-desc': (a, b) => b.score - a.score,
-  'failing': (a, b) => failingOf(b.repo).length - failingOf(a.repo).length || a.score - b.score,
-  'repo': () => 0,
-};
-function scoreNode(score) {
-  return h('div', { class: 'score' },
-    h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 10, 'aria-valuenow': score, 'aria-label': 'Overall score' }, h('div', { style: `width:${Math.max(0, score) * 10}%` })),
-    h('span', { class: 'txt' }, h('b', { text: fmtScore(score) }), ' / 10'));
-}
-function failingTags(repo) {
-  const rows = failingOf(repo);
-  if (!rows.length) return h('span', { class: 'muted', text: 'none' });
-  return h('span', {}, rows.map(r => h('a', { class: 'tag', href: '#' + anchorOf(repo), 'data-open': anchorOf(repo), title: r.reason },
-    `${nameOf(r.check)} ${r.score != null && r.score >= 0 ? r.score : '–'}`, CAT[r.check]?.threshold != null ? ` (≥ ${CAT[r.check].threshold})` : '')));
-}
-function renderRepos() {
-  const q = RL.repo.trim().toLowerCase();
-  const rows = REPOS.filter(r => r.repo.toLowerCase().includes(q))
-    .sort((a, b) => RL_SORT[RL.sort](a, b) || a.repo.localeCompare(b.repo));
-  $('r-count').textContent = `${rows.length} of ${plural(REPOS.length, 'scanned repository', 'scanned repositories')}`;
-  const tbody = $('repos-table').tBodies[0];
-  tbody.replaceChildren(...rows.map(r => {
-    const prev = PREV?.scores?.[r.repo];
-    return h('tr', {},
-      h('td', {}, h('a', { href: repoUrl(r.repo), text: r.repo })),
-      h('td', {}, scoreNode(r.score)),
-      h('td', {}, sparkline(trendValues(x => x.scores?.[r.repo] ?? null))),
-      h('td', { class: 'num' }, PREV ? (prev == null ? h('span', { class: 'muted', text: 'new' }) : deltaNode(r.score, prev, { suffix: false })) : h('span', { class: 'muted', text: '–' })),
-      h('td', {}, failingTags(r.repo)),
-      h('td', { class: 'nowrap' }, r.commit ? h('a', { href: `${repoUrl(r.repo)}/commit/${r.commit}` }, h('code', { style: 'color:inherit', text: commitText(r.commit) })) : '–',
-        r.date ? h('div', { class: 'small muted', text: fmtDate(r.date) }) : null));
-  }));
-  if (!rows.length) tbody.append(h('tr', {}, h('td', { colspan: 6, class: 'muted', text: REPOS.length ? 'No repository matches the filter.' : 'No repository was scanned.' })));
-}
-{
-  $('r-trend-h').textContent = `Trend (${TREND_MONTHS} months)`;
-  $('r-sort').addEventListener('change', () => { RL.sort = $('r-sort').value; renderRepos(); });
-  $('r-repo').addEventListener('input', () => { RL.repo = $('r-repo').value; renderRepos(); });
-  renderRepos();
-}
-/* A failing-check tag opens the repository in section 4 */
-document.addEventListener('click', e => {
-  const a = e.target.closest('a[data-open]');
-  if (a) $(a.dataset.open).open = true;
-});
-
-/* ═══════════════════════════ 3 Checks ═══════════════════════════ */
-function cellTip(repo, check, r) {
-  const thr = CAT[check]?.threshold;
-  if (!r) {
-    const err = DATA.errors.find(e => e.repo === repo && (e.check === check || e.check == null));
-    return [`${nameOf(check)} · no data`, `${repo}${err ? '\n' + err.reason : ''}`];
-  }
-  const decision = r.details.find(d => d.includes('scorecard_check:'));
-  const verdict = `${STATUS[r.result].label}${thr != null ? ` (threshold ≥ ${thr})` : ''}`;
-  return [`${nameOf(check)} · ${r.score != null && r.score >= 0 ? r.score : '–'}`, `${repo}\n${verdict}\n${decision ? decision.replace(/^Info: /, '') : r.reason}`];
-}
-{
-  const el = $('heatmap');
-  if (!ROWS.length || !CHECKS.length) el.append(h('p', { class: 'muted', text: 'No data.' }));
-  else {
-    const head1 = h('tr', {}, h('th'), ...CHECKS.map(c => h('th', { class: 'col', scope: 'col' }, h('span', { text: nameOf(c) }))), h('th', { class: 'col', scope: 'col' }, h('span', { text: 'Overall' })));
-    const head2 = h('tr', {}, h('th'), ...CHECKS.map(c => h('th', { class: 'thr', text: CAT[c].threshold != null ? `≥${CAT[c].threshold}` : '' })), h('th', { class: 'thr' }));
-    const body = ROWS.map(repo => h('tr', {},
-      h('th', { class: 'row', scope: 'row' }, h('a', { href: '#' + anchorOf(repo), 'data-open': anchorOf(repo), style: 'color:inherit', text: repo })),
-      ...CHECKS.map(check => {
-        const r = resultOf(repo, check);
-        const scored = r && r.result !== 'na' && r.score != null && r.score >= 0;
-        const cls = !r ? 'cell nodata' : r.result === 'na' ? 'cell na' : `cell${r.result === 'fail' ? ' fail' : ''}`;
-        const [value, label] = cellTip(repo, check, r);
-        const td = h('td', { class: cls, style: scored ? binStyle(r.score) : null, 'aria-label': `${repo}, ${value}, ${label.split('\n')[1] ?? ''}`,
-          text: !r ? '?' : scored ? fmtScore(r.score) : '–' });
-        td.addEventListener('pointermove', evt => showTip(evt, value, label));
-        td.addEventListener('pointerleave', hideTip);
-        return td;
-      }),
-      (() => {
-        const sc = SCORE_OF[repo];
-        const td = h('td', { class: sc == null ? 'cell nodata' : 'cell', style: sc == null ? null : binStyle(sc), text: sc == null ? '?' : fmtScore(sc), 'aria-label': `${repo}, overall score ${fmtScore(sc)}` });
-        td.addEventListener('pointermove', evt => showTip(evt, `Overall · ${fmtScore(sc)}`, repo));
-        td.addEventListener('pointerleave', hideTip);
-        return td;
-      })()));
-    el.append(h('table', { class: 'heat', 'aria-label': 'Scorecard check scores by repository' }, h('thead', {}, head1, head2), h('tbody', {}, ...body)));
-    $('heat-legend').append(
-      h('span', {}, 'Score', h('span', { class: 'ramp' }, ...BINS.map((b, i) => h('span', { style: `background:var(--seq-${i + 1});color:var(--seq-${i + 1}-ink)`, text: b.label })))),
-      h('span', {}, h('span', { class: 'sw', style: 'box-shadow:inset 0 0 0 2px var(--critical)' }), 'Below the threshold (fail)'),
-      h('span', {}, h('span', { class: 'sw', style: 'box-shadow:inset 0 0 0 1px var(--grid)' }), '– Not applicable'),
-      h('span', {}, h('span', { class: 'sw', style: 'background:repeating-linear-gradient(135deg, var(--grid) 0 3px, transparent 3px 7px)' }), '? No data'));
-  }
-
-  const tbody = $('check-table').tBodies[0];
-  for (const check of CHECKS) {
-    const rows = ROWS.map(repo => resultOf(repo, check));
-    const count = res => rows.filter(r => r?.result === res).length;
-    const scores = rows.filter(r => r && r.result !== 'na' && r.score != null && r.score >= 0).map(r => r.score);
-    const avg = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null;
-    const doc = CAT[check].documentation ?? {};
-    tbody.append(h('tr', {},
-      h('td', { class: 'nowrap' }, doc.url ? h('a', { href: doc.url, text: nameOf(check) }) : nameOf(check)),
-      h('td', { text: doc.short ?? '' }),
-      h('td', { class: 'num', text: CAT[check].threshold ?? '–' }),
-      h('td', { class: 'num', text: count('pass') }),
-      h('td', { class: 'num' }, count('fail') ? h('b', { text: count('fail') }) : '0'),
-      h('td', { class: 'num', text: count('na') }),
-      h('td', { class: 'num', text: rows.filter(r => !r).length }),
-      h('td', { class: 'num', text: avg == null ? '–' : avg.toFixed(1) })));
-  }
-  if (!CHECKS.length) tbody.append(h('tr', {}, h('td', { colspan: 8, class: 'muted', text: 'No data.' })));
-}
-
-/* ═══════════════════════════ 4 Details ═══════════════════════════ */
-const RESULT_ORDER = { fail: 0, pass: 1, na: 2 };
-function detailLines(lines) {
-  if (!lines.length) return null;
-  const pre = h('pre', { class: 'det' }, joinNodes(lines.map(l => h('span', { class: l.includes('scorecard_check:') ? 'ospo' : l.startsWith('Warn:') ? 'warn' : '', text: l })), '\n'));
-  return lines.length <= 3 ? pre : h('details', { class: 'more' }, h('summary', { text: plural(lines.length, 'detail line') }), pre);
-}
-{
-  const list = $('details-list');
-  for (const repo of ROWS) {
-    const results = DATA.results.filter(r => r.repo === repo)
-      .sort((a, b) => RESULT_ORDER[a.result] - RESULT_ORDER[b.result] || CHECKS.indexOf(a.check) - CHECKS.indexOf(b.check));
-    const errs = errorsOf(repo);
-    const failing = results.filter(r => r.result === 'fail').length;
-    const meta = REPOS.find(r => r.repo === repo);
-    const rows = [
-      ...results.map(r => h('tr', {},
-        h('td', { class: 'nowrap' }, CAT[r.check]?.documentation?.url ? h('a', { href: CAT[r.check].documentation.url, text: nameOf(r.check) }) : nameOf(r.check)),
-        h('td', { class: 'num', text: r.score != null && r.score >= 0 ? r.score : '–' }),
-        h('td', { class: 'num', text: CAT[r.check]?.threshold != null ? `≥ ${CAT[r.check].threshold}` : '–' }),
-        h('td', {}, statusPill(r.result)),
-        h('td', {}, r.reason, detailLines(r.details)))),
-      ...errs.map(e => h('tr', {},
-        h('td', { class: 'nowrap', text: e.check ? nameOf(e.check) : 'all checks' }),
-        h('td', { class: 'num', text: '–' }), h('td', { class: 'num', text: '–' }),
-        h('td', {}, statusPill('nodata')),
-        h('td', { text: e.reason }))),
-    ];
-    list.append(h('details', { class: 'repo', id: anchorOf(repo) },
-      h('summary', {},
-        h('span', { class: 'name', text: repo }),
-        h('span', { class: 'muted', text: meta ? `score ${fmtScore(meta.score)} / 10` : 'not scanned' }),
-        h('span', { class: failing ? '' : 'muted', text: plural(failing, 'failing check') }),
-        errs.length ? h('span', { class: 'muted', text: plural(errs.length, 'error') }) : null),
-      h('div', { class: 'body' },
-        h('div', { class: 'links' }, h('a', { href: repoUrl(repo), text: `github.com/${ORG}/${repo}` }),
-          meta?.commit ? [' · scanned commit ', h('a', { href: `${repoUrl(repo)}/commit/${meta.commit}` }, h('code', { style: 'color:inherit', text: commitText(meta.commit) }))] : null,
-          meta?.date ? ` · ${fmtDateTime(meta.date)}` : null),
-        h('div', { class: 'scroll-x' }, h('table', {},
-          h('thead', {}, h('tr', {}, h('th', { text: 'Check' }), h('th', { class: 'num', text: 'Score' }), h('th', { class: 'num', text: 'Threshold' }), h('th', { text: 'Result' }), h('th', { text: 'Reason and details' }))),
-          h('tbody', {}, ...rows))))));
-  }
-  if (!ROWS.length) list.append(h('p', { class: 'muted', style: 'padding:6px 10px', text: 'No data.' }));
-}
-
-/* ═══════════════════════════ 5 Trend ═══════════════════════════ */
+/* ═══════════════════════════ 2 Trend ═══════════════════════════ */
 {
   const measured = HISTORY.filter(x => x.average_score != null).length;
   $('trend-lead').textContent = `The last ${TREND_MONTHS} months, one point per monthly report; ${plural(measured, 'report')} with data so far. A month without a report is skipped. Repositories added or archived change the average, so compare it with the number of repositories scanned.`;
@@ -971,6 +751,128 @@ function detailLines(lines) {
     const ticks = niceTicks(0, Math.max(1, ...scanned.filter(v => v != null)));
     columnChart($('chart-scanned'), { labels, full, values: scanned, yMax: ticks.at(-1), yTicks: ticks, name: 'Repositories scanned' });
   } else $('chart-scanned').append(h('p', { class: 'muted', text: 'No data.' }));
+}
+
+/* ═══════════════════════════ 3 Repositories ═══════════════════════════ */
+const RESULT_ORDER = { fail: 0, pass: 1, na: 2 };
+function detailLines(lines) {
+  if (!lines.length) return null;
+  const pre = h('pre', { class: 'det' }, joinNodes(lines.map(l => h('span', { class: l.includes('scorecard_check:') ? 'ospo' : l.startsWith('Warn:') ? 'warn' : '', text: l })), '\n'));
+  return lines.length <= 3 ? pre : h('details', { class: 'more' }, h('summary', { text: plural(lines.length, 'detail line') }), pre);
+}
+function scoreNode(score) {
+  return h('div', { class: 'score' },
+    h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 10, 'aria-valuenow': score, 'aria-label': 'Overall score' }, h('div', { style: `width:${Math.max(0, score) * 10}%` })),
+    h('span', { class: 'txt' }, h('b', { text: fmtScore(score) }), ' / 10'));
+}
+/* Failing checks as tags; a click opens the card of the repository */
+function failingTags(repo, open) {
+  const rows = failingOf(repo), errs = errorsOf(repo).length;
+  const errNote = errs ? h('span', { class: 'muted', text: plural(errs, 'error') }) : null;
+  if (!rows.length) return errNote ?? h('span', { class: 'muted', text: 'none' });
+  return h('span', {}, rows.map(r => {
+    const a = h('a', { class: 'tag', href: '#' + anchorOf(repo), title: r.reason },
+      `${nameOf(r.check)} ${r.score != null && r.score >= 0 ? r.score : '–'}`, CAT[r.check]?.threshold != null ? ` (≥ ${CAT[r.check].threshold})` : '');
+    a.addEventListener('click', open);
+    return a;
+  }), errNote);
+}
+/* The card of a repository: every check with score, threshold, result, reason and details, failing first, plus its errors */
+function repoCard(repo, meta) {
+  const results = DATA.results.filter(r => r.repo === repo)
+    .sort((a, b) => RESULT_ORDER[a.result] - RESULT_ORDER[b.result] || CHECKS.indexOf(a.check) - CHECKS.indexOf(b.check));
+  const rows = [
+    ...results.map(r => h('tr', {},
+      h('td', { class: 'nowrap' }, CAT[r.check]?.documentation?.url ? h('a', { href: CAT[r.check].documentation.url, text: nameOf(r.check) }) : nameOf(r.check)),
+      h('td', { class: 'num', text: r.score != null && r.score >= 0 ? r.score : '–' }),
+      h('td', { class: 'num', text: CAT[r.check]?.threshold != null ? `≥ ${CAT[r.check].threshold}` : '–' }),
+      h('td', {}, statusPill(r.result)),
+      h('td', {}, r.reason, detailLines(r.details)))),
+    ...errorsOf(repo).map(e => h('tr', {},
+      h('td', { class: 'nowrap', text: e.check ? nameOf(e.check) : 'all checks' }),
+      h('td', { class: 'num', text: '–' }), h('td', { class: 'num', text: '–' }),
+      h('td', {}, statusPill('nodata')),
+      h('td', { text: e.reason }))),
+  ];
+  return h('div', { class: 'rcard' },
+    h('div', { class: 'links' }, h('a', { href: repoUrl(repo), text: `github.com/${ORG}/${repo}` }),
+      meta?.commit ? [' · scanned commit ', h('a', { href: `${repoUrl(repo)}/commit/${meta.commit}` }, h('code', { style: 'color:inherit', text: commitText(meta.commit) }))] : null,
+      meta?.date ? ` · ${fmtDateTime(meta.date)}` : null),
+    h('div', { class: 'scroll-x' }, h('table', {},
+      h('thead', {}, h('tr', {}, h('th', { text: 'Check' }), h('th', { class: 'num', text: 'Score' }), h('th', { class: 'num', text: 'Threshold' }), h('th', { text: 'Result' }), h('th', { text: 'Reason and details' }))),
+      h('tbody', {}, ...rows))));
+}
+{
+  $('r-trend-h').textContent = `Trend (${TREND_MONTHS} months)`;
+  const META = new Map(REPOS.map(r => [r.repo, r]));
+  const muted = text => h('span', { class: 'muted', text });
+  const tbody = $('repos-table').tBodies[0];
+  // one row per repository with a score, a result or an error; rows are built once, so open cards survive sorting and paging
+  const rows = ROWS.map(repo => {
+    const r = META.get(repo);   // undefined: not scanned
+    const det = h('details', { class: 'req' }, h('summary', {}, h('span', { class: 'name', text: repo })));
+    const cell = h('td', { colspan: 6 });
+    const card = h('tr', { class: 'card-row', hidden: '' }, cell);
+    const build = () => { if (det.open && !cell.firstChild) cell.append(repoCard(repo, r)); card.hidden = !det.open; };   // the card is built on first open
+    det.addEventListener('toggle', build);
+    const open = e => { e.preventDefault(); det.open = true; build(); };
+    const prev = PREV?.scores?.[repo];
+    const row = h('tr', { id: anchorOf(repo) },
+      h('td', { class: 'nowrap' }, det),
+      h('td', {}, r ? scoreNode(r.score) : muted('not scanned')),
+      h('td', {}, sparkline(trendValues(x => x.scores?.[repo] ?? null))),
+      h('td', { class: 'num' }, !r || !PREV ? muted('–') : prev == null ? muted('new') : deltaNode(r.score, prev, { suffix: false })),
+      h('td', {}, failingTags(repo, open)),
+      h('td', { class: 'nowrap' }, r?.commit ? h('a', { href: `${repoUrl(repo)}/commit/${r.commit}` }, h('code', { style: 'color:inherit', text: commitText(r.commit) })) : '–',
+        r?.date ? h('div', { class: 'small muted', text: fmtDate(r.date) }) : null));
+    return { repo, score: r?.score ?? null, det, build, els: [row, card] };
+  });
+  const byScore = dir => (a, b) => (a.score == null) - (b.score == null) || dir * (a.score - b.score);   // not scanned last
+  const SORT = {
+    'score-asc': byScore(1),
+    'score-desc': byScore(-1),
+    'failing': (a, b) => failingOf(b.repo).length - failingOf(a.repo).length || byScore(1)(a, b),
+    'repo': () => 0,
+  };
+  const total = plural(rows.length, 'repository', 'repositories') + (rows.length > REPOS.length ? ` (${REPOS.length} scanned)` : '');
+  // paging as in the repository table of the compliance report; printing shows every repository
+  const PL = { page: 1, size: 25 };
+  const render = () => {
+    const q = $('r-repo').value.trim().toLowerCase();
+    const all = rows.filter(x => x.repo.toLowerCase().includes(q)).sort((a, b) => SORT[$('r-sort').value](a, b) || a.repo.localeCompare(b.repo));
+    const pages = Math.max(1, Math.ceil(all.length / PL.size));
+    PL.page = Math.min(Math.max(1, PL.page), pages);
+    const from = PL.page > 1 ? (PL.page - 1) * PL.size : 0, shown = all.slice(from, from + PL.size);   // size is Infinity when printing
+    tbody.replaceChildren(...shown.flatMap(x => x.els));
+    if (!all.length) tbody.append(h('tr', {}, h('td', { colspan: 6, class: 'muted', text: rows.length ? 'No repository matches the filter.' : 'No repository was scanned.' })));
+    $('r-count').textContent = (q ? `${all.length} of ${total} match the filter` : total) +
+      (all.length > shown.length ? `; showing ${from + 1}–${from + shown.length}` : '');
+    renderPager($('r-pager'), PL.page, pages, p => { PL.page = p; render(); });
+  };
+  const restart = () => { PL.page = 1; PL.size = +$('r-size').value; render(); };
+  $('r-sort').addEventListener('change', restart);
+  $('r-size').addEventListener('change', restart);
+  $('r-repo').addEventListener('input', restart);
+  $('r-expand').addEventListener('click', () => {
+    const open = !rows.every(x => x.det.open);
+    rows.forEach(x => { x.det.open = open; x.build(); });
+    $('r-expand').textContent = open ? 'Collapse all' : 'Expand all';
+  });
+  // The printed report is the frozen record: every repository, all cards and detail lines expanded
+  let saved = null;
+  addEventListener('beforeprint', () => {
+    saved = { ...PL, q: $('r-repo').value, open: rows.map(x => x.det.open) };
+    $('r-repo').value = ''; Object.assign(PL, { page: 1, size: Infinity }); render();
+    rows.forEach(x => { x.det.open = true; x.build(); });
+    document.querySelectorAll('details.more').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; });
+  });
+  addEventListener('afterprint', () => {
+    if (!saved) return;
+    $('r-repo').value = saved.q; Object.assign(PL, { page: saved.page, size: saved.size }); render();
+    rows.forEach((x, i) => { x.det.open = saved.open[i]; x.build(); });
+    document.querySelectorAll('details.more').forEach(d => { d.open = d.dataset.wasOpen === 'true'; });
+  });
+  render();
 }
 
 /* ═══════════════════════════ A Scope and method ═══════════════════════════ */
@@ -1024,19 +926,6 @@ function detailLines(lines) {
 $('integrity').append('Generated from ', h('code', { title: DATA.ospo_sha ?? '', text: `ospo@${commitText(DATA.ospo_sha)}` }), ' · ', runLink(DATA.run_url, 'workflow run '),
   ' · input ', h('code', { text: INPUT.file }), ' ', h('code', { title: INPUT.sha256 ?? '', text: shortSha(INPUT.sha256) }),
   ' · report template ', h('code', { text: 'scripts/templates/scorecard_report.html' }));
-
-/* ═══════════════════════════ Print ═══════════════════════════ */
-// The printed report is the frozen record: every repository in sections 2 and 4, all details expanded.
-let saved = null;
-addEventListener('beforeprint', () => {
-  saved = { ...RL };
-  RL.repo = ''; renderRepos();
-  document.querySelectorAll('details.repo, details.more').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; });
-});
-addEventListener('afterprint', () => {
-  if (saved) { Object.assign(RL, saved); renderRepos(); }
-  document.querySelectorAll('details.repo, details.more').forEach(d => { d.open = d.dataset.wasOpen === 'true'; });
-});
 
 document.documentElement.dataset.render = 'ok';
 </script>
