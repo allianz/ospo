@@ -1,5 +1,6 @@
-// The HTML report: the template with data.json embedded. The page renders itself in the browser
-// from the embedded data.json only. See spec/compliance_report_spec.md, section "HTML report".
+// The HTML reports: a template with data.json embedded. The page renders itself in the browser
+// from the embedded data.json only. See spec/compliance_report_spec.md, section "HTML report",
+// and spec/scorecard_report_spec.md.
 
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -30,8 +31,8 @@ function replaceOnce(template, placeholder, value) {
   return parts[0] + value + parts[1];
 }
 
-/** The complete HTML report for one data.json. */
-export function renderHtml(data, template) {
-  const withTitle = replaceOnce(template, TITLE_PLACEHOLDER, escapeHtml(reportTitle(data)));
+/** The complete HTML report for one data.json; the title defaults to the compliance report's. */
+export function renderHtml(data, template, title = reportTitle(data)) {
+  const withTitle = replaceOnce(template, TITLE_PLACEHOLDER, escapeHtml(title));
   return replaceOnce(withTitle, DATA_PLACEHOLDER, embedJson(data));
 }

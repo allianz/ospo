@@ -4,7 +4,7 @@
 
 Several BSI TR-03185 requirements are measured with OpenSSF Scorecard: protection against unauthorised actions (GV.02: Branch-Protection, Dangerous-Workflow, Token-Permissions), testing (QA.04: CI-Tests), memory safety (QA.05: Fuzzing), peer review (QA.06: Code-Review), integrity of releases (BR.03: Signed-Releases) and the security contact (VM.01: Security-Policy). This script runs the Scorecard CLI for every repository, converts its output to the common JSON format of the compliance report, and applies the thresholds and the applicability rules of the OSPO.
 
-It writes **all** Scorecard checks, not only the eight mapped to BSI requirements, with Scorecard's `score`, `reason` and `details` unchanged, plus the overall score per repository. The BSI report uses only some of this; the rest is kept for a separate Scorecard report.
+It writes **all** Scorecard checks, not only the eight mapped to BSI requirements, with Scorecard's `score`, `reason` and `details` unchanged, plus the overall score per repository. The BSI report uses only some of this; the Scorecard report ([`scorecard_report.js`](scorecard_report_spec.md)) shows all of it.
 
 ## Scope
 
@@ -127,7 +127,7 @@ The file is in the common JSON format of the compliance report ([draft, section 
 | `catalogue` | One entry per configured check: `name`, `threshold` and `documentation` (`url` and `short`, copied from Scorecard's output, so the URL is pinned to the Scorecard commit). No `fix`: the Scorecard documentation explains remediation. For Branch-Protection, CI-Tests and Fuzzing, the applicability rule below is appended to `short`. A check missing from every output links to `docs/checks.md` of `scorecard_commit` |
 | `skipped` | Repositories without results: `repo` and `reason` (`archived` or `excluded_repos`) |
 | `errors` | Repository × check pairs without a result: `repo`, `check`, `reason`. The report treats them as "no data", never as `pass` |
-| `repositories` | One entry per scanned repository: `repo`, `commit` (scanned commit), `date` (of the scan, UTC), `score` (Scorecard's overall score, 0–10). For a Scorecard report; not used by the compliance report |
+| `repositories` | One entry per scanned repository: `repo`, `commit` (scanned commit), `date` (of the scan, UTC), `score` (Scorecard's overall score, 0–10). Used by the Scorecard report ([`scorecard_report.js`](scorecard_report_spec.md)); not by the compliance report |
 
 Results are sorted by repository name, then in the order of `thresholds`. The check ID is `scorecard/` plus the Scorecard name in lower case: `CI-Tests` → `scorecard/ci-tests`.
 

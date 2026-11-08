@@ -43,6 +43,10 @@ describe('renderHtml', () => {
     assert.equal(JSON.parse(embedded(renderHtml(special, TEMPLATE))).org, "$& $' $`");
   });
 
+  it('uses an explicit title instead of the compliance report title', () => {
+    assert.match(renderHtml(data, TEMPLATE, 'Scorecard <Report>'), /<title>Scorecard &lt;Report&gt;<\/title>/);
+  });
+
   it('requires each placeholder exactly once', () => {
     assert.throws(() => renderHtml(data, `<title>${TITLE_PLACEHOLDER}</title>`), /must contain __DATA_JSON__ exactly once \(found 0\)/);
     assert.throws(() => renderHtml(data, `${TEMPLATE}${TITLE_PLACEHOLDER}`), /must contain __TITLE__ exactly once \(found 2\)/);

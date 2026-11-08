@@ -82,7 +82,8 @@ dry_run_scorecard_check: check-token
 # ── Compliance reports ────────────────────────────────────────────────────────
 
 # Runs every tool with --json into a fresh $(JSON_DIR), then aggregates them once per report
-# configuration into $(REPORTS_DIR)/<YYYY-MM>/<key>-data.json and <key>-report.html. A failing
+# configuration into $(REPORTS_DIR)/<YYYY-MM>/<key>-data.json and <key>-report.html, and builds the
+# Scorecard report from scorecard.json (scorecard-data.json, scorecard-report.html). A failing
 # tool (leading -) leaves no file: the report shows "no data" for its checks. The Scorecard CLI
 # must be installed (see test_scorecard_check).
 #   make create_reports                                              # allianz, dry-run
@@ -100,6 +101,7 @@ create_reports: check-token
 	  echo "node $(SCRIPTS)/compliance_report.js --org $(ORG) --config $$c --dir $(JSON_DIR) --reports $(REPORTS_DIR)"; \
 	  node $(SCRIPTS)/compliance_report.js --org $(ORG) --config $$c --dir $(JSON_DIR) --reports $(REPORTS_DIR) || exit 1; \
 	done
+	node $(SCRIPTS)/scorecard_report.js --org $(ORG) --dir $(JSON_DIR) --reports $(REPORTS_DIR)
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 

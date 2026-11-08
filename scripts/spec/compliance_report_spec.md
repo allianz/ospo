@@ -272,7 +272,7 @@ Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 c
 
 ## Make target
 
-`make create_reports` runs every tool with `--json` into a fresh `results/`, then this script once per `config/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`:
+`make create_reports` runs every tool with `--json` into a fresh `results/`, then this script once per `config/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`, and finally [`scorecard_report.js`](scorecard_report_spec.md) for the Scorecard report:
 
 | Variable | Default | Meaning |
 |---|---|---|

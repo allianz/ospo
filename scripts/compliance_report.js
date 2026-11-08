@@ -6,7 +6,7 @@
 // Writes <reports>/<YYYY-MM>/<key>-data.json and the HTML report <key>-report.html rendered from it.
 // See spec/compliance_report_spec.md.
 
-import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { simpleGit } from 'simple-git';
 
@@ -15,21 +15,19 @@ import { loadYaml, repoRoot, requireFields } from './lib/config.js';
 import { blobUrl, isoSeconds, repoRelative, resolveOspoSha, runUrl, sha256, writeJsonReport } from './lib/json_output.js';
 import { createLogger } from './lib/logger.js';
 import { loadTemplate, renderHtml } from './lib/report_html.js';
+import {
+  DEFAULT_REPORTS_PATH, HEADER_FIELDS, REPORTS_DIR, dataPath, mergeHistory, readPreviousReport, readToolFile, validateToolFile,
+} from './lib/report_files.js';
+
+export { DEFAULT_REPORTS_PATH, REPORTS_DIR, dataPath, mergeHistory, readPreviousReport, validateToolFile };
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
 export const TOOL = 'compliance_report';
-/** Reports folder of the repository, one folder per month (reports/2026-11/bsi-data.json). */
-export const REPORTS_DIR = 'reports';
-/** Default output directory: the reports folder of the repository, committed by pull request. */
-export const DEFAULT_REPORTS_PATH = path.join(repoRoot, REPORTS_DIR);
-
 const LEVELS = ['MUST', 'SHOULD', 'MAY'];
-const RESULTS = ['pass', 'fail', 'na'];
 export const STATUSES = ['met', 'met-findings', 'not-met', 'no-data', 'not-assessed', 'optional'];
 /** Statuses whose checks count in the summary and the history. */
 const ASSESSED = new Set(['met', 'met-findings', 'no-data']);
-const HEADER_FIELDS = ['tool', 'run_at', 'org', 'ospo_sha', 'config_file', 'config_sha256', 'run_url', 'issue_title'];
 /** Optional header fields copied into inputs when present (scorecard_check). */
 const EXTRA_HEADER_FIELDS = ['source', 'scorecard_version'];
 /** Skip reasons that mean the repository is archived (out of scope). */
@@ -87,31 +85,6 @@ export function mappedChecks(requirements) {
 
 // ── Step 1–2: read and validate the tool files ──────────────────────────────
 
-/** Problems of a tool file against the common format (draft 1.6); an empty list means valid. */
-export function validateToolFile(doc, input, org) {
-  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) return ['not a JSON object'];
-  const problems = [];
-  const missing = HEADER_FIELDS.filter(f => !(f in doc));
-  if (missing.length > 0) problems.push(`missing header fields: ${missing.join(', ')}`);
-  const expectedTool = path.basename(input.script, '.js');
-  if ('tool' in doc && doc.tool !== expectedTool) problems.push(`tool is '${doc.tool}', expected '${expectedTool}'`);
-  if ('org' in doc && doc.org !== org) problems.push(`org is '${doc.org}', expected '${org}'`);
-  if (!doc.catalogue || typeof doc.catalogue !== 'object' || Array.isArray(doc.catalogue)) problems.push('catalogue must be an object');
-  for (const field of ['results', 'skipped', 'errors']) {
-    if (!Array.isArray(doc[field])) problems.push(`${field} must be a list`);
-  }
-  if (problems.length > 0) return problems;
-
-  const seen = new Set();
-  for (const row of doc.results) {
-    if (!(row?.check in doc.catalogue)) problems.push(`check ${row?.check} of ${row?.repo} is not in the catalogue`);
-    if (!RESULTS.includes(row?.result)) problems.push(`invalid result '${row?.result}' for ${row?.repo} ${row?.check}`);
-    if (seen.has(key(row?.repo, row?.check))) problems.push(`duplicate result for ${row?.repo} ${row?.check}`);
-    seen.add(key(row?.repo, row?.check));
-  }
-  return problems;
-}
-
 /** The `inputs` entry of a valid file: status, hash, the header fields the report shows, counts. */
 function inputEntry(input, status, { hash = null, doc = null, problems = [] } = {}) {
   const entry = { file: input.file, script: input.script, status, sha256: hash };
@@ -128,29 +101,9 @@ export async function readInputs(dir, inputs, org) {
   const entries = [];
   const docs = [];
   for (const input of inputs) {
-    let raw;
-    try {
-      raw = await readFile(path.join(dir, input.file));
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
-      entries.push(inputEntry(input, 'missing'));
-      continue;
-    }
-    const hash = sha256(raw);
-    let doc;
-    try {
-      doc = JSON.parse(raw.toString('utf8'));
-    } catch (error) {
-      entries.push(inputEntry(input, 'invalid', { hash, problems: [`not valid JSON: ${error.message}`] }));
-      continue;
-    }
-    const problems = validateToolFile(doc, input, org);
-    if (problems.length > 0) {
-      entries.push(inputEntry(input, 'invalid', { hash, problems }));
-      continue;
-    }
-    entries.push(inputEntry(input, 'ok', { hash, doc }));
-    docs.push(doc);
+    const { status, hash, doc, problems } = await readToolFile(dir, input, org);
+    entries.push(inputEntry(input, status, { hash, doc, problems }));
+    if (doc) docs.push(doc);
   }
   return { inputs: entries, docs };
 }
@@ -307,51 +260,6 @@ export function historyEntry(month, summary, assessed) {
     failing_repositories: summary.failing_repositories,
     coverage: Object.fromEntries(assessed.filter(r => ASSESSED.has(r.status)).map(r => [r.id, r.coverage])),
   };
-}
-
-/** The previous history with this run's entry added; an entry of the same month is replaced. Sorted by month. */
-export function mergeHistory(previous, entry) {
-  return [...(previous ?? []).filter(e => e.month !== entry.month), entry].sort((a, b) => a.month.localeCompare(b.month));
-}
-
-/** Path of a report's data.json in the repository: reports/2026-11/bsi-data.json. */
-export const dataPath = (month, reportKey) => `${REPORTS_DIR}/${month}/${reportKey}-data.json`;
-
-/**
- * The previous data.json of this report: the one in the latest month folder of the reports directory
- * before `month`. In CI the directory is the checkout of main, so it holds the merged reports only.
- * Returns `{ month, path, doc }` (`path` relative to the repository), or null when there is none
- * (first report). A file that is not valid JSON stops the run.
- */
-export async function readPreviousReport(reportsDir, reportKey, month) {
-  let entries;
-  try {
-    entries = await readdir(reportsDir, { withFileTypes: true });
-  } catch (error) {
-    if (error.code === 'ENOENT') return null;
-    throw error;
-  }
-  const months = entries
-    .filter(e => e.isDirectory() && /^\d{4}-\d{2}$/.test(e.name) && e.name < month)
-    .map(e => e.name)
-    .sort()
-    .reverse();
-  for (const previousMonth of months) {
-    const file = path.join(reportsDir, previousMonth, `${reportKey}-data.json`);
-    let text;
-    try {
-      text = await readFile(file, 'utf8');
-    } catch (error) {
-      if (error.code === 'ENOENT') continue;
-      throw error;
-    }
-    try {
-      return { month: previousMonth, path: dataPath(previousMonth, reportKey), doc: JSON.parse(text) };
-    } catch (error) {
-      throw new ScriptError(`${file} is not valid JSON: ${error.message}`);
-    }
-  }
-  return null;
 }
 
 // ── Step 7: notes ────────────────────────────────────────────────────────────
