@@ -368,7 +368,7 @@
     <div class="grid-2">
       <div class="card"><h3 class="chart-title">Stars</h3><p class="chart-sub">Stars of all projects at the end of each month</p><div id="c-stars"></div></div>
       <div class="card"><h3 class="chart-title">Unique visitors</h3><p class="chart-sub">People who viewed a project page in the 14 days before each monthly run</p><div id="c-visitors"></div></div>
-      <div class="card"><h3 class="chart-title">Unique cloners</h3><p class="chart-sub">People or machines who cloned a project in the 14 days before each monthly run</p><div id="c-cloners"></div></div>
+      <div class="card"><h3 class="chart-title">Contributors</h3><p class="chart-sub">People with at least one commit in any project, all-time, each counted once</p><div id="c-contributors"></div></div>
       <div class="card"><h3 class="chart-title">Merged pull requests</h3><p class="chart-sub">Pull requests merged in the month, by author</p><div id="c-prs"></div></div>
     </div>
   </section>
@@ -706,13 +706,13 @@ $('subtitle').textContent = `${fmtMonthLong(DATA.period.month)} · open source p
 
 /* ═══════════════════════════ 3 Growth ═══════════════════════════ */
 {
-  const v = G.visitors, cl = G.cloners;
-  $('growth-lead').textContent = `The last ${TREND_MONTHS} months. Unique visitors grew from ${num(v.six_months_ago)} to ${num(v.value)}, unique cloners from ${num(cl.six_months_ago)} to ${num(cl.value)}. ` +
+  const v = G.visitors, c = G.contributors;
+  $('growth-lead').textContent = `The last ${TREND_MONTHS} months. Unique visitors grew from ${num(v.six_months_ago)} to ${num(v.value)}, contributors from ${num(c.six_months_ago)} to ${num(c.value)}. ` +
     'Traffic is the 14-day value GitHub returns at each monthly run, so one point per month.';
   const tr = f => i => { const x = BY_PERIOD[SLOTS[i]]?.totals.traffic; return x ? f(x) : ''; };
   lineChart($('c-stars'), { values: trend(x => x.totals.stars), name: 'Stars' });
   lineChart($('c-visitors'), { values: trend(x => x.totals.traffic?.visitors), name: 'Unique visitors', detail: tr(x => `${num(x.views)} page views`) });
-  lineChart($('c-cloners'), { values: trend(x => x.totals.traffic?.cloners), name: 'Unique cloners', detail: tr(x => `${num(x.clones)} clones`) });
+  lineChart($('c-contributors'), { values: trend(x => x.totals.contributors?.total), name: 'Contributors', detail: i => { const c = BY_PERIOD[SLOTS[i]]?.totals.contributors; return c ? `${num(c.external)} external, ${num(c.internal)} internal` : ''; } });
   stackedColumns($('c-prs'), { values: trend(x => x.totals.prs_merged), name: 'Merged pull requests' });
 }
 
