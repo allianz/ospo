@@ -14,7 +14,8 @@ ORG ?= allianz
 CONFIG_DIR ?= config
 REPORTS_DIR ?= reports
 DRY_RUN ?= --dry-run
-# One report per configuration; a new config/compliance_report_*.yaml needs no change here
+# One report per configuration (bsi: BSI TR-03185, allianz: Allianz Mandatory Repository
+# Configuration); a new config/compliance_report_*.yaml needs no change here
 REPORT_CONFIGS := $(wildcard config/compliance_report_*.yaml)
 
 .PHONY: check-token \

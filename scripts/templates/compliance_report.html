@@ -488,7 +488,7 @@ for (const f of FINDINGS) for (const q of f.requirements) (FINDINGS_BY_REQ[q] ??
 const findingsOf = reqId => FINDINGS_BY_REQ[reqId] ?? [];
 const HISTORY = DATA.history;
 const PREV = HISTORY.length > 1 ? HISTORY[HISTORY.length - 2] : null;   // last measured month before this one
-const ACTIVE = DATA.scope.active, ARCHIVED = DATA.scope.archived;
+const ACTIVE = DATA.scope.active, ARCHIVED = DATA.scope.archived, OUT_OF_SCOPE = DATA.scope.out_of_scope ?? [];
 const S = DATA.summary;
 
 const STATUS = {
@@ -781,7 +781,7 @@ $('subtitle').textContent = `Open source projects published under github.com/${O
   metaRow('Status as of', fmtDateTime(DATA.run_at));
   metaRow('Trend period', `${fmtMonth(SLOTS[0])} – ${fmtMonth(SLOTS.at(-1))} (last ${TREND_MONTHS} months)`);
   metaRow('Previous report', DATA.previous_report ? h('a', { href: DATA.previous_report.data_url, text: DATA.previous_report.report_id }) : 'none (first report)');
-  metaRow('Scope', plural(ACTIVE.length, 'active repository', 'active repositories'));
+  metaRow('Scope', plural(ACTIVE.length, 'active repository', 'active repositories') + (OUT_OF_SCOPE.length ? ` (${OUT_OF_SCOPE.length} out of scope, see A)` : ''));
   metaRow('Workflow run', runLink(DATA.run_url));
 }
 
@@ -984,6 +984,7 @@ function repoListTag(text, filter) { const a = repoListLink(text, filter); a.cla
   const srow = (k, n, names) => st.append(h('tr', {}, h('td', {}, k, names ? h('div', { class: 'small muted', text: names }) : null), h('td', { class: 'num', text: n })));
   srow('Active repositories in scope', ACTIVE.length, capText(ACTIVE, 12));
   srow('Archived repositories', ARCHIVED.length, capText(ARCHIVED, 12));
+  srow('Out of scope by the report configuration (not counted)', OUT_OF_SCOPE.length, OUT_OF_SCOPE.map(x => `${x.repo}: ${x.reason}`).join(' · '));
   srow('Active, excluded by a tool (counted as failing its checks)', Object.keys(excluded).length, Object.entries(excluded).map(([r, ts]) => `${r}: ${[...ts].join(', ')}`).join(' · '));
   srow('Active, skipped by a tool for another reason (no data for its checks)', Object.keys(otherSkip).length, Object.entries(otherSkip).map(([r, ts]) => `${r} (${[...ts].join('; ')})`).join(' · '));
 

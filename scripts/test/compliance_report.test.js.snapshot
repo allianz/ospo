@@ -105,7 +105,8 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
     "archived": [
       "old",
       "stale"
-    ]
+    ],
+    "out_of_scope": []
   },
   "requirements": [
     {

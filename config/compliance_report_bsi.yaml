@@ -17,6 +17,11 @@
 #                 script that writes them.
 #   notes:        Hand-written notes file (Key messages, Needs attention),
 #                 relative to the repo root. Optional.
+#   out_of_scope: Repositories this report does not cover at all, each with
+#                 repo and reason. They are dropped like archived ones and
+#                 listed with the reason in appendix A. Optional. Unlike a
+#                 tool's excluded_repos (counted as failing), this is a
+#                 decision of the report: give the reason.
 #   requirements: One entry per requirement: title, level (MUST, SHOULD,
 #                 MAY), text (the clauses), implementation (plain text) and
 #                 checks (check IDs). A MUST without checks is "Not met",

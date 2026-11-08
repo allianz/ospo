@@ -53,6 +53,14 @@ export async function loadReportConfig(configPath) {
   for (const input of config.inputs) {
     if (typeof input?.file !== 'string' || typeof input?.script !== 'string') fail('every input needs file and script');
   }
+  const outOfScope = config.out_of_scope ?? [];
+  if (!Array.isArray(outOfScope)) fail('out_of_scope must be a list');
+  const listed = new Set();
+  for (const entry of outOfScope) {
+    if (typeof entry?.repo !== 'string' || typeof entry?.reason !== 'string' || !entry.reason) fail('every out_of_scope entry needs repo and reason');
+    if (listed.has(entry.repo)) fail(`out_of_scope lists ${entry.repo} twice`);
+    listed.add(entry.repo);
+  }
   const requirements = Object.entries(config.requirements).map(([id, r]) => {
     const chapter = id.split('.')[0];
     if (!(chapter in chapters)) fail(`requirement ${id}: chapter ${chapter} is not in framework.chapters`);
@@ -69,7 +77,7 @@ export async function loadReportConfig(configPath) {
       checks: r.checks,
     };
   });
-  return { ...config, requirements };
+  return { ...config, out_of_scope: outOfScope.map(({ repo, reason }) => ({ repo, reason })), requirements };
 }
 
 /** All check IDs mapped to at least one requirement. */
@@ -149,8 +157,11 @@ export async function readInputs(dir, inputs, org) {
 
 // ── Step 3–4: merge ──────────────────────────────────────────────────────────
 
-/** Active and archived repositories, from the results, skipped and errors of all tool files. */
-export function computeScope(docs) {
+/**
+ * Active, archived and out-of-scope repositories, from the results, skipped and errors of all tool files
+ * and the `out_of_scope` list of the report configuration. An archived repository is only listed as archived.
+ */
+export function computeScope(docs, outOfScope = []) {
   const archived = new Set();
   const seen = new Set();
   for (const doc of docs) {
@@ -161,8 +172,14 @@ export function computeScope(docs) {
       if (ARCHIVED_REASONS.has(row.reason)) archived.add(row.repo);
     }
   }
-  const sorted = set => [...set].sort((a, b) => a.localeCompare(b));
-  return { active: sorted([...seen].filter(r => !archived.has(r))), archived: sorted(archived) };
+  const byName = (a, b) => a.localeCompare(b);
+  const excluded = outOfScope.filter(({ repo }) => !archived.has(repo)).sort((a, b) => byName(a.repo, b.repo));
+  const out = new Set(excluded.map(({ repo }) => repo));
+  return {
+    active: [...seen].filter(r => !archived.has(r) && !out.has(r)).sort(byName),
+    archived: [...archived].sort(byName),
+    out_of_scope: excluded,
+  };
 }
 
 /**
@@ -411,7 +428,7 @@ export function unknownChecks(mapped, catalogue, inputs) {
 /** Builds data.json from the tool documents, the report configuration and the previous report (pure). */
 export function buildData({ config, configFile, configSha, inputs, docs, previous, notes, notesError, header, env = {} }) {
   const mapped = mappedChecks(config.requirements);
-  const scope = computeScope(docs);
+  const scope = computeScope(docs, config.out_of_scope);
   const merged = mergeToolFiles(docs, mapped, scope);
   const results = [...merged.results, ...excludedFailResults(docs, mapped, scope)];
   const requirements = assessRequirements(config.requirements, results, scope);
@@ -454,7 +471,8 @@ function logReport(log, data, warnings) {
       : [input.status, ...(input.problems ?? [])].join(': ');
     log.info(`  ${input.file.padEnd(width)}  ${detail}`);
   }
-  log.info(`Scope: ${data.scope.active.length} active, ${data.scope.archived.length} archived repositories`);
+  const outOfScope = data.scope.out_of_scope.length;
+  log.info(`Scope: ${data.scope.active.length} active, ${data.scope.archived.length} archived${outOfScope ? `, ${outOfScope} out of scope` : ''} repositories`);
   const byStatus = data.summary.requirements_by_status;
   log.info(`Requirements: ${STATUSES.map(s => `${byStatus[s]} ${s}`).join(', ')}`);
   for (const r of data.requirements) {

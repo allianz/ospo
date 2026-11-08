@@ -207,6 +207,12 @@ describe('loadReportConfig', () => {
     assert.deepEqual(requirements[3], { id: 'QA.02', chapter: 'QA', level: 'MUST', title: 'Public', text: [], implementation: '', checks: [] });
   });
 
+  it('defaults out_of_scope to an empty list and keeps only repo and reason', async () => {
+    assert.deepEqual((await config()).out_of_scope, []);
+    const cfg = await loadReportConfig(await writeReportConfig('scope.yaml', { out_of_scope: [{ repo: '.github', reason: 'Org config', note: 'x' }] }));
+    assert.deepEqual(cfg.out_of_scope, [{ repo: '.github', reason: 'Org config' }]);
+  });
+
   const cases = [
     ['a missing field', { inputs: [] }, /Config missing required field: inputs/],
     ['an invalid key', { key: 'BSI' }, /key must consist of a-z, 0-9 and -: 'BSI'/],
@@ -215,6 +221,10 @@ describe('loadReportConfig', () => {
     ['an invalid level', { requirements: { 'GV.01': { title: 't', level: 'MUSTN', checks: [] } } }, /level must be one of MUST, SHOULD, MAY/],
     ['a missing title', { requirements: { 'GV.01': { level: 'MUST', checks: [] } } }, /GV.01: title is missing/],
     ['checks that are no list', { requirements: { 'GV.01': { title: 't', level: 'MUST' } } }, /checks must be a list/],
+    ['out_of_scope that is no list', { out_of_scope: '.github' }, /out_of_scope must be a list/],
+    ['an out_of_scope entry without reason', { out_of_scope: [{ repo: '.github' }] }, /every out_of_scope entry needs repo and reason/],
+    ['an out_of_scope entry with an empty reason', { out_of_scope: [{ repo: '.github', reason: '' }] }, /every out_of_scope entry needs repo and reason/],
+    ['a repository out of scope twice', { out_of_scope: [{ repo: 'a', reason: 'r' }, { repo: 'a', reason: 's' }] }, /out_of_scope lists a twice/],
   ];
   for (const [label, overrides, message] of cases) {
     it(`rejects ${label}`, async () => {
@@ -295,12 +305,21 @@ describe('readInputs', () => {
 
 describe('computeScope', () => {
   it('collects active repositories from results, skipped and errors, and archived ones from skip reasons', () => {
-    assert.deepEqual(computeScope(Object.values(DOCS)), { active: ['alpha', 'beta', 'gamma'], archived: ['old', 'stale'] });
+    assert.deepEqual(computeScope(Object.values(DOCS)), { active: ['alpha', 'beta', 'gamma'], archived: ['old', 'stale'], out_of_scope: [] });
+  });
+
+  it('drops out-of-scope repositories from the active ones, sorted; an archived one stays archived only', () => {
+    const outOfScope = [{ repo: 'gamma', reason: 'r1' }, { repo: 'old', reason: 'r2' }, { repo: 'beta', reason: 'r3' }];
+    assert.deepEqual(computeScope(Object.values(DOCS), outOfScope), {
+      active: ['alpha'],
+      archived: ['old', 'stale'],
+      out_of_scope: [{ repo: 'beta', reason: 'r3' }, { repo: 'gamma', reason: 'r1' }],
+    });
   });
 
   it('ignores error rows without a repository', () => {
     const doc = toolDoc('x', { catalogue: {}, errors: [{ check: 'x/y', reason: 'r' }] });
-    assert.deepEqual(computeScope([doc]), { active: [], archived: [] });
+    assert.deepEqual(computeScope([doc]), { active: [], archived: [], out_of_scope: [] });
   });
 });
 
@@ -689,16 +708,40 @@ describe('buildData', () => {
       header: { run_at: '2026-12-01T00:00:00Z', org, ospo_sha: null, run_url: null },
     });
     assert.equal(data.report_id, 'OSPO-CR-TEST-2026-12');
-    assert.deepEqual(data.scope, { active: [], archived: [] });
+    assert.deepEqual(data.scope, { active: [], archived: [], out_of_scope: [] });
     assert.equal(data.summary.compliance_pct, null);
     assert.deepEqual(STATUSES.map(s => data.summary.requirements_by_status[s]), [0, 0, 1, 5, 1, 1]);
   });
+
+  it('leaves an out-of-scope repository out of results and counts, also when a tool excluded it', async () => {
+    const data = buildData({
+      config: { ...(await config()), out_of_scope: [{ repo: 'gamma', reason: 'Organisation configuration' }] },
+      configFile: 'config/x.yaml',
+      configSha: 's',
+      inputs: [],
+      docs: Object.values(DOCS),
+      previous: null,
+      notes: null,
+      notesError: null,
+      header: { run_at: '2026-12-01T00:00:00Z', org, ospo_sha: null, run_url: null },
+    });
+    assert.deepEqual(data.scope.active, ['alpha', 'beta']);
+    assert.deepEqual(data.scope.out_of_scope, [{ repo: 'gamma', reason: 'Organisation configuration' }]);
+    assert.deepEqual(data.results.filter(r => r.repo === 'gamma'), []);
+    const gv01 = data.requirements.find(r => r.id === 'GV.01');
+    assert.deepEqual(gv01.repositories, { applicable: 2, passing: 1, failing: 1, not_applicable: 0, no_data: 0 });
+  });
 });
 
-// ── The BSI report configuration ─────────────────────────────────────────────
+// ── The report configurations in config/ ─────────────────────────────────────
 
-describe('config/compliance_report_bsi.yaml', () => {
-  const configFile = path.join(repoRoot, 'config/compliance_report_bsi.yaml');
+const REPORT_CONFIGS = [
+  { file: 'config/compliance_report_bsi.yaml', requirements: 20 },
+  { file: 'config/compliance_report_allianz.yaml', requirements: 7 },
+];
+
+for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () => {
+  const configFile = path.join(repoRoot, file);
 
   it('maps only checks that the tools define', async () => {
     const lint = lintCatalogue(await loadLintConfig(path.join(repoRoot, 'config/lint_repos.yaml')));
@@ -715,7 +758,7 @@ describe('config/compliance_report_bsi.yaml', () => {
     ]);
     const { requirements } = await loadReportConfig(configFile);
     assert.deepEqual([...mappedChecks(requirements)].filter(check => !known.has(check)), []);
-    assert.equal(requirements.length, 20);
+    assert.equal(requirements.length, count);
   });
 
   it('names existing scripts and a valid notes file', async () => {
@@ -723,5 +766,21 @@ describe('config/compliance_report_bsi.yaml', () => {
     for (const input of reportConfig.inputs) await readFile(path.join(repoRoot, input.script));
     const { error } = await readNotes(reportConfig.notes);
     assert.equal(error, null);
+  });
+});
+
+describe('config/compliance_report_allianz.yaml mapping', () => {
+  it('maps every rule of the guideline to its lint checks', async () => {
+    const { requirements } = await loadReportConfig(path.join(repoRoot, 'config/compliance_report_allianz.yaml'));
+    assert.deepEqual(Object.fromEntries(requirements.map(q => [q.id, q.checks])), {
+      'RC.01': ['lint/description'],
+      'RC.02': ['lint/topics'],
+      'RC.03': ['lint/license', 'lint/license-type'],
+      'RC.04': ['lint/readme'],
+      'RC.05': ['lint/contributing'],
+      'RC.06': ['lint/notice'],
+      'RC.07': ['lint/authors'],
+    });
+    assert.ok(requirements.every(q => q.level === 'MUST'));
   });
 });

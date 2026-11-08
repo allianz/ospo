@@ -24,6 +24,7 @@ Rule: a MUST can never rely on **Not verifiable**. Central settings (org setting
 ### 1.2 Scope and applicability
 
 - **In scope:** all active (not archived) repositories of the organisation. A repository in a tool's `excluded_repos` stays in scope: the tool skips it and lists it under `skipped`, and `compliance_report` counts it as failing every mapped per-repository check of that tool (see 1.10 step 4).
+- **Out of scope by the report:** a report configuration may list repositories it does not cover in `out_of_scope`, each with a reason (e.g. `.github`, the organisation configuration, in the Allianz report). They are dropped like archived repositories and shown with the reason in the report.
 - **Archived repositories:** the checking tools list them under `skipped` (reason `archived`) and write no results for them. They are out of scope, so no check has results for them.
 - **Not applicable by topic:** repositories tagged `docs` or `template` have no software to build or test. QA.04 does not apply to them.
 - **Releasing repositories:** repositories with at least one GitHub release in the last 12 months. BR.02–BR.04 only apply to these.
@@ -172,7 +173,7 @@ One configuration file per report. Every file and file name is set in the config
 | Configuration | Report | Notes file |
 |---|---|---|
 | `config/compliance_report_bsi.yaml` | BSI TR-03185 Chapter 2 | `config/compliance_report_bsi_notes.md` |
-| `config/compliance_report_allianz.yaml` | Allianz open source compliance | `config/compliance_report_allianz_notes.md` |
+| `config/compliance_report_allianz.yaml` | Allianz Mandatory Repository Configuration (the lint rules projects must follow; rules enforced by organisation settings are left out) | `config/compliance_report_allianz_notes.md` |
 
 ```yaml
 # config/compliance_report_bsi.yaml
@@ -194,6 +195,8 @@ inputs:                      # tool files expected in results/ (see 1.10)
   - { file: scorecard.json,     script: scripts/scorecard_check.js }
 
 notes: config/compliance_report_bsi_notes.md   # optional, any path; see below
+out_of_scope:                # optional: repositories this report does not cover, with the reason (see 1.2)
+  - { repo: .github, reason: "Organisation configuration, not a project" }
 
 requirements:
   GV.01:

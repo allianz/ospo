@@ -10,6 +10,7 @@ The script:
 
 - reads the tool files named in the report configuration from one directory;
 - validates them, merges their catalogues and results, and maps the checks to the requirements of the configuration;
+- drops the repositories the configuration declares `out_of_scope`;
 - adds a `fail` for every active repository a tool skipped through `excluded_repos`;
 - computes the scope, the status and coverage of every requirement, and the summary;
 - carries the trend history forward from the published report on `main`;
@@ -61,6 +62,8 @@ framework:
 inputs:
   - { file: lint_repos.json, script: scripts/lint_repos.js }
 notes: config/compliance_report_bsi_notes.md
+out_of_scope:
+  - { repo: .github, reason: "Organisation configuration, not a project" }
 requirements:
   GV.01:
     title: How to contribute is documented
@@ -78,12 +81,13 @@ requirements:
 | `framework` | yes | The requirement set, copied into `data.json` unchanged. `chapters` names every chapter prefix used by a requirement ID |
 | `inputs` | yes | Tool files in `--dir`: `file` and the `script` that writes it. The tool name of a file must be the basename of its script |
 | `notes` | no | Notes file, relative to the repo root. Without it, `notes` is `null` |
+| `out_of_scope` | no | Repositories this report does not cover, each with `repo` and `reason` (default `[]`). See [Scope](#scope) |
 | `requirements` | yes | One entry per requirement ID (`<chapter>.<nn>`), in report order: `title`, `level` (`MUST`, `SHOULD`, `MAY`), `text` (list of clauses with `level` and `text`, default `[]`), `implementation` (plain text, default empty), `checks` (list of check IDs, `[]` for none) |
 
 ### Validation
 
 - A missing field: `Config missing required field: <field> (in <file>)`.
-- An invalid `key`, an input without `file` or `script`, a chapter that is not in `framework.chapters`, an invalid `level`, a missing `title`, or `checks` that is not a list: an error naming the requirement and the file.
+- An invalid `key`, an input without `file` or `script`, `out_of_scope` that is not a list, an entry without `repo` or `reason`, a repository listed twice, a chapter that is not in `framework.chapters`, an invalid `level`, a missing `title`, or `checks` that is not a list: an error naming the requirement and the file.
 
 ---
 
@@ -104,9 +108,10 @@ A missing or invalid file contributes nothing: its checks have no results, which
 From the valid tool files only:
 
 - **archived:** repositories listed under `skipped` with reason `archived` or `archived in this run` by any tool;
+- **out of scope:** the repositories in `out_of_scope` of the configuration, with their reason; an archived repository is only listed as archived;
 - **active:** every other repository that appears in a result, under `skipped` or in `errors`.
 
-Results of archived repositories are dropped. A repository that `archive_repos` archives in this run may still have results from tools that ran before it.
+Results of archived and out-of-scope repositories are dropped, so they count nowhere. `out_of_scope` is the report's own decision and states its reason in the report. It differs from a tool's `excluded_repos`, which keeps the repository in scope and counts it as failing (see [Excluded repositories](#excluded-repositories)). A repository that `archive_repos` archives in this run may still have results from tools that ran before it.
 
 ### Merge
 
@@ -186,7 +191,7 @@ Inputs:
   lint_repos.json        ok (45 results, 5 skipped, 0 errors)
   by_construction.json   missing
   …
-Scope: 10 active, 2 archived repositories
+Scope: 10 active, 2 archived, 1 out of scope repositories
 Requirements: 3 met, 15 met-findings, 0 not-met, 0 no-data, 2 not-assessed, 0 optional
 Compliance: 80.5% (124 of 154 checks passed), 7 repositories with findings
 History: 5 months (previous report: OSPO-CR-BSI-2026-10)
@@ -212,7 +217,7 @@ HTML written to reports/2026-11/bsi-report.html
 | `framework` | Copied from the configuration |
 | `previous_report` | `report_id` and `data_url` (link to the `data.json` that was read, on `main`) of the previous report, or `null` |
 | `inputs` | One entry per configured file: `file`, `script`, `status`, `sha256` (of the file as read, `null` if missing); for `ok` the header fields `tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, `issue_title`, plus `source` and `scorecard_version` where present, and `counts` (`results`, `skipped`, `errors`); for `invalid` the `problems` |
-| `scope` | `active` and `archived`, sorted |
+| `scope` | `active` and `archived`, sorted; `out_of_scope` as `{ repo, reason }`, sorted by `repo` |
 | `requirements` | One entry per requirement in configuration order: `id`, `chapter`, `level`, `title`, `text`, `implementation`, `checks`, `status`, `repositories`, `coverage` |
 | `summary` | See [Summary](#summary) |
 | `notes` | `file`, `sha256`, `key_messages`, `needs_attention`, or `null` |
@@ -259,7 +264,7 @@ Sections, all computed from `data.json`:
 | 3 Trends | Overall compliance and active repositories with findings over the last 6 months, one slot per month; a month without a report is a gap |
 | 4 Findings | Failing repositories per requirement, active repositories by number of failed requirements |
 | 5 Repositories | Every repository with its failed requirements, failing checks (score and threshold for scored checks), checks passed, and links to the open issue of each tool that has one. Sortable and filterable; printing shows every repository |
-| A Scope and method | Active and archived repositories, active repositories excluded by a tool (counted as failing) or skipped for another reason (no data), status definitions, one row per tool file (or "File missing" / "File invalid" with the problems) |
+| A Scope and method | Active, archived and out-of-scope repositories (with the reason), active repositories excluded by a tool (counted as failing) or skipped for another reason (no data), status definitions, one row per tool file (or "File missing" / "File invalid" with the problems) |
 
 Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 characters.
 
