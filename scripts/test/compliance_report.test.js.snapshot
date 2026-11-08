@@ -1,0 +1,452 @@
+exports[`run > writes data.json with statuses, summary, notes and the merged history 1`] = `
+{
+  "report_id": "OSPO-CR-TEST-2026-11",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "test-org",
+  "ospo_sha": "abc123",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/42",
+  "report_config": "<config>",
+  "config_sha256": "<sha>",
+  "framework": {
+    "id": "fw",
+    "title": "Test Framework",
+    "version": "1.0",
+    "url": "https://example.test/fw",
+    "chapters": {
+      "GV": "Governance",
+      "QA": "Quality",
+      "BR": "Build",
+      "DE": "Decommissioning"
+    }
+  },
+  "previous_report": {
+    "report_id": "OSPO-CR-TEST-2026-10",
+    "data_url": "https://github.com/allianz/ospo/blob/prevsha/reports/2026-10/test-data.json"
+  },
+  "inputs": [
+    {
+      "file": "lint_repos.json",
+      "script": "scripts/lint_repos.js",
+      "status": "ok",
+      "sha256": "15ee431a7eab1a6abef0d7786d110ea7d1a30313718ba43a16f46d5f1a25e52b",
+      "tool": "lint_repos",
+      "run_at": "2026-11-03T02:00:00Z",
+      "ospo_sha": "abc123",
+      "config_file": "config/lint_repos.yaml",
+      "config_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "run_url": null,
+      "issue_title": "Mandatory Repository Configuration",
+      "counts": {
+        "results": 6,
+        "skipped": 2,
+        "errors": 0
+      }
+    },
+    {
+      "file": "scorecard.json",
+      "script": "scripts/scorecard_check.js",
+      "status": "ok",
+      "sha256": "514996f5376bf1590f1c7d497ad02464f8247fea333ec6c0f6cd4ec47bd3c6aa",
+      "tool": "scorecard_check",
+      "run_at": "2026-11-03T02:00:00Z",
+      "ospo_sha": "abc123",
+      "config_file": "config/scorecard_check.yaml",
+      "config_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "run_url": null,
+      "issue_title": null,
+      "source": "scorecard CLI",
+      "scorecard_version": "v5.6.0",
+      "counts": {
+        "results": 6,
+        "skipped": 1,
+        "errors": 2
+      }
+    },
+    {
+      "file": "archive_repos.json",
+      "script": "scripts/archive_repos.js",
+      "status": "ok",
+      "sha256": "c6c315ed731cfff109c052f5c2587b490771816946801905ba057e265e57cfc7",
+      "tool": "archive_repos",
+      "run_at": "2026-11-03T02:00:00Z",
+      "ospo_sha": "abc123",
+      "config_file": "config/archive_repos.yaml",
+      "config_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "run_url": null,
+      "issue_title": null,
+      "counts": {
+        "results": 6,
+        "skipped": 2,
+        "errors": 0
+      }
+    },
+    {
+      "file": "by_construction.json",
+      "script": "scripts/by_construction.js",
+      "status": "missing",
+      "sha256": null
+    },
+    {
+      "file": "releases_check.json",
+      "script": "scripts/releases_check.js",
+      "status": "invalid",
+      "sha256": "0228f717792ffbc02f7fa058c934c10d7e91d0de743e365ebd78bfebf019254e",
+      "problems": [
+        "not valid JSON: Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+      ]
+    }
+  ],
+  "scope": {
+    "active": [
+      "alpha",
+      "beta",
+      "gamma"
+    ],
+    "archived": [
+      "old",
+      "stale"
+    ]
+  },
+  "requirements": [
+    {
+      "id": "GV.01",
+      "chapter": "GV",
+      "level": "MUST",
+      "title": "Contribute",
+      "text": [
+        {
+          "level": "MUST",
+          "text": "Contribution MUST be documented."
+        }
+      ],
+      "implementation": "CONTRIBUTING file.",
+      "checks": [
+        "lint/contributing"
+      ],
+      "status": "met-findings",
+      "repositories": {
+        "applicable": 3,
+        "passing": 1,
+        "failing": 2,
+        "not_applicable": 0,
+        "no_data": 0
+      },
+      "coverage": 33.3
+    },
+    {
+      "id": "GV.02",
+      "chapter": "GV",
+      "level": "MUST",
+      "title": "Protected",
+      "text": [],
+      "implementation": "Ruleset.",
+      "checks": [
+        "scorecard/ci-tests",
+        "scorecard/code-review"
+      ],
+      "status": "met-findings",
+      "repositories": {
+        "applicable": 2,
+        "passing": 1,
+        "failing": 1,
+        "not_applicable": 0,
+        "no_data": 1
+      },
+      "coverage": 50
+    },
+    {
+      "id": "QA.01",
+      "chapter": "QA",
+      "level": "MUST",
+      "title": "SBOM",
+      "text": [],
+      "implementation": "Dependency graph.",
+      "checks": [
+        "by-construction/sbom-available"
+      ],
+      "status": "no-data",
+      "repositories": {
+        "applicable": 0,
+        "passing": 0,
+        "failing": 0,
+        "not_applicable": 0,
+        "no_data": 3
+      },
+      "coverage": null
+    },
+    {
+      "id": "QA.02",
+      "chapter": "QA",
+      "level": "MUST",
+      "title": "Public",
+      "text": [],
+      "implementation": "",
+      "checks": [],
+      "status": "not-met",
+      "repositories": null,
+      "coverage": null
+    },
+    {
+      "id": "BR.02",
+      "chapter": "BR",
+      "level": "MUST",
+      "title": "Versions",
+      "text": [],
+      "implementation": "",
+      "checks": [
+        "releases/versioning"
+      ],
+      "status": "no-data",
+      "repositories": {
+        "applicable": 0,
+        "passing": 0,
+        "failing": 0,
+        "not_applicable": 0,
+        "no_data": 3
+      },
+      "coverage": null
+    },
+    {
+      "id": "BR.06",
+      "chapter": "BR",
+      "level": "SHOULD",
+      "title": "Reproducible",
+      "text": [],
+      "implementation": "",
+      "checks": [],
+      "status": "not-assessed",
+      "repositories": null,
+      "coverage": null
+    },
+    {
+      "id": "DE.01",
+      "chapter": "DE",
+      "level": "SHOULD",
+      "title": "Discontinuation",
+      "text": [],
+      "implementation": "",
+      "checks": [
+        "archive/activity-checked"
+      ],
+      "status": "met",
+      "repositories": {
+        "applicable": 3,
+        "passing": 3,
+        "failing": 0,
+        "not_applicable": 0,
+        "no_data": 0
+      },
+      "coverage": 100
+    },
+    {
+      "id": "DE.02",
+      "chapter": "DE",
+      "level": "MAY",
+      "title": "Migration",
+      "text": [],
+      "implementation": "",
+      "checks": [
+        "archive/activity-checked"
+      ],
+      "status": "optional",
+      "repositories": {
+        "applicable": 3,
+        "passing": 3,
+        "failing": 0,
+        "not_applicable": 0,
+        "no_data": 0
+      },
+      "coverage": 100
+    }
+  ],
+  "summary": {
+    "checks_evaluated": 10,
+    "checks_passed": 7,
+    "compliance_pct": 70,
+    "requirements_by_status": {
+      "met": 1,
+      "met-findings": 2,
+      "not-met": 1,
+      "no-data": 2,
+      "not-assessed": 1,
+      "optional": 1
+    },
+    "must_met": 2,
+    "must_total": 5,
+    "failing_repositories": 2
+  },
+  "notes": {
+    "file": "<notes>",
+    "sha256": "8c2ea1274c4e39cad79d0c0fb305de7b87ab4b3ca175770ea2d62c49b3f9c230",
+    "key_messages": [
+      "**Release integrity is the weakest area.** See \`BR.03\` and the [template](https://github.com/allianz/ospo/issues/1)."
+    ],
+    "needs_attention": [
+      "**Decision: license review** (Legal, by 30 Nov 2026)."
+    ]
+  },
+  "history": [
+    {
+      "month": "2026-09",
+      "compliance_pct": 60,
+      "failing_repositories": 3,
+      "coverage": {
+        "GV.01": 50
+      }
+    },
+    {
+      "month": "2026-10",
+      "compliance_pct": 65,
+      "failing_repositories": 3,
+      "coverage": {
+        "GV.01": 50
+      }
+    },
+    {
+      "month": "2026-11",
+      "compliance_pct": 70,
+      "failing_repositories": 2,
+      "coverage": {
+        "GV.01": 33.3,
+        "GV.02": 50,
+        "QA.01": null,
+        "BR.02": null,
+        "DE.01": 100
+      }
+    }
+  ],
+  "catalogue": {
+    "archive/activity-checked": {
+      "tool": "archive_repos",
+      "documentation": {
+        "url": "https://example.test/spec#Activity Checked",
+        "short": "Activity Checked rule."
+      }
+    },
+    "lint/contributing": {
+      "tool": "lint_repos",
+      "documentation": {
+        "url": "https://example.test/spec#Contributing File",
+        "short": "Contributing File rule."
+      }
+    },
+    "scorecard/ci-tests": {
+      "tool": "scorecard_check",
+      "threshold": 8,
+      "documentation": {
+        "url": "https://example.test/spec#CI-Tests",
+        "short": "CI-Tests rule."
+      }
+    },
+    "scorecard/code-review": {
+      "tool": "scorecard_check",
+      "threshold": 7,
+      "documentation": {
+        "url": "https://example.test/spec#Code-Review",
+        "short": "Code-Review rule."
+      }
+    }
+  },
+  "results": [
+    {
+      "repo": "alpha",
+      "check": "lint/contributing",
+      "result": "pass"
+    },
+    {
+      "repo": "beta",
+      "check": "lint/contributing",
+      "result": "fail"
+    },
+    {
+      "repo": "alpha",
+      "check": "scorecard/ci-tests",
+      "result": "pass",
+      "score": 10
+    },
+    {
+      "repo": "alpha",
+      "check": "scorecard/code-review",
+      "result": "pass",
+      "score": 10
+    },
+    {
+      "repo": "beta",
+      "check": "scorecard/ci-tests",
+      "result": "na",
+      "score": null
+    },
+    {
+      "repo": "gamma",
+      "check": "scorecard/ci-tests",
+      "result": "pass",
+      "score": 9
+    },
+    {
+      "repo": "gamma",
+      "check": "scorecard/code-review",
+      "result": "fail",
+      "score": 3
+    },
+    {
+      "repo": "alpha",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "beta",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "gamma",
+      "check": "archive/activity-checked",
+      "result": "pass"
+    },
+    {
+      "repo": "gamma",
+      "check": "lint/contributing",
+      "result": "fail"
+    }
+  ],
+  "skipped": [
+    {
+      "tool": "lint_repos",
+      "repo": "gamma",
+      "reason": "excluded_repos"
+    },
+    {
+      "tool": "lint_repos",
+      "repo": "old",
+      "reason": "archived"
+    },
+    {
+      "tool": "scorecard_check",
+      "repo": "old",
+      "reason": "archived"
+    },
+    {
+      "tool": "archive_repos",
+      "repo": "stale",
+      "reason": "archived in this run"
+    },
+    {
+      "tool": "archive_repos",
+      "repo": "old",
+      "reason": "archived"
+    }
+  ],
+  "errors": [
+    {
+      "tool": "scorecard_check",
+      "repo": "beta",
+      "check": "scorecard/code-review",
+      "reason": "internal error: boom"
+    }
+  ]
+}
+`;
+
+exports[`run > writes data.json with statuses, summary, notes and the merged history 2`] = `
+"Report: Test Framework (OSPO-CR-TEST-2026-11)\\nInputs:\\n  lint_repos.json       ok (6 results, 2 skipped, 0 errors)\\n  scorecard.json        ok (6 results, 1 skipped, 2 errors)\\n  archive_repos.json    ok (6 results, 2 skipped, 0 errors)\\n  by_construction.json  missing\\n  releases_check.json   invalid: not valid JSON: Expected property name or '}' in JSON at position 2 (line 1 column 3)\\nScope: 3 active, 2 archived repositories\\nRequirements: 1 met, 2 met-findings, 1 not-met, 2 no-data, 1 not-assessed, 1 optional\\nCompliance: 70% (7 of 10 checks passed), 2 repositories with findings\\nHistory: 3 months (previous report: OSPO-CR-TEST-2026-10)\\nWarning: data health: by_construction.json missing, releases_check.json invalid\\nWarning: data health: 1 error (no data)\\n\\nJSON written to <dir>-reports/2026-11/test-data.json\\nHTML written to <reports>/2026-11/test-report.html\\n"
+`;

@@ -43,7 +43,7 @@ Every checking script works the same way: it **runs its checks, owns its issues,
 | `advisories_check.js` | exists | Checks the published security advisories of every repository (VM.02). Writes the JSON file only. No issues, no writes to GitHub. |
 | `releases_check.js` | exists | Checks the GitHub releases of every repository: version identifiers (BR.02) and release notes (BR.04). Writes the JSON file only. No issues, no writes to GitHub. |
 | `scorecard_check.js` | exists | Runs the Scorecard CLI per repository, converts its output to the common format, applies thresholds and applicability (e.g. languages for fuzzing, QA.05; see 1.9). Writes all Scorecard checks, not only the mapped ones, for a later Scorecard report. Writes the JSON file only. No issues, no writes to GitHub. |
-| `compliance_report.js` | **new** | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses. Renders HTML and Markdown from `data.json` only |
+| `compliance_report.js` | exists ([spec](compliance_report_spec.md)); Markdown open | Runs once per report configuration (1.8). Aggregates all tool files into one self-contained `data.json` per report (see 1.10): merges results, maps checks to requirements, computes statuses. Renders the HTML report from `data.json` only; Markdown later |
 
 ### 1.4 Monthly workflow
 
@@ -58,24 +58,25 @@ advisories_check --json         → out/advisories_check.json
 releases_check --json           → out/releases_check.json
 scorecard_check --json          → out/scorecard.json
 compliance_report --config config/compliance_report_bsi.yaml
-                                ← out/*.json + reports/bsi-data.json on main + its notes file
-                                → out/bsi-data.json, out/bsi-report.html, out/bsi-report.md
+                                ← out/*.json + latest reports/<YYYY-MM>/bsi-data.json on main + its notes file
+                                → reports/2026-11/bsi-data.json, reports/2026-11/bsi-report.html
 compliance_report --config config/compliance_report_allianz.yaml
-                                ← out/*.json + reports/allianz-data.json on main + its notes file
-                                → out/allianz-data.json, out/allianz-report.html, out/allianz-report.md
-commit out/ as reports/         → branch compliance-report, PR opened if none is open
+                                ← out/*.json + latest reports/<YYYY-MM>/allianz-data.json on main + its notes file
+                                → reports/2026-11/allianz-data.json, reports/2026-11/allianz-report.html
+commit reports/2026-11/         → branch compliance-report, PR opened if none is open
 ```
 
-- **One run, several reports.** The tools run once; each report configuration (1.8) turns the same tool files into its own report. One commit holds all reports and all tool files, so they always rest on the same evidence. File names start with the report's `key`.
-- **Published by pull request.** The run checks out the branch `compliance-report` if it exists, otherwise creates it from `main`. It replaces `reports/` with `out/` and pushes with the GitHub App token; a PR opened with `GITHUB_TOKEN` would trigger no workflows. If no PR is open for the branch, it opens one. The OSPO reviews the PR, edits the notes files on the branch (1.8) and merges. The ruleset `ospo-managed` requires an approval: the App is the author, and an OSPO member approves. The merged commit on `main` is the published report. There is no release. The App needs `contents: write` and `pull_requests: write` on `ospo`, and the branch is deleted after the merge (repository setting "Automatically delete head branches"). **(verify)**
+- **Locally and in the workflow: `make create_reports`.** It runs the tool steps above into a fresh `out/` (each with a leading `-`, like `continue-on-error`) and then `compliance_report` once per `config/compliance_report_*.yaml`. By default it targets `allianz` and passes `--dry-run` to the tools that write to GitHub; the workflow calls it with `DRY_RUN=`.
+- **One run, several reports.** The tools run once; each report configuration (1.8) turns the same tool files into its own report. One commit holds all reports of the month, so they always rest on the same evidence. Each month has its own folder `reports/<YYYY-MM>/` (sorted by name); file names start with the report's `key`. The tool files stay in `out/` and are not committed: `data.json` pins each one by its `sha256` in `inputs`.
+- **Published by pull request.** The run checks out the branch `compliance-report` if it exists, otherwise creates it from `main`. It commits the month folder `reports/<YYYY-MM>/` and pushes with the GitHub App token; a PR opened with `GITHUB_TOKEN` would trigger no workflows. If no PR is open for the branch, it opens one. The OSPO reviews the PR, edits the notes files on the branch (1.8) and merges. The ruleset `ospo-managed` requires an approval: the App is the author, and an OSPO member approves. The merged commit on `main` is the published report. There is no release. The App needs `contents: write` and `pull_requests: write` on `ospo`, and the branch is deleted after the merge (repository setting "Automatically delete head branches"). **(verify)**
 - **Why a pull request.** The default branch of `ospo` is protected by the ruleset like every other managed repository (GV.02). A direct push would need a bypass, and it would fail `ospo` on its own Code-Review and CI-Tests checks (QA.04, QA.06; see 1.9). The monthly merge also keeps the repository active: GitHub disables scheduled workflows in a public repository after 60 days without activity.
 - **Editing the notes reruns everything.** `compliance.yaml` also runs on `pull_request` with `paths: config/compliance_report_*_notes.md`, only for the report PR (`if: github.head_ref == 'compliance-report'`). It runs all tools again, so the PR always shows the latest run. Its own commit changes only `reports/`, so it does not trigger another run.
 - **Rerun:** dispatch the workflow. It adds a commit to the open PR, or opens a new PR if none is open. The run uses the scripts on the branch; if `main` changed while the PR was open, update the branch first.
 - **Usually one report per month.** Every merge publishes a report. If two are merged in the same month, the later one replaces that month's entry in `history` (1.10 step 6).
 - **The tools run in two places.** As part of `compliance.yaml`, once a month with `--json`, for the report. And on their own schedules as today, for issues and notices (`lint_repos` twice a week, `license_scan` and `archive_repos` weekly), so project teams get feedback within days. The JSON-only tools (`by_construction`, `advisories_check`, `releases_check`, `scorecard_check`) open no issues and run only in `compliance.yaml`. Both runs use the same code and configuration; only the run in `compliance.yaml` writes the JSON file. Issues are updated by both, which is harmless because each tool keeps one issue per repository.
-- Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10). Because `out/` starts empty and replaces `reports/` as a whole, a failed tool leaves no file, never last month's.
-- `compliance_report` reads `reports/<key>-data.json` of its own report from `main` (`git show origin/main:reports/<key>-data.json`), which carries the trend history. It never reads the file on the branch, so runs that were not merged never enter the history. Each report has its own history. The checking scripts never read a previous run.
-- The tool files are committed with the reports as evidence. The report itself is rendered from `data.json` only.
+- Each tool step runs with `continue-on-error`, and `compliance_report` always runs. A missing or invalid tool file means "no data", never "pass" (see 1.10). Because `out/` starts empty, a failed tool leaves no file, never last month's.
+- `compliance_report` reads the `data.json` of its own report in the latest month folder on `main` (`git ls-tree` and `git show` on `origin/main`), which carries the trend history. It never reads the file on the branch, so runs that were not merged never enter the history. Each report has its own history. The checking scripts never read a previous run.
+- The tool files are not committed; `data.json` pins them by `sha256`. The report itself is rendered from `data.json` only.
 
 ### 1.5 Check IDs and issues
 
@@ -254,7 +255,7 @@ The first three rows are decisions of `scorecard_check` that need no Scorecard d
 
 ### 1.10 Aggregation (`compliance_report`)
 
-`compliance_report` turns the tool files in `out/` into one self-contained `data.json`. The HTML and Markdown reports are rendered from `data.json` only and never read a tool file, so every number in the report can be traced to `data.json`. The tool files are committed next to it as evidence (1.4), pinned by their `sha256` in `inputs`.
+`compliance_report` turns the tool files in `out/` into one self-contained `data.json`. The HTML and Markdown reports are rendered from `data.json` only and never read a tool file, so every number in the report can be traced to `data.json`. The tool files are pinned by their `sha256` in `inputs`; they are not committed (1.4).
 
 **Rule: `data.json` contains only what the report shows or the next run needs.** Everything else (e.g. `reason` and `details` of repository checks, `fix` for checks that have an issue) stays in the tool files and in the issues, which are written from them. If the report starts to show a field, it is added to `data.json` at the same time.
 
@@ -271,7 +272,7 @@ The first three rows are decisions of `scorecard_check` that need no Scorecard d
    - `scope`: active and archived repositories;
    - `requirements`: the mapped checks, status and coverage per requirement (1.7);
    - `summary`: checks evaluated and passed, compliance %, requirements by status, active repositories with findings (`failing_repositories`).
-6. **Carry forward** from `reports/<key>-data.json` on `main` (1.4): `history`. This run's entry is added for its month and replaces an existing entry of the same month. Nothing else is read from the previous run. No file on `main` (first report): `history` starts empty and `previous_report` is `null`.
+6. **Carry forward** from the latest `reports/<YYYY-MM>/<key>-data.json` on `main` (1.4): `history`. This run's entry is added for its month and replaces an existing entry of the same month. Nothing else is read from the previous run. No file on `main` (first report): `history` starts empty and `previous_report` is `null`.
 7. **Read the notes file** named by `notes:` (1.8), if configured: `notes` gets `file`, `sha256`, `key_messages` and `needs_attention` (each a list of inline-Markdown strings). Missing file: `notes: null`. Invalid file: `notes: null` and an entry in `errors` with `tool: compliance_report`.
 8. **Write** `<key>-data.json`, then render `<key>-report.html` and `<key>-report.md` from it. The data-health banner at the top of the summary is generated and appears only when an input is `missing` or `invalid` or `errors` is not empty.
 

@@ -35,11 +35,31 @@ export function headingSlug(heading) {
   return heading.trim().toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-');
 }
 
-/** URL of a heading in a spec file, pinned to the commit of the scripts (or main when it is unknown). */
-export function specUrl(specFile, heading, { sha = null, env = {} } = {}) {
+/** URL of a file in the ospo repository (path relative to its root), pinned to a commit (or main when it is unknown). */
+export function blobUrl(filePath, { sha = null, env = {} } = {}) {
   const server = env.GITHUB_SERVER_URL ?? DEFAULT_SERVER_URL;
   const repo = env.GITHUB_REPOSITORY ?? DEFAULT_OSPO_REPO;
-  return `${server}/${repo}/blob/${sha ?? 'main'}/scripts/spec/${specFile}#${headingSlug(heading)}`;
+  return `${server}/${repo}/blob/${sha ?? 'main'}/${filePath}`;
+}
+
+/** URL of a heading in a spec file, pinned to the commit of the scripts (or main when it is unknown). */
+export function specUrl(specFile, heading, { sha = null, env = {} } = {}) {
+  return `${blobUrl(`scripts/spec/${specFile}`, { sha, env })}#${headingSlug(heading)}`;
+}
+
+/** SHA-256 (hex) of a string or buffer. */
+export function sha256(data) {
+  return createHash('sha256').update(data).digest('hex');
+}
+
+/** A path relative to the repo root, with forward slashes (as written into the JSON files). */
+export function repoRelative(file) {
+  return path.relative(repoRoot, file).split(path.sep).join('/');
+}
+
+/** A date as ISO 8601 UTC without milliseconds ("2026-11-03T02:00:00Z"). */
+export function isoSeconds(date) {
+  return date.toISOString().replace(/\.\d{3}Z$/, 'Z');
 }
 
 /**
@@ -56,11 +76,11 @@ export async function buildHeader({ tool, org, configPath, issueTitle, env = {},
   const raw = await readFile(configPath);
   return {
     tool,
-    run_at: now.toISOString().replace(/\.\d{3}Z$/, 'Z'),
+    run_at: isoSeconds(now),
     org,
     ospo_sha: await resolveOspoSha(env, git),
-    config_file: path.relative(repoRoot, configPath).split(path.sep).join('/'),
-    config_sha256: createHash('sha256').update(raw).digest('hex'),
+    config_file: repoRelative(configPath),
+    config_sha256: sha256(raw),
     run_url: runUrl(env),
     issue_title: issueTitle ?? null,
   };
