@@ -313,11 +313,15 @@ describe('run', () => {
     t.assert.snapshot({ ...doc, config_file: '<config>' });
   });
 
-  it('--json --dry-run marks the planned archival', async () => {
+  it('--json --dry-run keeps a repository that would be archived in the results', async () => {
     const file = path.join(tmpDir, 'out', 'archive_dry.json');
     await runArchive(['--dry-run', '--json', file]);
     const doc = JSON.parse(await readFile(file, 'utf8'));
-    assert.deepEqual(doc.skipped[0], { repo: 'alpha-expired', reason: 'would be archived in this run (dry-run)' });
+    assert.ok(!doc.skipped.some(s => s.repo === 'alpha-expired'));
+    const rows = doc.results.filter(r => r.repo === 'alpha-expired').map(r => [r.check, r.result, r.reason]);
+    assert.equal(rows.length, 2);
+    assert.deepEqual(rows.map(([check, result]) => [check, result]), [['archive/recent-activity', 'fail'], ['archive/activity-checked', 'pass']]);
+    assert.ok(rows.every(([, , reason]) => /^Last push \d{4}-\d{2}-\d{2}.*would be archived in this run \(dry-run\)$/.test(reason)));
   });
 });
 

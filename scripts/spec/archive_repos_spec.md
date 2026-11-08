@@ -250,7 +250,7 @@ Each repository whose last push was evaluated has two results. `skipped` lists, 
 
 | Reason | Repositories |
 |---|---|
-| `archived in this run` (`would be archived in this run (dry-run)` with `--dry-run`) | Archived because the grace period expired |
+| `archived in this run` | Archived because the grace period expired. With `--dry-run` such a repository is not archived and stays active: it gets its two results (`recent-activity` = `fail`, `activity-checked` = `pass`), each reason ending in `would be archived in this run (dry-run)` |
 | `no push activity yet` | No `pushed_at` |
 | `archived` | Already archived |
 | `excluded_repos` | In `excluded_repos` |

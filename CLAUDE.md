@@ -20,7 +20,7 @@ make test_advisories_check # Integration test against ospo-sandbox org
 make test_releases_check  # Integration test against ospo-sandbox org
 make test_scorecard_check # Integration test against ospo-sandbox org (needs the Scorecard CLI)
 make create_reports       # All tools --json into out/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/compliance_report_*.yaml
-                          # (allianz, --dry-run; ORG=ospo-sandbox CONFIG_DIR=scripts/test-config for the sandbox, DRY_RUN= for real)
+                          # (allianz, --dry-run, also in CI; ORG=ospo-sandbox CONFIG_DIR=scripts/test-config for the sandbox)
 make test                 # Unit tests with coverage report (node --test)
 cd scripts && npm test                         # Unit tests without coverage
 cd scripts && npm run test:update-snapshots     # Regenerate output snapshots after an intended output change
@@ -44,7 +44,7 @@ node scripts/scorecard_check.js --org <org> --json <file> [--config <file>] [--d
 node scripts/compliance_report.js --org <org> --config <report.yaml> --dir <dir> [--reports <dir>] [--debug]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js`, `releases_check.js` and `scorecard_check.js` are JSON only as well (`--json` is required): they open no issues and never write to GitHub. `compliance_report.js` reads only the tool files in `--dir` (and the latest `reports/<YYYY-MM>/<key>-data.json` on `origin/main` for the history) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `out/` are not). A Markdown report is not implemented yet.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js`, `releases_check.js` and `scorecard_check.js` are JSON only as well (`--json` is required): they open no issues and never write to GitHub. `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `out/` are not). A Markdown report is not implemented yet.
 
 ### Required Tools
 
@@ -78,7 +78,7 @@ Nine JavaScript (ESM) scripts, each driven by a YAML config file, built on share
 6. **`scripts/advisories_check.js`** — Checks that published security advisories were published within `max_days` of their creation (`advisories/published-in-time`). JSON only: no issues, no writes. Reads `config/advisories_check.yaml`.
 7. **`scripts/releases_check.js`** — Checks GitHub releases of the last 12 months: SemVer/CalVer tags increasing within each major line (`releases/versioning`) and release notes in the body or `CHANGELOG*` (`releases/release-notes`); `na` without releases. JSON only: no issues, no writes. Reads `config/releases_check.yaml`.
 8. **`scripts/scorecard_check.js`** — Runs the OpenSSF Scorecard CLI per active repository and writes all Scorecard checks (`scorecard/<check>`, score, reason and details unchanged) with thresholds and applicability applied (managed branch protection from `config/create_repos.yaml`, `docs`/`template` topics for CI-Tests, languages for Fuzzing), plus a `repositories` block with the overall score per repository. JSON only: no issues, no writes. Reads `config/scorecard_check.yaml`.
-9. **`scripts/compliance_report.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/compliance_report_<key>.yaml`, which holds the requirement texts and the only check → requirement mapping): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest `reports/<YYYY-MM>/<key>-data.json` on `origin/main`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
+9. **`scripts/compliance_report.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/compliance_report_<key>.yaml`, which holds the requirement texts and the only check → requirement mapping): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest earlier month folder in the local `reports/`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
 
 ### Shared libraries (`scripts/lib/`)
 
@@ -103,6 +103,7 @@ Nine JavaScript (ESM) scripts, each driven by a YAML config file, built on share
 - `lint_repos.yaml` — Scheduled bi-weekly (Tue/Thu)
 - `archive_repos.yaml` — Scheduled weekly (Sun midnight)
 - `license_scan.yaml` — Scheduled weekly (Mon midnight)
+- `compliance_report.yaml` — Monthly (1st, 03:00 UTC) and on edits of `config/compliance_report_*_notes.md` in the report PR: `make create_reports` (tools with `--dry-run`, so it never writes issues or archives), commits `reports/<YYYY-MM>/` to the branch `compliance-report` (merging `main` into it) and opens the PR; tool files and reports are uploaded as artifact
 - All workflows support manual dispatch
 - Authentication via GitHub App tokens (`ALLIANZ_APP_ID`, `ALLIANZ_PRIVATE_KEY`)
 

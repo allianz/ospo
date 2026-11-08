@@ -9,7 +9,7 @@ JSON_DIR := results
 
 # create_reports: org, tool configs, directory of the tool files (gitignored, emptied first),
 # reports folder (committed by PR, one subfolder per month, never emptied) and --dry-run for the
-# tools that write to GitHub (CI runs them for real with DRY_RUN=)
+# tools that write to GitHub (also in the monthly workflow; DRY_RUN= runs them for real, manual use only)
 ORG ?= allianz
 CONFIG_DIR ?= config
 REPORT_DIR ?= out

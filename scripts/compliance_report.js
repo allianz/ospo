@@ -6,7 +6,7 @@
 // Writes <reports>/<YYYY-MM>/<key>-data.json and the HTML report <key>-report.html rendered from it.
 // See spec/compliance_report_spec.md.
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { readFile, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { simpleGit } from 'simple-git';
 
@@ -19,12 +19,10 @@ import { loadTemplate, renderHtml } from './lib/report_html.js';
 // ── Constants ────────────────────────────────────────────────────────────────
 
 export const TOOL = 'compliance_report';
-/** Directory of the published reports on main, one folder per month (reports/2026-11/bsi-data.json). */
+/** Reports folder of the repository, one folder per month (reports/2026-11/bsi-data.json). */
 export const REPORTS_DIR = 'reports';
 /** Default output directory: the reports folder of the repository, committed by pull request. */
 export const DEFAULT_REPORTS_PATH = path.join(repoRoot, REPORTS_DIR);
-/** The branch whose data.json carries the history. */
-export const PREVIOUS_REF = 'origin/main';
 
 const LEVELS = ['MUST', 'SHOULD', 'MAY'];
 const RESULTS = ['pass', 'fail', 'na'];
@@ -299,40 +297,44 @@ export function mergeHistory(previous, entry) {
   return [...(previous ?? []).filter(e => e.month !== entry.month), entry].sort((a, b) => a.month.localeCompare(b.month));
 }
 
-/** Path of a report's data.json in the reports folder: reports/2026-11/bsi-data.json. */
+/** Path of a report's data.json in the repository: reports/2026-11/bsi-data.json. */
 export const dataPath = (month, reportKey) => `${REPORTS_DIR}/${month}/${reportKey}-data.json`;
 
-/** The latest month folder of `paths` (git ls-tree output) that holds data.json of this report, or null. */
-export function latestDataPath(paths, reportKey) {
-  const pattern = new RegExp(`^${REPORTS_DIR}/(\\d{4}-\\d{2})/${reportKey}-data\\.json$`);
-  const months = paths.map(p => p.match(pattern)?.[1]).filter(Boolean).sort();
-  return months.length > 0 ? dataPath(months.at(-1), reportKey) : null;
-}
-
 /**
- * The previous data.json of this report on main: the one in the latest month folder, which may be
- * this month (a rerun replaces that month's history entry). Returns `{ sha, path, doc }`, or null when
- * main has none (first report, or no origin/main). A file that is not valid JSON stops the run.
+ * The previous data.json of this report: the one in the latest month folder of the reports directory
+ * before `month`. In CI the directory is the checkout of main, so it holds the merged reports only.
+ * Returns `{ month, path, doc }` (`path` relative to the repository), or null when there is none
+ * (first report). A file that is not valid JSON stops the run.
  */
-export async function readPreviousReport(reportKey, { git = simpleGit } = {}) {
-  let sha;
-  let file;
-  let text;
+export async function readPreviousReport(reportsDir, reportKey, month) {
+  let entries;
   try {
-    const repo = git(repoRoot);
-    sha = (await repo.revparse([PREVIOUS_REF])).trim();
-    const listing = await repo.raw(['ls-tree', '-r', '--name-only', sha, '--', `${REPORTS_DIR}/`]);
-    file = latestDataPath(listing.split('\n'), reportKey);
-    if (!file) return null;
-    text = await repo.show([`${sha}:${file}`]);
-  } catch {
-    return null;
-  }
-  try {
-    return { sha, path: file, doc: JSON.parse(text) };
+    entries = await readdir(reportsDir, { withFileTypes: true });
   } catch (error) {
-    throw new ScriptError(`${file} on ${PREVIOUS_REF} is not valid JSON: ${error.message}`);
+    if (error.code === 'ENOENT') return null;
+    throw error;
   }
+  const months = entries
+    .filter(e => e.isDirectory() && /^\d{4}-\d{2}$/.test(e.name) && e.name < month)
+    .map(e => e.name)
+    .sort()
+    .reverse();
+  for (const previousMonth of months) {
+    const file = path.join(reportsDir, previousMonth, `${reportKey}-data.json`);
+    let text;
+    try {
+      text = await readFile(file, 'utf8');
+    } catch (error) {
+      if (error.code === 'ENOENT') continue;
+      throw error;
+    }
+    try {
+      return { month: previousMonth, path: dataPath(previousMonth, reportKey), doc: JSON.parse(text) };
+    } catch (error) {
+      throw new ScriptError(`${file} is not valid JSON: ${error.message}`);
+    }
+  }
+  return null;
 }
 
 // ── Step 7: notes ────────────────────────────────────────────────────────────
@@ -425,7 +427,7 @@ export function buildData({ config, configFile, configSha, inputs, docs, previou
     config_sha256: configSha,
     framework: config.framework,
     previous_report: previous
-      ? { report_id: previous.doc.report_id ?? null, data_url: blobUrl(previous.path, { sha: previous.sha, env }) }
+      ? { report_id: previous.doc.report_id ?? null, data_url: blobUrl(previous.path, { env }) }
       : null,
     inputs,
     scope,
@@ -486,9 +488,10 @@ export async function run({ argv = [], env = {}, logger, git = simpleGit, now = 
 
   const config = await loadReportConfig(configPath);
   const { inputs, docs } = await readInputs(path.resolve(dir), config.inputs, org);
-  const previous = await readPreviousReport(config.key, { git });
   const { notes, error: notesError } = config.notes ? await readNotes(config.notes) : { notes: null, error: null };
   const header = { run_at: isoSeconds(now), org, ospo_sha: await resolveOspoSha(env, git), run_url: runUrl(env) };
+  const reportsDir = path.resolve(reports ?? DEFAULT_REPORTS_PATH);
+  const previous = await readPreviousReport(reportsDir, config.key, header.run_at.slice(0, 7));
   const data = buildData({
     config,
     configFile: repoRelative(configPath),
@@ -503,7 +506,7 @@ export async function run({ argv = [], env = {}, logger, git = simpleGit, now = 
   });
 
   logReport(log, data, dataHealth(data, unknownChecks(mappedChecks(config.requirements), data.catalogue, inputs)));
-  const monthDir = path.join(reports ?? DEFAULT_REPORTS_PATH, data.run_at.slice(0, 7));
+  const monthDir = path.join(reportsDir, data.run_at.slice(0, 7));
   const dataFile = path.join(monthDir, `${config.key}-data.json`);
   const htmlFile = path.join(monthDir, `${config.key}-report.html`);
   await writeJsonReport(path.resolve(dataFile), data);

@@ -18,7 +18,7 @@ The script:
 
 Out of scope:
 
-- Any call to GitHub. The script reads JSON files and git only.
+- Any call to GitHub or git. The script reads local files only.
 - A Markdown report. Only the HTML report is rendered in this version.
 - Running the tools. `make create_reports` runs them first (see [Make target](#make-target)).
 
@@ -160,7 +160,9 @@ Counted over the checks of the requirements with status `met`, `met-findings` or
 
 ### History
 
-The previous report is the `data.json` of this report in the latest month folder on `origin/main`: `git rev-parse origin/main`, `git ls-tree -r --name-only <sha> -- reports/`, the highest `reports/YYYY-MM/<key>-data.json` (other reports, other files and folders that are not a month are ignored), then `git show <sha>:<path>`. This can be the current month, when a report of this month was merged already; its history entry is then replaced. If the ref or such a file does not exist (first report, or a local checkout without the branch), `previous_report` is `null` and the history starts empty. A file that is not valid JSON stops the run. The files in the reports directory of the working tree are never read.
+The previous report is the `data.json` of this report in the latest month folder of the reports directory (`--reports`) **before** the month of this run: `reports/2026-10/bsi-data.json` for a run in November. Folders that are not a month (`YYYY-MM`) and other reports are ignored; a month folder without this report's file is skipped. The current month is never read: a rerun builds on the same previous month, and its own file is overwritten. Without such a file (first report), `previous_report` is `null` and the history starts empty. A file that is not valid JSON stops the run.
+
+The script reads local files only, no git. In CI, the reports directory is the checkout of the report branch, which is created from `main`, so it holds the merged reports. Locally, the folder can be prepared by hand for testing.
 
 This run's entry is added for its month (`run_at`, UTC) and replaces an existing entry of the same month. The list is sorted by month. Entry: `month`, `compliance_pct`, `failing_repositories`, and `coverage` per counted requirement. Nothing else is read from the previous report.
 
@@ -208,7 +210,7 @@ HTML written to reports/2026-11/bsi-report.html
 | `run_at`, `org`, `ospo_sha`, `run_url` | This run, as in the tool files |
 | `report_config`, `config_sha256` | Path of the report configuration relative to the repo root, and its SHA-256 |
 | `framework` | Copied from the configuration |
-| `previous_report` | `report_id` and `data_url` (the `data.json` on `origin/main` that was read, pinned to its commit) of the previous report, or `null` |
+| `previous_report` | `report_id` and `data_url` (link to the `data.json` that was read, on `main`) of the previous report, or `null` |
 | `inputs` | One entry per configured file: `file`, `script`, `status`, `sha256` (of the file as read, `null` if missing); for `ok` the header fields `tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, `issue_title`, plus `source` and `scorecard_version` where present, and `counts` (`results`, `skipped`, `errors`); for `invalid` the `problems` |
 | `scope` | `active` and `archived`, sorted |
 | `requirements` | One entry per requirement in configuration order: `id`, `chapter`, `level`, `title`, `text`, `implementation`, `checks`, `status`, `repositories`, `coverage` |
@@ -273,6 +275,6 @@ Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 c
 | `CONFIG_DIR` | `config` | Tool configurations (`scripts/test-config` for the sandbox) |
 | `REPORT_DIR` | `out` | Directory of the tool files, emptied first (gitignored) |
 | `REPORTS_DIR` | `reports` | Reports directory (`--reports`), never emptied |
-| `DRY_RUN` | `--dry-run` | Passed to `lint_repos`, `license_scan` and `archive_repos`, the tools that write to GitHub. `DRY_RUN=` runs them for real (monthly workflow) |
+| `DRY_RUN` | `--dry-run` | Passed to `lint_repos`, `license_scan` and `archive_repos`, the tools that write to GitHub. The monthly workflow keeps the default; `DRY_RUN=` runs them for real, for manual use only |
 
 A failing tool does not stop the target: it leaves no file, and the report shows "no data" for its checks. Because the directory starts empty, no file of an earlier run is ever used. `scorecard_check` needs the Scorecard CLI.

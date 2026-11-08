@@ -22,7 +22,6 @@ import {
   readInputs,
   readNotes,
   readPreviousReport,
-  latestDataPath,
   DEFAULT_REPORTS_PATH,
   repositoryOutcome,
   indexResults,
@@ -178,20 +177,23 @@ const PREVIOUS = {
   ],
 };
 
-/** A fake simple-git factory: origin/main is "prevsha" and holds `files` (path → content). */
-function fakeGit(files = {}) {
-  return () => ({
-    revparse: async ([ref]) => (ref === 'origin/main' ? 'prevsha\n' : 'headsha\n'),
-    raw: async ([command, , , sha]) => {
-      assert.equal(command, 'ls-tree');
-      return sha === 'prevsha' ? `${Object.keys(files).join('\n')}\n` : '';
-    },
-    show: async ([spec]) => {
-      const [sha, file] = spec.split(':');
-      if (sha !== 'prevsha' || !(file in files)) throw new Error(`fatal: path '${file}' does not exist in '${sha}'`);
-      return files[file];
-    },
-  });
+/**
+ * A reports directory: `files` maps paths relative to it to their content. By default the previous
+ * months 2026-09 and 2026-10, another report, a non-month folder and a current-month file that must be ignored.
+ */
+async function writeReports(dir, files = {
+  '2026-09/test-data.json': '{}',
+  '2026-10/test-data.json': JSON.stringify(PREVIOUS),
+  '2026-10/test-report.html': '<html></html>',
+  '2026-11/bsi-data.json': '{}',
+  '2026-11/test-data.json': '{ "report_id": "same month, ignored" }',
+  'old/test-data.json': '{}',
+}) {
+  for (const [file, content] of Object.entries(files)) {
+    await mkdir(path.dirname(path.join(dir, file)), { recursive: true });
+    await writeFile(path.join(dir, file), content);
+  }
+  return dir;
 }
 
 const config = async () => loadReportConfig(await writeReportConfig('base.yaml'));
@@ -448,34 +450,36 @@ describe('mergeHistory', () => {
   });
 });
 
-describe('latestDataPath', () => {
-  it('picks the latest month folder with data.json of the report', () => {
-    const paths = ['reports/2026-09/test-data.json', 'reports/2026-11/bsi-data.json', 'reports/2026-10/test-data.json', 'reports/2026-10/test-report.html',
-      'reports/old/test-data.json', 'reports/2026-12/sub/test-data.json', 'reports/2026-12/xtest-data.json', ''];
-    assert.equal(latestDataPath(paths, 'test'), 'reports/2026-10/test-data.json');
-    assert.equal(latestDataPath(paths, 'bsi'), 'reports/2026-11/bsi-data.json');
-    assert.equal(latestDataPath(paths, 'allianz'), null);
-  });
-});
-
 describe('readPreviousReport', () => {
-  it('reads data.json of the report from the latest month folder on origin/main', async () => {
-    const previous = await readPreviousReport('test', { git: fakeGit({ 'reports/2026-10/test-data.json': JSON.stringify(PREVIOUS), 'reports/2026-09/test-data.json': '{}', 'reports/2026-11/bsi-data.json': '{}' }) });
-    assert.deepEqual(previous, { sha: 'prevsha', path: 'reports/2026-10/test-data.json', doc: PREVIOUS });
+  it('reads data.json of the report from the latest month folder before this month', async () => {
+    const dir = await writeReports(path.join(tmpDir, 'prev-reports'));
+    assert.deepEqual(await readPreviousReport(dir, 'test', '2026-11'), { month: '2026-10', path: 'reports/2026-10/test-data.json', doc: PREVIOUS });
+    assert.deepEqual((await readPreviousReport(dir, 'test', '2026-10')).month, '2026-09');
   });
 
-  it('is null when git fails (no origin/main)', async () => {
-    const git = () => ({ revparse: async () => { throw new Error('fatal: ambiguous argument'); } });
-    assert.equal(await readPreviousReport('test', { git }), null);
+  it('skips month folders without data.json of the report', async () => {
+    const dir = await writeReports(path.join(tmpDir, 'prev-skip'), { '2026-09/test-data.json': '{}', '2026-10/bsi-data.json': '{}' });
+    assert.equal((await readPreviousReport(dir, 'test', '2026-11')).month, '2026-09');
   });
 
-  it('is null when main has no such file (first report)', async () => {
-    assert.equal(await readPreviousReport('test', { git: fakeGit() }), null);
+  it('is null without a reports directory or an earlier report (first report)', async () => {
+    assert.equal(await readPreviousReport(path.join(tmpDir, 'no-reports'), 'test', '2026-11'), null);
+    const dir = await writeReports(path.join(tmpDir, 'prev-none'), { '2026-11/test-data.json': '{}' });
+    assert.equal(await readPreviousReport(dir, 'test', '2026-11'), null);
   });
 
   it('stops on a file that is not valid JSON', async () => {
-    await assert.rejects(() => readPreviousReport('test', { git: fakeGit({ 'reports/2026-10/test-data.json': '{' }) }),
-      err => err instanceof ScriptError && /reports\/2026-10\/test-data.json on origin\/main is not valid JSON/.test(err.message));
+    const dir = await writeReports(path.join(tmpDir, 'prev-bad'), { '2026-10/test-data.json': '{' });
+    await assert.rejects(() => readPreviousReport(dir, 'test', '2026-11'),
+      err => err instanceof ScriptError && /2026-10\/test-data.json is not valid JSON/.test(err.message));
+  });
+
+  it('throws on read errors other than a missing file', async () => {
+    const dir = await writeReports(path.join(tmpDir, 'prev-eisdir'), { '2026-10/test-data.json/x': '{}' });
+    await assert.rejects(() => readPreviousReport(dir, 'test', '2026-11'), /EISDIR/);
+    const file = path.join(tmpDir, 'prev-file');
+    await writeFile(file, '');
+    await assert.rejects(() => readPreviousReport(file, 'test', '2026-11'), /ENOTDIR/);
   });
 });
 
@@ -564,15 +568,15 @@ describe('run', () => {
     configPath = await writeReportConfig('run.yaml', { notes: notesFile });
   });
 
-  async function runReport(name, { argv = [], debug = false, git = fakeGit({ 'reports/2026-10/test-data.json': JSON.stringify(PREVIOUS), 'reports/2026-09/test-data.json': '{}', 'reports/2026-11/bsi-data.json': '{}' }), config: cfg } = {}) {
+  async function runReport(name, { argv = [], debug = false, previous = true, config: cfg } = {}) {
     const dir = await writeToolFiles(path.join(tmpDir, name));
     const reports = path.join(tmpDir, `${name}-reports`);
+    if (previous) await writeReports(reports);
     const logger = createMemoryLogger({ debug });
     const code = await run({
       argv: ['--org', org, '--config', cfg ?? configPath, '--dir', dir, '--reports', reports, ...argv],
       env: { GITHUB_SHA: 'abc123', GITHUB_REPOSITORY: 'allianz/ospo', GITHUB_RUN_ID: '42' },
       logger,
-      git,
       now: NOW,
     });
     const data = JSON.parse(await readFile(path.join(reports, '2026-11', 'test-data.json'), 'utf8'));
@@ -594,7 +598,7 @@ describe('run', () => {
     const { code, logger, data, dir } = await runReport('full');
     assert.equal(code, 0);
     assert.equal(data.report_id, 'OSPO-CR-TEST-2026-11');
-    assert.deepEqual(data.previous_report, { report_id: 'OSPO-CR-TEST-2026-10', data_url: 'https://github.com/allianz/ospo/blob/prevsha/reports/2026-10/test-data.json' });
+    assert.deepEqual(data.previous_report, { report_id: 'OSPO-CR-TEST-2026-10', data_url: 'https://github.com/allianz/ospo/blob/main/reports/2026-10/test-data.json' });
     assert.deepEqual(data.history.map(e => e.month), ['2026-09', '2026-10', '2026-11']);
     assert.deepEqual(data.history.at(-1), {
       month: '2026-11', compliance_pct: 70, failing_repositories: 2,
@@ -615,7 +619,8 @@ describe('run', () => {
     assert.deepEqual(JSON.parse(embedded), data);
     assert.ok(!html.includes(DATA_PLACEHOLDER));
     assert.match(html, /<title>Test Framework Compliance Report · test-org · 2026-11<\/title>/);
-    assert.deepEqual(await readdir(path.join(reports, '2026-11')), ['test-data.json', 'test-report.html']);
+    assert.deepEqual(await readdir(path.join(reports, '2026-11')), ['bsi-data.json', 'test-data.json', 'test-report.html']);
+    assert.equal(JSON.parse(await readFile(path.join(reports, '2026-10', 'test-data.json'), 'utf8')).report_id, PREVIOUS.report_id);
   });
 
   it('writes into the reports folder of the repository by default', () => {
@@ -631,7 +636,7 @@ describe('run', () => {
   });
 
   it('starts the history without a previous report', async () => {
-    const { data, logger } = await runReport('first', { git: fakeGit() });
+    const { data, logger } = await runReport('first', { previous: false });
     assert.equal(data.previous_report, null);
     assert.deepEqual(data.history.map(e => e.month), ['2026-11']);
     assert.match(logger.output(), /History: 1 month \(previous report: none\)/);

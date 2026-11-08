@@ -21,7 +21,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
   },
   "previous_report": {
     "report_id": "OSPO-CR-TEST-2026-10",
-    "data_url": "https://github.com/allianz/ospo/blob/prevsha/reports/2026-10/test-data.json"
+    "data_url": "https://github.com/allianz/ospo/blob/main/reports/2026-10/test-data.json"
   },
   "inputs": [
     {

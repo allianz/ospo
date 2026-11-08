@@ -169,16 +169,27 @@ function noticeText({ newIssue, issueNumber, daysLeft }) {
   return `${notice}, archival in ${daysLeft} days`;
 }
 
-/** Results of the evaluated repositories; repositories archived in this run, never pushed, archived or excluded are skipped. */
+/**
+ * Results of the evaluated repositories; repositories archived in this run, never pushed, archived or excluded are skipped.
+ * With --dry-run a repository that would be archived is still active, so it gets its results like any other.
+ */
 export function buildJsonResults({ evaluated, neverPushed, archived, excluded, catalogue, warnAfter, dryRun = false }) {
   const results = [];
   const archivedNow = [];
   for (const e of evaluated) {
-    if (e.archived) {
-      archivedNow.push({ repo: e.repo, reason: dryRun ? 'would be archived in this run (dry-run)' : 'archived in this run' });
+    const lastPush = `Last push ${e.pushedAt.slice(0, 10)}`;
+    if (e.archived && !dryRun) {
+      archivedNow.push({ repo: e.repo, reason: 'archived in this run' });
       continue;
     }
-    const lastPush = `Last push ${e.pushedAt.slice(0, 10)}`;
+    if (e.archived) {
+      const notice = `${lastPush}, more than ${warnAfter} ago; would be archived in this run (dry-run)`;
+      results.push(
+        checkResult(e.repo, 'archive/recent-activity', catalogue, { passed: false, reason: notice }),
+        checkResult(e.repo, 'archive/activity-checked', catalogue, { passed: true, reason: `${lastPush}; would be archived in this run (dry-run)` }),
+      );
+      continue;
+    }
     const recent = e.stale
       ? { passed: false, reason: `${lastPush}, more than ${warnAfter} ago; ${noticeText(e)}` }
       : { passed: true, reason: `${lastPush}, within the last ${warnAfter}` };
