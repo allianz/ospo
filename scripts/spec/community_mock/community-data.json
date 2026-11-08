@@ -152,29 +152,29 @@
         "internal": 2,
         "external": 5
       },
-      "commits": 72,
+      "commits": 45,
       "prs": {
         "opened": {
-          "internal": 9,
-          "external": 10
+          "internal": 11,
+          "external": 11
         },
         "merged": {
           "internal": 9,
           "external": 9
         },
         "closed_unmerged": {
-          "internal": 1,
+          "internal": 0,
           "external": 1
         }
       },
       "issues": {
         "opened": {
           "internal": 5,
-          "external": 7
+          "external": 4
         },
         "closed": {
-          "internal": 3,
-          "external": 4
+          "internal": 5,
+          "external": 5
         }
       },
       "releases": {
@@ -186,10 +186,10 @@
       },
       "release_downloads": 5327,
       "traffic": {
-        "views": 5700,
-        "visitors": 1062,
-        "clones": 808,
-        "cloners": 101,
+        "views": 5714,
+        "visitors": 1068,
+        "clones": 575,
+        "cloners": 68,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -221,8 +221,8 @@
     {
       "repo": "design-tokens",
       "description": "Design tokens and themes for web and mobile",
-      "created_at": "2025-10-24T09:12:00Z",
-      "pushed_at": "2026-10-15T16:40:00Z",
+      "created_at": "2025-10-08T09:12:00Z",
+      "pushed_at": "2026-10-20T16:40:00Z",
       "stars": 665,
       "forks": 82,
       "new_project": false,
@@ -236,14 +236,14 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 1,
-        "external": 1
+        "internal": 5,
+        "external": 0
       },
       "commits": 33,
       "prs": {
         "opened": {
-          "internal": 6,
-          "external": 5
+          "internal": 5,
+          "external": 4
         },
         "merged": {
           "internal": 5,
@@ -251,33 +251,33 @@
         },
         "closed_unmerged": {
           "internal": 1,
-          "external": 2
+          "external": 0
         }
       },
       "issues": {
         "opened": {
           "internal": 3,
-          "external": 8
+          "external": 7
         },
         "closed": {
-          "internal": 6,
-          "external": 4
+          "internal": 5,
+          "external": 6
         }
       },
       "releases": {
         "period": 2,
         "total": 59,
         "tags": [
-          "v4.2.0",
-          "v1.3.1"
+          "v4.10.0",
+          "v1.8.1"
         ]
       },
       "release_downloads": 4623,
       "traffic": {
-        "views": 4746,
-        "visitors": 701,
-        "clones": 773,
-        "cloners": 67,
+        "views": 3609,
+        "visitors": 714,
+        "clones": 534,
+        "cloners": 110,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -312,8 +312,8 @@
     {
       "repo": "policy-sdk-java",
       "description": "Java SDK for the policy administration APIs",
-      "created_at": "2025-10-27T09:12:00Z",
-      "pushed_at": "2026-10-19T16:40:00Z",
+      "created_at": "2025-10-15T09:12:00Z",
+      "pushed_at": "2026-10-22T16:40:00Z",
       "stars": 319,
       "forks": 65,
       "new_project": false,
@@ -327,13 +327,13 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 2,
-        "external": 0
+        "internal": 3,
+        "external": 2
       },
-      "commits": 31,
+      "commits": 49,
       "prs": {
         "opened": {
-          "internal": 10,
+          "internal": 12,
           "external": 2
         },
         "merged": {
@@ -341,17 +341,17 @@
           "external": 2
         },
         "closed_unmerged": {
-          "internal": 1,
-          "external": 2
+          "internal": 0,
+          "external": 0
         }
       },
       "issues": {
         "opened": {
-          "internal": 6,
+          "internal": 2,
           "external": 4
         },
         "closed": {
-          "internal": 5,
+          "internal": 3,
           "external": 1
         }
       },
@@ -359,15 +359,15 @@
         "period": 1,
         "total": 21,
         "tags": [
-          "v2.5.0"
+          "v1.10.0"
         ]
       },
       "release_downloads": 3017,
       "traffic": {
-        "views": 1100,
-        "visitors": 399,
-        "clones": 143,
-        "cloners": 109,
+        "views": 2523,
+        "visitors": 391,
+        "clones": 427,
+        "cloners": 85,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -404,7 +404,7 @@
     {
       "repo": "k8s-operator-kit",
       "description": "Building blocks for Kubernetes operators",
-      "created_at": "2025-10-24T09:12:00Z",
+      "created_at": "2025-10-09T09:12:00Z",
       "pushed_at": "2026-10-16T16:40:00Z",
       "stars": 327,
       "forks": 72,
@@ -419,32 +419,32 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 5,
-        "external": 2
+        "internal": 2,
+        "external": 3
       },
-      "commits": 33,
+      "commits": 16,
       "prs": {
         "opened": {
-          "internal": 8,
-          "external": 2
+          "internal": 5,
+          "external": 3
         },
         "merged": {
           "internal": 5,
           "external": 1
         },
         "closed_unmerged": {
-          "internal": 0,
-          "external": 1
+          "internal": 1,
+          "external": 0
         }
       },
       "issues": {
         "opened": {
-          "internal": 4,
-          "external": 1
+          "internal": 6,
+          "external": 6
         },
         "closed": {
-          "internal": 6,
-          "external": 2
+          "internal": 5,
+          "external": 6
         }
       },
       "releases": {
@@ -454,10 +454,10 @@
       },
       "release_downloads": 5022,
       "traffic": {
-        "views": 2408,
-        "visitors": 367,
-        "clones": 775,
-        "cloners": 84,
+        "views": 2104,
+        "visitors": 335,
+        "clones": 477,
+        "cloners": 82,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -495,8 +495,8 @@
     {
       "repo": "pdf-render-service",
       "description": "HTML to PDF rendering as a service",
-      "created_at": "2025-10-02T09:12:00Z",
-      "pushed_at": "2026-10-17T16:40:00Z",
+      "created_at": "2025-10-25T09:12:00Z",
+      "pushed_at": "2026-10-19T16:40:00Z",
       "stars": 111,
       "forks": 28,
       "new_project": false,
@@ -510,13 +510,13 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 5,
-        "external": 2
+        "internal": 3,
+        "external": 3
       },
-      "commits": 48,
+      "commits": 39,
       "prs": {
         "opened": {
-          "internal": 7,
+          "internal": 9,
           "external": 3
         },
         "merged": {
@@ -525,32 +525,32 @@
         },
         "closed_unmerged": {
           "internal": 0,
-          "external": 1
+          "external": 2
         }
       },
       "issues": {
         "opened": {
-          "internal": 2,
-          "external": 8
+          "internal": 1,
+          "external": 1
         },
         "closed": {
-          "internal": 1,
-          "external": 4
+          "internal": 5,
+          "external": 5
         }
       },
       "releases": {
         "period": 1,
         "total": 19,
         "tags": [
-          "v3.0.0"
+          "v1.11.0"
         ]
       },
       "release_downloads": 4816,
       "traffic": {
-        "views": 900,
-        "visitors": 121,
-        "clones": 550,
-        "cloners": 12,
+        "views": 995,
+        "visitors": 129,
+        "clones": 349,
+        "cloners": 61,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -585,8 +585,8 @@
     {
       "repo": "data-anonymizer",
       "description": "Anonymise production data for test environments",
-      "created_at": "2025-10-05T09:12:00Z",
-      "pushed_at": "2026-10-20T16:40:00Z",
+      "created_at": "2025-10-14T09:12:00Z",
+      "pushed_at": "2026-10-19T16:40:00Z",
       "stars": 115,
       "forks": 19,
       "new_project": false,
@@ -600,32 +600,32 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 1,
-        "external": 2
+        "internal": 4,
+        "external": 0
       },
-      "commits": 18,
+      "commits": 28,
       "prs": {
         "opened": {
-          "internal": 5,
-          "external": 2
+          "internal": 6,
+          "external": 4
         },
         "merged": {
           "internal": 4,
           "external": 2
         },
         "closed_unmerged": {
-          "internal": 1,
+          "internal": 0,
           "external": 0
         }
       },
       "issues": {
         "opened": {
-          "internal": 2,
-          "external": 5
+          "internal": 4,
+          "external": 0
         },
         "closed": {
-          "internal": 4,
-          "external": 1
+          "internal": 1,
+          "external": 2
         }
       },
       "releases": {
@@ -635,10 +635,10 @@
       },
       "release_downloads": 4885,
       "traffic": {
-        "views": 752,
-        "visitors": 151,
-        "clones": 89,
-        "cloners": 21,
+        "views": 547,
+        "visitors": 134,
+        "clones": 730,
+        "cloners": 55,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -673,8 +673,8 @@
     {
       "repo": "terraform-modules",
       "description": "Reusable Terraform modules for cloud landing zones",
-      "created_at": "2025-10-14T09:12:00Z",
-      "pushed_at": "2026-10-21T16:40:00Z",
+      "created_at": "2025-10-02T09:12:00Z",
+      "pushed_at": "2026-10-29T16:40:00Z",
       "stars": 60,
       "forks": 19,
       "new_project": false,
@@ -691,29 +691,29 @@
         "internal": 2,
         "external": 2
       },
-      "commits": 38,
+      "commits": 20,
       "prs": {
         "opened": {
           "internal": 8,
-          "external": 2
+          "external": 3
         },
         "merged": {
           "internal": 6,
           "external": 2
         },
         "closed_unmerged": {
-          "internal": 1,
-          "external": 2
+          "internal": 0,
+          "external": 1
         }
       },
       "issues": {
         "opened": {
-          "internal": 5,
-          "external": 7
+          "internal": 4,
+          "external": 2
         },
         "closed": {
-          "internal": 5,
-          "external": 5
+          "internal": 1,
+          "external": 0
         }
       },
       "releases": {
@@ -723,10 +723,10 @@
       },
       "release_downloads": 4145,
       "traffic": {
-        "views": 345,
-        "visitors": 156,
-        "clones": 162,
-        "cloners": 37,
+        "views": 456,
+        "visitors": 109,
+        "clones": 261,
+        "cloners": 102,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -760,8 +760,8 @@
     {
       "repo": "mobile-sdk-ios",
       "description": "iOS SDK for the customer app platform",
-      "created_at": "2025-10-21T09:12:00Z",
-      "pushed_at": "2026-10-21T16:40:00Z",
+      "created_at": "2025-10-15T09:12:00Z",
+      "pushed_at": "2026-10-28T16:40:00Z",
       "stars": 54,
       "forks": 7,
       "new_project": false,
@@ -775,14 +775,14 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 1,
-        "external": 2
+        "internal": 4,
+        "external": 3
       },
-      "commits": 24,
+      "commits": 32,
       "prs": {
         "opened": {
           "internal": 8,
-          "external": 3
+          "external": 4
         },
         "merged": {
           "internal": 5,
@@ -790,24 +790,24 @@
         },
         "closed_unmerged": {
           "internal": 0,
-          "external": 2
+          "external": 1
         }
       },
       "issues": {
         "opened": {
-          "internal": 3,
-          "external": 8
+          "internal": 5,
+          "external": 1
         },
         "closed": {
-          "internal": 6,
-          "external": 1
+          "internal": 2,
+          "external": 3
         }
       },
       "releases": {
         "period": 1,
         "total": 14,
         "tags": [
-          "v2.12.0"
+          "v1.8.0"
         ]
       },
       "release_downloads": 4234,
@@ -841,8 +841,8 @@
     {
       "repo": "mobile-sdk-android",
       "description": "Android SDK for the customer app platform",
-      "created_at": "2025-10-27T09:12:00Z",
-      "pushed_at": "2026-10-17T16:40:00Z",
+      "created_at": "2025-10-12T09:12:00Z",
+      "pushed_at": "2026-10-16T16:40:00Z",
       "stars": 49,
       "forks": 7,
       "new_project": false,
@@ -856,10 +856,10 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 2,
+        "internal": 3,
         "external": 1
       },
-      "commits": 38,
+      "commits": 22,
       "prs": {
         "opened": {
           "internal": 8,
@@ -876,27 +876,27 @@
       },
       "issues": {
         "opened": {
-          "internal": 1,
-          "external": 0
+          "internal": 5,
+          "external": 3
         },
         "closed": {
-          "internal": 3,
-          "external": 0
+          "internal": 6,
+          "external": 6
         }
       },
       "releases": {
         "period": 1,
         "total": 14,
         "tags": [
-          "v3.2.0"
+          "v4.1.0"
         ]
       },
       "release_downloads": 4314,
       "traffic": {
-        "views": 445,
-        "visitors": 127,
-        "clones": 47,
-        "cloners": 15,
+        "views": 387,
+        "visitors": 84,
+        "clones": 458,
+        "cloners": 120,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -928,8 +928,8 @@
     {
       "repo": "api-guidelines",
       "description": "REST API design guidelines and linter rules",
-      "created_at": "2025-10-19T09:12:00Z",
-      "pushed_at": "2026-10-25T16:40:00Z",
+      "created_at": "2025-10-06T09:12:00Z",
+      "pushed_at": "2026-10-17T16:40:00Z",
       "stars": 78,
       "forks": 16,
       "new_project": false,
@@ -943,14 +943,14 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 2,
-        "external": 3
+        "internal": 4,
+        "external": 2
       },
       "commits": 41,
       "prs": {
         "opened": {
-          "internal": 9,
-          "external": 5
+          "internal": 10,
+          "external": 3
         },
         "merged": {
           "internal": 7,
@@ -963,12 +963,12 @@
       },
       "issues": {
         "opened": {
-          "internal": 4,
-          "external": 7
+          "internal": 2,
+          "external": 1
         },
         "closed": {
-          "internal": 4,
-          "external": 3
+          "internal": 1,
+          "external": 2
         }
       },
       "releases": {
@@ -978,10 +978,10 @@
       },
       "release_downloads": 4461,
       "traffic": {
-        "views": 510,
-        "visitors": 161,
-        "clones": 177,
-        "cloners": 41,
+        "views": 529,
+        "visitors": 111,
+        "clones": 582,
+        "cloners": 11,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -1015,8 +1015,8 @@
     {
       "repo": "risk-model-toolkit",
       "description": "Python toolkit for actuarial risk models",
-      "created_at": "2026-01-21T09:12:00Z",
-      "pushed_at": "2026-10-20T16:40:00Z",
+      "created_at": "2026-01-03T09:12:00Z",
+      "pushed_at": "2026-10-26T16:40:00Z",
       "stars": 134,
       "forks": 21,
       "new_project": false,
@@ -1030,14 +1030,14 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 1,
-        "external": 1
+        "internal": 4,
+        "external": 0
       },
-      "commits": 23,
+      "commits": 37,
       "prs": {
         "opened": {
-          "internal": 7,
-          "external": 2
+          "internal": 10,
+          "external": 3
         },
         "merged": {
           "internal": 7,
@@ -1045,17 +1045,17 @@
         },
         "closed_unmerged": {
           "internal": 0,
-          "external": 0
+          "external": 1
         }
       },
       "issues": {
         "opened": {
           "internal": 5,
-          "external": 5
+          "external": 8
         },
         "closed": {
-          "internal": 1,
-          "external": 0
+          "internal": 2,
+          "external": 3
         }
       },
       "releases": {
@@ -1065,10 +1065,10 @@
       },
       "release_downloads": 4615,
       "traffic": {
-        "views": 1041,
-        "visitors": 159,
-        "clones": 494,
-        "cloners": 118,
+        "views": 1134,
+        "visitors": 193,
+        "clones": 257,
+        "cloners": 75,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -1103,8 +1103,8 @@
     {
       "repo": "geo-hazard-maps",
       "description": "Natural hazard map layers and tile server",
-      "created_at": "2026-04-13T09:12:00Z",
-      "pushed_at": "2026-10-28T16:40:00Z",
+      "created_at": "2026-04-20T09:12:00Z",
+      "pushed_at": "2026-10-16T16:40:00Z",
       "stars": 75,
       "forks": 10,
       "new_project": false,
@@ -1118,32 +1118,32 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 1,
+        "internal": 2,
         "external": 1
       },
       "commits": 20,
       "prs": {
         "opened": {
           "internal": 6,
-          "external": 2
+          "external": 0
         },
         "merged": {
           "internal": 5,
           "external": 0
         },
         "closed_unmerged": {
-          "internal": 1,
+          "internal": 0,
           "external": 0
         }
       },
       "issues": {
         "opened": {
-          "internal": 5,
-          "external": 7
-        },
-        "closed": {
           "internal": 2,
           "external": 0
+        },
+        "closed": {
+          "internal": 1,
+          "external": 1
         }
       },
       "releases": {
@@ -1153,10 +1153,10 @@
       },
       "release_downloads": 904,
       "traffic": {
-        "views": 295,
-        "visitors": 144,
-        "clones": 864,
-        "cloners": 91,
+        "views": 429,
+        "visitors": 165,
+        "clones": 611,
+        "cloners": 18,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -1191,8 +1191,8 @@
     {
       "repo": "event-bus-connectors",
       "description": "Connectors between Kafka and core insurance systems",
-      "created_at": "2026-07-10T09:12:00Z",
-      "pushed_at": "2026-10-15T16:40:00Z",
+      "created_at": "2026-07-03T09:12:00Z",
+      "pushed_at": "2026-10-28T16:40:00Z",
       "stars": 64,
       "forks": 6,
       "new_project": false,
@@ -1206,32 +1206,32 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 4,
-        "external": 1
+        "internal": 2,
+        "external": 0
       },
-      "commits": 30,
+      "commits": 20,
       "prs": {
         "opened": {
           "internal": 7,
-          "external": 1
+          "external": 2
         },
         "merged": {
           "internal": 5,
           "external": 0
         },
         "closed_unmerged": {
-          "internal": 1,
+          "internal": 0,
           "external": 0
         }
       },
       "issues": {
         "opened": {
           "internal": 5,
-          "external": 0
+          "external": 1
         },
         "closed": {
-          "internal": 1,
-          "external": 1
+          "internal": 4,
+          "external": 2
         }
       },
       "releases": {
@@ -1241,10 +1241,10 @@
       },
       "release_downloads": 919,
       "traffic": {
-        "views": 528,
-        "visitors": 166,
-        "clones": 858,
-        "cloners": 44,
+        "views": 587,
+        "visitors": 155,
+        "clones": 870,
+        "cloners": 92,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -1278,8 +1278,8 @@
     {
       "repo": "chatbot-starter",
       "description": "Starter kit for conversational assistants",
-      "created_at": "2026-10-15T09:12:00Z",
-      "pushed_at": "2026-10-22T16:40:00Z",
+      "created_at": "2026-10-24T09:12:00Z",
+      "pushed_at": "2026-10-17T16:40:00Z",
       "stars": 35,
       "forks": 6,
       "new_project": true,
@@ -1293,32 +1293,32 @@
         "external": 0
       },
       "active_contributors": {
-        "internal": 4,
+        "internal": 1,
         "external": 0
       },
-      "commits": 18,
+      "commits": 9,
       "prs": {
         "opened": {
           "internal": 3,
-          "external": 2
+          "external": 1
         },
         "merged": {
           "internal": 3,
           "external": 0
         },
         "closed_unmerged": {
-          "internal": 0,
+          "internal": 1,
           "external": 0
         }
       },
       "issues": {
         "opened": {
-          "internal": 2,
-          "external": 0
+          "internal": 5,
+          "external": 3
         },
         "closed": {
           "internal": 1,
-          "external": 1
+          "external": 4
         }
       },
       "releases": {
@@ -1328,10 +1328,10 @@
       },
       "release_downloads": 1996,
       "traffic": {
-        "views": 204,
-        "visitors": 118,
-        "clones": 583,
-        "cloners": 95,
+        "views": 461,
+        "visitors": 73,
+        "clones": 655,
+        "cloners": 59,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
@@ -1420,13 +1420,18 @@
   "releases": [
     {
       "repo": "mobile-sdk-ios",
-      "tag": "v2.12.0",
-      "date": "2026-10-05"
+      "tag": "v1.8.0",
+      "date": "2026-10-03"
     },
     {
       "repo": "design-tokens",
-      "tag": "v1.3.1",
-      "date": "2026-10-11"
+      "tag": "v1.8.1",
+      "date": "2026-10-08"
+    },
+    {
+      "repo": "pdf-render-service",
+      "tag": "v1.11.0",
+      "date": "2026-10-12"
     },
     {
       "repo": "claims-engine",
@@ -1435,23 +1440,18 @@
     },
     {
       "repo": "mobile-sdk-android",
-      "tag": "v3.2.0",
-      "date": "2026-10-16"
-    },
-    {
-      "repo": "design-tokens",
-      "tag": "v4.2.0",
-      "date": "2026-10-20"
-    },
-    {
-      "repo": "pdf-render-service",
-      "tag": "v3.0.0",
-      "date": "2026-10-21"
+      "tag": "v4.1.0",
+      "date": "2026-10-24"
     },
     {
       "repo": "policy-sdk-java",
-      "tag": "v2.5.0",
-      "date": "2026-10-23"
+      "tag": "v1.10.0",
+      "date": "2026-10-27"
+    },
+    {
+      "repo": "design-tokens",
+      "tag": "v4.10.0",
+      "date": "2026-10-31"
     }
   ],
   "history": [
@@ -1492,6 +1492,11 @@
           },
           "releases_total": 10,
           "release_downloads": 2290,
+          "prs_merged": {
+            "internal": 8,
+            "external": 4
+          },
+          "commits": 48,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1516,6 +1521,11 @@
           },
           "releases_total": 43,
           "release_downloads": 1396,
+          "prs_merged": {
+            "internal": 4,
+            "external": 3
+          },
+          "commits": 23,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1538,6 +1548,11 @@
           },
           "releases_total": 17,
           "release_downloads": 1290,
+          "prs_merged": {
+            "internal": 6,
+            "external": 3
+          },
+          "commits": 27,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1558,6 +1573,11 @@
           },
           "releases_total": 19,
           "release_downloads": 2441,
+          "prs_merged": {
+            "internal": 3,
+            "external": 3
+          },
+          "commits": 21,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1578,6 +1598,11 @@
           },
           "releases_total": 10,
           "release_downloads": 1222,
+          "prs_merged": {
+            "internal": 6,
+            "external": 2
+          },
+          "commits": 34,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1596,6 +1621,11 @@
           },
           "releases_total": 4,
           "release_downloads": 3315,
+          "prs_merged": {
+            "internal": 3,
+            "external": 1
+          },
+          "commits": 12,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1613,6 +1643,11 @@
           },
           "releases_total": 28,
           "release_downloads": 2103,
+          "prs_merged": {
+            "internal": 6,
+            "external": 2
+          },
+          "commits": 22,
           "badges": [
             "stars-10",
             "forks-10",
@@ -1630,6 +1665,11 @@
           },
           "releases_total": 7,
           "release_downloads": 1446,
+          "prs_merged": {
+            "internal": 4,
+            "external": 3
+          },
+          "commits": 22,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -1645,6 +1685,11 @@
           },
           "releases_total": 6,
           "release_downloads": 1477,
+          "prs_merged": {
+            "internal": 3,
+            "external": 0
+          },
+          "commits": 9,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -1660,6 +1705,11 @@
           },
           "releases_total": 2,
           "release_downloads": 3325,
+          "prs_merged": {
+            "internal": 3,
+            "external": 2
+          },
+          "commits": 15,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1713,6 +1763,11 @@
           },
           "releases_total": 10,
           "release_downloads": 2325,
+          "prs_merged": {
+            "internal": 8,
+            "external": 7
+          },
+          "commits": 69,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1737,6 +1792,11 @@
           },
           "releases_total": 44,
           "release_downloads": 1541,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 16,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1759,6 +1819,11 @@
           },
           "releases_total": 17,
           "release_downloads": 1350,
+          "prs_merged": {
+            "internal": 7,
+            "external": 4
+          },
+          "commits": 36,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1779,6 +1844,11 @@
           },
           "releases_total": 20,
           "release_downloads": 2668,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 22,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1799,6 +1869,11 @@
           },
           "releases_total": 10,
           "release_downloads": 1338,
+          "prs_merged": {
+            "internal": 5,
+            "external": 0
+          },
+          "commits": 25,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1817,6 +1892,11 @@
           },
           "releases_total": 4,
           "release_downloads": 3406,
+          "prs_merged": {
+            "internal": 3,
+            "external": 1
+          },
+          "commits": 11,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1834,6 +1914,11 @@
           },
           "releases_total": 29,
           "release_downloads": 2476,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 22,
           "badges": [
             "stars-10",
             "forks-10",
@@ -1851,6 +1936,11 @@
           },
           "releases_total": 7,
           "release_downloads": 1465,
+          "prs_merged": {
+            "internal": 4,
+            "external": 4
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -1866,6 +1956,11 @@
           },
           "releases_total": 6,
           "release_downloads": 1589,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 19,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -1881,6 +1976,11 @@
           },
           "releases_total": 2,
           "release_downloads": 3422,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 30,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1934,6 +2034,11 @@
           },
           "releases_total": 11,
           "release_downloads": 2638,
+          "prs_merged": {
+            "internal": 6,
+            "external": 4
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1958,6 +2063,11 @@
           },
           "releases_total": 45,
           "release_downloads": 1749,
+          "prs_merged": {
+            "internal": 4,
+            "external": 6
+          },
+          "commits": 18,
           "badges": [
             "stars-10",
             "stars-50",
@@ -1980,6 +2090,11 @@
           },
           "releases_total": 17,
           "release_downloads": 1416,
+          "prs_merged": {
+            "internal": 8,
+            "external": 3
+          },
+          "commits": 41,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2000,6 +2115,11 @@
           },
           "releases_total": 21,
           "release_downloads": 3004,
+          "prs_merged": {
+            "internal": 4,
+            "external": 4
+          },
+          "commits": 28,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2020,6 +2140,11 @@
           },
           "releases_total": 10,
           "release_downloads": 1454,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 31,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2038,6 +2163,11 @@
           },
           "releases_total": 5,
           "release_downloads": 3550,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 31,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2055,6 +2185,11 @@
           },
           "releases_total": 30,
           "release_downloads": 2621,
+          "prs_merged": {
+            "internal": 7,
+            "external": 1
+          },
+          "commits": 45,
           "badges": [
             "stars-10",
             "forks-10",
@@ -2072,6 +2207,11 @@
           },
           "releases_total": 7,
           "release_downloads": 1515,
+          "prs_merged": {
+            "internal": 3,
+            "external": 0
+          },
+          "commits": 12,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -2087,6 +2227,11 @@
           },
           "releases_total": 7,
           "release_downloads": 1825,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 25,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -2102,6 +2247,11 @@
           },
           "releases_total": 2,
           "release_downloads": 3466,
+          "prs_merged": {
+            "internal": 3,
+            "external": 1
+          },
+          "commits": 10,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2155,6 +2305,11 @@
           },
           "releases_total": 12,
           "release_downloads": 3060,
+          "prs_merged": {
+            "internal": 6,
+            "external": 3
+          },
+          "commits": 36,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2179,6 +2334,11 @@
           },
           "releases_total": 47,
           "release_downloads": 2016,
+          "prs_merged": {
+            "internal": 4,
+            "external": 7
+          },
+          "commits": 38,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2201,6 +2361,11 @@
           },
           "releases_total": 17,
           "release_downloads": 1531,
+          "prs_merged": {
+            "internal": 8,
+            "external": 3
+          },
+          "commits": 57,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2221,6 +2386,11 @@
           },
           "releases_total": 22,
           "release_downloads": 3228,
+          "prs_merged": {
+            "internal": 3,
+            "external": 4
+          },
+          "commits": 22,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2241,6 +2411,11 @@
           },
           "releases_total": 11,
           "release_downloads": 1822,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 24,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2260,6 +2435,11 @@
           },
           "releases_total": 5,
           "release_downloads": 3638,
+          "prs_merged": {
+            "internal": 2,
+            "external": 2
+          },
+          "commits": 12,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2277,6 +2457,11 @@
           },
           "releases_total": 30,
           "release_downloads": 2691,
+          "prs_merged": {
+            "internal": 7,
+            "external": 1
+          },
+          "commits": 37,
           "badges": [
             "stars-10",
             "forks-10",
@@ -2294,6 +2479,11 @@
           },
           "releases_total": 8,
           "release_downloads": 1852,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -2309,6 +2499,11 @@
           },
           "releases_total": 7,
           "release_downloads": 1942,
+          "prs_merged": {
+            "internal": 3,
+            "external": 1
+          },
+          "commits": 19,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -2324,6 +2519,11 @@
           },
           "releases_total": 3,
           "release_downloads": 3841,
+          "prs_merged": {
+            "internal": 4,
+            "external": 3
+          },
+          "commits": 27,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2341,6 +2541,11 @@
           },
           "releases_total": 8,
           "release_downloads": 3427,
+          "prs_merged": {
+            "internal": 4,
+            "external": 0
+          },
+          "commits": 24,
           "badges": [
             "new",
             "stars-10",
@@ -2392,6 +2597,11 @@
           },
           "releases_total": 13,
           "release_downloads": 3350,
+          "prs_merged": {
+            "internal": 6,
+            "external": 9
+          },
+          "commits": 48,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2416,6 +2626,11 @@
           },
           "releases_total": 48,
           "release_downloads": 2383,
+          "prs_merged": {
+            "internal": 4,
+            "external": 6
+          },
+          "commits": 30,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2439,6 +2654,11 @@
           },
           "releases_total": 17,
           "release_downloads": 1639,
+          "prs_merged": {
+            "internal": 6,
+            "external": 3
+          },
+          "commits": 33,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2460,6 +2680,11 @@
           },
           "releases_total": 22,
           "release_downloads": 3300,
+          "prs_merged": {
+            "internal": 7,
+            "external": 3
+          },
+          "commits": 38,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2481,6 +2706,11 @@
           },
           "releases_total": 12,
           "release_downloads": 2292,
+          "prs_merged": {
+            "internal": 6,
+            "external": 0
+          },
+          "commits": 18,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2500,6 +2730,11 @@
           },
           "releases_total": 5,
           "release_downloads": 3716,
+          "prs_merged": {
+            "internal": 2,
+            "external": 2
+          },
+          "commits": 16,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2517,6 +2752,11 @@
           },
           "releases_total": 31,
           "release_downloads": 2872,
+          "prs_merged": {
+            "internal": 7,
+            "external": 2
+          },
+          "commits": 37,
           "badges": [
             "stars-10",
             "forks-10",
@@ -2534,6 +2774,11 @@
           },
           "releases_total": 9,
           "release_downloads": 2278,
+          "prs_merged": {
+            "internal": 3,
+            "external": 0
+          },
+          "commits": 12,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -2549,6 +2794,11 @@
           },
           "releases_total": 7,
           "release_downloads": 2004,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 13,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -2564,6 +2814,11 @@
           },
           "releases_total": 3,
           "release_downloads": 3930,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 28,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2582,6 +2837,11 @@
           },
           "releases_total": 9,
           "release_downloads": 3697,
+          "prs_merged": {
+            "internal": 4,
+            "external": 0
+          },
+          "commits": 16,
           "badges": [
             "stars-10",
             "releases-1"
@@ -2632,6 +2892,11 @@
           },
           "releases_total": 14,
           "release_downloads": 3553,
+          "prs_merged": {
+            "internal": 9,
+            "external": 6
+          },
+          "commits": 45,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2657,6 +2922,11 @@
           },
           "releases_total": 49,
           "release_downloads": 2547,
+          "prs_merged": {
+            "internal": 6,
+            "external": 2
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2680,6 +2950,11 @@
           },
           "releases_total": 18,
           "release_downloads": 1938,
+          "prs_merged": {
+            "internal": 7,
+            "external": 5
+          },
+          "commits": 36,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2701,6 +2976,11 @@
           },
           "releases_total": 23,
           "release_downloads": 3637,
+          "prs_merged": {
+            "internal": 7,
+            "external": 3
+          },
+          "commits": 41,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2722,6 +3002,11 @@
           },
           "releases_total": 13,
           "release_downloads": 2743,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 26,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2741,6 +3026,11 @@
           },
           "releases_total": 6,
           "release_downloads": 4058,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 13,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2758,6 +3048,11 @@
           },
           "releases_total": 31,
           "release_downloads": 2903,
+          "prs_merged": {
+            "internal": 7,
+            "external": 0
+          },
+          "commits": 42,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2776,6 +3071,11 @@
           },
           "releases_total": 10,
           "release_downloads": 2682,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -2792,6 +3092,11 @@
           },
           "releases_total": 8,
           "release_downloads": 2441,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -2807,6 +3112,11 @@
           },
           "releases_total": 3,
           "release_downloads": 4049,
+          "prs_merged": {
+            "internal": 3,
+            "external": 1
+          },
+          "commits": 16,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2825,6 +3135,11 @@
           },
           "releases_total": 10,
           "release_downloads": 3937,
+          "prs_merged": {
+            "internal": 3,
+            "external": 0
+          },
+          "commits": 12,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2877,6 +3192,11 @@
           },
           "releases_total": 15,
           "release_downloads": 3825,
+          "prs_merged": {
+            "internal": 8,
+            "external": 4
+          },
+          "commits": 44,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2902,6 +3222,11 @@
           },
           "releases_total": 50,
           "release_downloads": 2635,
+          "prs_merged": {
+            "internal": 4,
+            "external": 4
+          },
+          "commits": 24,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2926,6 +3251,11 @@
           },
           "releases_total": 18,
           "release_downloads": 1958,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2947,6 +3277,11 @@
           },
           "releases_total": 24,
           "release_downloads": 3893,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2968,6 +3303,11 @@
           },
           "releases_total": 14,
           "release_downloads": 3065,
+          "prs_merged": {
+            "internal": 7,
+            "external": 2
+          },
+          "commits": 30,
           "badges": [
             "stars-10",
             "stars-50",
@@ -2987,6 +3327,11 @@
           },
           "releases_total": 6,
           "release_downloads": 4072,
+          "prs_merged": {
+            "internal": 2,
+            "external": 2
+          },
+          "commits": 10,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3004,6 +3349,11 @@
           },
           "releases_total": 32,
           "release_downloads": 3318,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 27,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3022,6 +3372,11 @@
           },
           "releases_total": 11,
           "release_downloads": 3031,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3038,6 +3393,11 @@
           },
           "releases_total": 9,
           "release_downloads": 2857,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 21,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3053,6 +3413,11 @@
           },
           "releases_total": 3,
           "release_downloads": 4071,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 13,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3071,6 +3436,11 @@
           },
           "releases_total": 11,
           "release_downloads": 4079,
+          "prs_merged": {
+            "internal": 6,
+            "external": 2
+          },
+          "commits": 36,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3088,6 +3458,11 @@
           },
           "releases_total": 9,
           "release_downloads": 582,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 17,
           "badges": [
             "new",
             "stars-10",
@@ -3139,6 +3514,11 @@
           },
           "releases_total": 16,
           "release_downloads": 3980,
+          "prs_merged": {
+            "internal": 6,
+            "external": 4
+          },
+          "commits": 28,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3164,6 +3544,11 @@
           },
           "releases_total": 51,
           "release_downloads": 2925,
+          "prs_merged": {
+            "internal": 6,
+            "external": 6
+          },
+          "commits": 36,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3188,6 +3573,11 @@
           },
           "releases_total": 19,
           "release_downloads": 2147,
+          "prs_merged": {
+            "internal": 6,
+            "external": 2
+          },
+          "commits": 36,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3209,6 +3599,11 @@
           },
           "releases_total": 24,
           "release_downloads": 3932,
+          "prs_merged": {
+            "internal": 4,
+            "external": 4
+          },
+          "commits": 16,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3231,6 +3626,11 @@
           },
           "releases_total": 15,
           "release_downloads": 3450,
+          "prs_merged": {
+            "internal": 5,
+            "external": 0
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3250,6 +3650,11 @@
           },
           "releases_total": 6,
           "release_downloads": 4125,
+          "prs_merged": {
+            "internal": 2,
+            "external": 1
+          },
+          "commits": 7,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3267,6 +3672,11 @@
           },
           "releases_total": 32,
           "release_downloads": 3427,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 14,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3285,6 +3695,11 @@
           },
           "releases_total": 11,
           "release_downloads": 3099,
+          "prs_merged": {
+            "internal": 3,
+            "external": 0
+          },
+          "commits": 18,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3301,6 +3716,11 @@
           },
           "releases_total": 10,
           "release_downloads": 3127,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 18,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3317,6 +3737,11 @@
           },
           "releases_total": 3,
           "release_downloads": 4172,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 22,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3335,6 +3760,11 @@
           },
           "releases_total": 11,
           "release_downloads": 4199,
+          "prs_merged": {
+            "internal": 5,
+            "external": 3
+          },
+          "commits": 34,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3353,6 +3783,11 @@
           },
           "releases_total": 9,
           "release_downloads": 597,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "releases-1"
@@ -3404,6 +3839,11 @@
           },
           "releases_total": 17,
           "release_downloads": 4201,
+          "prs_merged": {
+            "internal": 7,
+            "external": 4
+          },
+          "commits": 47,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3429,6 +3869,11 @@
           },
           "releases_total": 53,
           "release_downloads": 3624,
+          "prs_merged": {
+            "internal": 5,
+            "external": 8
+          },
+          "commits": 49,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3453,6 +3898,11 @@
           },
           "releases_total": 19,
           "release_downloads": 2207,
+          "prs_merged": {
+            "internal": 8,
+            "external": 3
+          },
+          "commits": 49,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3474,6 +3924,11 @@
           },
           "releases_total": 25,
           "release_downloads": 4166,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3496,6 +3951,11 @@
           },
           "releases_total": 15,
           "release_downloads": 3489,
+          "prs_merged": {
+            "internal": 7,
+            "external": 0
+          },
+          "commits": 42,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3515,6 +3975,11 @@
           },
           "releases_total": 6,
           "release_downloads": 4239,
+          "prs_merged": {
+            "internal": 4,
+            "external": 0
+          },
+          "commits": 12,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3533,6 +3998,11 @@
           },
           "releases_total": 33,
           "release_downloads": 3634,
+          "prs_merged": {
+            "internal": 6,
+            "external": 0
+          },
+          "commits": 24,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3551,6 +4021,11 @@
           },
           "releases_total": 12,
           "release_downloads": 3391,
+          "prs_merged": {
+            "internal": 3,
+            "external": 2
+          },
+          "commits": 16,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3567,6 +4042,11 @@
           },
           "releases_total": 11,
           "release_downloads": 3530,
+          "prs_merged": {
+            "internal": 5,
+            "external": 0
+          },
+          "commits": 25,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3583,6 +4063,11 @@
           },
           "releases_total": 3,
           "release_downloads": 4182,
+          "prs_merged": {
+            "internal": 3,
+            "external": 2
+          },
+          "commits": 22,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3601,6 +4086,11 @@
           },
           "releases_total": 11,
           "release_downloads": 4292,
+          "prs_merged": {
+            "internal": 7,
+            "external": 2
+          },
+          "commits": 48,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3619,6 +4109,11 @@
           },
           "releases_total": 9,
           "release_downloads": 685,
+          "prs_merged": {
+            "internal": 3,
+            "external": 4
+          },
+          "commits": 23,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3671,6 +4166,11 @@
           },
           "releases_total": 17,
           "release_downloads": 4318,
+          "prs_merged": {
+            "internal": 9,
+            "external": 8
+          },
+          "commits": 43,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3697,6 +4197,11 @@
           },
           "releases_total": 55,
           "release_downloads": 3948,
+          "prs_merged": {
+            "internal": 8,
+            "external": 6
+          },
+          "commits": 58,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3721,6 +4226,11 @@
           },
           "releases_total": 19,
           "release_downloads": 2314,
+          "prs_merged": {
+            "internal": 10,
+            "external": 2
+          },
+          "commits": 62,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3742,6 +4252,11 @@
           },
           "releases_total": 26,
           "release_downloads": 4410,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 27,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3764,6 +4279,11 @@
           },
           "releases_total": 16,
           "release_downloads": 3870,
+          "prs_merged": {
+            "internal": 7,
+            "external": 1
+          },
+          "commits": 44,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3783,6 +4303,11 @@
           },
           "releases_total": 7,
           "release_downloads": 4640,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 24,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3801,6 +4326,11 @@
           },
           "releases_total": 33,
           "release_downloads": 3694,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 17,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3819,6 +4349,11 @@
           },
           "releases_total": 12,
           "release_downloads": 3423,
+          "prs_merged": {
+            "internal": 5,
+            "external": 0
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3835,6 +4370,11 @@
           },
           "releases_total": 12,
           "release_downloads": 3708,
+          "prs_merged": {
+            "internal": 7,
+            "external": 2
+          },
+          "commits": 27,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3851,6 +4391,11 @@
           },
           "releases_total": 3,
           "release_downloads": 4235,
+          "prs_merged": {
+            "internal": 6,
+            "external": 3
+          },
+          "commits": 21,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3869,6 +4414,11 @@
           },
           "releases_total": 11,
           "release_downloads": 4406,
+          "prs_merged": {
+            "internal": 7,
+            "external": 2
+          },
+          "commits": 37,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3887,6 +4437,11 @@
           },
           "releases_total": 9,
           "release_downloads": 702,
+          "prs_merged": {
+            "internal": 5,
+            "external": 0
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -3902,6 +4457,11 @@
           },
           "releases_total": 4,
           "release_downloads": 736,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 18,
           "badges": [
             "new",
             "stars-10",
@@ -3954,6 +4514,11 @@
           },
           "releases_total": 17,
           "release_downloads": 4419,
+          "prs_merged": {
+            "internal": 10,
+            "external": 10
+          },
+          "commits": 80,
           "badges": [
             "stars-10",
             "stars-50",
@@ -3980,6 +4545,11 @@
           },
           "releases_total": 56,
           "release_downloads": 4114,
+          "prs_merged": {
+            "internal": 5,
+            "external": 5
+          },
+          "commits": 25,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4004,6 +4574,11 @@
           },
           "releases_total": 20,
           "release_downloads": 2600,
+          "prs_merged": {
+            "internal": 10,
+            "external": 3
+          },
+          "commits": 53,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4025,6 +4600,11 @@
           },
           "releases_total": 26,
           "release_downloads": 4432,
+          "prs_merged": {
+            "internal": 4,
+            "external": 5
+          },
+          "commits": 31,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4047,6 +4627,11 @@
           },
           "releases_total": 17,
           "release_downloads": 4264,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 37,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4066,6 +4651,11 @@
           },
           "releases_total": 7,
           "release_downloads": 4753,
+          "prs_merged": {
+            "internal": 2,
+            "external": 3
+          },
+          "commits": 15,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4085,6 +4675,11 @@
           },
           "releases_total": 33,
           "release_downloads": 3713,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 39,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4103,6 +4698,11 @@
           },
           "releases_total": 12,
           "release_downloads": 3533,
+          "prs_merged": {
+            "internal": 6,
+            "external": 0
+          },
+          "commits": 18,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4120,6 +4720,11 @@
           },
           "releases_total": 13,
           "release_downloads": 3910,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 14,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -4136,6 +4741,11 @@
           },
           "releases_total": 3,
           "release_downloads": 4276,
+          "prs_merged": {
+            "internal": 5,
+            "external": 3
+          },
+          "commits": 39,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4154,6 +4764,11 @@
           },
           "releases_total": 11,
           "release_downloads": 4432,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4173,6 +4788,11 @@
           },
           "releases_total": 9,
           "release_downloads": 736,
+          "prs_merged": {
+            "internal": 2,
+            "external": 0
+          },
+          "commits": 8,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4189,6 +4809,11 @@
           },
           "releases_total": 4,
           "release_downloads": 780,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 24,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -4241,6 +4866,11 @@
           },
           "releases_total": 18,
           "release_downloads": 4829,
+          "prs_merged": {
+            "internal": 8,
+            "external": 11
+          },
+          "commits": 81,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4267,6 +4897,11 @@
           },
           "releases_total": 57,
           "release_downloads": 4468,
+          "prs_merged": {
+            "internal": 7,
+            "external": 5
+          },
+          "commits": 43,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4291,6 +4926,11 @@
           },
           "releases_total": 20,
           "release_downloads": 2718,
+          "prs_merged": {
+            "internal": 9,
+            "external": 2
+          },
+          "commits": 60,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4312,6 +4952,11 @@
           },
           "releases_total": 27,
           "release_downloads": 4915,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4334,6 +4979,11 @@
           },
           "releases_total": 18,
           "release_downloads": 4485,
+          "prs_merged": {
+            "internal": 7,
+            "external": 1
+          },
+          "commits": 38,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4353,6 +5003,11 @@
           },
           "releases_total": 7,
           "release_downloads": 4766,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 19,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4372,6 +5027,11 @@
           },
           "releases_total": 34,
           "release_downloads": 4132,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 23,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4390,6 +5050,11 @@
           },
           "releases_total": 13,
           "release_downloads": 3912,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 27,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4407,6 +5072,11 @@
           },
           "releases_total": 13,
           "release_downloads": 3924,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 26,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -4423,6 +5093,11 @@
           },
           "releases_total": 3,
           "release_downloads": 4350,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 21,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4441,6 +5116,11 @@
           },
           "releases_total": 11,
           "release_downloads": 4531,
+          "prs_merged": {
+            "internal": 6,
+            "external": 3
+          },
+          "commits": 39,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4460,6 +5140,11 @@
           },
           "releases_total": 9,
           "release_downloads": 844,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 16,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4476,6 +5161,11 @@
           },
           "releases_total": 4,
           "release_downloads": 818,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 18,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -4528,6 +5218,11 @@
           },
           "releases_total": 19,
           "release_downloads": 5327,
+          "prs_merged": {
+            "internal": 9,
+            "external": 9
+          },
+          "commits": 45,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4554,6 +5249,11 @@
           },
           "releases_total": 59,
           "release_downloads": 4623,
+          "prs_merged": {
+            "internal": 5,
+            "external": 3
+          },
+          "commits": 33,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4578,6 +5278,11 @@
           },
           "releases_total": 21,
           "release_downloads": 3017,
+          "prs_merged": {
+            "internal": 9,
+            "external": 2
+          },
+          "commits": 49,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4599,6 +5304,11 @@
           },
           "releases_total": 27,
           "release_downloads": 5022,
+          "prs_merged": {
+            "internal": 5,
+            "external": 1
+          },
+          "commits": 16,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4621,6 +5331,11 @@
           },
           "releases_total": 19,
           "release_downloads": 4816,
+          "prs_merged": {
+            "internal": 7,
+            "external": 2
+          },
+          "commits": 39,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4640,6 +5355,11 @@
           },
           "releases_total": 7,
           "release_downloads": 4885,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 28,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4659,6 +5379,11 @@
           },
           "releases_total": 34,
           "release_downloads": 4145,
+          "prs_merged": {
+            "internal": 6,
+            "external": 2
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4677,6 +5402,11 @@
           },
           "releases_total": 14,
           "release_downloads": 4234,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 32,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4694,6 +5424,11 @@
           },
           "releases_total": 14,
           "release_downloads": 4314,
+          "prs_merged": {
+            "internal": 7,
+            "external": 1
+          },
+          "commits": 22,
           "badges": [
             "stars-10",
             "external_contributors-1",
@@ -4710,6 +5445,11 @@
           },
           "releases_total": 3,
           "release_downloads": 4461,
+          "prs_merged": {
+            "internal": 7,
+            "external": 3
+          },
+          "commits": 41,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4728,6 +5468,11 @@
           },
           "releases_total": 11,
           "release_downloads": 4615,
+          "prs_merged": {
+            "internal": 7,
+            "external": 2
+          },
+          "commits": 37,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4747,6 +5492,11 @@
           },
           "releases_total": 9,
           "release_downloads": 904,
+          "prs_merged": {
+            "internal": 5,
+            "external": 0
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4764,6 +5514,11 @@
           },
           "releases_total": 4,
           "release_downloads": 919,
+          "prs_merged": {
+            "internal": 5,
+            "external": 0
+          },
+          "commits": 20,
           "badges": [
             "stars-10",
             "stars-50",
@@ -4780,6 +5535,11 @@
           },
           "releases_total": 0,
           "release_downloads": 1996,
+          "prs_merged": {
+            "internal": 3,
+            "external": 0
+          },
+          "commits": 9,
           "badges": [
             "new",
             "stars-10"
