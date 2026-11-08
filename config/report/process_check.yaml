@@ -1,0 +1,40 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Process Check Configuration
+#
+# This file configures the process_check script. For every active repository it
+# checks how the project handles security advisories (published in reasonable
+# time after their creation) and releases (SemVer or CalVer, increasing within
+# each major line, with release notes), and writes the checks of guarantees
+# GitHub gives by design (source archives generated from the tag, the SBOM of
+# public repositories), which always pass. JSON only: the script opens no
+# issues and changes nothing on GitHub.
+#
+# Parameters:
+#   excluded_repos:       Repository names to skip. Keep this empty: the
+#                         compliance report counts a skipped repository as
+#                         failing every check of this tool.
+#   advisories:
+#     max_days:           Maximum days from creation to publication of an
+#                         advisory.
+#     lookback:           Advisories published within this period are checked.
+#                         Format: "<N> day(s)|month(s)|year(s)"
+#   releases:
+#     lookback:           Releases published within this period are checked.
+#                         Format: "<N> day(s)|month(s)|year(s)"
+#     min_notes_chars:    Minimum length of a release body to count as release
+#                         notes. A shorter body passes if CHANGELOG* in the
+#                         repository root mentions the version.
+#
+# Want to propose a change? Open a pull request and describe your reasoning.
+
+# ──────────────────────────────────────────────────────────────────────────────
+
+excluded_repos: []
+
+advisories:
+  max_days: 90
+  lookback: "12 months"
+
+releases:
+  lookback: "12 months"
+  min_notes_chars: 50

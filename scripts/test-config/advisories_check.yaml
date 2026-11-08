@@ -1,6 +1,0 @@
-# Integration test configuration — targets the GitHub 'ospo-sandbox' organization.
-# Not used in production.
-
-excluded_repos: []
-max_days: 90
-lookback: "12 months"

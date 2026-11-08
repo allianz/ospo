@@ -81,14 +81,14 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       }
     },
     {
-      "file": "by_construction.json",
-      "script": "scripts/by_construction.js",
+      "file": "license_scan.json",
+      "script": "scripts/license_scan.js",
       "status": "missing",
       "sha256": null
     },
     {
-      "file": "releases_check.json",
-      "script": "scripts/releases_check.js",
+      "file": "process_check.json",
+      "script": "scripts/process_check.js",
       "status": "invalid",
       "sha256": "0228f717792ffbc02f7fa058c934c10d7e91d0de743e365ebd78bfebf019254e",
       "problems": [
@@ -449,5 +449,5 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
 `;
 
 exports[`run > writes data.json with statuses, summary, notes and the merged history 2`] = `
-"Report: Test Framework (OSPO-CR-TEST-2026-11)\\nInputs:\\n  lint_repos.json       ok (6 results, 2 skipped, 0 errors)\\n  scorecard.json        ok (6 results, 1 skipped, 2 errors)\\n  archive_repos.json    ok (6 results, 2 skipped, 0 errors)\\n  by_construction.json  missing\\n  releases_check.json   invalid: not valid JSON: Expected property name or '}' in JSON at position 2 (line 1 column 3)\\nScope: 3 active, 2 archived repositories\\nRequirements: 1 met, 2 met-findings, 1 not-met, 2 no-data, 1 not-assessed, 1 optional\\nCompliance: 70% (7 of 10 checks passed), 2 repositories with findings\\nHistory: 3 months (previous report: OSPO-CR-TEST-2026-10)\\nWarning: data health: by_construction.json missing, releases_check.json invalid\\nWarning: data health: 1 error (no data)\\n\\nJSON written to <dir>-reports/2026-11/test-data.json\\nHTML written to <reports>/2026-11/test-report.html\\n"
+"Report: Test Framework (OSPO-CR-TEST-2026-11)\\nInputs:\\n  lint_repos.json     ok (6 results, 2 skipped, 0 errors)\\n  scorecard.json      ok (6 results, 1 skipped, 2 errors)\\n  archive_repos.json  ok (6 results, 2 skipped, 0 errors)\\n  license_scan.json   missing\\n  process_check.json  invalid: not valid JSON: Expected property name or '}' in JSON at position 2 (line 1 column 3)\\nScope: 3 active, 2 archived repositories\\nRequirements: 1 met, 2 met-findings, 1 not-met, 2 no-data, 1 not-assessed, 1 optional\\nCompliance: 70% (7 of 10 checks passed), 2 repositories with findings\\nHistory: 3 months (previous report: OSPO-CR-TEST-2026-10)\\nWarning: data health: license_scan.json missing, process_check.json invalid\\nWarning: data health: 1 error (no data)\\n\\nJSON written to <dir>-reports/2026-11/test-data.json\\nHTML written to <reports>/2026-11/test-report.html\\n"
 `;

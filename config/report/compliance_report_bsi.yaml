@@ -50,12 +50,10 @@ inputs:
   - { file: lint_repos.json, script: scripts/lint_repos.js }
   - { file: license_scan.json, script: scripts/license_scan.js }
   - { file: archive_repos.json, script: scripts/archive_repos.js }
-  - { file: by_construction.json, script: scripts/by_construction.js }
-  - { file: advisories_check.json, script: scripts/advisories_check.js }
-  - { file: releases_check.json, script: scripts/releases_check.js }
+  - { file: process_check.json, script: scripts/process_check.js }
   - { file: scorecard.json, script: scripts/scorecard_check.js }
 
-notes: config/compliance_report_bsi_notes.md
+notes: config/report/compliance_report_bsi_notes.md
 
 requirements:
   GV.01:

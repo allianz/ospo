@@ -50,7 +50,7 @@ framework:
 inputs:
   - { file: lint_repos.json, script: scripts/lint_repos.js }
 
-notes: config/compliance_report_allianz_notes.md
+notes: config/report/compliance_report_allianz_notes.md
 
 out_of_scope:
   - { repo: .github, reason: "Organisation configuration (profile, default community files), not a project" }

@@ -17,7 +17,7 @@ exports[`run > writes data.json with summary, results and the merged history 1`]
     "tool": "scorecard_check",
     "run_at": "2026-11-03T01:00:00Z",
     "ospo_sha": "abc123",
-    "config_file": "config/scorecard_check.yaml",
+    "config_file": "config/report/scorecard_check.yaml",
     "config_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
     "run_url": null,
     "source": "scorecard CLI (--format=json --show-details)",

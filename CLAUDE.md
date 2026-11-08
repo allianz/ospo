@@ -15,12 +15,10 @@ make test_create_repos    # Integration test against ospo-sandbox org
 make test_lint_repos      # Integration test against ospo-sandbox org
 make test_archive_repos   # Integration test against ospo-sandbox org
 make test_license_scan    # Integration test against ospo-sandbox org
-make test_by_construction # Integration test against ospo-sandbox org
-make test_advisories_check # Integration test against ospo-sandbox org
-make test_releases_check  # Integration test against ospo-sandbox org
+make test_process_check  # Integration test against ospo-sandbox org
 make test_scorecard_check # Integration test against ospo-sandbox org (needs the Scorecard CLI)
 make test_community_metrics # Integration test against ospo-sandbox org
-make create_reports       # All tools --json into results/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/compliance_report_*.yaml
+make create_reports       # All tools --json into results/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/report/compliance_report_*.yaml
                           # and scorecard-data.json + scorecard-report.html from results/scorecard.json
                           # and community-data.json + community-report.html from results/community.json
                           # (allianz, --dry-run, also in CI; ORG=ospo-sandbox CONFIG_DIR=scripts/test-config for the sandbox)
@@ -40,9 +38,7 @@ node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
-node scripts/by_construction.js --org <org> [--config <file>] [--debug] [--json <file>]
-node scripts/advisories_check.js --org <org> --json <file> [--config <file>] [--debug]
-node scripts/releases_check.js --org <org> --json <file> [--config <file>] [--debug]
+node scripts/process_check.js --org <org> --json <file> [--config <file>] [--debug]
 node scripts/scorecard_check.js --org <org> --json <file> [--config <file>] [--debug]
 node scripts/compliance_report.js --org <org> --config <report.yaml> --dir <dir> [--reports <dir>] [--debug]
 node scripts/scorecard_report.js --org <org> --dir <dir> [--reports <dir>] [--debug]
@@ -50,7 +46,7 @@ node scripts/community_metrics.js --org <org> --json <file> [--config <file>] [-
 node scripts/community_report.js --org <org> --dir <dir> [--reports <dir>] [--debug]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `by_construction.js` writes only that JSON: the checks of GitHub guarantees that always pass, one per active repository. `advisories_check.js`, `releases_check.js` and `scorecard_check.js` are JSON only as well (`--json` is required): they open no issues and never write to GitHub. `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). `scorecard_report.js` works the same way for `<dir>/scorecard.json` alone (no config) and writes `scorecard-data.json` and `scorecard-report.html` into the same month folder. `community_metrics.js` is JSON only too: it collects the community numbers of the previous calendar month (counts only, no logins) into `community.json`, which `community_report.js` turns into `community-data.json` and `community-report.html` in the same way. A Markdown report is not implemented yet.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. `process_check.js` and `scorecard_check.js` are JSON only (`--json` is required): they open no issues and never write to GitHub. `process_check.js` also writes the by-construction checks (GitHub guarantees that always pass, one per active repository), and isolates errors per check family: an unexpected API error becomes an `errors` row, the file is still written and the exit code is `1`. `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). `scorecard_report.js` works the same way for `<dir>/scorecard.json` alone (no config) and writes `scorecard-data.json` and `scorecard-report.html` into the same month folder. `community_metrics.js` is JSON only too: it collects the community numbers of the previous calendar month (counts only, no logins) into `community.json`, which `community_report.js` turns into `community-data.json` and `community-report.html` in the same way. A Markdown report is not implemented yet.
 
 ### Required Tools
 
@@ -66,9 +62,7 @@ Detailed specs for each script — behaviour, config schema, and output format:
 - [`scripts/spec/lint_repos_spec.md`](scripts/spec/lint_repos_spec.md)
 - [`scripts/spec/archive_repos_spec.md`](scripts/spec/archive_repos_spec.md)
 - [`scripts/spec/license_scan_spec.md`](scripts/spec/license_scan_spec.md)
-- [`scripts/spec/by_construction_spec.md`](scripts/spec/by_construction_spec.md)
-- [`scripts/spec/advisories_check_spec.md`](scripts/spec/advisories_check_spec.md)
-- [`scripts/spec/releases_check_spec.md`](scripts/spec/releases_check_spec.md)
+- [`scripts/spec/process_check_spec.md`](scripts/spec/process_check_spec.md)
 - [`scripts/spec/scorecard_check_spec.md`](scripts/spec/scorecard_check_spec.md)
 - [`scripts/spec/compliance_report_spec.md`](scripts/spec/compliance_report_spec.md)
 - [`scripts/spec/scorecard_report_spec.md`](scripts/spec/scorecard_report_spec.md)
@@ -77,20 +71,18 @@ Detailed specs for each script — behaviour, config schema, and output format:
 
 ## Architecture
 
-Twelve JavaScript (ESM) scripts, each driven by a YAML config file (except `scorecard_report.js` and `community_report.js`), built on shared libraries in `scripts/lib/`:
+Ten JavaScript (ESM) scripts, each driven by a YAML config file (except `scorecard_report.js` and `community_report.js`), built on shared libraries in `scripts/lib/`:
 
 1. **`scripts/create_repos.js`** — Creates/manages repos and teams, assigns permissions, syncs with Azure AD. Reads `config/create_repos.yaml`.
 2. **`scripts/lint_repos.js`** — Enforces repo compliance (description, topics, license, README, CONTRIBUTING). Reads `config/lint_repos.yaml`.
 3. **`scripts/archive_repos.js`** — Archives stale repos after a grace period with warning issues. Reads `config/archive_repos.yaml`.
 4. **`scripts/license_scan.js`** — Scans dependency licenses via the GitHub SBOM API and opens issues for denied licenses. Reads `config/license_scan.yaml`.
-5. **`scripts/by_construction.js`** — Writes the `by-construction/*` checks (GitHub guarantees, e.g. source archives, SBOM availability) as JSON: always `pass`, one per active repository, no issues. Reads `config/by_construction.yaml`.
-6. **`scripts/advisories_check.js`** — Checks that published security advisories were published within `max_days` of their creation (`advisories/published-in-time`). JSON only: no issues, no writes. Reads `config/advisories_check.yaml`.
-7. **`scripts/releases_check.js`** — Checks GitHub releases of the last 12 months: SemVer/CalVer tags increasing within each major line (`releases/versioning`) and release notes in the body or `CHANGELOG*` (`releases/release-notes`); `na` without releases. JSON only: no issues, no writes. Reads `config/releases_check.yaml`.
-8. **`scripts/scorecard_check.js`** — Runs the OpenSSF Scorecard CLI per active repository and writes all Scorecard checks (`scorecard/<check>`, score, reason and details unchanged) with thresholds and applicability applied (managed branch protection from `config/create_repos.yaml`, `docs`/`template` topics for CI-Tests, languages for Fuzzing), plus a `repositories` block with the overall score per repository. JSON only: no issues, no writes. Reads `config/scorecard_check.yaml`.
-9. **`scripts/compliance_report.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/compliance_report_<key>.yaml`, which holds the requirement texts and the only check → requirement mapping): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest earlier month folder in the local `reports/`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
-10. **`scripts/scorecard_report.js`** — The OpenSSF Scorecard report: turns `scorecard.json` (all checks plus the overall score per repository) into `reports/<YYYY-MM>/scorecard-data.json` with summary and a score `history` carried forward from the previous month, and renders `scorecard-report.html` (template `scripts/templates/scorecard_report.html`: heatmap repository × check, details, trend). No config, no GitHub calls.
-11. **`scripts/community_metrics.js`** — Collects the community metrics of the previous calendar month per public repository (stars, forks, contributors internal/external, commits, PRs, issues, releases, 14-day traffic) and the totals of the organisation (people counted once across repositories, in memory only). Counts only, no logins in the file. JSON only: no issues, no writes. Reads `config/community_metrics.yaml`.
-12. **`scripts/community_report.js`** — The community report: turns `community.json` into `reports/<YYYY-MM>/community-data.json` with growth (vs the month before and 6 months before), milestones and highlights, carries the `history` forward, and renders `community-report.html` (template `scripts/templates/community_report.html`). No config, no GitHub calls.
+5. **`scripts/process_check.js`** — Checks how projects handle advisories and releases, per active repository: published security advisories published within `advisories.max_days` of their creation (`advisories/published-in-time`); GitHub releases of the last 12 months with SemVer/CalVer tags increasing within each major line (`releases/versioning`) and release notes in the body or `CHANGELOG*` (`releases/release-notes`), `na` without releases; plus the `by-construction/*` checks (GitHub guarantees, e.g. source archives, SBOM availability), always `pass`. JSON only: no issues, no writes. Reads `config/report/process_check.yaml` (sections `advisories` and `releases`).
+6. **`scripts/scorecard_check.js`** — Runs the OpenSSF Scorecard CLI per active repository and writes all Scorecard checks (`scorecard/<check>`, score, reason and details unchanged) with thresholds and applicability applied (managed branch protection from `config/create_repos.yaml`, `docs`/`template` topics for CI-Tests, languages for Fuzzing), plus a `repositories` block with the overall score per repository. JSON only: no issues, no writes. Reads `config/report/scorecard_check.yaml`.
+7. **`scripts/compliance_report.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/report/compliance_report_<key>.yaml`, which holds the requirement texts and the only check → requirement mapping): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest earlier month folder in the local `reports/`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
+8. **`scripts/scorecard_report.js`** — The OpenSSF Scorecard report: turns `scorecard.json` (all checks plus the overall score per repository) into `reports/<YYYY-MM>/scorecard-data.json` with summary and a score `history` carried forward from the previous month, and renders `scorecard-report.html` (template `scripts/templates/scorecard_report.html`: heatmap repository × check, details, trend). No config, no GitHub calls.
+9. **`scripts/community_metrics.js`** — Collects the community metrics of the previous calendar month per public repository (stars, forks, contributors internal/external, commits, PRs, issues, releases, 14-day traffic) and the totals of the organisation (people counted once across repositories, in memory only). Counts only, no logins in the file. JSON only: no issues, no writes. Reads `config/report/community_metrics.yaml`.
+10. **`scripts/community_report.js`** — The community report: turns `community.json` into `reports/<YYYY-MM>/community-data.json` with growth (vs the month before and 6 months before), milestones and highlights, carries the `history` forward, and renders `community-report.html` (template `scripts/templates/community_report.html`). No config, no GitHub calls.
 
 ### Shared libraries (`scripts/lib/`)
 
@@ -107,8 +99,8 @@ Twelve JavaScript (ESM) scripts, each driven by a YAML config file (except `scor
 
 ### Configuration
 
-- **Production configs**: `config/` directory
-- **Test configs**: `scripts/test-config/` directory (targets `ospo-sandbox` org)
+- **Production configs**: `config/` directory: the tools that act on GitHub (`create_repos`, `lint_repos`, `archive_repos`, `license_scan`) directly in `config/`; everything that only feeds the reports (`process_check`, `scorecard_check`, `community_metrics`, `compliance_report_<key>.yaml` and its `_notes.md`) in `config/report/` (`defaultConfigPath(name, 'report')`)
+- **Test configs**: `scripts/test-config/` directory (targets `ospo-sandbox` org), same layout (`scripts/test-config/report/`), so `CONFIG_DIR=scripts/test-config` works for `make create_reports`
 
 ### Output folders
 
@@ -120,7 +112,7 @@ Twelve JavaScript (ESM) scripts, each driven by a YAML config file (except `scor
 - `lint_repos.yaml` — Scheduled bi-weekly (Tue/Thu)
 - `archive_repos.yaml` — Scheduled weekly (Sun midnight)
 - `license_scan.yaml` — Scheduled weekly (Mon midnight)
-- `compliance_report.yaml` — Monthly (1st, 03:00 UTC) and on edits of `config/compliance_report_*_notes.md` in the report PR: `make create_reports` (tools with `--dry-run`, so it never writes issues or archives), commits `reports/<YYYY-MM>/` to the branch `compliance-report` (merging `main` into it) and opens the PR; tool files and reports are uploaded as artifact
+- `compliance_report.yaml` — Monthly (1st, 03:00 UTC) and on edits of `config/report/compliance_report_*_notes.md` in the report PR: `make create_reports` (tools with `--dry-run`, so it never writes issues or archives), commits `reports/<YYYY-MM>/` to the branch `compliance-report` (merging `main` into it) and opens the PR; tool files and reports are uploaded as artifact
 - All workflows support manual dispatch
 - Authentication via GitHub App tokens (`ALLIANZ_APP_ID`, `ALLIANZ_PRIVATE_KEY`)
 

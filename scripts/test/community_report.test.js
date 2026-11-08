@@ -48,7 +48,7 @@ const TOTALS = {
 function communityDoc(extra = {}) {
   return {
     tool: 'community_metrics', run_at: '2026-11-01T03:00:00Z', org, ospo_sha: 'abc123',
-    config_file: 'config/community_metrics.yaml', config_sha256: 'f'.repeat(64), run_url: null, issue_title: null,
+    config_file: 'config/report/community_metrics.yaml', config_sha256: 'f'.repeat(64), run_url: null, issue_title: null,
     results: [], catalogue: {},
     skipped: [{ repo: '.github', reason: 'excluded_repos' }],
     errors: [{ repo: 'gamma', metric: 'contributors', reason: 'Contributor statistics not ready after 10 attempts' }],

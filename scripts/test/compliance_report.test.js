@@ -32,11 +32,9 @@ import {
 import { ScriptError } from '../lib/cli.js';
 import { repoRoot } from '../lib/config.js';
 import { buildCatalogue as archiveCatalogue } from '../archive_repos.js';
-import { CHECK as ADVISORIES_CHECK } from '../advisories_check.js';
-import { CHECKS as BY_CONSTRUCTION_CHECKS } from '../by_construction.js';
 import { buildCatalogue as licenseCatalogue } from '../license_scan.js';
 import { buildCatalogue as lintCatalogue, loadConfig as loadLintConfig } from '../lint_repos.js';
-import { RELEASE_NOTES, VERSIONING } from '../releases_check.js';
+import { buildCatalogue as processCatalogue } from '../process_check.js';
 import { checkId, loadConfig as loadScorecardConfig } from '../scorecard_check.js';
 import { DATA_PLACEHOLDER } from '../lib/report_html.js';
 import { createMemoryLogger } from './helpers/memory_logger.js';
@@ -77,7 +75,7 @@ function toolDoc(tool, { catalogue, results = [], skipped = [], errors = [], ext
 
 /**
  * Active: alpha, beta, gamma (excluded by lint_repos). Archived: old (before), stale (archived in
- * this run, so its lint result is dropped). by_construction.json is missing, releases_check.json invalid.
+ * this run, so its lint result is dropped). license_scan.json is missing, process_check.json invalid.
  */
 const DOCS = {
   lint_repos: toolDoc('lint_repos', {
@@ -119,8 +117,8 @@ const INPUTS = [
   { file: 'lint_repos.json', script: 'scripts/lint_repos.js' },
   { file: 'scorecard.json', script: 'scripts/scorecard_check.js' },
   { file: 'archive_repos.json', script: 'scripts/archive_repos.js' },
-  { file: 'by_construction.json', script: 'scripts/by_construction.js' },
-  { file: 'releases_check.json', script: 'scripts/releases_check.js' },
+  { file: 'license_scan.json', script: 'scripts/license_scan.js' },
+  { file: 'process_check.json', script: 'scripts/process_check.js' },
 ];
 
 const REQUIREMENTS = {
@@ -158,13 +156,13 @@ async function writeReportConfig(name, overrides = {}) {
   return file;
 }
 
-/** Writes the tool files: three valid, releases_check.json invalid, by_construction.json missing. */
+/** Writes the tool files: three valid, process_check.json invalid, license_scan.json missing. */
 async function writeToolFiles(dir) {
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, 'lint_repos.json'), JSON.stringify(DOCS.lint_repos, null, 2));
   await writeFile(path.join(dir, 'scorecard.json'), JSON.stringify(DOCS.scorecard_check, null, 2));
   await writeFile(path.join(dir, 'archive_repos.json'), JSON.stringify(DOCS.archive_repos, null, 2));
-  await writeFile(path.join(dir, 'releases_check.json'), '{ not json');
+  await writeFile(path.join(dir, 'process_check.json'), '{ not json');
   return dir;
 }
 
@@ -275,7 +273,7 @@ describe('readInputs', () => {
     await writeFile(path.join(dir, 'archive_repos.json'), JSON.stringify({ ...DOCS.archive_repos, org: 'other' }));
     const { inputs, docs } = await readInputs(dir, INPUTS, org);
     assert.deepEqual(inputs.map(i => [i.file, i.status]), [
-      ['lint_repos.json', 'ok'], ['scorecard.json', 'ok'], ['archive_repos.json', 'invalid'], ['by_construction.json', 'missing'], ['releases_check.json', 'invalid'],
+      ['lint_repos.json', 'ok'], ['scorecard.json', 'ok'], ['archive_repos.json', 'invalid'], ['license_scan.json', 'missing'], ['process_check.json', 'invalid'],
     ]);
     assert.deepEqual(docs.map(d => d.tool), ['lint_repos', 'scorecard_check']);
     assert.deepEqual(inputs[2].problems, ["org is 'other', expected 'test-org'"]);
@@ -736,8 +734,8 @@ describe('buildData', () => {
 // ── The report configurations in config/ ─────────────────────────────────────
 
 const REPORT_CONFIGS = [
-  { file: 'config/compliance_report_bsi.yaml', requirements: 20 },
-  { file: 'config/compliance_report_allianz.yaml', requirements: 7 },
+  { file: 'config/report/compliance_report_bsi.yaml', requirements: 20 },
+  { file: 'config/report/compliance_report_allianz.yaml', requirements: 7 },
 ];
 
 for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () => {
@@ -745,15 +743,12 @@ for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () =>
 
   it('maps only checks that the tools define', async () => {
     const lint = lintCatalogue(await loadLintConfig(path.join(repoRoot, 'config/lint_repos.yaml')));
-    const scorecard = await loadScorecardConfig(path.join(repoRoot, 'config/scorecard_check.yaml'));
+    const scorecard = await loadScorecardConfig(path.join(repoRoot, 'config/report/scorecard_check.yaml'));
     const known = new Set([
       ...Object.keys(lint),
       ...Object.keys(licenseCatalogue()),
       ...Object.keys(archiveCatalogue({ warnAfter: '1 years', gracePeriod: '60 days' })),
-      ...Object.keys(BY_CONSTRUCTION_CHECKS),
-      ADVISORIES_CHECK,
-      VERSIONING,
-      RELEASE_NOTES,
+      ...Object.keys(processCatalogue()),
       ...Object.keys(scorecard.thresholds).map(checkId),
     ]);
     const { requirements } = await loadReportConfig(configFile);
@@ -769,9 +764,9 @@ for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () =>
   });
 });
 
-describe('config/compliance_report_allianz.yaml mapping', () => {
+describe('config/report/compliance_report_allianz.yaml mapping', () => {
   it('maps every rule of the guideline to its lint checks', async () => {
-    const { requirements } = await loadReportConfig(path.join(repoRoot, 'config/compliance_report_allianz.yaml'));
+    const { requirements } = await loadReportConfig(path.join(repoRoot, 'config/report/compliance_report_allianz.yaml'));
     assert.deepEqual(Object.fromEntries(requirements.map(q => [q.id, q.checks])), {
       'RC.01': ['lint/description'],
       'RC.02': ['lint/topics'],

@@ -34,7 +34,7 @@ node scripts/community_metrics.js --org <org> --json <file> [--config <file>] [-
 |---|---|---|
 | `--org` | required | GitHub organization |
 | `--json` | required | Write the metrics to this file (`results/community.json` in `make create_reports`) |
-| `--config` | `config/community_metrics.yaml` | Path to config file |
+| `--config` | `config/report/community_metrics.yaml` | Path to config file |
 | `--dry-run` | false | Accepted like in every script. Has no effect: the script makes no changes |
 | `--debug` | false | Also print every repository with its numbers |
 
@@ -168,7 +168,7 @@ No logins anywhere in the file.
 
 ## Make target
 
-`make test_community_metrics` runs the script against `ospo-sandbox` with `scripts/test-config/community_metrics.yaml`; `make dry_run_community_metrics` against `allianz`. `make create_reports` runs it with the other tools (`--json $(JSON_DIR)/community.json`); a failing run leaves no file, and the community report shows "no data".
+`make test_community_metrics` runs the script against `ospo-sandbox` with `scripts/test-config/report/community_metrics.yaml`; `make dry_run_community_metrics` against `allianz`. `make create_reports` runs it with the other tools (`--json $(JSON_DIR)/community.json`); a failing run leaves no file, and the community report shows "no data".
 
 ## Open points
 

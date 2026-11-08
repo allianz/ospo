@@ -358,7 +358,7 @@ function logRepo(log, e) {
 }
 
 export async function run({ argv = [], env = {}, logger, github, git, sleep, polling, now = new Date() } = {}) {
-  const { org, configPath, debug, json } = parseCli(argv, { defaultConfigPath: defaultConfigPath(TOOL), stringFlags: ['json'] });
+  const { org, configPath, debug, json } = parseCli(argv, { defaultConfigPath: defaultConfigPath(TOOL, 'report'), stringFlags: ['json'] });
   if (!json) throw new ScriptError('--json is required');
   const gh = github ?? createGitHub(createOctokit(resolveToken(env)));
   const log = logger ?? createLogger({ debug });

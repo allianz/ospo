@@ -48,7 +48,7 @@ function scorecardDoc(extra = {}) {
     run_at: '2026-11-03T01:00:00Z',
     org,
     ospo_sha: 'abc123',
-    config_file: 'config/scorecard_check.yaml',
+    config_file: 'config/report/scorecard_check.yaml',
     config_sha256: 'f'.repeat(64),
     run_url: null,
     issue_title: null,

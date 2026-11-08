@@ -33,7 +33,7 @@ node scripts/scorecard_check.js --org <org> --json <file> [--config <file>] [--d
 |---|---|---|
 | `--org` | required | GitHub organization whose repositories are checked |
 | `--json` | required | Write the results to this file, see [JSON output](#json-output). The file is the only product of the script |
-| `--config` | `config/scorecard_check.yaml` | Path to config file (relative to repo root) |
+| `--config` | `config/report/scorecard_check.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Accepted like in every script. Has no effect: the script makes no changes |
 | `--debug` | false | Also print the number of repositories with managed branch protection, and passing and not applicable checks |
 

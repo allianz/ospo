@@ -26,6 +26,10 @@ describe('config', () => {
     assert.equal(repoRoot, path.resolve(import.meta.dirname, '..', '..', '..'));
   });
 
+  it('points the default config of a report tool at <repo>/config/report/<name>.yaml', () => {
+    assert.equal(defaultConfigPath('process_check', 'report'), path.join(repoRoot, 'config', 'report', 'process_check.yaml'));
+  });
+
   it('loads YAML, and null for an empty file', async () => {
     const file = path.join(tmpDir, 'a.yaml');
     await writeFile(file, 'key: value\nlist: [1, 2]\n');

@@ -70,13 +70,13 @@ describe('loadConfig', () => {
   });
 
   it('loads the production config, which configures exactly the checks of Scorecard v5.6.0', async () => {
-    const config = await loadConfig(path.join(repoRoot, 'config/scorecard_check.yaml'));
+    const config = await loadConfig(path.join(repoRoot, 'config/report/scorecard_check.yaml'));
     assert.equal(config.scorecard_version, fixture.scorecard.version);
     assert.deepEqual(Object.keys(config.thresholds).sort(), fixture.checks.map(c => c.name).sort());
   });
 
   it('loads the test config', async () => {
-    const config = await loadConfig(path.join(repoRoot, 'scripts/test-config/scorecard_check.yaml'));
+    const config = await loadConfig(path.join(repoRoot, 'scripts/test-config/report/scorecard_check.yaml'));
     assert.equal(config.create_repos_config, 'scripts/test-config/create_repos.yaml');
   });
 

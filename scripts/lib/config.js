@@ -6,9 +6,9 @@ import { fileURLToPath } from 'node:url';
 /** Root of the ospo repository (parent of scripts/). */
 export const repoRoot = path.join(fileURLToPath(new URL('.', import.meta.url)), '..', '..');
 
-/** Default production config path for a tool: <repo>/config/<name>.yaml */
-export function defaultConfigPath(name) {
-  return path.join(repoRoot, 'config', `${name}.yaml`);
+/** Default production config path for a tool: <repo>/config/<subdir>/<name>.yaml (report tools use subdir 'report'). */
+export function defaultConfigPath(name, subdir = '') {
+  return path.join(repoRoot, 'config', subdir, `${name}.yaml`);
 }
 
 /** Reads and parses a YAML file. An empty file yields null. */

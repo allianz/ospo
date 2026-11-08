@@ -366,7 +366,7 @@ function logRepo(log, e, thresholds, debug) {
 }
 
 export async function run({ argv = [], env = {}, logger, github, scorecard, now = new Date(), git } = {}) {
-  const { org, configPath, debug, json } = parseCli(argv, { defaultConfigPath: defaultConfigPath(TOOL), stringFlags: ['json'] });
+  const { org, configPath, debug, json } = parseCli(argv, { defaultConfigPath: defaultConfigPath(TOOL, 'report'), stringFlags: ['json'] });
   if (!json) throw new ScriptError('--json is required');
   const gh = github ?? createGitHub(createOctokit(resolveToken(env)));
   const sc = scorecard ?? createScorecardCli({ bin: env.SCORECARD_BIN || 'scorecard', env: { ...env, GITHUB_AUTH_TOKEN: resolveToken(env) } });

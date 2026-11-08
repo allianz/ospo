@@ -2,3 +2,11 @@
 # Not used in production.
 
 excluded_repos: []
+
+advisories:
+  max_days: 90
+  lookback: "12 months"
+
+releases:
+  lookback: "12 months"
+  min_notes_chars: 50

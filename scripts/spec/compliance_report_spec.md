@@ -34,7 +34,7 @@ node scripts/compliance_report.js --org <org> --config <file> --dir <dir> [--rep
 | Flag | Default | Description |
 |---|---|---|
 | `--org` | required | Organisation of the run. A tool file of another organisation is invalid |
-| `--config` | required | Report configuration, e.g. `config/compliance_report_bsi.yaml`. There is no default: one run per report |
+| `--config` | required | Report configuration, e.g. `config/report/compliance_report_bsi.yaml`. There is no default: one run per report |
 | `--dir` | required | Directory with the tool files (`results/` in `make create_reports`). Only read |
 | `--reports` | `reports/` of the repo | Reports directory. `data.json` and the HTML report are written to `<reports>/<YYYY-MM>/` |
 | `--dry-run` | false | Accepted like in every script. Has no effect: the script makes no changes on GitHub |
@@ -61,7 +61,7 @@ framework:
   chapters: { GV: Governance, LE: Legal, QA: Quality, BR: Build and release, VM: Vulnerability management, DE: Decommissioning }
 inputs:
   - { file: lint_repos.json, script: scripts/lint_repos.js }
-notes: config/compliance_report_bsi_notes.md
+notes: config/report/compliance_report_bsi_notes.md
 out_of_scope:
   - { repo: .github, reason: "Organisation configuration, not a project" }
 requirements:
@@ -189,13 +189,13 @@ Missing file: `notes: null`. Invalid file: `notes: null` and an `errors` row `{ 
 Report: BSI TR-03185 Chapter 2 (OSPO-CR-BSI-2026-11)
 Inputs:
   lint_repos.json        ok (45 results, 5 skipped, 0 errors)
-  by_construction.json   missing
+  process_check.json     missing
   …
 Scope: 10 active, 2 archived, 1 out of scope repositories
 Requirements: 3 met, 15 met-findings, 0 not-met, 0 no-data, 2 not-assessed, 0 optional
 Compliance: 80.5% (124 of 154 checks passed), 7 repositories with findings
 History: 5 months (previous report: OSPO-CR-BSI-2026-10)
-Warning: data health: by_construction.json missing
+Warning: data health: process_check.json missing
 
 JSON written to reports/2026-11/bsi-data.json
 HTML written to reports/2026-11/bsi-report.html
@@ -272,7 +272,7 @@ Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 c
 
 ## Make target
 
-`make create_reports` runs every tool with `--json` into a fresh `results/`, then this script once per `config/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`, and finally [`scorecard_report.js`](scorecard_report_spec.md) for the Scorecard report:
+`make create_reports` runs every tool with `--json` into a fresh `results/`, then this script once per `config/report/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`, and finally [`scorecard_report.js`](scorecard_report_spec.md) for the Scorecard report:
 
 | Variable | Default | Meaning |
 |---|---|---|
