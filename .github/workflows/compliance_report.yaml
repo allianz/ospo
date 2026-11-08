@@ -180,7 +180,12 @@ jobs:
           {
             echo "Monthly compliance report for $MONTH, created by [this workflow run]($RUN_URL)."
             echo
-            echo "- **View:** download the artifact \`compliance-report-$MONTH\` of the run, or the \`*-report.html\` files of \`reports/$MONTH/\` from this branch, and open them in a browser."
+            # reports/README.md links the reports on main, so they only open after the merge; these link this branch
+            echo "- **View:** the reports of this branch, rendered through htmlpreview.github.io:"
+            for f in "reports/$MONTH"/*-report.html; do
+              echo "  - [$(basename "$f")](https://htmlpreview.github.io/?$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/$BRANCH/$f)"
+            done
+            echo "  Or download the artifact \`compliance-report-$MONTH\` of the run and open the \`*-report.html\` files in a browser."
             echo "- **Notes:** edit \`config/report/compliance_report_*_notes.md\` on this branch (Key messages, Needs attention). Each edit reruns all tools and updates the reports."
             echo "- **Publish:** merge. The merged \`reports/$MONTH/\` is the published report and the base of next month's trend."
             echo

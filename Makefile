@@ -78,7 +78,8 @@ dry_run_community_metrics: check-token
 # Runs every tool with --json into a fresh $(JSON_DIR), then aggregates them once per report
 # configuration into $(REPORTS_DIR)/<YYYY-MM>/<key>-data.json and <key>-report.html, and builds the
 # Scorecard report from scorecard.json (scorecard-data.json, scorecard-report.html) and the community
-# report from community.json (community-data.json, community-report.html). A failing
+# report from community.json (community-data.json, community-report.html), and regenerates the
+# index $(REPORTS_DIR)/README.md (latest month, links via htmlpreview.github.io). A failing
 # tool (leading -) leaves no file: the report shows "no data" for its checks. process_check still
 # writes its file when single API reads fail; they are listed in its errors. The Scorecard CLI
 # must be installed (see test_scorecard_check).
@@ -98,6 +99,7 @@ create_reports: check-token
 	done
 	node $(SCRIPTS)/scorecard_report.js --org $(ORG) --dir $(JSON_DIR) --reports $(REPORTS_DIR)
 	node $(SCRIPTS)/community_report.js --org $(ORG) --dir $(JSON_DIR) --reports $(REPORTS_DIR)
+	node $(SCRIPTS)/reports_index.js --org $(ORG) --reports $(REPORTS_DIR)
 
 # ── Unit tests ────────────────────────────────────────────────────────────────
 

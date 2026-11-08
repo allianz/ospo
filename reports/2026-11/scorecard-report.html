@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenSSF Scorecard Report · allianz · 2026-11</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --accent-wash: rgba(42,120,214,0.10);
+    --track: #cde2fb;
+    --good: #0ca30c;
+    --good-2: #077a07;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --neutral: #898781;
+    --delta-good: #006300;
+    --delta-bad: #b42f2f;
+    --ord-1: #86b6ef; --ord-1-ink: #0b0b0b;
+    --ord-2: #2a78d6; --ord-2-ink: #ffffff;
+    --ord-3: #104281; --ord-3-ink: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #f0efec;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-wash: rgba(57,135,229,0.12);
+      --track: #184f95;
+      --good-2: #0a8a0a;
+      --delta-good: #0ca30c;
+      --delta-bad: #e66767;
+      --ord-1: #184f95; --ord-1-ink: #ffffff;
+      --ord-2: #3987e5; --ord-2-ink: #ffffff;
+      --ord-3: #9ec5f4; --ord-3-ink: #0b0b0b;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .page { max-width: 1120px; margin: 0 auto; padding: 24px 24px 64px; }
+
+
+  header.report {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--grid);
+    margin-bottom: 28px;
+  }
+  .brand { font-size: 13px; color: var(--ink-2); letter-spacing: 0.02em; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 6px 0 4px; font-weight: 650; }
+  .subtitle { color: var(--ink-2); margin: 0; }
+  dl.meta {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2px 16px;
+    margin: 0;
+    font-size: 13px;
+  }
+  dl.meta dt { color: var(--muted); }
+  dl.meta dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+  nav.toc { font-size: 13px; color: var(--ink-2); margin: -12px 0 28px; }
+  nav.toc a { margin-right: 14px; white-space: nowrap; }
+
+  section { margin-bottom: 36px; }
+  h2 { font-size: 19px; margin: 0 0 4px; font-weight: 650; }
+  h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px; }
+  .lead { color: var(--ink-2); margin: 0 0 16px; max-width: 760px; }
+  h3 { font-size: 15px; margin: 0 0 4px; font-weight: 600; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-hero { display: grid; grid-template-columns: 1.15fr 2fr; gap: 16px; margin-bottom: 16px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tiles > :last-child:nth-child(odd) { grid-column: 1 / -1; }   /* odd number of tiles: the last one spans the row */
+  @media (max-width: 860px) { .grid-2, .grid-hero, .tiles { grid-template-columns: 1fr; } header.report { grid-template-columns: 1fr; } }
+
+  .hero .label, .tile .label { color: var(--ink-2); font-size: 13px; }
+  .hero .value { font-size: 56px; font-weight: 650; line-height: 1.05; margin: 6px 0 4px; }
+  .hero .value small { font-size: 28px; font-weight: 600; }
+  .hero .note { color: var(--ink-2); font-size: 13px; margin-top: 10px; }
+  .tile .value { font-size: 28px; font-weight: 650; line-height: 1.2; margin-top: 2px; }
+  .tile .value small { font-size: 15px; color: var(--ink-2); font-weight: 500; }
+  .tile .sub { font-size: 12px; color: var(--muted); }
+  .delta { font-size: 13px; font-weight: 600; }
+  .delta.good { color: var(--delta-good); }
+  .delta.bad { color: var(--delta-bad); }
+  .delta.flat { color: var(--ink-2); }
+  .delta span { color: var(--muted); font-weight: 400; }
+  .tile { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .tile .spark { margin-top: 4px; }
+
+  ul.points { margin: 8px 0 0; padding-left: 18px; }
+  ul.points li { margin-bottom: 8px; }
+  .alert { border: 1px solid var(--critical); border-left-width: 4px; border-radius: 8px; padding: 8px 14px; margin: 0 0 16px; background: var(--surface); }
+
+  /* status */
+  .status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; }
+  .status .ico {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex: none;
+  }
+  .status .ico.ring { background: transparent !important; border: 1.5px solid var(--muted); color: var(--muted) !important; }
+  .status .ico.ring-good { background: transparent !important; border: 1.5px solid var(--good); color: var(--good) !important; }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 8px 10px; border-bottom: 1px solid var(--axis); white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  .chapter-row td { background: var(--page); font-weight: 600; color: var(--ink-2); padding-top: 12px; }
+  .id { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .nowrap { white-space: nowrap; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .level { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-2); border: 1px solid var(--axis); border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
+  details.req > summary { cursor: pointer; list-style: none; }
+  details.req > summary::-webkit-details-marker { display: none; }
+  details.req > summary::before { content: "▸"; color: var(--muted); display: inline-block; width: 14px; transition: transform .15s; }
+  details.req[open] > summary::before { transform: rotate(90deg); }
+  tr.card-row > td { background: var(--page); padding: 4px 10px 18px; }
+  tr.card-row[hidden] { display: none; }
+  .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: grid; gap: 16px; min-width: 0; }
+  .rcard h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .rcard p { margin: 0; max-width: 820px; }
+  .tr-clauses { display: grid; gap: 6px; max-width: 820px; }
+  .tr-clause { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
+  .tr-clause .level { justify-self: start; }
+  .links { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .links a { margin-right: 4px; }
+  .rcard table { font-size: 12.5px; }
+  .rcard td, .rcard th { padding: 6px 8px; }
+  .cov { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
+  .meter { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
+  .meter > div { height: 100%; background: var(--accent); border-radius: 3px; }
+  .cov .txt, .cov-txt { font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; }
+  .cov .txt b { color: var(--ink); font-weight: 600; }
+  .tag { display: inline-block; font-size: 12px; border: 1px solid var(--grid); border-radius: 4px; padding: 0 5px; margin: 0 4px 2px 0; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  a.tag:hover { border-color: var(--accent); text-decoration: none; }
+  pre.det { margin: 4px 0 0; font: 11.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); white-space: pre-wrap; }
+
+  /* charts */
+  svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+  svg.chart:focus { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .grid-line { stroke: var(--grid); stroke-width: 1; }
+  .axis-line { stroke: var(--axis); stroke-width: 1; }
+  .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .vlabel { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .clabel { fill: var(--ink-2); font-size: 12px; }
+  .chart-title { margin-bottom: 2px; }
+  .chart-sub { color: var(--ink-2); font-size: 13px; margin: 0 0 10px; }
+
+  .segbar { display: flex; gap: 2px; height: 28px; margin: 8px 0 8px; }
+  .segbar > * {
+    border-radius: 4px; display: flex; align-items: center; padding: 0 8px;
+    font-size: 12px; font-weight: 600; white-space: nowrap; overflow: visible; min-width: 0; cursor: default;
+  }
+  .segbar > a { cursor: pointer; text-decoration: none; }
+  .segbar > *:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .segbar > *:hover { filter: brightness(1.07); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); }
+  .legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .seg-row { margin-bottom: 14px; }
+  .seg-row .seg-label { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; }
+  .seg-row .seg-label b { color: var(--ink); font-weight: 600; }
+
+  details.datatable { margin-top: 10px; font-size: 12px; }
+  details.datatable > summary, details.more > summary { color: var(--accent); cursor: pointer; font-size: 12.5px; }
+  details.datatable table, details.more table { margin-top: 6px; }
+
+  .scroll-x { overflow-x: auto; }
+  /* narrow windows: let headers and coverage wrap so the tables need less width; .scroll-x catches the rest */
+  @media (max-width: 860px) {
+    th { white-space: normal; }
+    .cov { grid-template-columns: minmax(60px, 90px); white-space: normal; gap: 4px; }
+    .cov .txt { white-space: normal; }
+  }
+
+  #tip {
+    position: fixed; z-index: 10; pointer-events: none;
+    background: var(--surface); border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px;
+    display: grid; gap: 1px; max-width: 320px;
+  }
+  #tip strong { font-size: 14px; color: var(--ink); }
+  #tip span { color: var(--ink-2); white-space: pre-line; }
+  #tip[hidden] { display: none; }
+
+  .integrity { font-size: 12px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 12px; margin-top: 28px; font-variant-numeric: tabular-nums; }
+  code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); }
+
+  @media print {
+    :root { color-scheme: light; }
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: #fff; font-size: 11.5px; }
+    .page { max-width: none; padding: 0; }
+    nav.toc, details.datatable, #tip { display: none !important; }
+    .card { break-inside: avoid; }
+    section.break { break-before: page; }
+    tr { break-inside: avoid; }
+    details.req > summary::before { content: ""; width: 0; }
+    tr.card-row { break-inside: auto; }
+    a { color: inherit; }
+  }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; padding: 4px 10px 10px; font-size: 12.5px; color: var(--ink-2); }
+  .filters label { display: grid; gap: 2px; }
+  .filters label.chk { display: flex; align-items: center; gap: 6px; padding-bottom: 5px; }
+  .filters select, .filters input[type=search], .filters button {
+    font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--axis); border-radius: 6px; padding: 4px 8px; max-width: 280px;
+  }
+  .filters button { cursor: pointer; }
+  .filter-count { font-size: 12.5px; color: var(--muted); padding: 0 10px 6px; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--ink); }
+  th .arrow { color: var(--accent); margin-left: 3px; }
+  .pager-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding: 10px 10px 4px; }
+  .pager { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12.5px; color: var(--muted); }
+  .pager-size { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+  .pager-size select { font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 6px; padding: 3px 6px; }
+  .pager button { font: inherit; font-size: 12.5px; min-width: 30px; color: var(--ink-2); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 3px 8px; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .pager button[aria-current="page"] { color: var(--surface); background: var(--accent); border-color: var(--accent); }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
+  .pager button:disabled[aria-current="page"] { color: var(--ink-2); background: none; border-color: var(--axis); }
+  .pager .gap { padding: 0 2px; }
+  .showall { margin: 8px 10px; font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  ul.sub { margin: 4px 0 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-2); }
+  ul.sub li { margin-bottom: 2px; }
+  .rcard tfoot td { border-bottom: none; padding-top: 8px; }
+  .why { white-space: nowrap; }
+  @media print {
+    .filters, .filter-count, .showall, .pager-bar { display: none !important; }
+    .scroll-x { overflow: visible; }
+  }
+  noscript p { border: 1px solid var(--critical); border-radius: 8px; padding: 8px 14px; }
+  .score { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
+  .score .txt { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+  .score .txt b { color: var(--ink); font-weight: 600; }
+  pre.det .ospo { color: var(--ink); font-weight: 600; }
+  pre.det .warn { color: var(--delta-bad); }
+</style>
+</head>
+<body>
+<div id="tip" hidden></div>
+<div class="page">
+
+  <noscript><p>This report is rendered from the embedded data.json and needs JavaScript.</p></noscript>
+  <div class="alert" id="render-error" role="alert" hidden></div>
+
+  <header class="report">
+    <div>
+      <div class="brand">Open Source Program Office</div>
+      <h1 id="title"></h1>
+      <p class="subtitle" id="subtitle"></p>
+    </div>
+    <dl class="meta" id="meta"></dl>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <a href="#summary">1 Summary</a>
+    <a href="#trend">2 Trend</a>
+    <a href="#repositories">3 Repositories</a>
+    <a href="#method">A Scope &amp; method</a>
+  </nav>
+
+  <!-- ─────────────────────────── 1 Summary ─────────────────────────── -->
+  <section id="summary">
+    <h2><span class="num">1</span>Summary</h2>
+    <p class="lead" id="summary-lead"></p>
+    <div class="alert" id="data-alert" role="alert" hidden></div>
+    <div class="grid-hero">
+      <div class="card hero">
+        <div class="label">Average Scorecard score</div>
+        <div class="value" id="hero-value"></div>
+        <div id="hero-delta"></div>
+        <div id="hero-spark" class="spark"></div>
+        <div class="note" id="hero-note"></div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+    <div class="card">
+      <h3 class="chart-title">Overall score by repository</h3>
+      <p class="chart-sub">Scorecard's overall score (0–10) of each scanned repository, highest first</p>
+      <div id="chart-scores"></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 2 Trend ─────────────────────────── -->
+  <section id="trend">
+    <h2><span class="num">2</span>Trend</h2>
+    <p class="lead" id="trend-lead"></p>
+    <div class="grid-2">
+      <div class="card">
+        <h3 class="chart-title">Average Scorecard score</h3>
+        <p class="chart-sub">Mean overall score of the scanned repositories, per monthly report</p>
+        <div id="chart-average"></div>
+      </div>
+      <div class="card">
+        <h3 class="chart-title">Repositories scanned</h3>
+        <p class="chart-sub">Repositories with an overall score, per monthly report</p>
+        <div id="chart-scanned"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 3 Repositories ─────────────────────────── -->
+  <section id="repositories" class="break">
+    <h2><span class="num">3</span>Repositories</h2>
+    <p class="lead">Every repository with its overall score, how it developed over the last monthly reports, and the checks below the OSPO threshold. The overall score is Scorecard's own risk-weighted average of its checks; the thresholds do not change it. Expand a repository for every check with score, threshold, result, Scorecard's reason and its detail lines, failing checks first. Lines starting with <code>scorecard_check:</code> are decisions of the OSPO tool, not of Scorecard.</p>
+    <div class="card" style="padding:10px 8px 6px">
+      <div class="filters">
+        <label>Sort by <select id="r-sort">
+          <option value="score-asc">Lowest score first</option>
+          <option value="score-desc">Highest score first</option>
+          <option value="failing">Most failing checks</option>
+          <option value="repo">Repository name (A–Z)</option>
+        </select></label>
+        <label>Repository <input id="r-repo" type="search" placeholder="name contains…"></label>
+        <button type="button" id="r-expand">Expand all</button>
+      </div>
+      <div class="filter-count" id="r-count"></div>
+      <div class="scroll-x">
+      <table id="repos-table">
+        <thead><tr>
+          <th>Repository</th><th>Score</th><th id="r-trend-h">Trend</th><th class="num">Change</th><th>Failing checks</th><th>Scanned commit</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <div class="pager-bar">
+        <nav class="pager" id="r-pager" aria-label="Repository table pages"></nav>
+        <label class="pager-size">Rows per page <select id="r-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── A Method ─────────────────────────── -->
+  <section id="method" class="break">
+    <h2><span class="num">A</span>Scope and method</h2>
+    <div class="grid-2">
+      <div class="card"><h3>Scope</h3><table id="scope-table"><tbody></tbody></table></div>
+      <div class="card"><h3>How results are decided</h3><table id="def-table"><tbody></tbody></table></div>
+    </div>
+    <div class="card" style="margin-top:16px;padding:14px 8px 6px">
+      <h3 style="padding:0 10px">Tool run</h3>
+      <p class="chart-sub" style="padding:0 10px">scorecard_check runs the Scorecard CLI per active repository and writes one JSON file. This report only reads that file.</p>
+      <div class="scroll-x">
+        <table id="run-table">
+          <thead><tr><th>Tool</th><th>Run at</th><th>Configuration</th><th>Scorecard</th><th class="num">Results</th><th class="num">Skipped</th><th class="num">Errors</th><th>Workflow run</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="errors-box"></div>
+    </div>
+  </section>
+
+  <div class="integrity" id="integrity"></div>
+</div>
+
+<!-- data.json of this report, embedded by scripts/scorecard_report.js (lib/report_html.js) -->
+<script type="application/json" id="data.json">{"report_id":"OSPO-SC-2026-11","run_at":"2026-11-08T21:04:57Z","org":"allianz","ospo_sha":"b0cc2983771f2bd46861ef6616fa61ff9901cfc1","run_url":null,"previous_report":null,"input":{"file":"scorecard.json","script":"scripts/scorecard_check.js","status":"ok","sha256":"90423c607ffa1384455b5910b848245bdd09426d027c7cf7691cdb2420311a5c","tool":"scorecard_check","run_at":"2026-11-08T21:04:03Z","ospo_sha":"b0cc2983771f2bd46861ef6616fa61ff9901cfc1","config_file":"config/report/scorecard_check.yaml","config_sha256":"2fca157fc18af460b9bc858300898f3c7f58fdcfb39c855fe7dd4558ccc0ec36","run_url":null,"source":"scorecard CLI (--format=json --show-details)","scorecard_version":"v5.6.0","scorecard_commit":"61e84743356275f6ffca23b1b2f2cb945e19eb96","counts":{"results":90,"skipped":6,"errors":0,"repositories":5}},"scope":{"active":[".github","geofeed","ng-aquila","ospo","yukimi"],"archived":["calculus-prime-pnc","gem-config","license-scout","merge-bot","merge-bot-config","merge-processor"]},"summary":{"repositories_active":5,"repositories_scanned":5,"average_score":5.7,"median_score":4.3,"checks_passed":36,"checks_failed":25,"checks_na":29,"repositories_with_findings":5,"repositories_with_errors":0},"history":[{"month":"2026-11","average_score":5.7,"scores":{".github":4.1,"geofeed":4.3,"ng-aquila":3.9,"ospo":7.4,"yukimi":9}}],"repositories":[{"repo":".github","commit":"42baef0d845113d6b8905394e48cbbbb4de17184","date":"2026-11-08T21:04:04Z","score":4.1},{"repo":"geofeed","commit":"8b4804494146bdd6b0ad1e31b1db4c0adef5a6a1","date":"2026-11-08T21:04:04Z","score":4.3},{"repo":"ng-aquila","commit":"f995f66ab5b21fb9871929ea8e3ef2730347e88a","date":"2026-11-08T21:04:04Z","score":3.9},{"repo":"ospo","commit":"30b7fe068f2274f6a42e62f2c6783e8da2371514","date":"2026-11-08T21:04:13Z","score":7.4},{"repo":"yukimi","commit":"fac40d6d8ec407a1f09295782502ae6f0bc2ea80","date":"2026-11-08T21:04:21Z","score":9}],"catalogue":{"scorecard/binary-artifacts":{"name":"Binary-Artifacts","threshold":10,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#binary-artifacts","short":"Determines if the project has generated executable (binary) artifacts in the source repository."}},"scorecard/branch-protection":{"name":"Branch-Protection","threshold":6,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#branch-protection","short":"Determines if the default and release branches are protected with GitHub's branch protection settings. Not applicable to repositories with branch-protection: managed in create_repos.yaml: they are protected by the org ruleset ospo-managed."}},"scorecard/ci-tests":{"name":"CI-Tests","threshold":8,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#ci-tests","short":"Determines if the project runs tests before pull requests are merged. Not applicable to repositories with topic docs or template. Inconclusive (-1) is not applicable, unless Code-Review counted changesets: then changes reached the default branch without pull requests, and the result is fail."}},"scorecard/cii-best-practices":{"name":"CII-Best-Practices","threshold":5,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#cii-best-practices","short":"Determines if the project has an OpenSSF (formerly CII) Best Practices Badge."}},"scorecard/code-review":{"name":"Code-Review","threshold":7,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#code-review","short":"Determines if the project requires human code review before pull requests (aka merge requests) are merged."}},"scorecard/contributors":{"name":"Contributors","threshold":3,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#contributors","short":"Determines if the project has a set of contributors from multiple organizations (e.g., companies)."}},"scorecard/dangerous-workflow":{"name":"Dangerous-Workflow","threshold":10,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#dangerous-workflow","short":"Determines if the project's GitHub Action workflows avoid dangerous patterns."}},"scorecard/dependency-update-tool":{"name":"Dependency-Update-Tool","threshold":10,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#dependency-update-tool","short":"Determines if the project uses a dependency update tool."}},"scorecard/fuzzing":{"name":"Fuzzing","threshold":10,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#fuzzing","short":"Determines if the project uses fuzzing. Applies only to repositories with more than 5% code in a non-memory-safe language (C, C++, Objective-C, Objective-C++, Assembly); all others are not applicable."}},"scorecard/license":{"name":"License","threshold":10,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#license","short":"Determines if the project has defined a license."}},"scorecard/maintained":{"name":"Maintained","threshold":7,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#maintained","short":"Determines if the project is \"actively maintained\"."}},"scorecard/packaging":{"name":"Packaging","threshold":10,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#packaging","short":"Determines if the project is published as a package that others can easily download, install, easily update, and uninstall."}},"scorecard/pinned-dependencies":{"name":"Pinned-Dependencies","threshold":8,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#pinned-dependencies","short":"Determines if the project has declared and pinned the dependencies of its build process."}},"scorecard/sast":{"name":"SAST","threshold":7,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#sast","short":"Determines if the project uses static code analysis."}},"scorecard/security-policy":{"name":"Security-Policy","threshold":10,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#security-policy","short":"Determines if the project has published a security policy."}},"scorecard/signed-releases":{"name":"Signed-Releases","threshold":8,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#signed-releases","short":"Determines if the project cryptographically signs release artifacts."}},"scorecard/token-permissions":{"name":"Token-Permissions","threshold":8,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#token-permissions","short":"Determines if the project's workflows follow the principle of least privilege."}},"scorecard/vulnerabilities":{"name":"Vulnerabilities","threshold":10,"documentation":{"url":"https://github.com/ossf/scorecard/blob/61e84743356275f6ffca23b1b2f2cb945e19eb96/docs/checks.md#vulnerabilities","short":"Determines if the project has open, known unfixed vulnerabilities."}}},"results":[{"repo":".github","check":"scorecard/binary-artifacts","result":"pass","score":10,"reason":"no binaries found in the repo","details":[]},{"repo":".github","check":"scorecard/branch-protection","result":"na","score":5,"reason":"branch protection is not maximal on development and all release branches","details":["Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed","Info: 'allow deletion' disabled on branch 'main'","Info: 'force pushes' disabled on branch 'main'","Warn: 'branch protection settings apply to administrators' is disabled on branch 'main'","Warn: 'stale review dismissal' is disabled on branch 'main'","Warn: required approving review count is 1 on branch 'main'","Warn: codeowners review is not required on branch 'main'","Warn: 'last push approval' is disabled on branch 'main'","Warn: no status checks found to merge onto branch 'main'","Info: PRs are required in order to make changes on branch 'main'"]},{"repo":".github","check":"scorecard/ci-tests","result":"na","score":null,"reason":"no pull request found","details":["Info: scorecard_check: not applicable, topic 'docs'"]},{"repo":".github","check":"scorecard/cii-best-practices","result":"fail","score":0,"reason":"no effort to earn an OpenSSF best practices badge detected","details":[]},{"repo":".github","check":"scorecard/code-review","result":"fail","score":0,"reason":"Found 0/30 approved changesets -- score normalized to 0","details":[]},{"repo":".github","check":"scorecard/contributors","result":"pass","score":6,"reason":"project has 2 contributing companies or organizations -- score normalized to 6","details":["Info: found contributions from: allianz, ospo-sandbox"]},{"repo":".github","check":"scorecard/dangerous-workflow","result":"na","score":null,"reason":"no workflows found","details":[]},{"repo":".github","check":"scorecard/dependency-update-tool","result":"fail","score":0,"reason":"no update tool detected","details":["Warn: no dependency update tool configurations found"]},{"repo":".github","check":"scorecard/fuzzing","result":"na","score":0,"reason":"project is not fuzzed","details":["Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, Objective-C++, Assembly) above 5%","Warn: no fuzzer integrations found"]},{"repo":".github","check":"scorecard/license","result":"pass","score":10,"reason":"license file detected","details":["Info: project has a license file: LICENSE:0","Info: FSF or OSI recognized license: Creative Commons Attribution 4.0 International: LICENSE:0"]},{"repo":".github","check":"scorecard/maintained","result":"fail","score":0,"reason":"0 commit(s) and 0 issue activity found in the last 90 days -- score normalized to 0","details":[]},{"repo":".github","check":"scorecard/packaging","result":"na","score":null,"reason":"packaging workflow not detected","details":["Warn: no GitHub/GitLab publishing workflow detected."]},{"repo":".github","check":"scorecard/pinned-dependencies","result":"na","score":null,"reason":"no dependencies found","details":[]},{"repo":".github","check":"scorecard/sast","result":"fail","score":0,"reason":"no SAST tool detected","details":["Warn: no pull requests merged into dev branch"]},{"repo":".github","check":"scorecard/security-policy","result":"pass","score":10,"reason":"security policy file detected","details":["Info: security policy file detected: SECURITY.md:1","Info: Found linked content: SECURITY.md:1","Info: Found disclosure, vulnerability, and/or timelines in security policy: SECURITY.md:1","Info: Found text in security policy: SECURITY.md:1"]},{"repo":".github","check":"scorecard/signed-releases","result":"na","score":null,"reason":"no releases found","details":[]},{"repo":".github","check":"scorecard/token-permissions","result":"na","score":null,"reason":"No tokens found","details":[]},{"repo":".github","check":"scorecard/vulnerabilities","result":"pass","score":10,"reason":"0 existing vulnerabilities detected","details":[]},{"repo":"geofeed","check":"scorecard/binary-artifacts","result":"pass","score":10,"reason":"no binaries found in the repo","details":[]},{"repo":"geofeed","check":"scorecard/branch-protection","result":"na","score":5,"reason":"branch protection is not maximal on development and all release branches","details":["Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed","Info: 'allow deletion' disabled on branch 'main'","Info: 'force pushes' disabled on branch 'main'","Warn: 'branch protection settings apply to administrators' is disabled on branch 'main'","Warn: 'stale review dismissal' is disabled on branch 'main'","Warn: required approving review count is 1 on branch 'main'","Warn: codeowners review is not required on branch 'main'","Warn: 'last push approval' is disabled on branch 'main'","Warn: no status checks found to merge onto branch 'main'","Info: PRs are required in order to make changes on branch 'main'"]},{"repo":"geofeed","check":"scorecard/ci-tests","result":"na","score":0,"reason":"0 out of 1 merged PRs checked by a CI test -- score normalized to 0","details":["Info: scorecard_check: not applicable, topic 'docs'"]},{"repo":"geofeed","check":"scorecard/cii-best-practices","result":"fail","score":0,"reason":"no effort to earn an OpenSSF best practices badge detected","details":[]},{"repo":"geofeed","check":"scorecard/code-review","result":"fail","score":5,"reason":"Found 1/2 approved changesets -- score normalized to 5","details":[]},{"repo":"geofeed","check":"scorecard/contributors","result":"fail","score":0,"reason":"project has 0 contributing companies or organizations -- score normalized to 0","details":[]},{"repo":"geofeed","check":"scorecard/dangerous-workflow","result":"na","score":null,"reason":"no workflows found","details":[]},{"repo":"geofeed","check":"scorecard/dependency-update-tool","result":"fail","score":0,"reason":"no update tool detected","details":["Warn: no dependency update tool configurations found"]},{"repo":"geofeed","check":"scorecard/fuzzing","result":"na","score":0,"reason":"project is not fuzzed","details":["Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, Objective-C++, Assembly) above 5%","Warn: no fuzzer integrations found"]},{"repo":"geofeed","check":"scorecard/license","result":"pass","score":10,"reason":"license file detected","details":["Info: project has a license file: LICENSE:0","Info: FSF or OSI recognized license: MIT License: LICENSE:0"]},{"repo":"geofeed","check":"scorecard/maintained","result":"fail","score":0,"reason":"0 commit(s) and 0 issue activity found in the last 90 days -- score normalized to 0","details":[]},{"repo":"geofeed","check":"scorecard/packaging","result":"na","score":null,"reason":"packaging workflow not detected","details":["Warn: no GitHub/GitLab publishing workflow detected."]},{"repo":"geofeed","check":"scorecard/pinned-dependencies","result":"na","score":null,"reason":"no dependencies found","details":[]},{"repo":"geofeed","check":"scorecard/sast","result":"fail","score":0,"reason":"SAST tool is not run on all commits -- score normalized to 0","details":["Warn: 0 commits out of 15 are checked with a SAST tool"]},{"repo":"geofeed","check":"scorecard/security-policy","result":"pass","score":10,"reason":"security policy file detected","details":["Info: security policy file detected: SECURITY.md:1","Info: Found linked content: SECURITY.md:1","Info: Found disclosure, vulnerability, and/or timelines in security policy: SECURITY.md:1","Info: Found text in security policy: SECURITY.md:1"]},{"repo":"geofeed","check":"scorecard/signed-releases","result":"na","score":null,"reason":"no releases found","details":[]},{"repo":"geofeed","check":"scorecard/token-permissions","result":"na","score":null,"reason":"No tokens found","details":[]},{"repo":"geofeed","check":"scorecard/vulnerabilities","result":"pass","score":10,"reason":"0 existing vulnerabilities detected","details":[]},{"repo":"ng-aquila","check":"scorecard/binary-artifacts","result":"pass","score":10,"reason":"no binaries found in the repo","details":[]},{"repo":"ng-aquila","check":"scorecard/branch-protection","result":"fail","score":3,"reason":"branch protection is not maximal on development and all release branches","details":["Info: 'allow deletion' disabled on branch 'main'","Info: 'force pushes' disabled on branch 'main'","Warn: 'branch protection settings apply to administrators' is disabled on branch 'main'","Warn: 'stale review dismissal' is disabled on branch 'main'","Warn: codeowners review is not required on branch 'main'","Warn: 'last push approval' is disabled on branch 'main'","Warn: 'up-to-date branches' is disabled on branch 'main'","Warn: no status checks found to merge onto branch 'main'","Warn: PRs are not required to make changes on branch 'main'; or we don't have data to detect it.If you think it might be the latter, make sure to run Scorecard with a PAT or use Repo Rules (that are always public) instead of Branch Protection settings"]},{"repo":"ng-aquila","check":"scorecard/ci-tests","result":"na","score":null,"reason":"no pull request found","details":["Info: scorecard_check: not applicable, topic 'docs'"]},{"repo":"ng-aquila","check":"scorecard/cii-best-practices","result":"fail","score":2,"reason":"badge detected: InProgress","details":[]},{"repo":"ng-aquila","check":"scorecard/code-review","result":"fail","score":0,"reason":"Found 0/30 approved changesets -- score normalized to 0","details":[]},{"repo":"ng-aquila","check":"scorecard/contributors","result":"pass","score":6,"reason":"project has 2 contributing companies or organizations -- score normalized to 6","details":["Info: found contributions from: allianz technology, satellytes"]},{"repo":"ng-aquila","check":"scorecard/dangerous-workflow","result":"pass","score":10,"reason":"no dangerous workflow patterns detected","details":[]},{"repo":"ng-aquila","check":"scorecard/dependency-update-tool","result":"fail","score":0,"reason":"no update tool detected","details":["Warn: no dependency update tool configurations found"]},{"repo":"ng-aquila","check":"scorecard/fuzzing","result":"na","score":0,"reason":"project is not fuzzed","details":["Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, Objective-C++, Assembly) above 5%","Warn: no fuzzer integrations found"]},{"repo":"ng-aquila","check":"scorecard/license","result":"pass","score":10,"reason":"license file detected","details":["Info: project has a license file: LICENSE:0","Info: FSF or OSI recognized license: MIT License: LICENSE:0"]},{"repo":"ng-aquila","check":"scorecard/maintained","result":"pass","score":10,"reason":"30 commit(s) and 0 issue activity found in the last 90 days -- score normalized to 10","details":[]},{"repo":"ng-aquila","check":"scorecard/packaging","result":"na","score":null,"reason":"packaging workflow not detected","details":["Warn: no GitHub/GitLab publishing workflow detected."]},{"repo":"ng-aquila","check":"scorecard/pinned-dependencies","result":"fail","score":4,"reason":"dependency not pinned by hash detected -- score normalized to 4","details":["Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/ci.yml:24: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/ci.yml/main?enable=pin","Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/ci.yml:29: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/ci.yml/main?enable=pin","Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/ci.yml:76: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/ci.yml/main?enable=pin","Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/ci.yml:90: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/ci.yml/main?enable=pin","Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/ci.yml:100: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/ci.yml/main?enable=pin","Warn: third-party GitHubAction not pinned by hash: .github/workflows/claude-pr-review.yml:18: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/claude-pr-review.yml/main?enable=pin","Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/deploy-docs.yml:11: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/deploy-docs.yml/main?enable=pin","Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/deploy-docs.yml:16: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/deploy-docs.yml/main?enable=pin","Warn: third-party GitHubAction not pinned by hash: .github/workflows/deploy-docs.yml:32: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/deploy-docs.yml/main?enable=pin","Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/figma-code-connect.yml:23: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/figma-code-connect.yml/main?enable=pin","Warn: GitHub-owned GitHubAction not pinned by hash: .github/workflows/figma-code-connect.yml:28: update your workflow using https://app.stepsecurity.io/secureworkflow/allianz/ng-aquila/figma-code-connect.yml/main?enable=pin","Info:   0 out of   9 GitHub-owned GitHubAction dependencies pinned","Info:   0 out of   2 third-party GitHubAction dependencies pinned","Info:   3 out of   3 npmCommand dependencies pinned"]},{"repo":"ng-aquila","check":"scorecard/sast","result":"fail","score":0,"reason":"no SAST tool detected","details":["Warn: no pull requests merged into dev branch"]},{"repo":"ng-aquila","check":"scorecard/security-policy","result":"fail","score":3,"reason":"security policy file detected","details":["Info: security policy file detected: SECURITY.md:1","Warn: no linked content found","Warn: One or no descriptive hints of disclosure, vulnerability, and/or timelines in security policy","Info: Found text in security policy: SECURITY.md:1"]},{"repo":"ng-aquila","check":"scorecard/signed-releases","result":"na","score":null,"reason":"no releases found","details":[]},{"repo":"ng-aquila","check":"scorecard/token-permissions","result":"fail","score":0,"reason":"detected GitHub workflow tokens with excessive permissions","details":["Info: jobLevel 'contents' permission set to 'read': .github/workflows/ci.yml:20","Info: jobLevel 'actions' permission set to 'read': .github/workflows/ci.yml:21","Info: jobLevel 'actions' permission set to 'read': .github/workflows/claude-pr-review.yml:17","Info: jobLevel 'contents' permission set to 'read': .github/workflows/claude-pr-review.yml:14","Info: jobLevel 'contents' permission set to 'read': .github/workflows/figma-code-connect.yml:20","Warn: no topLevel permission defined: .github/workflows/ci.yml:1","Warn: no topLevel permission defined: .github/workflows/claude-pr-review.yml:1","Warn: no topLevel permission defined: .github/workflows/deploy-docs.yml:1","Warn: no topLevel permission defined: .github/workflows/figma-code-connect.yml:1","Info: no jobLevel write permissions found"]},{"repo":"ng-aquila","check":"scorecard/vulnerabilities","result":"fail","score":0,"reason":"21 existing vulnerabilities detected","details":["Warn: Project is vulnerable to: https://osv.dev/GHSA-3g3m-2fjr-6pw4","Warn: Project is vulnerable to: https://osv.dev/GHSA-g3hv-75wg-m249","Warn: Project is vulnerable to: https://osv.dev/GHSA-587h-7wmj-h5pm","Warn: Project is vulnerable to: https://osv.dev/GHSA-698v-4r3x-3vcv","Warn: Project is vulnerable to: https://osv.dev/GHSA-9jrq-w75r-8gcw","Warn: Project is vulnerable to: https://osv.dev/GHSA-r825-w8mm-5pxw","Warn: Project is vulnerable to: https://osv.dev/GHSA-rq7h-c2jc-7f22","Warn: Project is vulnerable to: https://osv.dev/GHSA-vfpm-58rq-9qcg","Warn: Project is vulnerable to: https://osv.dev/GHSA-mrhx-c7xc-m3w5","Warn: Project is vulnerable to: https://osv.dev/GHSA-46jr-4wx8-v453","Warn: Project is vulnerable to: https://osv.dev/GHSA-f897-62hf-6gxq","Warn: Project is vulnerable to: https://osv.dev/GHSA-jm63-cq47-j5jp","Warn: Project is vulnerable to: https://osv.dev/GHSA-rvq5-wwqv-78pq","Warn: Project is vulnerable to: https://osv.dev/GHSA-27r3-jxmh-p828","Warn: Project is vulnerable to: https://osv.dev/GHSA-333x-w4r6-6crp","Warn: Project is vulnerable to: https://osv.dev/GHSA-w74x-v6f9-j3xg","Warn: Project is vulnerable to: https://osv.dev/GHSA-wjr9-j795-jxcr","Warn: Project is vulnerable to: https://osv.dev/GHSA-xhq7-xmqj-769h","Warn: Project is vulnerable to: https://osv.dev/GHSA-rxp7-6hxx-x8q5","Warn: Project is vulnerable to: https://osv.dev/GHSA-6pq8-jhm2-2vcw","Warn: Project is vulnerable to: https://osv.dev/GHSA-mrwp-f3q8-3g9p"]},{"repo":"ospo","check":"scorecard/binary-artifacts","result":"pass","score":10,"reason":"no binaries found in the repo","details":[]},{"repo":"ospo","check":"scorecard/branch-protection","result":"na","score":5,"reason":"branch protection is not maximal on development and all release branches","details":["Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed","Info: 'allow deletion' disabled on branch 'main'","Info: 'force pushes' disabled on branch 'main'","Warn: 'branch protection settings apply to administrators' is disabled on branch 'main'","Warn: 'stale review dismissal' is disabled on branch 'main'","Warn: required approving review count is 1 on branch 'main'","Warn: codeowners review is not required on branch 'main'","Warn: 'last push approval' is disabled on branch 'main'","Warn: no status checks found to merge onto branch 'main'","Info: PRs are required in order to make changes on branch 'main'"]},{"repo":"ospo","check":"scorecard/ci-tests","result":"na","score":7,"reason":"15 out of 21 merged PRs checked by a CI test -- score normalized to 7","details":["Info: scorecard_check: not applicable, topic 'docs'"]},{"repo":"ospo","check":"scorecard/cii-best-practices","result":"fail","score":0,"reason":"no effort to earn an OpenSSF best practices badge detected","details":[]},{"repo":"ospo","check":"scorecard/code-review","result":"fail","score":4,"reason":"Found 12/25 approved changesets -- score normalized to 4","details":[]},{"repo":"ospo","check":"scorecard/contributors","result":"pass","score":6,"reason":"project has 2 contributing companies or organizations -- score normalized to 6","details":["Info: found contributions from: allianz, ospo-sandbox"]},{"repo":"ospo","check":"scorecard/dangerous-workflow","result":"pass","score":10,"reason":"no dangerous workflow patterns detected","details":[]},{"repo":"ospo","check":"scorecard/dependency-update-tool","result":"pass","score":10,"reason":"update tool detected","details":["Info: detected update tool: Dependabot: :0"]},{"repo":"ospo","check":"scorecard/fuzzing","result":"na","score":0,"reason":"project is not fuzzed","details":["Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, Objective-C++, Assembly) above 5%","Warn: no fuzzer integrations found"]},{"repo":"ospo","check":"scorecard/license","result":"pass","score":10,"reason":"license file detected","details":["Info: project has a license file: LICENSE:0","Info: FSF or OSI recognized license: MIT License: LICENSE:0"]},{"repo":"ospo","check":"scorecard/maintained","result":"fail","score":2,"reason":"3 commit(s) and 0 issue activity found in the last 90 days -- score normalized to 2","details":[]},{"repo":"ospo","check":"scorecard/packaging","result":"na","score":null,"reason":"packaging workflow not detected","details":["Warn: no GitHub/GitLab publishing workflow detected."]},{"repo":"ospo","check":"scorecard/pinned-dependencies","result":"pass","score":10,"reason":"all dependencies are pinned","details":["Info:  17 out of  17 GitHub-owned GitHubAction dependencies pinned","Info:   5 out of   5 npmCommand dependencies pinned"]},{"repo":"ospo","check":"scorecard/sast","result":"pass","score":9,"reason":"SAST tool is not run on all commits -- score normalized to 9","details":["Warn: 20 commits out of 21 are checked with a SAST tool"]},{"repo":"ospo","check":"scorecard/security-policy","result":"pass","score":10,"reason":"security policy file detected","details":["Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1","Info: Found linked content: github.com/allianz/.github/SECURITY.md:1","Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1","Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"]},{"repo":"ospo","check":"scorecard/signed-releases","result":"na","score":null,"reason":"no releases found","details":[]},{"repo":"ospo","check":"scorecard/token-permissions","result":"pass","score":10,"reason":"GitHub workflow tokens follow principle of least privilege","details":["Info: topLevel 'contents' permission set to 'read': .github/workflows/archive_repos.yaml:8","Info: topLevel 'contents' permission set to 'read': .github/workflows/create_repos.yaml:10","Info: topLevel 'contents' permission set to 'read': .github/workflows/license_scan.yaml:8","Info: topLevel 'contents' permission set to 'read': .github/workflows/lint_repos.yaml:8","Info: no jobLevel write permissions found"]},{"repo":"ospo","check":"scorecard/vulnerabilities","result":"pass","score":10,"reason":"0 existing vulnerabilities detected","details":[]},{"repo":"yukimi","check":"scorecard/binary-artifacts","result":"pass","score":10,"reason":"no binaries found in the repo","details":[]},{"repo":"yukimi","check":"scorecard/branch-protection","result":"na","score":5,"reason":"branch protection is not maximal on development and all release branches","details":["Info: scorecard_check: not evaluated, branch-protection is managed by the org ruleset ospo-managed","Info: 'allow deletion' disabled on branch 'main'","Info: 'force pushes' disabled on branch 'main'","Warn: 'branch protection settings apply to administrators' is disabled on branch 'main'","Warn: 'stale review dismissal' is disabled on branch 'main'","Warn: required approving review count is 1 on branch 'main'","Warn: codeowners review is not required on branch 'main'","Warn: 'last push approval' is disabled on branch 'main'","Warn: no status checks found to merge onto branch 'main'","Info: PRs are required in order to make changes on branch 'main'"]},{"repo":"yukimi","check":"scorecard/ci-tests","result":"pass","score":10,"reason":"30 out of 30 merged PRs checked by a CI test -- score normalized to 10","details":[]},{"repo":"yukimi","check":"scorecard/cii-best-practices","result":"fail","score":0,"reason":"no effort to earn an OpenSSF best practices badge detected","details":[]},{"repo":"yukimi","check":"scorecard/code-review","result":"pass","score":10,"reason":"all changesets reviewed","details":[]},{"repo":"yukimi","check":"scorecard/contributors","result":"pass","score":6,"reason":"project has 2 contributing companies or organizations -- score normalized to 6","details":["Info: found contributions from: allianz, ospo-sandbox"]},{"repo":"yukimi","check":"scorecard/dangerous-workflow","result":"pass","score":10,"reason":"no dangerous workflow patterns detected","details":[]},{"repo":"yukimi","check":"scorecard/dependency-update-tool","result":"pass","score":10,"reason":"update tool detected","details":["Info: detected update tool: Dependabot: .github/dependabot.yml:1"]},{"repo":"yukimi","check":"scorecard/fuzzing","result":"na","score":10,"reason":"project is fuzzed","details":["Info: scorecard_check: not applicable, no non-memory-safe language (C, C++, Objective-C, Objective-C++, Assembly) above 5%","Info: GoBuiltInFuzzer integration found: internal/account/tenant/naming_test.go:85","Info: GoBuiltInFuzzer integration found: internal/snowflake/host/host_test.go:144","Info: GoBuiltInFuzzer integration found: internal/snowflake/statement/render_test.go:140","Info: GoBuiltInFuzzer integration found: internal/snowflake/statement/render_test.go:187","Info: GoBuiltInFuzzer integration found: internal/snowflake/statement/render_test.go:209"]},{"repo":"yukimi","check":"scorecard/license","result":"pass","score":10,"reason":"license file detected","details":["Info: project has a license file: LICENSE:0","Info: FSF or OSI recognized license: Apache License 2.0: LICENSE:0"]},{"repo":"yukimi","check":"scorecard/maintained","result":"pass","score":10,"reason":"30 commit(s) and 0 issue activity found in the last 90 days -- score normalized to 10","details":[]},{"repo":"yukimi","check":"scorecard/packaging","result":"na","score":null,"reason":"packaging workflow not detected","details":["Warn: no GitHub/GitLab publishing workflow detected."]},{"repo":"yukimi","check":"scorecard/pinned-dependencies","result":"pass","score":10,"reason":"all dependencies are pinned","details":["Info:  10 out of  10 GitHub-owned GitHubAction dependencies pinned","Info:   1 out of   1 third-party GitHubAction dependencies pinned","Info:   1 out of   1 containerImage dependencies pinned"]},{"repo":"yukimi","check":"scorecard/sast","result":"pass","score":10,"reason":"SAST tool is run on all commits","details":["Info: all commits (30) are checked with a SAST tool"]},{"repo":"yukimi","check":"scorecard/security-policy","result":"pass","score":10,"reason":"security policy file detected","details":["Info: security policy file detected: github.com/allianz/.github/SECURITY.md:1","Info: Found linked content: github.com/allianz/.github/SECURITY.md:1","Info: Found disclosure, vulnerability, and/or timelines in security policy: github.com/allianz/.github/SECURITY.md:1","Info: Found text in security policy: github.com/allianz/.github/SECURITY.md:1"]},{"repo":"yukimi","check":"scorecard/signed-releases","result":"na","score":null,"reason":"no releases found","details":[]},{"repo":"yukimi","check":"scorecard/token-permissions","result":"pass","score":10,"reason":"GitHub workflow tokens follow principle of least privilege","details":["Warn: jobLevel 'contents' permission set to 'write': .github/workflows/release.yml:17","Warn: jobLevel 'packages' permission set to 'write': .github/workflows/release.yml:18","Info: topLevel 'contents' permission set to 'read': .github/workflows/ci.yml:9","Info: topLevel 'contents' permission set to 'read': .github/workflows/release.yml:8","Info: topLevel permissions set to 'read-all': .github/workflows/scorecard.yml:16"]},{"repo":"yukimi","check":"scorecard/vulnerabilities","result":"fail","score":7,"reason":"3 existing vulnerabilities detected","details":["Warn: Project is vulnerable to: https://osv.dev/GO-2026-6865","Warn: Project is vulnerable to: https://osv.dev/GO-2026-6860","Warn: Project is vulnerable to: https://osv.dev/GO-2026-6866"]}],"skipped":[{"repo":"license-scout","reason":"archived"},{"repo":"merge-processor","reason":"archived"},{"repo":"calculus-prime-pnc","reason":"archived"},{"repo":"gem-config","reason":"archived"},{"repo":"merge-bot-config","reason":"archived"},{"repo":"merge-bot","reason":"archived"}],"errors":[]}</script>
+<script>
+/* Render guard: an error while rendering is shown on the page instead of leaving it blank. */
+addEventListener('error', e => {
+  document.documentElement.dataset.render = 'error';
+  const box = document.getElementById('render-error');
+  box.textContent = `The report could not be rendered: ${e.message}`;
+  box.hidden = false;
+});
+</script>
+
+<script>
+/* ═══════════════════════════ Load data ═══════════════════════════ */
+const $ = id => document.getElementById(id);
+const readJson = id => JSON.parse($(id).textContent);
+const DATA = readJson('data.json');   // the only input: scorecard_report builds it from the tool file of scorecard_check
+const ORG = DATA.org;
+const INPUT = DATA.input;
+const CAT = DATA.catalogue;
+const CHECKS = Object.keys(CAT);
+const REPOS = DATA.repositories;
+const SCORE_OF = Object.fromEntries(REPOS.map(r => [r.repo, r.score]));
+const HISTORY = DATA.history;
+const PREV = HISTORY.length > 1 ? HISTORY[HISTORY.length - 2] : null;   // last report before this one
+const ACTIVE = DATA.scope.active, ARCHIVED = DATA.scope.archived;
+const S = DATA.summary;
+const failingOf = repo => DATA.results.filter(r => r.repo === repo && r.result === 'fail');
+const errorsOf = repo => DATA.errors.filter(e => e.repo === repo);
+/* Rows of the repository table: every active repository with a score, a result or an error */
+const ROWS = [...new Set([...REPOS.map(r => r.repo), ...DATA.results.map(r => r.repo), ...DATA.errors.map(e => e.repo).filter(Boolean)])].sort((a, b) => a.localeCompare(b));
+const NOT_SCANNED = ACTIVE.filter(r => !(r in SCORE_OF));
+
+const STATUS = {
+  'pass':   { label: 'Pass',           color: 'var(--good)',     glyph: '✓', ink: '#fff' },
+  'fail':   { label: 'Fail',           color: 'var(--critical)', glyph: '✕', ink: '#fff' },
+  'na':     { label: 'Not applicable', color: 'transparent',     glyph: '–', ink: 'var(--muted)', ring: 'ring' },
+  'nodata': { label: 'No data',        color: 'var(--neutral)',  glyph: '?', ink: '#fff' },
+};
+const fmtScore = v => v == null ? '–' : Number.isInteger(v) ? String(v) : v.toFixed(1);
+const nameOf = check => CAT[check]?.name ?? check.replace(/^scorecard\//, '');
+const repoUrl = repo => `https://github.com/${ORG}/${repo}`;
+const anchorOf = repo => 'd-' + repo.replace(/[^A-Za-z0-9_-]/g, '_');
+
+/* ═══════════════════════════ Helpers (as in compliance_report.html) ═══════════════════════════ */
+const NS = 'http://www.w3.org/2000/svg';
+function s(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function h(tag, attrs = {}, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'style') e.style.cssText = v;
+    else e.setAttribute(k, v);
+  }
+  for (const c of children.flat(Infinity)) if (c != null && c !== false) e.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  return e;
+}
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ymd = iso => iso.slice(0, 10).split('-').map(Number);
+const fmtDate = iso => { if (!iso) return '–'; const [y, m, d] = ymd(iso); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const fmtMonth = ym => `${MONTHS[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}`;   // '2026-11' → 'Nov 2026'
+const fmtMon = ym => MONTHS[+ym.slice(5, 7) - 1];                            // '2026-11' → 'Nov'
+const addMonths = (ym, k) => { const n = +ym.slice(0, 4) * 12 + +ym.slice(5, 7) - 1 + k; return `${Math.floor(n / 12)}-${String(n % 12 + 1).padStart(2, '0')}`; };
+/* Trends show the last TREND_MONTHS months, one slot per month. A month without a report is null:
+   lines continue through it without a point, bars leave a gap; before the first report the line is flat. */
+const TREND_MONTHS = 6;
+const SLOTS = Array.from({ length: TREND_MONTHS }, (_, i) => addMonths(HISTORY.at(-1).month, i - TREND_MONTHS + 1));
+const BY_MONTH = Object.fromEntries(HISTORY.map(x => [x.month, x]));
+const trendValues = f => SLOTS.map(m => (BY_MONTH[m] ? f(BY_MONTH[m]) : null) ?? null);
+const fmtDateTime = iso => `${fmtDate(iso)}, ${iso.slice(11, 16)} UTC`;
+const plural = (n, one, many = one + 's') => `${n} ${n === 1 ? one : many}`;
+const shortSha = x => x == null ? '–' : x.length > 12 ? `${x.slice(0, 4)}…${x.slice(-4)}` : x;
+/* Link to a workflow run, or "local run" when the run was not in GitHub Actions (run_url null) */
+const runLink = (url, prefix = '') => url ? h('a', { href: url, text: prefix + url.split('/').pop() }) : h('span', { class: 'muted', text: 'local run' });
+const OSPO_REF = DATA.ospo_sha ?? 'main';
+/* A commit for people: the first 7 characters, like GitHub */
+const commitText = sha => sha ? sha.slice(0, 7) : 'unknown';
+const capText = (xs, n) => xs.length > n ? `${xs.slice(0, n).join(', ')} and ${xs.length - n} more` : xs.join(', ');
+const joinNodes = (nodes, sep = ' · ') => nodes.flatMap((n, i) => i ? [sep, n] : [n]);
+
+const tip = $('tip');
+function showTip(evt, value, label) {
+  tip.replaceChildren(h('strong', { text: value }), h('span', { text: label }));
+  tip.hidden = false;
+  let x, y;
+  if (evt && evt.clientX != null && evt.type !== 'focus') { x = evt.clientX; y = evt.clientY; }
+  else { const r = evt.target.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top; }
+  const w = tip.offsetWidth, hgt = tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(x + 14, innerWidth - w - 8)) + 'px';
+  tip.style.top = (y - hgt - 12 < 0 ? y + 16 : y - hgt - 12) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+
+function statusPill(key, label) {
+  const st = STATUS[key];
+  const ico = h('span', { class: 'ico' + (st.ring ? ' ' + st.ring : ''), style: `background:${st.color};color:${st.ink}`, 'aria-hidden': 'true', text: st.glyph });
+  return h('span', { class: 'status' }, ico, label ?? st.label);
+}
+
+const uniq = xs => [...new Set(xs)];
+/* Page buttons: previous, first, a window around the current page, last, next (as in compliance_report.html) */
+function renderPager(el, page, pages, go) {
+  el.replaceChildren();
+  const single = pages <= 1;  // one page only: show the pager greyed out
+  const btn = (label, p, opts = {}) => {
+    if (single) opts.disabled = true;
+    const b = h('button', { type: 'button', text: label, 'aria-label': opts.aria ?? `Page ${p}`, 'aria-current': opts.current ? 'page' : null, disabled: opts.disabled ? '' : null });
+    if (!opts.disabled && !opts.current) b.addEventListener('click', () => go(p));
+    return b;
+  };
+  el.append(btn('‹ Previous', page - 1, { aria: 'Previous page', disabled: page === 1 }));
+  const nums = uniq([1, page - 2, page - 1, page, page + 1, page + 2, pages].filter(p => p >= 1 && p <= pages)).sort((a, b) => a - b);
+  nums.forEach((p, i) => {
+    if (i && p - nums[i - 1] > 1) el.append(h('span', { class: 'gap', text: '…' }));
+    el.append(btn(String(p), p, { current: p === page }));
+  });
+  el.append(btn('Next ›', page + 1, { aria: 'Next page', disabled: page === pages }));
+  el.append(h('span', { style: 'margin-left:8px', text: `Page ${page} of ${pages}` }));
+}
+
+function dataTable(headers, rows, numericCols = []) {
+  const t = h('table');
+  t.append(h('thead', {}, h('tr', {}, ...headers.map((x, i) => h('th', { class: numericCols.includes(i) ? 'num' : '', text: x })))));
+  t.append(h('tbody', {}, ...rows.map(r => h('tr', {}, ...r.map((c, i) => h('td', { class: numericCols.includes(i) ? 'num' : '', text: c instanceof Node ? null : c }, c instanceof Node ? c : null))))));
+  return h('details', { class: 'datatable' }, h('summary', { text: 'Show data table' }), t);
+}
+
+/* null values (no data in that run) are skipped */
+function sparkline(values, { w = 96, hgt = 24, min, max } = {}) {
+  let pts = values.map((v, i) => [i, v]).filter(([, v]) => v != null);
+  if (!pts.length) return h('span', { class: 'cov-txt muted', text: '–' });
+  const vs = pts.map(([, v]) => v);
+  if (pts[0][0] > 0) pts = [[0, pts[0][1]], ...pts];   // flat line before the first report
+  const lo = min ?? Math.min(...vs), hi = max ?? Math.max(...vs);
+  const span = hi - lo || 1;
+  const x = i => 2 + i * (w - 6) / Math.max(1, values.length - 1);
+  const y = v => hgt - 4 - (v - lo) * (hgt - 8) / span;
+  const svg = s('svg', { width: w, height: hgt, viewBox: `0 0 ${w} ${hgt}`, 'aria-hidden': 'true' });
+  s('polyline', { points: pts.map(([i, v]) => `${x(i)},${y(v)}`).join(' '), fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  const [li, lv] = pts.at(-1);
+  s('circle', { cx: x(li), cy: y(lv), r: 3, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
+  return svg;
+}
+
+const showLabel = (i, n) => n <= 8 || (n - 1 - i) % 2 === 0;
+
+function lineChart(el, { labels, full, values, yMin, yMax, yTicks, fmt, name }) {   // values: one per month, null = no report
+  const W = 560, H = 250, m = { t: 14, r: 52, b: 30, l: 44 };
+  const idx = values.map((v, i) => v == null ? null : i).filter(i => i != null);   // measured months
+  const first = idx[0], li = idx.at(-1);
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', tabindex: 0, 'aria-label': `${name}: ${fmt(values[first])} in ${full[first]} to ${fmt(values[li])} in ${full[li]}` });
+  const x = i => m.l + i * (W - m.l - m.r) / Math.max(1, values.length - 1);
+  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / (yMax - yMin);
+  for (const t of yTicks) {
+    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
+    s('text', { class: 'tick', x: m.l - 8, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = fmt(t);
+  }
+  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
+  labels.forEach((l, i) => { if (showLabel(i, labels.length)) s('text', { class: 'tick', x: x(i), y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = l; });
+  // the line runs through months without a report; before the first report it is flat
+  const pts = [...(first > 0 ? [[x(0), y(values[first])]] : []), ...idx.map(i => [x(i), y(values[i])])];
+  const d = pts.map(([px, py]) => `${px},${py}`).join(' L');
+  s('path', { d: `M${pts[0][0]},${H - m.b} L${d} L${pts.at(-1)[0]},${H - m.b} Z`, fill: 'var(--accent-wash)' }, svg);
+  s('path', { d: `M${d}`, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  s('circle', { cx: x(li), cy: y(values[li]), r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+  s('text', { class: 'vlabel', x: x(li) + 10, y: y(values[li]) + 4 }, svg).textContent = fmt(values[li]);
+  // hover only on months with a report
+  const cross = s('line', { x1: 0, x2: 0, y1: m.t, y2: H - m.b, stroke: 'var(--axis)', 'stroke-width': 1, visibility: 'hidden' }, svg);
+  const dot = s('circle', { r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' }, svg);
+  const hit = s('rect', { x: m.l - 10, y: m.t, width: W - m.l - m.r + 20, height: H - m.t - m.b, fill: 'transparent' }, svg);
+  let cur = li;
+  const hide = () => { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); hideTip(); };
+  const show = (i, evt) => {
+    if (values[i] == null) return hide();
+    cur = i;
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(values[i])); dot.setAttribute('visibility', 'visible');
+    showTip(evt, fmt(values[i]), `${name} · ${full[i]}`);
+  };
+  hit.addEventListener('pointermove', evt => {
+    const r = svg.getBoundingClientRect();
+    const px = (evt.clientX - r.left) * W / r.width;
+    show(Math.max(0, Math.min(values.length - 1, Math.round((px - m.l) / ((W - m.l - m.r) / Math.max(1, values.length - 1))))), evt);
+  });
+  hit.addEventListener('pointerleave', hide);
+  svg.addEventListener('focus', () => show(cur, { target: dot, type: 'focus' }));
+  svg.addEventListener('blur', hide);
+  svg.addEventListener('keydown', evt => {   // arrow keys step through the months with a report
+    if (evt.key === 'ArrowLeft' || evt.key === 'ArrowRight') {
+      evt.preventDefault();
+      const k = idx.indexOf(cur) + (evt.key === 'ArrowRight' ? 1 : -1);
+      show(idx[Math.max(0, Math.min(idx.length - 1, k))], { target: dot, type: 'focus' });
+    }
+  });
+  el.append(svg, dataTable(['Month', name], idx.map(i => [full[i], fmt(values[i])]), [1]));
+}
+
+function roundedTop(x, y, w, base, r) {
+  r = Math.min(r, w / 2, base - y);
+  return `M${x},${base} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${base} Z`;
+}
+function roundedRight(x, y, w, hgt, r) {
+  r = Math.min(r, w, hgt / 2);
+  return `M${x},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + hgt - r} Q${x + w},${y + hgt} ${x + w - r},${y + hgt} H${x} Z`;
+}
+
+function columnChart(el, { labels, full, values, yMax, yTicks, name }) {   // values: one per month, null = no report (gap)
+  const W = 560, H = 250, m = { t: 20, r: 16, b: 30, l: 44 };
+  const idx = values.map((v, i) => v == null ? null : i).filter(i => i != null);
+  const first = idx[0], li = idx.at(-1);
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${name}: ${values[first]} in ${full[first]} to ${values[li]} in ${full[li]}` });
+  const band = (W - m.l - m.r) / values.length;
+  const bw = Math.min(24, band * 0.62);
+  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / yMax;
+  for (const t of yTicks) {
+    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
+    s('text', { class: 'tick', x: m.l - 8, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = t;
+  }
+  values.forEach((v, i) => {
+    const cx = m.l + band * i + band / 2;
+    if (showLabel(i, values.length)) s('text', { class: 'tick', x: cx, y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = labels[i];
+    if (v == null) return;   // no report this month: a gap, no hover
+    const bar = s('path', { d: roundedTop(cx - bw / 2, y(v), bw, H - m.b, 4), fill: 'var(--accent)' }, svg);
+    if (i === li) s('text', { class: 'vlabel', x: cx, y: y(v) - 6, 'text-anchor': 'middle' }, svg).textContent = v;
+    const hit = s('rect', { x: m.l + band * i, y: m.t, width: band, height: H - m.t - m.b, fill: 'transparent', tabindex: 0, 'aria-label': `${full[i]}: ${v}` }, svg);
+    const on = evt => { bar.setAttribute('opacity', 0.8); showTip(evt, String(v), `${name} · ${full[i]}`); };
+    const off = () => { bar.removeAttribute('opacity'); hideTip(); };
+    hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
+    hit.addEventListener('focus', on); hit.addEventListener('blur', off);
+  });
+  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
+  el.append(svg, dataTable(['Month', name], idx.map(i => [full[i], values[i]]), [1]));
+}
+
+function niceTicks(lo, hi, count = 4) {
+  const raw = Math.max(1e-9, (hi - lo) / count);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 5, 10].map(k => k * mag).find(st => st >= raw);
+  const a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step;
+  const ticks = [];
+  for (let t = a; t <= b + 1e-9; t += step) ticks.push(+t.toFixed(6));
+  return ticks;
+}
+
+/* Overall score per repository as horizontal bars, 0–10, one series (accent), highest first */
+function scoreBars(el, items) {
+  if (!items.length) { el.append(h('p', { class: 'muted', text: 'No repository was scanned.' })); return; }
+  const W = 1000, row = 26, m = { t: 4, r: 44, l: 200, b: 22 };
+  const H = m.t + row * items.length + m.b;
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Overall Scorecard score by repository' });
+  const xw = v => Math.max(0, v) * (W - m.l - m.r) / 10;
+  for (const t of [0, 2, 4, 6, 8, 10]) {
+    s('line', { class: t ? 'grid-line' : 'axis-line', x1: m.l + xw(t), x2: m.l + xw(t), y1: m.t, y2: H - m.b }, svg);
+    s('text', { class: 'tick', x: m.l + xw(t), y: H - m.b + 15, 'text-anchor': 'middle' }, svg).textContent = t;
+  }
+  items.forEach((d, i) => {
+    const y0 = m.t + row * i;
+    const label = d.repo.length > 26 ? d.repo.slice(0, 25) + '…' : d.repo;
+    s('text', { class: 'clabel', x: m.l - 10, y: y0 + row / 2 + 4, 'text-anchor': 'end' }, svg).textContent = label;
+    const bar = s('path', { d: roundedRight(m.l, y0 + 6, Math.max(2, xw(d.score)), row - 12, 4), fill: 'var(--accent)' }, svg);
+    s('text', { class: 'vlabel', x: m.l + Math.max(2, xw(d.score)) + 6, y: y0 + row / 2 + 4 }, svg).textContent = fmtScore(d.score);
+    const failing = failingOf(d.repo).length;
+    const hit = s('rect', { x: 0, y: y0, width: W, height: row, fill: 'transparent', tabindex: 0, 'aria-label': `${d.repo}: ${fmtScore(d.score)} of 10, ${plural(failing, 'failing check')}` }, svg);
+    const on = evt => { bar.setAttribute('opacity', 0.8); showTip(evt, `${fmtScore(d.score)} / 10`, `${d.repo} · ${plural(failing, 'failing check')}`); };
+    const off = () => { bar.removeAttribute('opacity'); hideTip(); };
+    hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
+    hit.addEventListener('focus', on); hit.addEventListener('blur', off);
+  });
+  el.append(svg, dataTable(['Repository', 'Overall score', 'Failing checks'], items.map(d => [d.repo, fmtScore(d.score), failingOf(d.repo).length]), [1, 2]));
+}
+
+/* Change against the previous report: ▲ good when the score rises */
+function deltaNode(cur, prev, { goodWhenUp = true, suffix = true } = {}) {
+  if (cur == null || prev == null) return null;
+  const d = +(cur - prev).toFixed(1);
+  const cls = d === 0 ? 'flat' : (d > 0) === goodWhenUp ? 'good' : 'bad';
+  return h('span', { class: `delta ${cls}` }, `${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${Math.abs(d)} `, suffix && PREV ? h('span', { text: `vs ${fmtMonth(PREV.month)}` }) : null);
+}
+
+/* ═══════════════════════════ Header ═══════════════════════════ */
+$('title').append('OpenSSF Scorecard', h('br'), 'Report');
+$('subtitle').textContent = `Open source projects published under github.com/${ORG}` + (INPUT.scorecard_version ? ` · Scorecard ${INPUT.scorecard_version}` : '');
+{
+  const meta = $('meta');
+  const metaRow = (k, v) => meta.append(h('dt', { text: k }), h('dd', {}, v));
+  metaRow('Report ID', DATA.report_id);
+  metaRow('Status as of', fmtDateTime(DATA.run_at));
+  metaRow('Scorecard', INPUT.scorecard_commit
+    ? h('a', { href: `https://github.com/ossf/scorecard/tree/${INPUT.scorecard_commit}`, text: `${INPUT.scorecard_version ?? 'unknown'} (${commitText(INPUT.scorecard_commit)})` })
+    : INPUT.scorecard_version ?? '–');
+  metaRow('Trend period', `${fmtMonth(SLOTS[0])} – ${fmtMonth(SLOTS.at(-1))} (last ${TREND_MONTHS} months)`);
+  metaRow('Previous report', DATA.previous_report ? h('a', { href: DATA.previous_report.data_url, text: DATA.previous_report.report_id }) : 'none (first report)');
+  metaRow('Scope', `${plural(ACTIVE.length, 'active repository', 'active repositories')}, ${S.repositories_scanned} scanned`);
+  metaRow('Workflow run', runLink(DATA.run_url));
+}
+
+/* ═══════════════════════════ 1 Summary ═══════════════════════════ */
+{
+  const evaluated = S.checks_passed + S.checks_failed;
+  $('summary-lead').textContent = S.repositories_scanned
+    ? `${S.repositories_scanned} of ${plural(S.repositories_active, 'active repository', 'active repositories')} were scanned with OpenSSF Scorecard. ` +
+      `Their average overall score is ${fmtScore(S.average_score)} of 10 (median ${fmtScore(S.median_score)}). ` +
+      `${S.repositories_with_findings} of them fail at least one check against the OSPO thresholds.`
+    : 'No repository was scanned in this run.';
+
+  $('hero-value').append(...(S.average_score == null ? ['–'] : [fmtScore(S.average_score), h('small', { text: ' / 10' })]));
+  $('hero-delta').append(deltaNode(S.average_score, PREV?.average_score) || '');
+  $('hero-spark').append(sparkline(trendValues(x => x.average_score), { w: 220, hgt: 36 }));
+  $('hero-note').textContent = S.repositories_scanned
+    ? `Mean of the overall score of ${plural(S.repositories_scanned, 'scanned repository', 'scanned repositories')}; median ${fmtScore(S.median_score)}. The overall score is Scorecard's risk-weighted average of its checks.`
+    : '';
+
+  const withF = new Set(DATA.results.filter(r => r.result === 'fail').map(r => r.repo));
+  const sorted = [...REPOS].sort((a, b) => a.score - b.score || a.repo.localeCompare(b.repo));
+  const tile = (label, value, small, ...extra) => h('div', { class: 'card tile' }, h('div', { class: 'label', text: label }), h('div', { class: 'value' }, String(value), small ? h('small', { text: ' ' + small }) : null), ...extra);
+  $('tiles').append(
+    tile('Repositories scanned', S.repositories_scanned, `of ${S.repositories_active}`,
+      h('div', { class: 'sub', text: NOT_SCANNED.length ? `Not scanned: ${capText(NOT_SCANNED, 4)}` : 'All active repositories scanned' })),
+    tile('Repositories with findings', S.repositories_with_findings, `of ${S.repositories_scanned}`,
+      h('div', { class: 'sub', text: `Without findings: ${capText(REPOS.map(r => r.repo).filter(r => !withF.has(r)), 3) || 'none'}` })),
+    tile('Failing checks', S.checks_failed, `of ${evaluated} evaluated`,
+      h('div', { class: 'sub', text: `${S.checks_passed} passed; ${S.checks_na} not applicable, not counted` })),
+    tile('Lowest score', sorted.length ? fmtScore(sorted[0].score) : '–', sorted.length ? sorted[0].repo : '',
+      h('div', { class: 'sub', text: sorted.length ? `Highest: ${sorted.at(-1).repo} ${fmtScore(sorted.at(-1).score)}` : 'No repository scanned' })),
+  );
+  scoreBars($('chart-scores'), [...REPOS].sort((a, b) => b.score - a.score || a.repo.localeCompare(b.repo)));
+
+  // Data health: shown only when something is missing, so a reader cannot overlook it
+  const health = [
+    INPUT.status !== 'ok' ? `${INPUT.file} is ${INPUT.status}: no repository has results (no data, not passed).` : null,
+    DATA.errors.length ? `${plural(DATA.errors.length, 'check')} could not be evaluated (Scorecard errors, treated as no data).` : null,
+  ].filter(Boolean);
+  if (health.length) {
+    $('data-alert').append(h('b', { text: 'Incomplete data. ' }), health.join(' '));
+    $('data-alert').hidden = false;
+  }
+}
+
+/* ═══════════════════════════ 2 Trend ═══════════════════════════ */
+{
+  const measured = HISTORY.filter(x => x.average_score != null).length;
+  $('trend-lead').textContent = `The last ${TREND_MONTHS} months, one point per monthly report; ${plural(measured, 'report')} with data so far. A month without a report is skipped. Repositories added or archived change the average, so compare it with the number of repositories scanned.`;
+  const labels = SLOTS.map(fmtMon), full = SLOTS.map(fmtMonth);
+  const avg = trendValues(x => x.average_score);
+  if (avg.some(v => v != null)) lineChart($('chart-average'), { labels, full, values: avg, yMin: 0, yMax: 10, yTicks: [0, 2, 4, 6, 8, 10], fmt: v => v.toFixed(1), name: 'Average Scorecard score' });
+  else $('chart-average').append(h('p', { class: 'muted', text: 'No data.' }));
+  const scanned = trendValues(x => x.average_score == null ? null : Object.keys(x.scores ?? {}).length);
+  if (scanned.some(v => v != null)) {
+    const ticks = niceTicks(0, Math.max(1, ...scanned.filter(v => v != null)));
+    columnChart($('chart-scanned'), { labels, full, values: scanned, yMax: ticks.at(-1), yTicks: ticks, name: 'Repositories scanned' });
+  } else $('chart-scanned').append(h('p', { class: 'muted', text: 'No data.' }));
+}
+
+/* ═══════════════════════════ 3 Repositories ═══════════════════════════ */
+const RESULT_ORDER = { fail: 0, pass: 1, na: 2 };
+function detailLines(lines) {
+  if (!lines.length) return null;
+  const pre = h('pre', { class: 'det' }, joinNodes(lines.map(l => h('span', { class: l.includes('scorecard_check:') ? 'ospo' : l.startsWith('Warn:') ? 'warn' : '', text: l })), '\n'));
+  return lines.length <= 3 ? pre : h('details', { class: 'more' }, h('summary', { text: plural(lines.length, 'detail line') }), pre);
+}
+function scoreNode(score) {
+  return h('div', { class: 'score' },
+    h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 10, 'aria-valuenow': score, 'aria-label': 'Overall score' }, h('div', { style: `width:${Math.max(0, score) * 10}%` })),
+    h('span', { class: 'txt' }, h('b', { text: fmtScore(score) }), ' / 10'));
+}
+/* Failing checks as tags; a click opens the card of the repository */
+function failingTags(repo, open) {
+  const rows = failingOf(repo), errs = errorsOf(repo).length;
+  const errNote = errs ? h('span', { class: 'muted', text: plural(errs, 'error') }) : null;
+  if (!rows.length) return errNote ?? h('span', { class: 'muted', text: 'none' });
+  return h('span', {}, rows.map(r => {
+    const a = h('a', { class: 'tag', href: '#' + anchorOf(repo), title: r.reason },
+      `${nameOf(r.check)} ${r.score != null && r.score >= 0 ? r.score : '–'}`, CAT[r.check]?.threshold != null ? ` (≥ ${CAT[r.check].threshold})` : '');
+    a.addEventListener('click', open);
+    return a;
+  }), errNote);
+}
+/* The card of a repository: every check with score, threshold, result, reason and details, failing first, plus its errors */
+function repoCard(repo, meta) {
+  const results = DATA.results.filter(r => r.repo === repo)
+    .sort((a, b) => RESULT_ORDER[a.result] - RESULT_ORDER[b.result] || CHECKS.indexOf(a.check) - CHECKS.indexOf(b.check));
+  const rows = [
+    ...results.map(r => h('tr', {},
+      h('td', { class: 'nowrap' }, CAT[r.check]?.documentation?.url ? h('a', { href: CAT[r.check].documentation.url, text: nameOf(r.check) }) : nameOf(r.check)),
+      h('td', { class: 'num', text: r.score != null && r.score >= 0 ? r.score : '–' }),
+      h('td', { class: 'num', text: CAT[r.check]?.threshold != null ? `≥ ${CAT[r.check].threshold}` : '–' }),
+      h('td', {}, statusPill(r.result)),
+      h('td', {}, r.reason, detailLines(r.details)))),
+    ...errorsOf(repo).map(e => h('tr', {},
+      h('td', { class: 'nowrap', text: e.check ? nameOf(e.check) : 'all checks' }),
+      h('td', { class: 'num', text: '–' }), h('td', { class: 'num', text: '–' }),
+      h('td', {}, statusPill('nodata')),
+      h('td', { text: e.reason }))),
+  ];
+  return h('div', { class: 'rcard' },
+    h('div', { class: 'links' }, h('a', { href: repoUrl(repo), text: `github.com/${ORG}/${repo}` }),
+      meta?.commit ? [' · scanned commit ', h('a', { href: `${repoUrl(repo)}/commit/${meta.commit}` }, h('code', { style: 'color:inherit', text: commitText(meta.commit) }))] : null,
+      meta?.date ? ` · ${fmtDateTime(meta.date)}` : null),
+    h('div', { class: 'scroll-x' }, h('table', {},
+      h('thead', {}, h('tr', {}, h('th', { text: 'Check' }), h('th', { class: 'num', text: 'Score' }), h('th', { class: 'num', text: 'Threshold' }), h('th', { text: 'Result' }), h('th', { text: 'Reason and details' }))),
+      h('tbody', {}, ...rows))));
+}
+{
+  $('r-trend-h').textContent = `Trend (${TREND_MONTHS} months)`;
+  const META = new Map(REPOS.map(r => [r.repo, r]));
+  const muted = text => h('span', { class: 'muted', text });
+  const tbody = $('repos-table').tBodies[0];
+  // one row per repository with a score, a result or an error; rows are built once, so open cards survive sorting and paging
+  const rows = ROWS.map(repo => {
+    const r = META.get(repo);   // undefined: not scanned
+    const det = h('details', { class: 'req' }, h('summary', {}, h('span', { class: 'name', text: repo })));
+    const cell = h('td', { colspan: 6 });
+    const card = h('tr', { class: 'card-row', hidden: '' }, cell);
+    const build = () => { if (det.open && !cell.firstChild) cell.append(repoCard(repo, r)); card.hidden = !det.open; };   // the card is built on first open
+    det.addEventListener('toggle', build);
+    const open = e => { e.preventDefault(); det.open = true; build(); };
+    const prev = PREV?.scores?.[repo];
+    const row = h('tr', { id: anchorOf(repo) },
+      h('td', { class: 'nowrap' }, det),
+      h('td', {}, r ? scoreNode(r.score) : muted('not scanned')),
+      h('td', {}, sparkline(trendValues(x => x.scores?.[repo] ?? null))),
+      h('td', { class: 'num' }, !r || !PREV ? muted('–') : prev == null ? muted('new') : deltaNode(r.score, prev, { suffix: false })),
+      h('td', {}, failingTags(repo, open)),
+      h('td', { class: 'nowrap' }, r?.commit ? h('a', { href: `${repoUrl(repo)}/commit/${r.commit}` }, h('code', { style: 'color:inherit', text: commitText(r.commit) })) : '–',
+        r?.date ? h('div', { class: 'small muted', text: fmtDate(r.date) }) : null));
+    return { repo, score: r?.score ?? null, det, build, els: [row, card] };
+  });
+  const byScore = dir => (a, b) => (a.score == null) - (b.score == null) || dir * (a.score - b.score);   // not scanned last
+  const SORT = {
+    'score-asc': byScore(1),
+    'score-desc': byScore(-1),
+    'failing': (a, b) => failingOf(b.repo).length - failingOf(a.repo).length || byScore(1)(a, b),
+    'repo': () => 0,
+  };
+  const total = plural(rows.length, 'repository', 'repositories') + (rows.length > REPOS.length ? ` (${REPOS.length} scanned)` : '');
+  // paging as in the repository table of the compliance report; printing shows every repository
+  const PL = { page: 1, size: 25 };
+  const render = () => {
+    const q = $('r-repo').value.trim().toLowerCase();
+    const all = rows.filter(x => x.repo.toLowerCase().includes(q)).sort((a, b) => SORT[$('r-sort').value](a, b) || a.repo.localeCompare(b.repo));
+    const pages = Math.max(1, Math.ceil(all.length / PL.size));
+    PL.page = Math.min(Math.max(1, PL.page), pages);
+    const from = PL.page > 1 ? (PL.page - 1) * PL.size : 0, shown = all.slice(from, from + PL.size);   // size is Infinity when printing
+    tbody.replaceChildren(...shown.flatMap(x => x.els));
+    if (!all.length) tbody.append(h('tr', {}, h('td', { colspan: 6, class: 'muted', text: rows.length ? 'No repository matches the filter.' : 'No repository was scanned.' })));
+    $('r-count').textContent = (q ? `${all.length} of ${total} match the filter` : total) +
+      (all.length > shown.length ? `; showing ${from + 1}–${from + shown.length}` : '');
+    renderPager($('r-pager'), PL.page, pages, p => { PL.page = p; render(); });
+  };
+  const restart = () => { PL.page = 1; PL.size = +$('r-size').value; render(); };
+  $('r-sort').addEventListener('change', restart);
+  $('r-size').addEventListener('change', restart);
+  $('r-repo').addEventListener('input', restart);
+  $('r-expand').addEventListener('click', () => {
+    const open = !rows.every(x => x.det.open);
+    rows.forEach(x => { x.det.open = open; x.build(); });
+    $('r-expand').textContent = open ? 'Collapse all' : 'Expand all';
+  });
+  // The printed report is the frozen record: every repository, all cards and detail lines expanded
+  let saved = null;
+  addEventListener('beforeprint', () => {
+    saved = { ...PL, q: $('r-repo').value, open: rows.map(x => x.det.open) };
+    $('r-repo').value = ''; Object.assign(PL, { page: 1, size: Infinity }); render();
+    rows.forEach(x => { x.det.open = true; x.build(); });
+    document.querySelectorAll('details.more').forEach(d => { d.dataset.wasOpen = d.open; d.open = true; });
+  });
+  addEventListener('afterprint', () => {
+    if (!saved) return;
+    $('r-repo').value = saved.q; Object.assign(PL, { page: saved.page, size: saved.size }); render();
+    rows.forEach((x, i) => { x.det.open = saved.open[i]; x.build(); });
+    document.querySelectorAll('details.more').forEach(d => { d.open = d.dataset.wasOpen === 'true'; });
+  });
+  render();
+}
+
+/* ═══════════════════════════ A Scope and method ═══════════════════════════ */
+{
+  const row = (k, ...v) => h('tr', {}, h('td', { class: 'nowrap', style: 'font-weight:600', text: k }), h('td', {}, ...v));
+  const notScanned = NOT_SCANNED.map(repo => {
+    const skip = DATA.skipped.find(x => x.repo === repo);
+    return `${repo} (${skip ? skip.reason : errorsOf(repo)[0]?.reason ?? 'no result'})`;
+  });
+  $('scope-table').tBodies[0].append(
+    row('Active', plural(ACTIVE.length, 'repository', 'repositories'), ACTIVE.length ? h('div', { class: 'small muted', text: capText(ACTIVE, 20) }) : null),
+    row('Scanned', plural(REPOS.length, 'repository', 'repositories'), ' with an overall score'),
+    row('Not scanned', notScanned.length ? h('span', { text: capText(notScanned, 10) }) : 'none', h('div', { class: 'small muted', text: 'Active repositories without a score: excluded in the configuration, or Scorecard failed.' })),
+    row('Archived', plural(ARCHIVED.length, 'repository', 'repositories'), ARCHIVED.length ? h('div', { class: 'small muted', text: `Not scanned, out of scope: ${capText(ARCHIVED, 12)}` }) : null),
+  );
+  const spec = `https://github.com/${ORG}/ospo/blob/${OSPO_REF}/scripts/spec/scorecard_check_spec.md`;
+  const cfg = INPUT.config_file ? h('a', { href: `https://github.com/${ORG}/ospo/blob/${OSPO_REF}/${INPUT.config_file}` }, h('code', { style: 'color:inherit', text: INPUT.config_file })) : 'the configuration of scorecard_check';
+  $('def-table').tBodies[0].append(
+    row('Score', 'Scorecard rates each check from 0 (high risk) to 10 (low risk). −1 means Scorecard could not evaluate the check.'),
+    row('Overall score', "Scorecard's weighted average of the check scores, weighted by risk (critical, high, medium, low). Checks with −1 do not count. The OSPO thresholds do not change it."),
+    row(`${STATUS.pass.label} / ${STATUS.fail.label}`, 'The score reaches the OSPO threshold of the check, or not. Thresholds are set in ', cfg, '.'),
+    row(STATUS.na.label, 'Score −1, or a decision of scorecard_check: Branch-Protection on repositories protected by the org ruleset, CI-Tests on repositories with the topic docs or template, Fuzzing without a non-memory-safe language. The first detail line names the decision. ', h('a', { href: spec, text: 'Rules' })),
+    row(STATUS.nodata.label, 'The repository could not be scanned, or the check returned no result. It counts neither as passed nor as failed.'),
+  );
+
+  const tbody = $('run-table').tBodies[0];
+  if (INPUT.status === 'ok') {
+    tbody.append(h('tr', {},
+      h('td', {}, h('a', { href: `https://github.com/${ORG}/ospo/blob/${OSPO_REF}/${INPUT.script}` }, h('code', { style: 'color:inherit', text: INPUT.script.split('/').pop() }))),
+      h('td', { class: 'nowrap', text: INPUT.run_at ? fmtDateTime(INPUT.run_at) : '–' }),
+      h('td', {}, INPUT.config_file ? h('code', { text: INPUT.config_file }) : '–'),
+      h('td', {}, INPUT.scorecard_version ?? '–', INPUT.source ? h('div', { class: 'small muted', text: INPUT.source }) : null),
+      h('td', { class: 'num', text: INPUT.counts.results }),
+      h('td', { class: 'num', text: INPUT.counts.skipped }),
+      h('td', { class: 'num', text: INPUT.counts.errors }),
+      h('td', {}, runLink(INPUT.run_url))));
+  } else {
+    tbody.append(h('tr', {},
+      h('td', {}, h('code', { text: INPUT.file })),
+      h('td', { colspan: 7 }, h('b', { text: INPUT.status === 'missing' ? 'File missing' : 'File invalid' }),
+        INPUT.problems?.length ? h('ul', { class: 'sub' }, ...INPUT.problems.map(p => h('li', { text: p }))) : null)));
+  }
+  if (DATA.errors.length) {
+    $('errors-box').append(h('h3', { style: 'padding:14px 10px 0', text: 'Errors' }), h('div', { class: 'scroll-x' }, h('table', {},
+      h('thead', {}, h('tr', {}, h('th', { text: 'Repository' }), h('th', { text: 'Check' }), h('th', { text: 'Reason' }))),
+      h('tbody', {}, ...DATA.errors.map(e => h('tr', {}, h('td', { text: e.repo ?? '–' }), h('td', { text: e.check ? nameOf(e.check) : 'all' }), h('td', { text: e.reason })))))));
+  }
+}
+
+/* ═══════════════════════════ Footer ═══════════════════════════ */
+$('integrity').append('Generated from ', h('code', { title: DATA.ospo_sha ?? '', text: `ospo@${commitText(DATA.ospo_sha)}` }), ' · ', runLink(DATA.run_url, 'workflow run '),
+  ' · input ', h('code', { text: INPUT.file }), ' ', h('code', { title: INPUT.sha256 ?? '', text: shortSha(INPUT.sha256) }),
+  ' · report template ', h('code', { text: 'scripts/templates/scorecard_report.html' }));
+
+document.documentElement.dataset.render = 'ok';
+</script>
+</body>
+</html>

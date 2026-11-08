@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open Source Community Report · allianz · 2026-11</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --accent-wash: rgba(42,120,214,0.10);
+    --track: #cde2fb;
+    --good: #0ca30c;
+    --good-2: #077a07;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+    --neutral: #898781;
+    --delta-good: #006300;
+    --delta-bad: #b42f2f;
+    --ord-1: #86b6ef; --ord-1-ink: #0b0b0b;
+    --ord-2: #2a78d6; --ord-2-ink: #ffffff;
+    --ord-3: #104281; --ord-3-ink: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #f0efec;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-wash: rgba(57,135,229,0.12);
+      --track: #184f95;
+      --good-2: #0a8a0a;
+      --delta-good: #0ca30c;
+      --delta-bad: #e66767;
+      --ord-1: #184f95; --ord-1-ink: #ffffff;
+      --ord-2: #3987e5; --ord-2-ink: #ffffff;
+      --ord-3: #9ec5f4; --ord-3-ink: #0b0b0b;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .page { max-width: 1120px; margin: 0 auto; padding: 24px 24px 64px; }
+
+
+  header.report {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--grid);
+    margin-bottom: 28px;
+  }
+  .brand { font-size: 13px; color: var(--ink-2); letter-spacing: 0.02em; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 6px 0 4px; font-weight: 650; }
+  .subtitle { color: var(--ink-2); margin: 0; }
+  dl.meta {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 2px 16px;
+    margin: 0;
+    font-size: 13px;
+  }
+  dl.meta dt { color: var(--muted); }
+  dl.meta dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+  nav.toc { font-size: 13px; color: var(--ink-2); margin: -12px 0 28px; }
+  nav.toc a { margin-right: 14px; white-space: nowrap; }
+
+  section { margin-bottom: 36px; }
+  h2 { font-size: 19px; margin: 0 0 4px; font-weight: 650; }
+  h2 .num { color: var(--muted); font-weight: 500; margin-right: 6px; }
+  .lead { color: var(--ink-2); margin: 0 0 16px; max-width: 760px; }
+  h3 { font-size: 15px; margin: 0 0 4px; font-weight: 600; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-hero { display: grid; grid-template-columns: 1.15fr 2fr; gap: 16px; margin-bottom: 16px; }
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tiles > :last-child:nth-child(odd) { grid-column: 1 / -1; }   /* odd number of tiles: the last one spans the row */
+  @media (max-width: 860px) { .grid-2, .grid-hero, .tiles { grid-template-columns: 1fr; } header.report { grid-template-columns: 1fr; } }
+
+  .hero .label, .tile .label { color: var(--ink-2); font-size: 13px; }
+  .hero .value { font-size: 56px; font-weight: 650; line-height: 1.05; margin: 6px 0 4px; }
+  .hero .value small { font-size: 28px; font-weight: 600; }
+  .hero .note { color: var(--ink-2); font-size: 13px; margin-top: 10px; }
+  .tile .value { font-size: 28px; font-weight: 650; line-height: 1.2; margin-top: 2px; }
+  .tile .value small { font-size: 15px; color: var(--ink-2); font-weight: 500; }
+  .tile .sub { font-size: 12px; color: var(--muted); }
+  .delta { font-size: 13px; font-weight: 600; }
+  .delta.good { color: var(--delta-good); }
+  .delta.bad { color: var(--delta-bad); }
+  .delta.flat { color: var(--ink-2); }
+  .delta span { color: var(--muted); font-weight: 400; }
+  .tile { display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .tile .spark { margin-top: 4px; }
+
+  ul.points { margin: 8px 0 0; padding-left: 18px; }
+  ul.points li { margin-bottom: 8px; }
+  .alert { border: 1px solid var(--critical); border-left-width: 4px; border-radius: 8px; padding: 8px 14px; margin: 0 0 16px; background: var(--surface); }
+
+  /* status */
+  .status { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 13px; }
+  .status .ico {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex: none;
+  }
+  .status .ico.ring { background: transparent !important; border: 1.5px solid var(--muted); color: var(--muted) !important; }
+  .status .ico.ring-good { background: transparent !important; border: 1.5px solid var(--good); color: var(--good) !important; }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--ink-2); padding: 8px 10px; border-bottom: 1px solid var(--axis); white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+  .chapter-row td { background: var(--page); font-weight: 600; color: var(--ink-2); padding-top: 12px; }
+  .id { font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .nowrap { white-space: nowrap; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .level { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-2); border: 1px solid var(--axis); border-radius: 4px; padding: 1px 5px; white-space: nowrap; }
+  details.req > summary { cursor: pointer; list-style: none; }
+  details.req > summary::-webkit-details-marker { display: none; }
+  details.req > summary::before { content: "▸"; color: var(--muted); display: inline-block; width: 14px; transition: transform .15s; }
+  details.req[open] > summary::before { transform: rotate(90deg); }
+  tr.card-row > td { background: var(--page); padding: 4px 10px 18px; }
+  tr.card-row[hidden] { display: none; }
+  .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: grid; gap: 16px; min-width: 0; }
+  .rcard h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .rcard p { margin: 0; max-width: 820px; }
+  .tr-clauses { display: grid; gap: 6px; max-width: 820px; }
+  .tr-clause { display: grid; grid-template-columns: 64px 1fr; gap: 10px; align-items: baseline; }
+  .tr-clause .level { justify-self: start; }
+  .links { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .links a { margin-right: 4px; }
+  .rcard table { font-size: 12.5px; }
+  .rcard td, .rcard th { padding: 6px 8px; }
+  .cov { display: grid; grid-template-columns: 90px auto; gap: 8px; align-items: center; white-space: nowrap; }
+  .meter { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; }
+  .meter > div { height: 100%; background: var(--accent); border-radius: 3px; }
+  .cov .txt, .cov-txt { font-variant-numeric: tabular-nums; color: var(--ink-2); white-space: nowrap; }
+  .cov .txt b { color: var(--ink); font-weight: 600; }
+  .tag { display: inline-block; font-size: 12px; border: 1px solid var(--grid); border-radius: 4px; padding: 0 5px; margin: 0 4px 2px 0; color: var(--ink-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  a.tag:hover { border-color: var(--accent); text-decoration: none; }
+  pre.det { margin: 4px 0 0; font: 11.5px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); white-space: pre-wrap; }
+
+  /* charts */
+  svg.chart { width: 100%; height: auto; display: block; overflow: visible; }
+  svg.chart:focus { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+  .grid-line { stroke: var(--grid); stroke-width: 1; }
+  .axis-line { stroke: var(--axis); stroke-width: 1; }
+  .tick { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .vlabel { fill: var(--ink); font-size: 12px; font-weight: 600; }
+  .clabel { fill: var(--ink-2); font-size: 12px; }
+  .chart-title { margin-bottom: 2px; }
+  .chart-sub { color: var(--ink-2); font-size: 13px; margin: 0 0 10px; }
+
+  .segbar { display: flex; gap: 2px; height: 28px; margin: 8px 0 8px; }
+  .segbar > * {
+    border-radius: 4px; display: flex; align-items: center; padding: 0 8px;
+    font-size: 12px; font-weight: 600; white-space: nowrap; overflow: visible; min-width: 0; cursor: default;
+  }
+  .segbar > a { cursor: pointer; text-decoration: none; }
+  .segbar > *:focus { outline: 2px solid var(--ink); outline-offset: 1px; }
+  .segbar > *:hover { filter: brightness(1.07); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--ink-2); }
+  .legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+  .seg-row { margin-bottom: 14px; }
+  .seg-row .seg-label { font-size: 13px; color: var(--ink-2); display: flex; justify-content: space-between; }
+  .seg-row .seg-label b { color: var(--ink); font-weight: 600; }
+
+  details.datatable { margin-top: 10px; font-size: 12px; }
+  details.datatable > summary, details.more > summary { color: var(--accent); cursor: pointer; font-size: 12.5px; }
+  details.datatable table, details.more table { margin-top: 6px; }
+
+  .scroll-x { overflow-x: auto; }
+  /* narrow windows: let headers and coverage wrap so the tables need less width; .scroll-x catches the rest */
+  @media (max-width: 860px) {
+    th { white-space: normal; }
+    .cov { grid-template-columns: minmax(60px, 90px); white-space: normal; gap: 4px; }
+    .cov .txt { white-space: normal; }
+  }
+
+  #tip {
+    position: fixed; z-index: 10; pointer-events: none;
+    background: var(--surface); border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px;
+    display: grid; gap: 1px; max-width: 320px;
+  }
+  #tip strong { font-size: 14px; color: var(--ink); }
+  #tip span { color: var(--ink-2); white-space: pre-line; }
+  #tip[hidden] { display: none; }
+
+  .integrity { font-size: 12px; color: var(--muted); border-top: 1px solid var(--grid); padding-top: 12px; margin-top: 28px; font-variant-numeric: tabular-nums; }
+  code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); }
+
+  @media print {
+    :root { color-scheme: light; }
+    @page { size: A4; margin: 14mm 12mm; }
+    body { background: #fff; font-size: 11.5px; }
+    .page { max-width: none; padding: 0; }
+    nav.toc, details.datatable, #tip { display: none !important; }
+    .card { break-inside: avoid; }
+    section.break { break-before: page; }
+    tr { break-inside: avoid; }
+    details.req > summary::before { content: ""; width: 0; }
+    tr.card-row { break-inside: auto; }
+    a { color: inherit; }
+  }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: end; padding: 4px 10px 10px; font-size: 12.5px; color: var(--ink-2); }
+  .filters label { display: grid; gap: 2px; }
+  .filters label.chk { display: flex; align-items: center; gap: 6px; padding-bottom: 5px; }
+  .filters select, .filters input[type=search], .filters button {
+    font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--axis); border-radius: 6px; padding: 4px 8px; max-width: 280px;
+  }
+  .filters button { cursor: pointer; }
+  .filter-count { font-size: 12.5px; color: var(--muted); padding: 0 10px 6px; }
+  th.sortable { cursor: pointer; user-select: none; }
+  th.sortable:hover { color: var(--ink); }
+  th .arrow { color: var(--accent); margin-left: 3px; }
+  .pager-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px 16px; padding: 10px 10px 4px; }
+  .pager { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; font-size: 12.5px; color: var(--muted); }
+  .pager-size { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+  .pager-size select { font: inherit; font-size: 12.5px; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 6px; padding: 3px 6px; }
+  .pager button { font: inherit; font-size: 12.5px; min-width: 30px; color: var(--ink-2); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 3px 8px; cursor: pointer; font-variant-numeric: tabular-nums; }
+  .pager button[aria-current="page"] { color: var(--surface); background: var(--accent); border-color: var(--accent); }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
+  .pager button:disabled[aria-current="page"] { color: var(--ink-2); background: none; border-color: var(--axis); }
+  .pager .gap { padding: 0 2px; }
+  .showall { margin: 8px 10px; font: inherit; font-size: 12.5px; color: var(--accent); background: none; border: 1px solid var(--axis); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  ul.sub { margin: 4px 0 0; padding-left: 16px; font-size: 12.5px; color: var(--ink-2); }
+  ul.sub li { margin-bottom: 2px; }
+  .rcard tfoot td { border-bottom: none; padding-top: 8px; }
+  .why { white-space: nowrap; }
+  @media print {
+    .filters, .filter-count, .showall, .pager-bar { display: none !important; }
+    .scroll-x { overflow: visible; }
+  }
+  noscript p { border: 1px solid var(--critical); border-radius: 8px; padding: 8px 14px; }
+  /* Community report: internal / external as categorical slots 1 and 2 (validated light and dark) */
+  :root { --ext: #2a78d6; --int: #eb6834; }
+  @media (prefers-color-scheme: dark) { :root:where(:not([data-theme="light"])) { --ext: #3987e5; --int: #d95926; } }
+  .mock { border: 1px dashed var(--warning); border-radius: 8px; padding: 8px 14px; margin: 0 0 20px; font-size: 13px; color: var(--ink-2); background: var(--surface); }
+  .kpis { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 16px; }
+  .kpis .hero { grid-row: span 2; justify-content: start; gap: 10px; }
+  .kpis .hero .value { font-size: 56px; line-height: 1.05; margin: 8px 0 2px; }
+  .kpis .hero .note { margin-top: auto; }
+  .notice { border: 1px solid var(--border); border-left: 4px solid var(--muted); border-radius: 8px; padding: 8px 14px; margin: 0 0 16px; background: var(--surface); font-size: 13px; color: var(--ink-2); }
+  table.compact { font-size: 12.5px; }
+  table.compact th, table.compact td { padding: 8px 6px; }
+  table.compact th { white-space: normal; vertical-align: bottom; }
+  @media (max-width: 860px) { .kpis { grid-template-columns: 1fr; } .kpis .hero { grid-row: auto; } }
+  .deltas { display: flex; flex-wrap: wrap; gap: 2px 14px; }
+  ul.highlights { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  ul.highlights li { display: grid; grid-template-columns: 28px 1fr; gap: 8px; align-items: baseline; padding: 8px 4px; border-bottom: 1px solid var(--grid); }
+  ul.highlights li:last-child { border-bottom: none; }
+  ul.highlights .ico { font-size: 18px; line-height: 1; }
+  ul.highlights .rel { color: var(--ink-2); font-size: 12.5px; margin-top: 2px; }
+  #projects-table td { vertical-align: middle; }
+  #projects-table details.req > summary .name { font-weight: 650; }
+  #projects-table .desc { color: var(--ink-2); font-size: 12.5px; padding-left: 14px; }
+  #projects-table .stars { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  #projects-table .stars b { font-size: 15px; font-weight: 650; }
+  #projects-table .stars .d { display: block; font-size: 11.5px; }
+  .pbody { display: grid; gap: 18px; }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .fact .period { font-size: 12px; color: var(--ink-2); margin: -4px 0 8px; }
+  .fact { background: var(--page); border: 1px solid var(--grid); border-radius: 10px; padding: 10px 12px; }
+  .fact h4 { margin: 0 0 4px; font-size: 11px; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .fact dl { display: grid; grid-template-columns: 1fr auto; gap: 3px 10px; margin: 0; font-size: 12.5px; }
+  .fact dt { color: var(--ink-2); } .fact dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .fact .tags { margin-top: 6px; font-size: 12px; color: var(--ink-2); }
+  .trends { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .trends h4 { margin: 0 0 2px; font-size: 13px; font-weight: 600; }
+  .trends .chart-sub { font-size: 12px; margin-bottom: 4px; }
+  @media (max-width: 960px) { .facts { grid-template-columns: 1fr 1fr; } .trends { grid-template-columns: 1fr; } }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; border: 1px solid var(--grid); border-radius: 999px; padding: 2px 10px 2px 8px; white-space: nowrap; background: var(--page); }
+  .chip.new { font-weight: 600; }
+  .chip .ico { font-size: 14px; line-height: 1; }
+  .chip b { font-weight: 650; }
+  .chip .d { font-size: 11.5px; }
+  .legend .sw.ext { background: var(--ext); } .legend .sw.int { background: var(--int); }
+  .d { color: var(--delta-good); font-weight: 600; }
+  .ext { color: var(--muted); }
+  dl.defs { display: grid; grid-template-columns: 180px 1fr; gap: 8px 16px; margin: 0; font-size: 13px; }
+  dl.defs dt { font-weight: 600; } dl.defs dd { margin: 0; color: var(--ink-2); }
+  @media print { ul.highlights li { break-inside: avoid; } details.req > summary::before { content: ""; width: 0; } tr.card-row { break-inside: auto; } .chip, .meter { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<div id="tip" hidden></div>
+<div class="page">
+
+  <noscript><p>This report is rendered from the embedded data.json and needs JavaScript.</p></noscript>
+  <div class="alert" id="render-error" role="alert" hidden></div>
+  <div class="mock" id="mock" hidden><b>Mock report.</b> All numbers and projects are made up, to show the layout of the community report.</div>
+
+  <header class="report">
+    <div>
+      <div class="brand">Open Source Program Office</div>
+      <h1 id="title"></h1>
+      <p class="subtitle" id="subtitle"></p>
+    </div>
+    <dl class="meta" id="meta"></dl>
+  </header>
+
+  <nav class="toc" aria-label="Contents">
+    <a href="#glance">1 At a glance</a>
+    <a href="#highlights">2 Highlights</a>
+    <a href="#growth">3 Growth</a>
+    <a href="#projects">4 Projects</a>
+    <a href="#method">A Scope &amp; method</a>
+  </nav>
+
+  <!-- ─────────────────────────── 1 At a glance ─────────────────────────── -->
+  <section id="glance">
+    <h2><span class="num">1</span>At a glance</h2>
+    <p class="lead" id="glance-lead"></p>
+    <div class="alert" id="data-alert" role="alert" hidden></div>
+    <div class="notice" id="data-note" hidden></div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <!-- ─────────────────────────── 2 Highlights ─────────────────────────── -->
+  <section id="highlights">
+    <h2><span class="num">2</span>Highlights of the month</h2>
+    <p class="lead">Milestones of the organisation, new projects, first-time contributors and the releases of the month.</p>
+    <div class="card"><ul class="highlights" id="highlight-list"></ul></div>
+  </section>
+
+  <!-- ─────────────────────────── 3 Growth ─────────────────────────── -->
+  <section id="growth" class="break">
+    <h2><span class="num">3</span>Growth</h2>
+    <p class="lead" id="growth-lead"></p>
+    <div class="grid-2">
+      <div class="card"><h3 class="chart-title">Stars</h3><p class="chart-sub">Stars of all projects at the end of each month</p><div id="c-stars"></div></div>
+      <div class="card"><h3 class="chart-title">Unique visitors</h3><p class="chart-sub">People who viewed a project page in the 14 days before each monthly run</p><div id="c-visitors"></div></div>
+      <div class="card"><h3 class="chart-title">Contributors</h3><p class="chart-sub">People with a commit in any project, all-time, counted once</p><div id="c-contributors"></div></div>
+      <div class="card"><h3 class="chart-title">Merged pull requests</h3><p class="chart-sub">Pull requests merged in the month, by author</p><div id="c-prs"></div></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── 4 Projects ─────────────────────────── -->
+  <section id="projects" class="break">
+    <h2><span class="num">4</span>Projects</h2>
+    <p class="lead" id="projects-lead"></p>
+    <div class="card" style="padding:10px 8px 6px">
+      <div class="filters">
+        <label>Sort by <select id="p-sort">
+          <option value="repo">Project name (A–Z)</option>
+          <option value="stars">Most stars</option>
+          <option value="growth">Most new stars this month</option>
+          <option value="contributors">Most contributors</option>
+        </select></label>
+        <label>Project <input id="p-repo" type="search" placeholder="name contains…"></label>
+        <button type="button" id="p-expand">Expand all</button>
+      </div>
+      <div class="filter-count" id="p-count"></div>
+      <div class="scroll-x">
+        <table id="projects-table">
+          <thead><tr><th>Project</th><th>Stats</th><th class="num">Stars</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="pager-bar">
+        <nav class="pager" id="p-pager" aria-label="Project table pages"></nav>
+        <label class="pager-size">Rows per page <select id="p-size"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── A Scope & method ─────────────────────────── -->
+  <section id="method" class="break">
+    <h2><span class="num">A</span>Scope &amp; method</h2>
+    <p class="lead">Every number comes from the GitHub REST API, collected by community_metrics once a month. The files hold counts only: no person is named.</p>
+    <div class="card"><dl class="defs" id="defs"></dl></div>
+  </section>
+
+  <div class="integrity" id="integrity"></div>
+</div>
+
+<!-- data.json of this report, embedded by scripts/community_report.js (lib/report_html.js) -->
+<script type="application/json" id="data.json">{"report_id":"OSPO-CM-2026-11","run_at":"2026-11-08T21:04:57Z","org":"allianz","ospo_sha":"b0cc2983771f2bd46861ef6616fa61ff9901cfc1","run_url":null,"previous_report":null,"input":{"file":"community.json","script":"scripts/community_metrics.js","status":"ok","sha256":"10bba499db8e382122ca2ccdca2f536f96d7c1ffd1e22f346f83433004748af2","tool":"community_metrics","run_at":"2026-11-08T21:04:51Z","ospo_sha":"b0cc2983771f2bd46861ef6616fa61ff9901cfc1","config_file":"config/report/community_metrics.yaml","config_sha256":"58328fc0a93b43097c2b87e0f4149df1a0b2ebe0b1ae277560ed64857309b3aa","run_url":null,"counts":{"repositories":4,"skipped":7,"errors":0}},"period":{"month":"2026-10","from":"2026-10-01T00:00:00Z","to":"2026-11-01T00:00:00Z"},"levels":{"milestones":{"visitors":[1000,2500,5000,10000],"stars":[1000,2500,5000,10000],"public_projects":[25,50,100],"contributors":[100,200,500,1000],"external_contributors":[10,25,50,100]},"active_within":"90 days"},"totals":{"public_projects":4,"new_projects":0,"active_projects":3,"stars":256,"forks":59,"contributors":{"internal":6,"external":18},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":3,"external":5},"commits":45,"prs_merged":{"internal":31,"external":0},"releases":4,"release_downloads":0,"traffic":{"views":1228,"visitors":285,"clones":1424,"cloners":401}},"growth":{"stars":{"value":256,"previous":null,"six_months_ago":null},"visitors":{"value":285,"previous":null,"six_months_ago":null},"cloners":{"value":401,"previous":null,"six_months_ago":null},"views":{"value":1228,"previous":null,"six_months_ago":null},"clones":{"value":1424,"previous":null,"six_months_ago":null},"contributors":{"value":24,"previous":null,"six_months_ago":null},"external_contributors":{"value":18,"previous":null,"six_months_ago":null},"public_projects":{"value":4,"previous":null,"six_months_ago":null},"prs_merged":{"value":31,"previous":null,"six_months_ago":null},"releases":{"value":4,"previous":null,"six_months_ago":null}},"repositories":[{"repo":"geofeed","description":"Official Allianz IP location feed, so services like Microsoft 365 and Citrix deliver a faster user experience for employees worldwide","created_at":"2026-05-13T07:31:03Z","pushed_at":"2026-06-11T13:41:00Z","stars":0,"forks":3,"new_project":false,"active":false,"contributors":{"internal":0,"external":1},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":0,"external":1},"commits":0,"prs":{"opened":{"internal":0,"external":1},"merged":{"internal":0,"external":0},"closed_unmerged":{"internal":0,"external":0}},"issues":{"opened":{"internal":0,"external":0},"closed":{"internal":0,"external":0}},"releases":{"period":0,"total":0,"tags":[]},"release_downloads":0,"traffic":{"views":16,"visitors":8,"clones":17,"cloners":11,"from":"2026-10-25","to":"2026-11-07"}},{"repo":"ng-aquila","description":"Angular UI Component library for the Open Insurance Platform","created_at":"2020-03-20T07:32:01Z","pushed_at":"2026-11-06T19:00:35Z","stars":250,"forks":50,"new_project":false,"active":true,"contributors":{"internal":2,"external":17},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":1,"external":4},"commits":22,"prs":{"opened":{"internal":0,"external":1},"merged":{"internal":0,"external":0},"closed_unmerged":{"internal":0,"external":0}},"issues":{"opened":{"internal":0,"external":1},"closed":{"internal":0,"external":1}},"releases":{"period":3,"total":134,"tags":["v22.4.0","v22.5.0","v22.6.0"]},"release_downloads":0,"traffic":{"views":507,"visitors":205,"clones":863,"cloners":211,"from":"2026-10-25","to":"2026-11-07"}},{"repo":"ospo","description":"Developer guides for the Allianz organization on GitHub","created_at":"2023-07-27T09:38:10Z","pushed_at":"2026-11-08T20:55:00Z","stars":2,"forks":3,"new_project":false,"active":true,"contributors":{"internal":3,"external":1},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":0,"external":0},"commits":0,"prs":{"opened":{"internal":0,"external":0},"merged":{"internal":0,"external":0},"closed_unmerged":{"internal":1,"external":1}},"issues":{"opened":{"internal":0,"external":0},"closed":{"internal":0,"external":0}},"releases":{"period":0,"total":0,"tags":[]},"release_downloads":0,"traffic":{"views":186,"visitors":31,"clones":147,"cloners":66,"from":"2026-10-25","to":"2026-11-07"}},{"repo":"yukimi","description":"Self-service Snowflake provisioning with built-in security and policy enforcement.","created_at":"2026-05-04T09:14:06Z","pushed_at":"2026-11-03T15:34:41Z","stars":4,"forks":3,"new_project":false,"active":true,"contributors":{"internal":4,"external":0},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":2,"external":0},"commits":23,"prs":{"opened":{"internal":32,"external":0},"merged":{"internal":31,"external":0},"closed_unmerged":{"internal":0,"external":0}},"issues":{"opened":{"internal":0,"external":0},"closed":{"internal":0,"external":0}},"releases":{"period":1,"total":1,"tags":["v.0.2.0"]},"release_downloads":0,"traffic":{"views":519,"visitors":41,"clones":397,"cloners":113,"from":"2026-10-25","to":"2026-11-07"}}],"milestones":["external_contributors-10"],"new_milestones":[],"highlights":[{"kind":"releases","icon":"🚀","text":"4 releases in October."}],"releases":[{"repo":"ng-aquila","tag":"v22.4.0","date":"2026-10-06"},{"repo":"ng-aquila","tag":"v22.5.0","date":"2026-10-09"},{"repo":"yukimi","tag":"v.0.2.0","date":"2026-10-12"},{"repo":"ng-aquila","tag":"v22.6.0","date":"2026-10-27"}],"history":[{"month":"2026-11","period":"2026-10","totals":{"public_projects":4,"new_projects":0,"active_projects":3,"stars":256,"forks":59,"contributors":{"internal":6,"external":18},"new_contributors":{"internal":0,"external":0},"active_contributors":{"internal":3,"external":5},"commits":45,"prs_merged":{"internal":31,"external":0},"releases":4,"release_downloads":0,"traffic":{"views":1228,"visitors":285,"clones":1424,"cloners":401}},"repositories":{"geofeed":{"traffic":{"views":16,"visitors":8,"clones":17,"cloners":11},"stars":0,"forks":3,"contributors":{"internal":0,"external":1},"prs_merged":{"internal":0,"external":0},"commits":0,"releases_total":0,"release_downloads":0},"ng-aquila":{"traffic":{"views":507,"visitors":205,"clones":863,"cloners":211},"stars":250,"forks":50,"contributors":{"internal":2,"external":17},"prs_merged":{"internal":0,"external":0},"commits":22,"releases_total":134,"release_downloads":0},"ospo":{"traffic":{"views":186,"visitors":31,"clones":147,"cloners":66},"stars":2,"forks":3,"contributors":{"internal":3,"external":1},"prs_merged":{"internal":0,"external":0},"commits":0,"releases_total":0,"release_downloads":0},"yukimi":{"traffic":{"views":519,"visitors":41,"clones":397,"cloners":113},"stars":4,"forks":3,"contributors":{"internal":4,"external":0},"prs_merged":{"internal":31,"external":0},"commits":23,"releases_total":1,"release_downloads":0}},"milestones":["external_contributors-10"]}],"skipped":[{"repo":".github","reason":"excluded_repos"},{"repo":"calculus-prime-pnc","reason":"archived"},{"repo":"gem-config","reason":"archived"},{"repo":"license-scout","reason":"archived"},{"repo":"merge-bot","reason":"archived"},{"repo":"merge-bot-config","reason":"archived"},{"repo":"merge-processor","reason":"archived"}],"errors":[]}</script>
+<script>
+/* Render guard: an error while rendering is shown on the page instead of leaving it blank. */
+addEventListener('error', e => {
+  document.documentElement.dataset.render = 'error';
+  const box = document.getElementById('render-error');
+  box.textContent = `The report could not be rendered: ${e.message}`;
+  box.hidden = false;
+});
+</script>
+
+<script>
+/* ═══════════════════════════ Load data ═══════════════════════════ */
+const $ = id => document.getElementById(id);
+const DATA = JSON.parse($('data.json').textContent);
+const ORG = DATA.org, T = DATA.totals, G = DATA.growth, REPOS = DATA.repositories;
+const HISTORY = DATA.history;
+
+/* ═══════════════════════════ Helpers (as in scorecard_report.html) ═══════════════════════════ */
+const NS = 'http://www.w3.org/2000/svg';
+function s(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function h(tag, attrs = {}, ...children) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'style') e.style.cssText = v;
+    else e.setAttribute(k, v);
+  }
+  for (const c of children.flat(Infinity)) if (c != null && c !== false) e.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  return e;
+}
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_LONG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const fmtDate = iso => { if (!iso) return '–'; const [y, m, d] = iso.slice(0, 10).split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y}`; };
+const fmtDateTime = iso => `${fmtDate(iso)}, ${iso.slice(11, 16)} UTC`;
+const fmtMonth = ym => `${MONTHS[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}`;
+const fmtMonthLong = ym => `${MONTHS_LONG[+ym.slice(5, 7) - 1]} ${ym.slice(0, 4)}`;
+const fmtMon = ym => MONTHS[+ym.slice(5, 7) - 1];
+const addMonths = (ym, k) => { const n = +ym.slice(0, 4) * 12 + +ym.slice(5, 7) - 1 + k; return `${Math.floor(n / 12)}-${String(n % 12 + 1).padStart(2, '0')}`; };
+const num = v => v == null ? '–' : Number(v).toLocaleString('en');
+const plural = (n, one, many = one + 's') => `${num(n)} ${n === 1 ? one : many}`;
+const sum2 = x => x ? x.internal + x.external : null;
+const noData = el => el.append(h('p', { class: 'small muted', text: 'No data.' }));
+const repoUrl = repo => `https://github.com/${ORG}/${repo}`;
+const runLink = url => url ? h('a', { href: url, text: url.split('/').pop() }) : h('span', { class: 'muted', text: 'local run' });
+
+/* Trends: the last TREND_MONTHS periods, one slot per month, as in the other reports; a month without a report is null (a gap) */
+const TREND_MONTHS = 6;
+const SLOTS = Array.from({ length: TREND_MONTHS }, (_, i) => addMonths(DATA.period.month, i - TREND_MONTHS + 1));
+const BY_PERIOD = Object.fromEntries(HISTORY.map(x => [x.period, x]));
+/* The month before (not simply the entry before): a month without a report gives no change "this month" */
+const PREV = BY_PERIOD[addMonths(DATA.period.month, -1)] ?? null;
+const ACTIVE_WITHIN = DATA.levels.active_within ?? '90 days';
+const trend = f => SLOTS.map(m => (BY_PERIOD[m] ? f(BY_PERIOD[m]) : null) ?? null);
+const LABELS = SLOTS.map(fmtMon), FULL = SLOTS.map(fmtMonth);
+const PREV_LABEL = fmtMon(addMonths(DATA.period.month, -1)), EARLIER_LABEL = fmtMon(addMonths(DATA.period.month, -TREND_MONTHS));
+
+const tip = $('tip');
+function showTip(evt, value, label) {
+  tip.replaceChildren(h('strong', { text: value }), h('span', { text: label }));
+  tip.hidden = false;
+  let x, y;
+  if (evt && evt.clientX != null && evt.type !== 'focus') { x = evt.clientX; y = evt.clientY; }
+  else { const r = evt.target.getBoundingClientRect(); x = r.left + r.width / 2; y = r.top; }
+  const w = tip.offsetWidth, hgt = tip.offsetHeight;
+  tip.style.left = Math.max(8, Math.min(x + 14, innerWidth - w - 8)) + 'px';
+  tip.style.top = (y - hgt - 12 < 0 ? y + 16 : y - hgt - 12) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+
+const uniq = xs => [...new Set(xs)];
+/* Page buttons: previous, first, a window around the current page, last, next (as in compliance_report.html) */
+function renderPager(el, page, pages, go) {
+  el.replaceChildren();
+  const single = pages <= 1;  // one page only: show the pager greyed out
+  const btn = (label, p, opts = {}) => {
+    if (single) opts.disabled = true;
+    const b = h('button', { type: 'button', text: label, 'aria-label': opts.aria ?? `Page ${p}`, 'aria-current': opts.current ? 'page' : null, disabled: opts.disabled ? '' : null });
+    if (!opts.disabled && !opts.current) b.addEventListener('click', () => go(p));
+    return b;
+  };
+  el.append(btn('‹ Previous', page - 1, { aria: 'Previous page', disabled: page === 1 }));
+  const nums = uniq([1, page - 2, page - 1, page, page + 1, page + 2, pages].filter(p => p >= 1 && p <= pages)).sort((a, b) => a - b);
+  nums.forEach((p, i) => {
+    if (i && p - nums[i - 1] > 1) el.append(h('span', { class: 'gap', text: '…' }));
+    el.append(btn(String(p), p, { current: p === page }));
+  });
+  el.append(btn('Next ›', page + 1, { aria: 'Next page', disabled: page === pages }));
+  el.append(h('span', { style: 'margin-left:8px', text: `Page ${page} of ${pages}` }));
+}
+
+function dataTable(headers, rows, numericCols = []) {
+  const t = h('table');
+  t.append(h('thead', {}, h('tr', {}, ...headers.map((x, i) => h('th', { class: numericCols.includes(i) ? 'num' : '', text: x })))));
+  t.append(h('tbody', {}, ...rows.map(r => h('tr', {}, ...r.map((c, i) => h('td', { class: numericCols.includes(i) ? 'num' : '', text: c }))))));
+  return h('details', { class: 'datatable' }, h('summary', { text: 'Show data table' }), t);
+}
+
+function sparkline(values, { w = 120, hgt = 28, flatStart = true } = {}) {
+  let pts = values.map((v, i) => [i, v]).filter(([, v]) => v != null);
+  if (!pts.length) return h('span', { class: 'muted', text: '–' });
+  const vs = pts.map(([, v]) => v);
+  if (pts[0][0] > 0 && flatStart) pts = [[0, pts[0][1]], ...pts];
+  const lo = Math.min(...vs), hi = Math.max(...vs), span = hi - lo || 1;
+  const x = i => 2 + i * (w - 6) / Math.max(1, values.length - 1);
+  const y = v => hgt - 4 - (v - lo) * (hgt - 8) / span;
+  const svg = s('svg', { width: w, height: hgt, viewBox: `0 0 ${w} ${hgt}`, 'aria-hidden': 'true' });
+  s('polyline', { points: pts.map(([i, v]) => `${x(i)},${y(v)}`).join(' '), fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  const [li, lv] = pts.at(-1);
+  s('circle', { cx: x(li), cy: y(lv), r: 3, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 1.5 }, svg);
+  return svg;
+}
+
+function niceTicks(lo, hi, count = 4) {
+  const raw = Math.max(1e-9, (hi - lo) / count);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map(k => k * mag).find(st => st >= raw);
+  const a = Math.floor(lo / step) * step, b = Math.ceil(hi / step) * step;
+  const ticks = [];
+  for (let t = a; t <= b + 1e-9; t += step) ticks.push(+t.toFixed(6));
+  return ticks;
+}
+const showLabel = (i, n) => n <= 8 || (n - 1 - i) % 2 === 0;
+
+function lineChart(el, { values, name, W = 560, H = 240, flatStart = true, detail }) {   // detail(i): extra tooltip line   // flatStart: a flat line before the first value
+  const m = { t: 14, r: 56, b: 30, l: 52 };
+  const idx = values.map((v, i) => v == null ? null : i).filter(i => i != null);
+  if (!idx.length) return noData(el);
+  const first = idx[0], li = idx.at(-1);
+  const vs = idx.map(i => values[i]);
+  const ticks = niceTicks(Math.min(...vs) * 0.9, Math.max(...vs, Math.min(...vs) + 4));
+  const yMin = ticks[0], yMax = ticks.at(-1);
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', tabindex: 0, 'aria-label': `${name}: ${num(values[first])} in ${FULL[first]} to ${num(values[li])} in ${FULL[li]}` });
+  const x = i => m.l + i * (W - m.l - m.r) / Math.max(1, values.length - 1);
+  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / (yMax - yMin);
+  for (const t of ticks) {
+    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
+    s('text', { class: 'tick', x: m.l - 8, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = num(t);
+  }
+  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
+  LABELS.forEach((l, i) => { if (showLabel(i, LABELS.length)) s('text', { class: 'tick', x: x(i), y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = l; });
+  const pts = [...(first > 0 && flatStart ? [[x(0), y(values[first])]] : []), ...idx.map(i => [x(i), y(values[i])])];
+  const d = pts.map(([px, py]) => `${px},${py}`).join(' L');
+  s('path', { d: `M${pts[0][0]},${H - m.b} L${d} L${pts.at(-1)[0]},${H - m.b} Z`, fill: 'var(--accent-wash)' }, svg);
+  s('path', { d: `M${d}`, fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+  s('circle', { cx: x(li), cy: y(values[li]), r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2 }, svg);
+  s('text', { class: 'vlabel', x: x(li) + 10, y: y(values[li]) + 4 }, svg).textContent = num(values[li]);
+  const cross = s('line', { y1: m.t, y2: H - m.b, stroke: 'var(--axis)', 'stroke-width': 1, visibility: 'hidden' }, svg);
+  const dot = s('circle', { r: 4.5, fill: 'var(--accent)', stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' }, svg);
+  const hit = s('rect', { x: m.l - 10, y: m.t, width: W - m.l - m.r + 20, height: H - m.t - m.b, fill: 'transparent' }, svg);
+  let cur = li;
+  const hide = () => { cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); hideTip(); };
+  const show = (i, evt) => {
+    if (values[i] == null) return hide();
+    cur = i;
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('visibility', 'visible');
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(values[i])); dot.setAttribute('visibility', 'visible');
+    showTip(evt, num(values[i]), `${name} · ${FULL[i]}` + (detail ? `\n${detail(i)}` : ''));
+  };
+  hit.addEventListener('pointermove', evt => {
+    const r = svg.getBoundingClientRect();
+    const px = (evt.clientX - r.left) * W / r.width;
+    show(Math.max(0, Math.min(values.length - 1, Math.round((px - m.l) / ((W - m.l - m.r) / Math.max(1, values.length - 1))))), evt);
+  });
+  hit.addEventListener('pointerleave', hide);
+  svg.addEventListener('focus', () => show(cur, { target: dot, type: 'focus' }));
+  svg.addEventListener('blur', hide);
+  svg.addEventListener('keydown', evt => {
+    if (evt.key !== 'ArrowLeft' && evt.key !== 'ArrowRight') return;
+    evt.preventDefault();
+    const k = idx.indexOf(cur) + (evt.key === 'ArrowRight' ? 1 : -1);
+    show(idx[Math.max(0, Math.min(idx.length - 1, k))], { target: dot, type: 'focus' });
+  });
+  el.append(svg, dataTable(['Month', name], idx.map(i => [FULL[i], num(values[i])]), [1]));
+}
+
+function roundedTop(x, y, w, base, r) {
+  r = Math.min(r, w / 2, base - y);
+  return `M${x},${base} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${base} Z`;
+}
+
+/* Stacked columns external (bottom, slot 1) + internal (top, slot 2); 2px surface gap between segments */
+function stackedColumns(el, { values, name, W = 560, H = 240 }) {   // values: one {internal, external} per month, null = no report
+  const m = { t: 22, r: 16, b: 30, l: 44 };
+  const tot = values.map(v => v == null ? null : v.internal + v.external);
+  const idx = tot.map((v, i) => v == null ? null : i).filter(i => i != null);
+  if (!idx.length) return noData(el);
+  const li = idx.at(-1);
+  const ticks = niceTicks(0, Math.max(1, ...idx.map(i => tot[i])));
+  const yMax = ticks.at(-1);
+  const svg = s('svg', { class: 'chart', viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${name}: ${num(tot[li])} in ${FULL[li]}, ${num(values[li].external)} external` });
+  const band = (W - m.l - m.r) / values.length, bw = Math.min(26, band * 0.62);
+  const y = v => m.t + (yMax - v) * (H - m.t - m.b) / yMax;
+  for (const t of ticks) {
+    s('line', { class: 'grid-line', x1: m.l, x2: W - m.r, y1: y(t), y2: y(t) }, svg);
+    s('text', { class: 'tick', x: m.l - 8, y: y(t) + 4, 'text-anchor': 'end' }, svg).textContent = num(t);
+  }
+  values.forEach((v, i) => {
+    const cx = m.l + band * i + band / 2;
+    if (showLabel(i, values.length)) s('text', { class: 'tick', x: cx, y: H - m.b + 18, 'text-anchor': 'middle' }, svg).textContent = LABELS[i];
+    if (v == null) return;
+    const base = H - m.b, yExt = y(v.external), yTop = y(v.external + v.internal);
+    const segs = [];
+    if (v.external) segs.push(s('path', { d: v.internal ? `M${cx - bw / 2},${base} V${yExt} H${cx + bw / 2} V${base} Z` : roundedTop(cx - bw / 2, yExt, bw, base, 4), fill: 'var(--ext)' }, svg));
+    if (v.internal) segs.push(s('path', { d: roundedTop(cx - bw / 2, yTop, bw, yExt - (v.external ? 2 : 0), 4), fill: 'var(--int)' }, svg));
+    if (i === li) s('text', { class: 'vlabel', x: cx, y: yTop - 6, 'text-anchor': 'middle' }, svg).textContent = num(tot[i]);
+    const hit = s('rect', { x: m.l + band * i, y: m.t, width: band, height: H - m.t - m.b, fill: 'transparent', tabindex: 0, 'aria-label': `${FULL[i]}: ${num(tot[i])}, external ${num(v.external)}, internal ${num(v.internal)}` }, svg);
+    const on = evt => { segs.forEach(p => p.setAttribute('opacity', 0.8)); showTip(evt, num(tot[i]), `${name} · ${FULL[i]}\nExternal ${num(v.external)} · Internal ${num(v.internal)}`); };
+    const off = () => { segs.forEach(p => p.removeAttribute('opacity')); hideTip(); };
+    hit.addEventListener('pointermove', on); hit.addEventListener('pointerleave', off);
+    hit.addEventListener('focus', on); hit.addEventListener('blur', off);
+  });
+  s('line', { class: 'axis-line', x1: m.l, x2: W - m.r, y1: H - m.b, y2: H - m.b }, svg);
+  const legend = h('div', { class: 'legend', style: 'margin-bottom:6px' },
+    h('span', {}, h('span', { class: 'sw ext' }), 'External'), h('span', {}, h('span', { class: 'sw int' }), 'Internal (org members)'));
+  el.append(legend, svg, dataTable(['Month', 'External', 'Internal', 'Total'], idx.map(i => [FULL[i], num(values[i].external), num(values[i].internal), num(tot[i])]), [1, 2, 3]));
+}
+
+/* Change: ▲ when growing. Shown neutral (not red) when shrinking: the report is about growth, not findings */
+function deltaNode(cur, prev, label) {
+  if (cur == null || prev == null) return h('span', { class: 'delta flat' }, '– ', h('span', { text: `vs ${label}` }));
+  const d = cur - prev;
+  return h('span', { class: `delta ${d > 0 ? 'good' : 'flat'}` }, `${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${num(Math.abs(d))} `, h('span', { text: `vs ${label}` }));
+}
+
+/* ═══════════════════════════ Header ═══════════════════════════ */
+if (DATA.mock) $('mock').hidden = false;
+$('title').append('Open Source Community', h('br'), 'Report');
+$('subtitle').textContent = `${fmtMonthLong(DATA.period.month)} · open source projects published under github.com/${ORG}`;
+{
+  const meta = $('meta');
+  const row = (k, v) => meta.append(h('dt', { text: k }), h('dd', {}, v));
+  row('Report ID', DATA.report_id);
+  row('Period', `${fmtDate(DATA.period.from)} – ${fmtDate(new Date(Date.parse(DATA.period.to) - 864e5).toISOString())}`);
+  row('Status as of', fmtDateTime(DATA.run_at));
+  row('Trend period', `${fmtMonth(SLOTS[0])} – ${fmtMonth(SLOTS.at(-1))} (last ${TREND_MONTHS} months)`);
+  row('Previous report', DATA.previous_report ? h('a', { href: DATA.previous_report.data_url, text: DATA.previous_report.report_id }) : 'none (first report)');
+  row('Scope', plural(T.public_projects, 'public project'));
+  row('Workflow run', runLink(DATA.run_url));
+}
+
+/* ═══════════════════════════ 1 At a glance ═══════════════════════════ */
+{
+  const nc = T.new_contributors, tr = T.traffic;
+  const pct = g => g.six_months_ago && g.value != null ? Math.round((g.value / g.six_months_ago - 1) * 100) : null;
+  const vg = pct(G.visitors), sg = pct(G.stars);
+  const more = p => p >= 0 ? `${p}% more` : `${-p}% fewer`;
+  $('glance-lead').textContent = DATA.input.status !== 'ok'
+    ? `No numbers for ${fmtMonthLong(DATA.period.month)}: ${DATA.input.file} is ${DATA.input.status}. The trends show the earlier months.`
+    : (tr ? `In the 14 days before the run, ${num(tr.visitors)} people visited the ${plural(T.public_projects, 'open source project')} of ${ORG} and ${num(tr.cloners)} cloned them` +
+        (vg != null ? `: ${more(vg)} visitors than ${TREND_MONTHS} months ago.` : '.')
+      : `The traffic of the ${plural(T.public_projects, 'open source project')} of ${ORG} could not be read.`) +
+      ` In ${fmtMonthLong(DATA.period.month)}, ${plural(nc?.external, 'person', 'people')} from outside Allianz made their first contribution and ${plural(T.releases, 'release')} ${T.releases === 1 ? 'was' : 'were'} published.` +
+      (sg != null && sg > 0 ? ` Stars grew by ${sg}% in ${TREND_MONTHS} months.` : '');
+
+  const kpi = (key, label, sub, f, hero = false) => {
+    const g = G[key];
+    return h('div', { class: 'card tile' + (hero ? ' hero' : '') },
+      h('div', { class: 'label', text: label }),
+      h('div', { class: 'value', text: num(g.value) }),
+      h('div', { class: 'deltas' }, deltaNode(g.value, g.previous, PREV_LABEL), deltaNode(g.value, g.six_months_ago, EARLIER_LABEL)),
+      h('div', { class: 'spark' }, sparkline(trend(f), hero ? { w: 380, hgt: 120 } : {})),
+      h('div', { class: hero ? 'note' : 'sub', text: sub }));
+  };
+  $('kpis').append(
+    kpi('stars', 'Stars', `Stars of all ${plural(T.public_projects, 'public project')} (${num(T.new_projects)} new, ${num(T.active_projects)} active in the last ${ACTIVE_WITHIN}). ${num(T.forks)} forks.`, x => x.totals.stars, true),
+    kpi('visitors', 'Unique visitors', `Last 14 days · ${num(T.traffic?.views)} page views`, x => x.totals.traffic?.visitors),
+    kpi('cloners', 'Unique cloners', `Last 14 days · ${num(T.traffic?.clones)} clones`, x => x.totals.traffic?.cloners),
+    kpi('external_contributors', 'External contributors', `All-time, of ${num(G.contributors.value)} contributors · ${num(nc?.external)} new in ${fmtMon(DATA.period.month)}`, x => x.totals.contributors?.external),
+    kpi('releases', 'Releases', `Published in ${fmtMon(DATA.period.month)}`, x => x.totals.releases),
+  );
+
+  if (DATA.input.status !== 'ok') {
+    $('data-alert').append(h('b', { text: 'No data. ' }), `${DATA.input.file} is ${DATA.input.status}: the numbers of this month are missing.`);
+    $('data-alert').hidden = false;
+  }
+  if (DATA.errors.length) {
+    $('data-note').append(h('b', { text: 'Note: ' }), `some numbers could not be read: ${DATA.errors.map(e => `${e.metric} of ${e.repo}`).join(', ')}. They are shown as "no data" (see A).`);
+    $('data-note').hidden = false;
+  }
+}
+
+/* ═══════════════════════════ 2 Highlights ═══════════════════════════ */
+{
+  const list = $('highlight-list');
+  if (!DATA.highlights.length) list.append(h('li', {}, h('span', { class: 'ico', 'aria-hidden': 'true', text: '·' }), h('div', { class: 'muted', text: DATA.input.status === 'ok' ? 'Nothing new this month.' : 'No data this month.' })));
+  for (const x of DATA.highlights) {
+    const body = h('div', {}, x.repo ? [h('a', { href: repoUrl(x.repo), text: x.repo, style: 'font-weight:600' }), ' '] : null, x.text);
+    if (x.kind === 'releases') body.append(h('div', { class: 'rel' }, DATA.releases.map(r => `${r.repo} ${r.tag}`).join(' · ')));
+    list.append(h('li', {}, h('span', { class: 'ico', 'aria-hidden': 'true', text: x.icon }), body));
+  }
+}
+
+/* ═══════════════════════════ 3 Growth ═══════════════════════════ */
+{
+  const v = G.visitors, c = G.contributors;
+  const change = (what, g) => g.six_months_ago != null && g.value != null ? `${what} ${g.value >= g.six_months_ago ? 'grew' : 'went'} from ${num(g.six_months_ago)} to ${num(g.value)}` : null;
+  const changes = [change('Unique visitors', v), change('contributors', c)].filter(Boolean);
+  $('growth-lead').textContent = `The last ${TREND_MONTHS} months.` + (changes.length ? ` ${changes.join(', ')}.` : '') + ' ' +
+    'Traffic is the 14-day value GitHub returns at each monthly run, so one point per month.';
+  const tr = f => i => { const x = BY_PERIOD[SLOTS[i]]?.totals.traffic; return x ? f(x) : ''; };
+  lineChart($('c-stars'), { values: trend(x => x.totals.stars), name: 'Stars' });
+  lineChart($('c-visitors'), { values: trend(x => x.totals.traffic?.visitors), name: 'Unique visitors', detail: tr(x => `${num(x.views)} page views`) });
+  stackedColumns($('c-contributors'), { values: trend(x => x.totals.contributors), name: 'Contributors' });
+  stackedColumns($('c-prs'), { values: trend(x => x.totals.prs_merged), name: 'Merged pull requests' });
+}
+
+/* ═══════════════════════════ 4 Projects ═══════════════════════════ */
+/* Stats of a project as chips: the number, and its growth this month where it grew */
+const prevOf = repo => PREV?.repositories?.[repo];
+function stat(ico, value, label, growth, title) {
+  return h('span', { class: 'chip', title }, h('span', { class: 'ico', 'aria-hidden': 'true', text: ico }), h('b', { text: num(value) }),
+    growth > 0 ? h('span', { class: 'd', text: ` +${num(growth)}` }) : null, ` ${label}`);
+}
+function statsOf(r) {
+  const p = prevOf(r.repo), c = sum2(r.contributors);
+  return h('div', { class: 'chips' },
+    r.new_project ? h('span', { class: 'chip', title: 'Published this month' }, h('span', { class: 'ico', 'aria-hidden': 'true', text: '🆕' }), 'New project') : null,
+    stat('👥', c, `contributors · ${num(r.contributors?.external)} external`, sum2(r.new_contributors), `All-time; +${num(sum2(r.new_contributors))} new in ${fmtMon(DATA.period.month)}`),
+    stat('🚀', r.releases?.total, r.releases?.total === 1 ? 'release' : 'releases', r.releases?.period, `All-time; ${num(r.releases?.period)} in ${fmtMon(DATA.period.month)}`),
+    stat('🍴', r.forks, r.forks === 1 ? 'fork' : 'forks', p ? r.forks - p.forks : null, 'All-time'),
+    r.active ? h('span', { class: 'chip', title: `A push in the last ${ACTIVE_WITHIN}` }, h('span', { class: 'ico', 'aria-hidden': 'true', text: '🔥' }), 'Active') : null);
+}
+const prevStars = repo => prevOf(repo)?.stars;
+const starGrowth = r => { const p = prevStars(r.repo); return p == null ? null : r.stars - p; };
+const split = x => x ? [num(sum2(x)), ' ', h('span', { class: 'ext small', text: `(${num(x.external)} ext.)` })] : [h('span', { class: 'muted', text: 'no data' })];
+const fact = (title, period, rows, extra) => h('div', { class: 'fact' }, h('h4', { text: title }), h('div', { class: 'period', text: period }),
+  h('dl', {}, rows.flatMap(([k, v]) => [h('dt', { text: k }), h('dd', {}, v)])), extra ?? null);
+
+function projectBody(r) {
+  const body = h('div', { class: 'pbody' });
+  // three boxes, each with its period, longest first: all-time at the run, the month, and the 14 days of traffic GitHub returns
+  const asOf = fmtDate(DATA.run_at);
+  const monthEnd = fmtDate(new Date(Date.parse(DATA.period.to) - 864e5).toISOString());
+  body.append(h('div', { class: 'facts' },
+    fact('All-time', `as of ${asOf}`, [
+      ['Stars', num(r.stars)],
+      ['Forks', num(r.forks)],
+      ['Contributors', split(r.contributors)],
+      ['Releases', num(r.releases?.total)],
+      ['Release downloads', num(r.release_downloads)],
+      ['Published', fmtDate(r.created_at)],
+    ]),
+    fact('Last month', `${fmtDate(DATA.period.from)} – ${monthEnd}`, [
+      ['New contributors', split(r.new_contributors)],
+      ['Active contributors', split(r.active_contributors)],
+      ['Commits', num(r.commits)],
+      ['PRs merged', split(r.prs?.merged)],
+      ['Issues opened / closed', `${num(sum2(r.issues?.opened))} / ${num(sum2(r.issues?.closed))}`],
+      ['Releases', num(r.releases?.period)],
+    ], r.releases?.tags.length ? h('div', { class: 'tags' }, '🚀 ', r.releases.tags.join(', ')) : null),
+    fact('Last 14 days', r.traffic ? `${fmtDate(r.traffic.from)} – ${fmtDate(r.traffic.to)}` : 'GitHub keeps traffic for 14 days', r.traffic ? [
+      ['Views', num(r.traffic.views)],
+      ['Unique visitors', num(r.traffic.visitors)],
+      ['Clones', num(r.traffic.clones)],
+      ['Unique cloners', num(r.traffic.cloners)],
+    ] : [['Traffic', h('span', { class: 'muted', text: 'no data' })]]),
+  ));
+  const of = f => trend(x => { const p = x.repositories?.[r.repo]; return p ? f(p) : null; });
+  const box = (title, sub) => { const el = h('div'); return [h('div', {}, h('h4', { text: title }), h('p', { class: 'chart-sub', text: sub }), el), el]; };
+  const [stars, starsEl] = box('Stars', 'At the end of each month');
+  const [vis, visEl] = box('Unique visitors', 'Last 14 days at each monthly run');
+  const [prs, prsEl] = box('Merged pull requests', 'Per month, by author');
+  body.append(h('div', { class: 'trends' }, stars, vis, prs));
+  const size = { W: 380, H: 210 };
+  lineChart(starsEl, { values: of(p => p.stars), name: `Stars of ${r.repo}`, flatStart: false, ...size });
+  if (of(p => p.traffic?.visitors).some(x => x != null)) lineChart(visEl, { values: of(p => p.traffic?.visitors), name: `Unique visitors of ${r.repo}`, flatStart: false, ...size });
+  else visEl.append(h('p', { class: 'small muted', text: 'No traffic data.' }));
+  stackedColumns(prsEl, { values: of(p => p.prs_merged), name: `Merged PRs of ${r.repo}`, ...size });
+  return body;
+}
+
+{
+  $('projects-lead').textContent = `Every project with its stats; green numbers are the growth in ${fmtMonthLong(DATA.period.month)}. ` +
+    `Expand a project for all numbers and its trends over the last ${TREND_MONTHS} months. Numbers in brackets are external.`;
+  const tbody = $('projects-table').tBodies[0];
+  const rows = REPOS.map(r => {
+    const g = starGrowth(r);
+    const det = h('details', { class: 'req' }, h('summary', {}, h('span', { class: 'name', text: r.repo })));
+    const cell = h('td', { colspan: 3 });
+    const card = h('tr', { class: 'card-row', hidden: '' }, cell);
+    // details are built on first open
+    det.addEventListener('toggle', () => { if (det.open && !cell.firstChild) cell.append(h('div', { class: 'rcard' }, projectBody(r))); card.hidden = !det.open; });
+    const row = h('tr', {},
+      h('td', {}, det, h('div', { class: 'desc', text: r.description })),
+      h('td', {}, statsOf(r)),
+      h('td', { class: 'num stars' }, h('b', { text: num(r.stars) }), g > 0 ? h('span', { class: 'd', text: `+${num(g)} in ${fmtMon(DATA.period.month)}` }) : null));
+    return { r, det, els: [row, card] };
+  });
+  const SORT = {
+    contributors: (a, b) => (sum2(b.r.contributors) ?? -1) - (sum2(a.r.contributors) ?? -1) || a.r.repo.localeCompare(b.r.repo),
+    stars: (a, b) => b.r.stars - a.r.stars || a.r.repo.localeCompare(b.r.repo),
+    growth: (a, b) => (starGrowth(b.r) ?? -1) - (starGrowth(a.r) ?? -1) || a.r.repo.localeCompare(b.r.repo),
+    repo: (a, b) => a.r.repo.localeCompare(b.r.repo),
+  };
+  // paging as in the repository table of the compliance report; printing shows every project
+  const PL = { page: 1, size: 25 };
+  const render = () => {
+    const q = $('p-repo').value.trim().toLowerCase();
+    const all = rows.filter(x => x.r.repo.toLowerCase().includes(q)).sort(SORT[$('p-sort').value]);
+    const pages = Math.max(1, Math.ceil(all.length / PL.size));
+    PL.page = Math.min(Math.max(1, PL.page), pages);
+    const from = PL.page > 1 ? (PL.page - 1) * PL.size : 0, shown = all.slice(from, from + PL.size);   // size is Infinity when printing
+    tbody.replaceChildren(...shown.flatMap(x => x.els));
+    $('p-count').textContent = (q ? `${all.length} of ${plural(rows.length, 'project')} match the filter` : plural(rows.length, 'project')) +
+      (all.length > shown.length ? `; showing ${from + 1}–${from + shown.length}` : '');
+    renderPager($('p-pager'), PL.page, pages, p => { PL.page = p; render(); });
+  };
+  const restart = () => { PL.page = 1; PL.size = +$('p-size').value; render(); };
+  $('p-sort').addEventListener('change', restart);
+  $('p-size').addEventListener('change', restart);
+  $('p-repo').addEventListener('input', restart);
+  $('p-expand').addEventListener('click', () => {
+    const open = !rows.every(x => x.det.open);
+    rows.forEach(x => { x.det.open = open; });
+    $('p-expand').textContent = open ? 'Collapse all' : 'Expand all';
+  });
+  let saved = null;
+  addEventListener('beforeprint', () => {
+    saved = { ...PL, q: $('p-repo').value, open: rows.map(x => x.det.open) };
+    $('p-repo').value = ''; Object.assign(PL, { page: 1, size: Infinity }); render();
+    rows.forEach(x => { x.det.open = true; });
+  });
+  addEventListener('afterprint', () => {
+    if (!saved) return;
+    $('p-repo').value = saved.q; Object.assign(PL, { page: saved.page, size: saved.size }); render();
+    rows.forEach((x, i) => { x.det.open = saved.open[i]; });
+  });
+  render();
+}
+
+/* ═══════════════════════════ A Scope & method ═══════════════════════════ */
+{
+  const d = $('defs');
+  const def = (k, ...v) => d.append(h('dt', { text: k }), h('dd', {}, ...v));
+  def('Projects in scope', `${plural(T.public_projects, 'public repository', 'public repositories')} of ${ORG}, not archived, not forks.`);
+  def('Not included', DATA.skipped.length ? DATA.skipped.map(x => `${x.repo} (${x.reason})`).join(', ') : 'none');
+  def('Period', `${fmtMonthLong(DATA.period.month)} (UTC). Commits and contributors follow GitHub's weekly statistics: a week counts in the month in which it starts.`);
+  def('Internal / external', `Internal: member of the GitHub organisation ${ORG} at the time of the run. External: every other GitHub user. Bots are not counted.`);
+  def('Contributors', 'Commit authors on the default branch with a GitHub account, counted once across all projects. New: the first commit of the person in any project falls in the month.');
+  def('Visitors and clones', 'GitHub keeps traffic for 14 days only: the numbers cover the last 14 days before the run, not the whole month. The trends show this 14-day value once per month. Unique visitors and cloners are summed over the projects, so a person visiting two projects counts twice. Clones include CI pipelines.');
+  def('Active', `A push to the project in the last ${ACTIVE_WITHIN} before the end of the month.`);
+  def('Missing data', DATA.errors.length ? DATA.errors.map(e => `${e.repo}: ${e.reason}`).join('; ') : 'none');
+  const source = DATA.input.run_at ? `generated from ${DATA.input.file} of ${fmtDateTime(DATA.input.run_at)}` : `${DATA.input.file} ${DATA.input.status}`;
+  $('integrity').textContent = `${DATA.report_id} · ${source} · ospo ${(DATA.ospo_sha ?? 'unknown').slice(0, 7)}`;
+}
+
+document.documentElement.dataset.render = 'ok';
+</script>
+</body>
+</html>
