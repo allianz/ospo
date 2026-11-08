@@ -21,29 +21,26 @@
   },
   "levels": {
     "badges": {
-      "stars": [
-        10,
-        50,
-        100,
-        500,
-        1000
-      ],
-      "forks": [
-        10,
-        50,
-        100
-      ],
-      "external_contributors": [
-        1,
-        5,
-        10,
-        25
-      ],
-      "releases": [
-        1,
-        10,
-        50
-      ]
+      "stars": {
+        "bronze": 10,
+        "silver": 100,
+        "gold": 1000
+      },
+      "external_contributors": {
+        "bronze": 1,
+        "silver": 5,
+        "gold": 25
+      },
+      "releases": {
+        "bronze": 1,
+        "silver": 10,
+        "gold": 50
+      },
+      "forks": {
+        "bronze": 10,
+        "silver": 50,
+        "gold": 100
+      }
     },
     "milestones": {
       "stars": [
@@ -73,35 +70,35 @@
     }
   },
   "totals": {
-    "stars": 3185,
-    "forks": 534,
+    "stars": 3240,
+    "forks": 539,
     "public_projects": 14,
     "contributors": {
-      "internal": 108,
+      "internal": 107,
       "external": 95,
-      "total": 203
+      "total": 202
     },
     "new_contributors": {
       "internal": 3,
       "external": 3
     },
     "prs_merged": {
-      "internal": 84,
-      "external": 29
+      "internal": 86,
+      "external": 30
     },
     "releases": 7,
-    "commits": 411,
+    "commits": 422,
     "active_contributors": {
       "internal": 31,
-      "external": 16
+      "external": 17
     },
     "new_projects": 1,
     "active_projects": 12
   },
   "growth": {
     "stars": {
-      "value": 3185,
-      "previous": 3030,
+      "value": 3240,
+      "previous": 3070,
       "year_ago": 1978
     },
     "public_projects": {
@@ -115,18 +112,18 @@
       "year_ago": 52
     },
     "contributors": {
-      "value": 203,
-      "previous": 196,
+      "value": 202,
+      "previous": 195,
       "year_ago": 111
     },
     "prs_merged": {
-      "value": 113,
-      "previous": 109,
+      "value": 116,
+      "previous": 111,
       "year_ago": 69
     },
     "releases": {
       "value": 7,
-      "previous": 6,
+      "previous": 7,
       "year_ago": 5
     }
   },
@@ -136,13 +133,13 @@
       "description": "Rules engine for insurance claims handling",
       "created_at": "2025-10-19T09:12:00Z",
       "pushed_at": "2026-10-23T16:40:00Z",
-      "stars": 1099,
-      "forks": 176,
+      "stars": 1090,
+      "forks": 174,
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 18,
-        "external": 35
+        "internal": 17,
+        "external": 33
       },
       "new_contributors": {
         "internal": 0,
@@ -184,35 +181,32 @@
           "v3.1.0"
         ]
       },
-      "release_downloads": 5327,
+      "release_downloads": 5191,
       "traffic": {
-        "views": 5714,
-        "visitors": 1068,
+        "views": 5669,
+        "visitors": 1060,
         "clones": 575,
         "cloners": 68,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "stars-100",
-        "stars-500",
-        "stars-1000",
-        "forks-10",
-        "forks-50",
-        "forks-100",
-        "external_contributors-1",
-        "external_contributors-5",
-        "external_contributors-10",
-        "external_contributors-25",
-        "releases-1",
-        "releases-10"
+        "stars-bronze",
+        "stars-silver",
+        "stars-gold",
+        "forks-bronze",
+        "forks-silver",
+        "forks-gold",
+        "external_contributors-bronze",
+        "external_contributors-silver",
+        "external_contributors-gold",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "releases-50",
+          "badge": "releases-gold",
           "value": 19,
           "level": 50
         }
@@ -223,13 +217,13 @@
       "description": "Design tokens and themes for web and mobile",
       "created_at": "2025-10-08T09:12:00Z",
       "pushed_at": "2026-10-20T16:40:00Z",
-      "stars": 665,
-      "forks": 82,
+      "stars": 676,
+      "forks": 83,
       "new_project": false,
       "active": true,
       "contributors": {
         "internal": 12,
-        "external": 23
+        "external": 25
       },
       "new_contributors": {
         "internal": 0,
@@ -266,46 +260,44 @@
       },
       "releases": {
         "period": 2,
-        "total": 59,
+        "total": 60,
         "tags": [
           "v4.10.0",
           "v1.8.1"
         ]
       },
-      "release_downloads": 4623,
+      "release_downloads": 4766,
       "traffic": {
-        "views": 3609,
-        "visitors": 714,
+        "views": 3664,
+        "visitors": 723,
         "clones": 534,
         "cloners": 110,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "stars-100",
-        "stars-500",
-        "forks-10",
-        "forks-50",
-        "external_contributors-1",
-        "external_contributors-5",
-        "external_contributors-10",
-        "releases-1",
-        "releases-10",
-        "releases-50"
+        "stars-bronze",
+        "stars-silver",
+        "forks-bronze",
+        "forks-silver",
+        "external_contributors-bronze",
+        "external_contributors-silver",
+        "external_contributors-gold",
+        "releases-bronze",
+        "releases-silver",
+        "releases-gold"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-1000",
-          "value": 665,
+          "badge": "stars-gold",
+          "value": 676,
           "level": 1000
         },
         {
-          "badge": "external_contributors-25",
-          "value": 23,
-          "level": 25
+          "badge": "forks-gold",
+          "value": 83,
+          "level": 100
         }
       ]
     },
@@ -320,7 +312,7 @@
       "active": true,
       "contributors": {
         "internal": 18,
-        "external": 8
+        "external": 9
       },
       "new_contributors": {
         "internal": 1,
@@ -362,7 +354,7 @@
           "v1.10.0"
         ]
       },
-      "release_downloads": 3017,
+      "release_downloads": 3007,
       "traffic": {
         "views": 2523,
         "visitors": 391,
@@ -372,32 +364,36 @@
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "stars-100",
-        "forks-10",
-        "forks-50",
-        "external_contributors-1",
-        "external_contributors-5",
-        "releases-1",
-        "releases-10"
+        "stars-bronze",
+        "stars-silver",
+        "forks-bronze",
+        "forks-silver",
+        "external_contributors-bronze",
+        "external_contributors-silver",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-500",
+          "badge": "stars-gold",
           "value": 319,
-          "level": 500
+          "level": 1000
         },
         {
-          "badge": "external_contributors-10",
-          "value": 8,
-          "level": 10
+          "badge": "external_contributors-gold",
+          "value": 9,
+          "level": 25
         },
         {
-          "badge": "releases-50",
+          "badge": "releases-gold",
           "value": 21,
           "level": 50
+        },
+        {
+          "badge": "forks-gold",
+          "value": 65,
+          "level": 100
         }
       ]
     },
@@ -406,13 +402,13 @@
       "description": "Building blocks for Kubernetes operators",
       "created_at": "2025-10-09T09:12:00Z",
       "pushed_at": "2026-10-16T16:40:00Z",
-      "stars": 327,
+      "stars": 328,
       "forks": 72,
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 10,
-        "external": 11
+        "internal": 11,
+        "external": 10
       },
       "new_contributors": {
         "internal": 0,
@@ -422,14 +418,14 @@
         "internal": 2,
         "external": 3
       },
-      "commits": 16,
+      "commits": 19,
       "prs": {
         "opened": {
-          "internal": 5,
+          "internal": 6,
           "external": 3
         },
         "merged": {
-          "internal": 5,
+          "internal": 6,
           "external": 1
         },
         "closed_unmerged": {
@@ -449,46 +445,49 @@
       },
       "releases": {
         "period": 0,
-        "total": 27,
+        "total": 28,
         "tags": []
       },
-      "release_downloads": 5022,
+      "release_downloads": 4993,
       "traffic": {
-        "views": 2104,
-        "visitors": 335,
+        "views": 2110,
+        "visitors": 336,
         "clones": 477,
         "cloners": 82,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "stars-100",
-        "forks-10",
-        "forks-50",
-        "external_contributors-1",
-        "external_contributors-5",
-        "external_contributors-10",
-        "releases-1",
-        "releases-10"
+        "stars-bronze",
+        "stars-silver",
+        "forks-bronze",
+        "forks-silver",
+        "external_contributors-bronze",
+        "external_contributors-silver",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-500",
-          "value": 327,
-          "level": 500
+          "badge": "stars-gold",
+          "value": 328,
+          "level": 1000
         },
         {
-          "badge": "external_contributors-25",
-          "value": 11,
+          "badge": "external_contributors-gold",
+          "value": 10,
           "level": 25
         },
         {
-          "badge": "releases-50",
-          "value": 27,
+          "badge": "releases-gold",
+          "value": 28,
           "level": 50
+        },
+        {
+          "badge": "forks-gold",
+          "value": 72,
+          "level": 100
         }
       ]
     },
@@ -540,12 +539,12 @@
       },
       "releases": {
         "period": 1,
-        "total": 19,
+        "total": 18,
         "tags": [
           "v1.11.0"
         ]
       },
-      "release_downloads": 4816,
+      "release_downloads": 4490,
       "traffic": {
         "views": 995,
         "visitors": 129,
@@ -555,29 +554,33 @@
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "stars-100",
-        "forks-10",
-        "external_contributors-1",
-        "releases-1",
-        "releases-10"
+        "stars-bronze",
+        "stars-silver",
+        "forks-bronze",
+        "external_contributors-bronze",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-500",
+          "badge": "stars-gold",
           "value": 111,
-          "level": 500
+          "level": 1000
         },
         {
-          "badge": "external_contributors-5",
+          "badge": "external_contributors-silver",
           "value": 3,
           "level": 5
         },
         {
-          "badge": "releases-50",
-          "value": 19,
+          "badge": "releases-gold",
+          "value": 18,
+          "level": 50
+        },
+        {
+          "badge": "forks-silver",
+          "value": 28,
           "level": 50
         }
       ]
@@ -587,30 +590,30 @@
       "description": "Anonymise production data for test environments",
       "created_at": "2025-10-14T09:12:00Z",
       "pushed_at": "2026-10-19T16:40:00Z",
-      "stars": 115,
-      "forks": 19,
+      "stars": 117,
+      "forks": 20,
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 4,
-        "external": 5
+        "internal": 5,
+        "external": 4
       },
       "new_contributors": {
         "internal": 0,
         "external": 0
       },
       "active_contributors": {
-        "internal": 4,
+        "internal": 5,
         "external": 0
       },
-      "commits": 28,
+      "commits": 34,
       "prs": {
         "opened": {
-          "internal": 6,
+          "internal": 7,
           "external": 4
         },
         "merged": {
-          "internal": 4,
+          "internal": 5,
           "external": 2
         },
         "closed_unmerged": {
@@ -630,43 +633,46 @@
       },
       "releases": {
         "period": 0,
-        "total": 7,
+        "total": 8,
         "tags": []
       },
-      "release_downloads": 4885,
+      "release_downloads": 5157,
       "traffic": {
-        "views": 547,
-        "visitors": 134,
+        "views": 553,
+        "visitors": 135,
         "clones": 730,
         "cloners": 55,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "stars-100",
-        "forks-10",
-        "external_contributors-1",
-        "external_contributors-5",
-        "releases-1"
+        "stars-bronze",
+        "stars-silver",
+        "forks-bronze",
+        "external_contributors-bronze",
+        "releases-bronze"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-500",
-          "value": 115,
-          "level": 500
+          "badge": "stars-gold",
+          "value": 117,
+          "level": 1000
         },
         {
-          "badge": "external_contributors-10",
-          "value": 5,
+          "badge": "external_contributors-silver",
+          "value": 4,
+          "level": 5
+        },
+        {
+          "badge": "releases-silver",
+          "value": 8,
           "level": 10
         },
         {
-          "badge": "releases-10",
-          "value": 7,
-          "level": 10
+          "badge": "forks-silver",
+          "value": 20,
+          "level": 50
         }
       ]
     },
@@ -680,7 +686,7 @@
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 11,
+        "internal": 10,
         "external": 2
       },
       "new_contributors": {
@@ -691,14 +697,14 @@
         "internal": 2,
         "external": 2
       },
-      "commits": 20,
+      "commits": 17,
       "prs": {
         "opened": {
-          "internal": 8,
+          "internal": 7,
           "external": 3
         },
         "merged": {
-          "internal": 6,
+          "internal": 5,
           "external": 2
         },
         "closed_unmerged": {
@@ -718,10 +724,10 @@
       },
       "releases": {
         "period": 0,
-        "total": 34,
+        "total": 35,
         "tags": []
       },
-      "release_downloads": 4145,
+      "release_downloads": 4163,
       "traffic": {
         "views": 456,
         "visitors": 109,
@@ -731,28 +737,32 @@
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "forks-10",
-        "external_contributors-1",
-        "releases-1",
-        "releases-10"
+        "stars-bronze",
+        "forks-bronze",
+        "external_contributors-bronze",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-100",
+          "badge": "stars-silver",
           "value": 60,
           "level": 100
         },
         {
-          "badge": "external_contributors-5",
+          "badge": "external_contributors-silver",
           "value": 2,
           "level": 5
         },
         {
-          "badge": "releases-50",
-          "value": 34,
+          "badge": "releases-gold",
+          "value": 35,
+          "level": 50
+        },
+        {
+          "badge": "forks-silver",
+          "value": 19,
           "level": 50
         }
       ]
@@ -767,8 +777,8 @@
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 6,
-        "external": 3
+        "internal": 5,
+        "external": 4
       },
       "new_contributors": {
         "internal": 0,
@@ -778,15 +788,15 @@
         "internal": 4,
         "external": 3
       },
-      "commits": 32,
+      "commits": 33,
       "prs": {
         "opened": {
           "internal": 8,
-          "external": 4
+          "external": 5
         },
         "merged": {
           "internal": 5,
-          "external": 2
+          "external": 3
         },
         "closed_unmerged": {
           "internal": 0,
@@ -810,31 +820,35 @@
           "v1.8.0"
         ]
       },
-      "release_downloads": 4234,
+      "release_downloads": 4094,
       "traffic": null,
       "badges": [
-        "stars-10",
-        "stars-50",
-        "external_contributors-1",
-        "releases-1",
-        "releases-10"
+        "stars-bronze",
+        "external_contributors-bronze",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-100",
+          "badge": "stars-silver",
           "value": 54,
           "level": 100
         },
         {
-          "badge": "external_contributors-5",
-          "value": 3,
+          "badge": "external_contributors-silver",
+          "value": 4,
           "level": 5
         },
         {
-          "badge": "releases-50",
+          "badge": "releases-gold",
           "value": 14,
           "level": 50
+        },
+        {
+          "badge": "forks-bronze",
+          "value": 7,
+          "level": 10
         }
       ]
     },
@@ -843,12 +857,12 @@
       "description": "Android SDK for the customer app platform",
       "created_at": "2025-10-12T09:12:00Z",
       "pushed_at": "2026-10-16T16:40:00Z",
-      "stars": 49,
+      "stars": 50,
       "forks": 7,
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 9,
+        "internal": 10,
         "external": 1
       },
       "new_contributors": {
@@ -886,42 +900,47 @@
       },
       "releases": {
         "period": 1,
-        "total": 14,
+        "total": 15,
         "tags": [
           "v4.1.0"
         ]
       },
-      "release_downloads": 4314,
+      "release_downloads": 4469,
       "traffic": {
-        "views": 387,
-        "visitors": 84,
+        "views": 391,
+        "visitors": 85,
         "clones": 458,
         "cloners": 120,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "external_contributors-1",
-        "releases-1",
-        "releases-10"
+        "stars-bronze",
+        "external_contributors-bronze",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-50",
-          "value": 49,
-          "level": 50
+          "badge": "stars-silver",
+          "value": 50,
+          "level": 100
         },
         {
-          "badge": "external_contributors-5",
+          "badge": "external_contributors-silver",
           "value": 1,
           "level": 5
         },
         {
-          "badge": "releases-50",
-          "value": 14,
+          "badge": "releases-gold",
+          "value": 15,
           "level": 50
+        },
+        {
+          "badge": "forks-bronze",
+          "value": 7,
+          "level": 10
         }
       ]
     },
@@ -930,7 +949,7 @@
       "description": "REST API design guidelines and linter rules",
       "created_at": "2025-10-06T09:12:00Z",
       "pushed_at": "2026-10-17T16:40:00Z",
-      "stars": 78,
+      "stars": 76,
       "forks": 16,
       "new_project": false,
       "active": false,
@@ -976,39 +995,43 @@
         "total": 3,
         "tags": []
       },
-      "release_downloads": 4461,
+      "release_downloads": 4457,
       "traffic": {
-        "views": 529,
-        "visitors": 111,
+        "views": 523,
+        "visitors": 109,
         "clones": 582,
         "cloners": 11,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "forks-10",
-        "external_contributors-1",
-        "external_contributors-5",
-        "releases-1"
+        "stars-bronze",
+        "forks-bronze",
+        "external_contributors-bronze",
+        "external_contributors-silver",
+        "releases-bronze"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-100",
-          "value": 78,
+          "badge": "stars-silver",
+          "value": 76,
           "level": 100
         },
         {
-          "badge": "external_contributors-10",
+          "badge": "external_contributors-gold",
           "value": 5,
+          "level": 25
+        },
+        {
+          "badge": "releases-silver",
+          "value": 3,
           "level": 10
         },
         {
-          "badge": "releases-10",
-          "value": 3,
-          "level": 10
+          "badge": "forks-silver",
+          "value": 16,
+          "level": 50
         }
       ]
     },
@@ -1017,13 +1040,13 @@
       "description": "Python toolkit for actuarial risk models",
       "created_at": "2026-01-03T09:12:00Z",
       "pushed_at": "2026-10-26T16:40:00Z",
-      "stars": 134,
+      "stars": 137,
       "forks": 21,
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 9,
-        "external": 3
+        "internal": 8,
+        "external": 2
       },
       "new_contributors": {
         "internal": 0,
@@ -1060,42 +1083,46 @@
       },
       "releases": {
         "period": 0,
-        "total": 11,
+        "total": 12,
         "tags": []
       },
-      "release_downloads": 4615,
+      "release_downloads": 4964,
       "traffic": {
-        "views": 1134,
-        "visitors": 193,
+        "views": 1155,
+        "visitors": 195,
         "clones": 257,
         "cloners": 75,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "stars-100",
-        "forks-10",
-        "external_contributors-1",
-        "releases-1",
-        "releases-10"
+        "stars-bronze",
+        "stars-silver",
+        "forks-bronze",
+        "external_contributors-bronze",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [],
       "next_badges": [
         {
-          "badge": "stars-500",
-          "value": 134,
-          "level": 500
+          "badge": "stars-gold",
+          "value": 137,
+          "level": 1000
         },
         {
-          "badge": "external_contributors-5",
-          "value": 3,
+          "badge": "external_contributors-silver",
+          "value": 2,
           "level": 5
         },
         {
-          "badge": "releases-50",
-          "value": 11,
+          "badge": "releases-gold",
+          "value": 12,
+          "level": 50
+        },
+        {
+          "badge": "forks-silver",
+          "value": 21,
           "level": 50
         }
       ]
@@ -1110,8 +1137,8 @@
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 4,
-        "external": 1
+        "internal": 5,
+        "external": 2
       },
       "new_contributors": {
         "internal": 0,
@@ -1119,16 +1146,16 @@
       },
       "active_contributors": {
         "internal": 2,
-        "external": 1
+        "external": 2
       },
-      "commits": 20,
+      "commits": 24,
       "prs": {
         "opened": {
-          "internal": 6,
+          "internal": 7,
           "external": 0
         },
         "merged": {
-          "internal": 5,
+          "internal": 6,
           "external": 0
         },
         "closed_unmerged": {
@@ -1148,10 +1175,10 @@
       },
       "releases": {
         "period": 0,
-        "total": 9,
+        "total": 10,
         "tags": []
       },
-      "release_downloads": 904,
+      "release_downloads": 965,
       "traffic": {
         "views": 429,
         "visitors": 165,
@@ -1161,30 +1188,35 @@
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "forks-10",
-        "external_contributors-1",
-        "releases-1"
+        "stars-bronze",
+        "forks-bronze",
+        "external_contributors-bronze",
+        "releases-bronze",
+        "releases-silver"
       ],
       "new_badges": [
-        "forks-10"
+        "forks-bronze"
       ],
       "next_badges": [
         {
-          "badge": "stars-100",
+          "badge": "stars-silver",
           "value": 75,
           "level": 100
         },
         {
-          "badge": "external_contributors-5",
-          "value": 1,
+          "badge": "external_contributors-silver",
+          "value": 2,
           "level": 5
         },
         {
-          "badge": "releases-10",
-          "value": 9,
-          "level": 10
+          "badge": "releases-gold",
+          "value": 10,
+          "level": 50
+        },
+        {
+          "badge": "forks-silver",
+          "value": 10,
+          "level": 50
         }
       ]
     },
@@ -1193,12 +1225,12 @@
       "description": "Connectors between Kafka and core insurance systems",
       "created_at": "2026-07-03T09:12:00Z",
       "pushed_at": "2026-10-28T16:40:00Z",
-      "stars": 64,
-      "forks": 6,
+      "stars": 112,
+      "forks": 11,
       "new_project": false,
       "active": true,
       "contributors": {
-        "internal": 6,
+        "internal": 5,
         "external": 1
       },
       "new_contributors": {
@@ -1239,39 +1271,45 @@
         "total": 4,
         "tags": []
       },
-      "release_downloads": 919,
+      "release_downloads": 957,
       "traffic": {
-        "views": 587,
-        "visitors": 155,
+        "views": 923,
+        "visitors": 198,
         "clones": 870,
         "cloners": 92,
         "from": "2026-10-18",
         "to": "2026-10-31"
       },
       "badges": [
-        "stars-10",
-        "stars-50",
-        "external_contributors-1",
-        "releases-1"
+        "stars-bronze",
+        "stars-silver",
+        "forks-bronze",
+        "external_contributors-bronze",
+        "releases-bronze"
       ],
       "new_badges": [
-        "stars-50"
+        "stars-silver"
       ],
       "next_badges": [
         {
-          "badge": "stars-100",
-          "value": 64,
-          "level": 100
+          "badge": "stars-gold",
+          "value": 112,
+          "level": 1000
         },
         {
-          "badge": "external_contributors-5",
+          "badge": "external_contributors-silver",
           "value": 1,
           "level": 5
         },
         {
-          "badge": "releases-10",
+          "badge": "releases-silver",
           "value": 4,
           "level": 10
+        },
+        {
+          "badge": "forks-silver",
+          "value": 11,
+          "level": 50
         }
       ]
     },
@@ -1337,27 +1375,32 @@
       },
       "badges": [
         "new",
-        "stars-10"
+        "stars-bronze"
       ],
       "new_badges": [
         "new",
-        "stars-10"
+        "stars-bronze"
       ],
       "next_badges": [
         {
-          "badge": "stars-50",
+          "badge": "stars-silver",
           "value": 35,
-          "level": 50
+          "level": 100
         },
         {
-          "badge": "external_contributors-1",
+          "badge": "external_contributors-bronze",
           "value": 0,
           "level": 1
         },
         {
-          "badge": "releases-1",
+          "badge": "releases-bronze",
           "value": 0,
           "level": 1
+        },
+        {
+          "badge": "forks-bronze",
+          "value": 6,
+          "level": 10
         }
       ]
     }
@@ -1387,24 +1430,24 @@
     },
     {
       "kind": "badge",
-      "icon": "⭐",
+      "icon": "🥈",
       "repo": "event-bus-connectors",
-      "badge": "stars-50",
-      "text": "reached 50 stars."
+      "badge": "stars-silver",
+      "text": "earned Silver in Popular: 100 stars or more."
     },
     {
       "kind": "badge",
-      "icon": "⭐",
+      "icon": "🥉",
       "repo": "chatbot-starter",
-      "badge": "stars-10",
-      "text": "reached 10 stars."
+      "badge": "stars-bronze",
+      "text": "earned Bronze in Popular: 10 stars or more."
     },
     {
       "kind": "badge",
-      "icon": "🍴",
+      "icon": "🥉",
       "repo": "geo-hazard-maps",
-      "badge": "forks-10",
-      "text": "was forked 10 times."
+      "badge": "forks-bronze",
+      "text": "earned Bronze in Reused: 10 forks or more."
     },
     {
       "kind": "welcome",
@@ -1498,18 +1541,15 @@
           },
           "commits": 48,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -1527,16 +1567,14 @@
           },
           "commits": 23,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "policy-sdk-java": {
@@ -1554,14 +1592,13 @@
           },
           "commits": 27,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -1579,14 +1616,13 @@
           },
           "commits": 21,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -1604,12 +1640,11 @@
           },
           "commits": 34,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -1627,11 +1662,10 @@
           },
           "commits": 12,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -1649,11 +1683,11 @@
           },
           "commits": 22,
           "badges": [
-            "stars-10",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -1671,9 +1705,9 @@
           },
           "commits": 22,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "mobile-sdk-android": {
@@ -1691,9 +1725,9 @@
           },
           "commits": 9,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "api-guidelines": {
@@ -1711,11 +1745,10 @@
           },
           "commits": 15,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -1769,18 +1802,15 @@
           },
           "commits": 69,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -1798,16 +1828,14 @@
           },
           "commits": 16,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "policy-sdk-java": {
@@ -1825,14 +1853,13 @@
           },
           "commits": 36,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -1850,14 +1877,13 @@
           },
           "commits": 22,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -1875,12 +1901,11 @@
           },
           "commits": 25,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -1898,11 +1923,10 @@
           },
           "commits": 11,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -1920,11 +1944,11 @@
           },
           "commits": 22,
           "badges": [
-            "stars-10",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -1942,9 +1966,9 @@
           },
           "commits": 32,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "mobile-sdk-android": {
@@ -1962,9 +1986,9 @@
           },
           "commits": 19,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "api-guidelines": {
@@ -1982,11 +2006,10 @@
           },
           "commits": 30,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -2040,18 +2063,15 @@
           },
           "commits": 32,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -2069,16 +2089,14 @@
           },
           "commits": 18,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "policy-sdk-java": {
@@ -2096,14 +2114,13 @@
           },
           "commits": 41,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -2121,14 +2138,13 @@
           },
           "commits": 28,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -2146,12 +2162,11 @@
           },
           "commits": 31,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -2169,11 +2184,10 @@
           },
           "commits": 31,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -2191,11 +2205,11 @@
           },
           "commits": 45,
           "badges": [
-            "stars-10",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -2213,9 +2227,9 @@
           },
           "commits": 12,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "mobile-sdk-android": {
@@ -2233,9 +2247,9 @@
           },
           "commits": 25,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "api-guidelines": {
@@ -2253,11 +2267,10 @@
           },
           "commits": 10,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -2311,18 +2324,15 @@
           },
           "commits": 36,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -2340,16 +2350,14 @@
           },
           "commits": 38,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "policy-sdk-java": {
@@ -2367,14 +2375,13 @@
           },
           "commits": 57,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -2392,14 +2399,13 @@
           },
           "commits": 22,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -2417,13 +2423,12 @@
           },
           "commits": 24,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -2441,11 +2446,10 @@
           },
           "commits": 12,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -2463,11 +2467,11 @@
           },
           "commits": 37,
           "badges": [
-            "stars-10",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -2485,9 +2489,9 @@
           },
           "commits": 32,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "mobile-sdk-android": {
@@ -2505,9 +2509,9 @@
           },
           "commits": 19,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "api-guidelines": {
@@ -2525,11 +2529,10 @@
           },
           "commits": 27,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
@@ -2548,8 +2551,8 @@
           "commits": 24,
           "badges": [
             "new",
-            "stars-10",
-            "releases-1"
+            "stars-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -2603,18 +2606,15 @@
           },
           "commits": 48,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -2632,17 +2632,14 @@
           },
           "commits": 30,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "policy-sdk-java": {
@@ -2660,15 +2657,14 @@
           },
           "commits": 33,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -2686,15 +2682,14 @@
           },
           "commits": 38,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -2712,13 +2707,12 @@
           },
           "commits": 18,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -2736,11 +2730,10 @@
           },
           "commits": 16,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -2758,11 +2751,11 @@
           },
           "commits": 37,
           "badges": [
-            "stars-10",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -2780,9 +2773,9 @@
           },
           "commits": 12,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "mobile-sdk-android": {
@@ -2800,9 +2793,9 @@
           },
           "commits": 13,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "api-guidelines": {
@@ -2820,12 +2813,11 @@
           },
           "commits": 28,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
@@ -2843,8 +2835,8 @@
           },
           "commits": 16,
           "badges": [
-            "stars-10",
-            "releases-1"
+            "stars-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -2898,19 +2890,16 @@
           },
           "commits": 45,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "external_contributors-25",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -2928,17 +2917,14 @@
           },
           "commits": 32,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "policy-sdk-java": {
@@ -2956,15 +2942,14 @@
           },
           "commits": 36,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -2982,15 +2967,14 @@
           },
           "commits": 41,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -3008,13 +2992,12 @@
           },
           "commits": 26,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -3032,11 +3015,10 @@
           },
           "commits": 13,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -3054,12 +3036,11 @@
           },
           "commits": 42,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -3077,10 +3058,10 @@
           },
           "commits": 32,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-android": {
@@ -3098,9 +3079,9 @@
           },
           "commits": 20,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "api-guidelines": {
@@ -3118,12 +3099,11 @@
           },
           "commits": 16,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
@@ -3141,10 +3121,9 @@
           },
           "commits": 12,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         }
       },
@@ -3198,19 +3177,16 @@
           },
           "commits": 44,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "external_contributors-25",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -3228,18 +3204,15 @@
           },
           "commits": 24,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10",
-            "releases-50"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver",
+            "releases-gold"
           ]
         },
         "policy-sdk-java": {
@@ -3257,15 +3230,14 @@
           },
           "commits": 20,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -3283,15 +3255,14 @@
           },
           "commits": 20,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -3309,13 +3280,12 @@
           },
           "commits": 30,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -3333,11 +3303,10 @@
           },
           "commits": 10,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -3355,12 +3324,11 @@
           },
           "commits": 27,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -3378,10 +3346,10 @@
           },
           "commits": 32,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-android": {
@@ -3399,9 +3367,9 @@
           },
           "commits": 21,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "api-guidelines": {
@@ -3419,12 +3387,11 @@
           },
           "commits": 13,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
@@ -3442,11 +3409,10 @@
           },
           "commits": 36,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "geo-hazard-maps": {
@@ -3465,8 +3431,8 @@
           "commits": 17,
           "badges": [
             "new",
-            "stars-10",
-            "releases-1"
+            "stars-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -3520,19 +3486,16 @@
           },
           "commits": 28,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "external_contributors-25",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -3550,18 +3513,15 @@
           },
           "commits": 36,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10",
-            "releases-50"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver",
+            "releases-gold"
           ]
         },
         "policy-sdk-java": {
@@ -3579,15 +3539,14 @@
           },
           "commits": 36,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -3605,16 +3564,14 @@
           },
           "commits": 16,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -3632,13 +3589,12 @@
           },
           "commits": 20,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -3656,11 +3612,10 @@
           },
           "commits": 7,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -3678,12 +3633,11 @@
           },
           "commits": 14,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -3701,10 +3655,10 @@
           },
           "commits": 18,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-android": {
@@ -3722,10 +3676,10 @@
           },
           "commits": 18,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "api-guidelines": {
@@ -3743,12 +3697,11 @@
           },
           "commits": 22,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
@@ -3766,12 +3719,11 @@
           },
           "commits": 34,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "geo-hazard-maps": {
@@ -3789,8 +3741,8 @@
           },
           "commits": 32,
           "badges": [
-            "stars-10",
-            "releases-1"
+            "stars-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -3845,19 +3797,16 @@
           },
           "commits": 47,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "external_contributors-25",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -3875,18 +3824,15 @@
           },
           "commits": 49,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10",
-            "releases-50"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver",
+            "releases-gold"
           ]
         },
         "policy-sdk-java": {
@@ -3904,15 +3850,14 @@
           },
           "commits": 49,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -3930,16 +3875,14 @@
           },
           "commits": 20,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -3957,13 +3900,12 @@
           },
           "commits": 42,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -3981,12 +3923,11 @@
           },
           "commits": 12,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -4004,12 +3945,11 @@
           },
           "commits": 24,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -4027,10 +3967,10 @@
           },
           "commits": 16,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-android": {
@@ -4048,10 +3988,10 @@
           },
           "commits": 25,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "api-guidelines": {
@@ -4069,12 +4009,11 @@
           },
           "commits": 22,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
@@ -4092,12 +4031,11 @@
           },
           "commits": 48,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "geo-hazard-maps": {
@@ -4115,9 +4053,9 @@
           },
           "commits": 23,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -4138,22 +4076,22 @@
         "public_projects": 13,
         "contributors": {
           "internal": 98,
-          "external": 83,
-          "total": 181
+          "external": 84,
+          "total": 182
         },
         "new_contributors": {
           "internal": 8,
-          "external": 5
+          "external": 6
         },
         "prs_merged": {
-          "internal": 81,
-          "external": 29
+          "internal": 80,
+          "external": 30
         },
         "releases": 6,
-        "commits": 418,
+        "commits": 426,
         "active_contributors": {
           "internal": 25,
-          "external": 19
+          "external": 20
         }
       },
       "repositories": {
@@ -4172,20 +4110,17 @@
           },
           "commits": 43,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "stars-1000",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "external_contributors-25",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "stars-gold",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
@@ -4203,18 +4138,15 @@
           },
           "commits": 58,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10",
-            "releases-50"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver",
+            "releases-gold"
           ]
         },
         "policy-sdk-java": {
@@ -4232,15 +4164,14 @@
           },
           "commits": 62,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
@@ -4258,16 +4189,14 @@
           },
           "commits": 27,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -4285,13 +4214,12 @@
           },
           "commits": 44,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
@@ -4309,12 +4237,11 @@
           },
           "commits": 24,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
@@ -4332,12 +4259,11 @@
           },
           "commits": 17,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
@@ -4355,10 +4281,10 @@
           },
           "commits": 20,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-android": {
@@ -4376,10 +4302,10 @@
           },
           "commits": 27,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "api-guidelines": {
@@ -4397,12 +4323,11 @@
           },
           "commits": 21,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
@@ -4420,12 +4345,11 @@
           },
           "commits": 37,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "geo-hazard-maps": {
@@ -4443,9 +4367,9 @@
           },
           "commits": 20,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "event-bus-connectors": {
@@ -4453,19 +4377,20 @@
           "forks": 5,
           "contributors": {
             "internal": 5,
-            "external": 0
-          },
-          "releases_total": 4,
-          "release_downloads": 736,
-          "prs_merged": {
-            "internal": 5,
             "external": 1
           },
-          "commits": 18,
+          "releases_total": 4,
+          "release_downloads": 783,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 26,
           "badges": [
             "new",
-            "stars-10",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -4481,343 +4406,327 @@
       "month": "2026-09",
       "period": "2026-08",
       "totals": {
-        "stars": 2918,
-        "forks": 488,
+        "stars": 2923,
+        "forks": 490,
         "public_projects": 13,
         "contributors": {
-          "internal": 103,
-          "external": 88,
+          "internal": 102,
+          "external": 89,
           "total": 191
         },
         "new_contributors": {
-          "internal": 6,
+          "internal": 4,
           "external": 6
         },
         "prs_merged": {
-          "internal": 71,
-          "external": 35
+          "internal": 73,
+          "external": 37
         },
-        "releases": 4,
-        "commits": 403,
+        "releases": 9,
+        "commits": 419,
         "active_contributors": {
-          "internal": 33,
+          "internal": 25,
           "external": 23
         }
       },
       "repositories": {
         "claims-engine": {
-          "stars": 1051,
-          "forks": 168,
+          "stars": 1036,
+          "forks": 167,
           "contributors": {
             "internal": 17,
             "external": 30
           },
           "releases_total": 17,
-          "release_downloads": 4419,
+          "release_downloads": 4431,
           "prs_merged": {
             "internal": 10,
             "external": 10
           },
-          "commits": 80,
+          "commits": 60,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "stars-1000",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "external_contributors-25",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "stars-gold",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
-          "stars": 632,
-          "forks": 76,
+          "stars": 629,
+          "forks": 77,
           "contributors": {
             "internal": 12,
             "external": 23
           },
-          "releases_total": 56,
-          "release_downloads": 4114,
+          "releases_total": 57,
+          "release_downloads": 4207,
           "prs_merged": {
             "internal": 5,
-            "external": 5
+            "external": 4
           },
-          "commits": 25,
+          "commits": 42,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10",
-            "releases-50"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver",
+            "releases-gold"
           ]
         },
         "policy-sdk-java": {
-          "stars": 300,
-          "forks": 60,
+          "stars": 301,
+          "forks": 62,
           "contributors": {
             "internal": 17,
-            "external": 8
+            "external": 9
           },
-          "releases_total": 20,
-          "release_downloads": 2600,
+          "releases_total": 19,
+          "release_downloads": 2404,
           "prs_merged": {
-            "internal": 10,
-            "external": 3
+            "internal": 7,
+            "external": 4
           },
-          "commits": 53,
+          "commits": 29,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
           "stars": 295,
-          "forks": 65,
+          "forks": 66,
           "contributors": {
-            "internal": 10,
-            "external": 11
+            "internal": 11,
+            "external": 10
           },
-          "releases_total": 26,
-          "release_downloads": 4432,
+          "releases_total": 27,
+          "release_downloads": 4559,
           "prs_merged": {
-            "internal": 4,
-            "external": 5
+            "internal": 6,
+            "external": 3
           },
-          "commits": 31,
+          "commits": 42,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
-          "stars": 109,
-          "forks": 29,
+          "stars": 108,
+          "forks": 27,
           "contributors": {
-            "internal": 13,
+            "internal": 12,
             "external": 3
           },
           "releases_total": 17,
-          "release_downloads": 4264,
+          "release_downloads": 4078,
           "prs_merged": {
-            "internal": 6,
-            "external": 1
+            "internal": 8,
+            "external": 0
           },
-          "commits": 37,
+          "commits": 48,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
           "stars": 108,
-          "forks": 17,
+          "forks": 18,
           "contributors": {
             "internal": 4,
-            "external": 5
+            "external": 4
           },
-          "releases_total": 7,
-          "release_downloads": 4753,
+          "releases_total": 8,
+          "release_downloads": 5028,
           "prs_merged": {
-            "internal": 2,
-            "external": 3
+            "internal": 3,
+            "external": 1
           },
-          "commits": 15,
+          "commits": 20,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
           "stars": 57,
-          "forks": 19,
+          "forks": 18,
           "contributors": {
-            "internal": 11,
+            "internal": 10,
             "external": 1
           },
-          "releases_total": 33,
-          "release_downloads": 3713,
+          "releases_total": 34,
+          "release_downloads": 3811,
           "prs_merged": {
-            "internal": 6,
-            "external": 1
+            "internal": 5,
+            "external": 2
           },
-          "commits": 39,
+          "commits": 32,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
-          "stars": 50,
-          "forks": 6,
+          "stars": 51,
+          "forks": 7,
           "contributors": {
-            "internal": 6,
-            "external": 3
+            "internal": 5,
+            "external": 4
           },
           "releases_total": 12,
-          "release_downloads": 3533,
+          "release_downloads": 3461,
           "prs_merged": {
-            "internal": 6,
-            "external": 0
+            "internal": 3,
+            "external": 4
           },
-          "commits": 18,
+          "commits": 20,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-android": {
-          "stars": 47,
+          "stars": 48,
           "forks": 7,
           "contributors": {
-            "internal": 9,
+            "internal": 10,
             "external": 1
           },
           "releases_total": 13,
-          "release_downloads": 3910,
+          "release_downloads": 3933,
           "prs_merged": {
-            "internal": 4,
+            "internal": 5,
             "external": 1
           },
-          "commits": 14,
+          "commits": 23,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "api-guidelines": {
-          "stars": 74,
-          "forks": 14,
+          "stars": 73,
+          "forks": 13,
           "contributors": {
             "internal": 8,
             "external": 5
           },
           "releases_total": 3,
-          "release_downloads": 4276,
+          "release_downloads": 4332,
           "prs_merged": {
-            "internal": 5,
+            "internal": 7,
             "external": 3
           },
-          "commits": 39,
+          "commits": 24,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
-          "stars": 105,
-          "forks": 16,
+          "stars": 107,
+          "forks": 15,
           "contributors": {
-            "internal": 9,
+            "internal": 8,
             "external": 2
           },
-          "releases_total": 11,
-          "release_downloads": 4432,
+          "releases_total": 12,
+          "release_downloads": 4781,
           "prs_merged": {
-            "internal": 6,
+            "internal": 4,
             "external": 1
           },
-          "commits": 20,
+          "commits": 27,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "geo-hazard-maps": {
           "stars": 56,
           "forks": 8,
           "contributors": {
-            "internal": 4,
-            "external": 1
-          },
-          "releases_total": 9,
-          "release_downloads": 736,
-          "prs_merged": {
-            "internal": 2,
-            "external": 0
-          },
-          "commits": 8,
-          "badges": [
-            "stars-10",
-            "stars-50",
-            "external_contributors-1",
-            "releases-1"
-          ]
-        },
-        "event-bus-connectors": {
-          "stars": 34,
-          "forks": 3,
-          "contributors": {
-            "internal": 6,
-            "external": 1
-          },
-          "releases_total": 4,
-          "release_downloads": 780,
-          "prs_merged": {
             "internal": 5,
             "external": 2
           },
-          "commits": 24,
+          "releases_total": 10,
+          "release_downloads": 797,
+          "prs_merged": {
+            "internal": 6,
+            "external": 3
+          },
+          "commits": 27,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
+          ]
+        },
+        "event-bus-connectors": {
+          "stars": 54,
+          "forks": 5,
+          "contributors": {
+            "internal": 5,
+            "external": 1
+          },
+          "releases_total": 4,
+          "release_downloads": 818,
+          "prs_merged": {
+            "internal": 4,
+            "external": 1
+          },
+          "commits": 25,
+          "badges": [
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -4833,88 +4742,83 @@
       "month": "2026-10",
       "period": "2026-09",
       "totals": {
-        "stars": 3030,
-        "forks": 508,
+        "stars": 3070,
+        "forks": 511,
         "public_projects": 13,
         "contributors": {
-          "internal": 104,
+          "internal": 103,
           "external": 92,
-          "total": 196
+          "total": 195
         },
         "new_contributors": {
-          "internal": 1,
-          "external": 4
+          "internal": 2,
+          "external": 3
         },
         "prs_merged": {
-          "internal": 76,
-          "external": 33
+          "internal": 82,
+          "external": 29
         },
-        "releases": 6,
-        "commits": 443,
+        "releases": 7,
+        "commits": 428,
         "active_contributors": {
-          "internal": 28,
-          "external": 18
+          "internal": 23,
+          "external": 21
         }
       },
       "repositories": {
         "claims-engine": {
-          "stars": 1075,
+          "stars": 1066,
           "forks": 173,
           "contributors": {
-            "internal": 18,
-            "external": 33
+            "internal": 17,
+            "external": 31
           },
           "releases_total": 18,
-          "release_downloads": 4829,
+          "release_downloads": 4693,
           "prs_merged": {
-            "internal": 8,
-            "external": 11
+            "internal": 10,
+            "external": 7
           },
-          "commits": 81,
+          "commits": 71,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "stars-1000",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "external_contributors-25",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "stars-gold",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
-          "stars": 649,
+          "stars": 660,
           "forks": 80,
           "contributors": {
             "internal": 12,
-            "external": 23
+            "external": 25
           },
-          "releases_total": 57,
-          "release_downloads": 4468,
+          "releases_total": 58,
+          "release_downloads": 4611,
           "prs_merged": {
-            "internal": 7,
-            "external": 5
+            "internal": 8,
+            "external": 6
           },
-          "commits": 43,
+          "commits": 44,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10",
-            "releases-50"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver",
+            "releases-gold"
           ]
         },
         "policy-sdk-java": {
@@ -4922,52 +4826,49 @@
           "forks": 64,
           "contributors": {
             "internal": 17,
-            "external": 8
+            "external": 9
           },
           "releases_total": 20,
-          "release_downloads": 2718,
+          "release_downloads": 2708,
           "prs_merged": {
-            "internal": 9,
-            "external": 2
+            "internal": 10,
+            "external": 1
           },
-          "commits": 60,
+          "commits": 42,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
-          "stars": 309,
-          "forks": 68,
+          "stars": 310,
+          "forks": 69,
           "contributors": {
-            "internal": 10,
-            "external": 11
+            "internal": 11,
+            "external": 10
           },
-          "releases_total": 27,
-          "release_downloads": 4915,
+          "releases_total": 28,
+          "release_downloads": 4886,
           "prs_merged": {
             "internal": 5,
-            "external": 2
+            "external": 3
           },
-          "commits": 32,
+          "commits": 23,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -4977,199 +4878,193 @@
             "internal": 13,
             "external": 3
           },
-          "releases_total": 18,
-          "release_downloads": 4485,
+          "releases_total": 17,
+          "release_downloads": 4159,
           "prs_merged": {
             "internal": 7,
-            "external": 1
+            "external": 0
           },
-          "commits": 38,
+          "commits": 21,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
-          "stars": 111,
-          "forks": 17,
+          "stars": 113,
+          "forks": 19,
           "contributors": {
-            "internal": 4,
-            "external": 5
+            "internal": 5,
+            "external": 4
           },
-          "releases_total": 7,
-          "release_downloads": 4766,
+          "releases_total": 8,
+          "release_downloads": 5038,
           "prs_merged": {
             "internal": 5,
-            "external": 2
+            "external": 3
           },
-          "commits": 19,
+          "commits": 31,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
           "stars": 58,
           "forks": 17,
           "contributors": {
-            "internal": 11,
+            "internal": 10,
             "external": 1
           },
-          "releases_total": 34,
-          "release_downloads": 4132,
+          "releases_total": 35,
+          "release_downloads": 4150,
           "prs_merged": {
-            "internal": 5,
-            "external": 1
+            "internal": 7,
+            "external": 0
           },
-          "commits": 23,
+          "commits": 42,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
           "stars": 52,
-          "forks": 5,
+          "forks": 7,
           "contributors": {
-            "internal": 6,
-            "external": 3
+            "internal": 5,
+            "external": 4
           },
           "releases_total": 13,
-          "release_downloads": 3912,
+          "release_downloads": 3772,
+          "prs_merged": {
+            "internal": 5,
+            "external": 2
+          },
+          "commits": 36,
+          "badges": [
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
+          ]
+        },
+        "mobile-sdk-android": {
+          "stars": 49,
+          "forks": 5,
+          "contributors": {
+            "internal": 10,
+            "external": 1
+          },
+          "releases_total": 14,
+          "release_downloads": 4079,
           "prs_merged": {
             "internal": 5,
             "external": 1
           },
-          "commits": 27,
-          "badges": [
-            "stars-10",
-            "stars-50",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
-          ]
-        },
-        "mobile-sdk-android": {
-          "stars": 48,
-          "forks": 7,
-          "contributors": {
-            "internal": 9,
-            "external": 1
-          },
-          "releases_total": 13,
-          "release_downloads": 3924,
-          "prs_merged": {
-            "internal": 6,
-            "external": 1
-          },
           "commits": 26,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "api-guidelines": {
-          "stars": 76,
-          "forks": 14,
+          "stars": 74,
+          "forks": 13,
           "contributors": {
             "internal": 8,
             "external": 5
           },
           "releases_total": 3,
-          "release_downloads": 4350,
-          "prs_merged": {
-            "internal": 4,
-            "external": 1
-          },
-          "commits": 21,
-          "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
-          ]
-        },
-        "risk-model-toolkit": {
-          "stars": 119,
-          "forks": 19,
-          "contributors": {
-            "internal": 9,
-            "external": 3
-          },
-          "releases_total": 11,
-          "release_downloads": 4531,
-          "prs_merged": {
-            "internal": 6,
-            "external": 3
-          },
-          "commits": 39,
-          "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
-          ]
-        },
-        "geo-hazard-maps": {
-          "stars": 66,
-          "forks": 8,
-          "contributors": {
-            "internal": 4,
-            "external": 1
-          },
-          "releases_total": 9,
-          "release_downloads": 844,
-          "prs_merged": {
-            "internal": 5,
-            "external": 1
-          },
-          "commits": 16,
-          "badges": [
-            "stars-10",
-            "stars-50",
-            "external_contributors-1",
-            "releases-1"
-          ]
-        },
-        "event-bus-connectors": {
-          "stars": 48,
-          "forks": 7,
-          "contributors": {
-            "internal": 6,
-            "external": 1
-          },
-          "releases_total": 4,
-          "release_downloads": 818,
+          "release_downloads": 4346,
           "prs_merged": {
             "internal": 4,
             "external": 2
           },
           "commits": 18,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
+          ]
+        },
+        "risk-model-toolkit": {
+          "stars": 122,
+          "forks": 17,
+          "contributors": {
+            "internal": 8,
+            "external": 2
+          },
+          "releases_total": 12,
+          "release_downloads": 4880,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 37,
+          "badges": [
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
+          ]
+        },
+        "geo-hazard-maps": {
+          "stars": 66,
+          "forks": 8,
+          "contributors": {
+            "internal": 5,
+            "external": 2
+          },
+          "releases_total": 10,
+          "release_downloads": 905,
+          "prs_merged": {
+            "internal": 6,
+            "external": 1
+          },
+          "commits": 19,
+          "badges": [
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
+          ]
+        },
+        "event-bus-connectors": {
+          "stars": 81,
+          "forks": 10,
+          "contributors": {
+            "internal": 5,
+            "external": 1
+          },
+          "releases_total": 4,
+          "release_downloads": 856,
+          "prs_merged": {
+            "internal": 4,
+            "external": 2
+          },
+          "commits": 18,
+          "badges": [
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         }
       },
@@ -5185,88 +5080,83 @@
       "month": "2026-11",
       "period": "2026-10",
       "totals": {
-        "stars": 3185,
-        "forks": 534,
+        "stars": 3240,
+        "forks": 539,
         "public_projects": 14,
         "contributors": {
-          "internal": 108,
+          "internal": 107,
           "external": 95,
-          "total": 203
+          "total": 202
         },
         "new_contributors": {
           "internal": 3,
           "external": 3
         },
         "prs_merged": {
-          "internal": 84,
-          "external": 29
+          "internal": 86,
+          "external": 30
         },
         "releases": 7,
-        "commits": 411,
+        "commits": 422,
         "active_contributors": {
           "internal": 31,
-          "external": 16
+          "external": 17
         }
       },
       "repositories": {
         "claims-engine": {
-          "stars": 1099,
-          "forks": 176,
+          "stars": 1090,
+          "forks": 174,
           "contributors": {
-            "internal": 18,
-            "external": 35
+            "internal": 17,
+            "external": 33
           },
           "releases_total": 19,
-          "release_downloads": 5327,
+          "release_downloads": 5191,
           "prs_merged": {
             "internal": 9,
             "external": 9
           },
           "commits": 45,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "stars-1000",
-            "forks-10",
-            "forks-50",
-            "forks-100",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "external_contributors-25",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "stars-gold",
+            "forks-bronze",
+            "forks-silver",
+            "forks-gold",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "design-tokens": {
-          "stars": 665,
-          "forks": 82,
+          "stars": 676,
+          "forks": 83,
           "contributors": {
             "internal": 12,
-            "external": 23
+            "external": 25
           },
-          "releases_total": 59,
-          "release_downloads": 4623,
+          "releases_total": 60,
+          "release_downloads": 4766,
           "prs_merged": {
             "internal": 5,
             "external": 3
           },
           "commits": 33,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "stars-500",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10",
-            "releases-50"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "external_contributors-gold",
+            "releases-bronze",
+            "releases-silver",
+            "releases-gold"
           ]
         },
         "policy-sdk-java": {
@@ -5274,52 +5164,49 @@
           "forks": 65,
           "contributors": {
             "internal": 18,
-            "external": 8
+            "external": 9
           },
           "releases_total": 21,
-          "release_downloads": 3017,
+          "release_downloads": 3007,
           "prs_merged": {
             "internal": 9,
             "external": 2
           },
           "commits": 49,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "k8s-operator-kit": {
-          "stars": 327,
+          "stars": 328,
           "forks": 72,
           "contributors": {
-            "internal": 10,
-            "external": 11
+            "internal": 11,
+            "external": 10
           },
-          "releases_total": 27,
-          "release_downloads": 5022,
+          "releases_total": 28,
+          "release_downloads": 4993,
           "prs_merged": {
-            "internal": 5,
+            "internal": 6,
             "external": 1
           },
-          "commits": 16,
+          "commits": 19,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "forks-50",
-            "external_contributors-1",
-            "external_contributors-5",
-            "external_contributors-10",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "forks-silver",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "pdf-render-service": {
@@ -5329,201 +5216,195 @@
             "internal": 13,
             "external": 3
           },
-          "releases_total": 19,
-          "release_downloads": 4816,
+          "releases_total": 18,
+          "release_downloads": 4490,
           "prs_merged": {
             "internal": 7,
             "external": 2
           },
           "commits": 39,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "data-anonymizer": {
-          "stars": 115,
-          "forks": 19,
+          "stars": 117,
+          "forks": 20,
           "contributors": {
-            "internal": 4,
-            "external": 5
+            "internal": 5,
+            "external": 4
           },
-          "releases_total": 7,
-          "release_downloads": 4885,
+          "releases_total": 8,
+          "release_downloads": 5157,
           "prs_merged": {
-            "internal": 4,
+            "internal": 5,
             "external": 2
           },
-          "commits": 28,
+          "commits": 34,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "terraform-modules": {
           "stars": 60,
           "forks": 19,
           "contributors": {
-            "internal": 11,
+            "internal": 10,
             "external": 2
           },
-          "releases_total": 34,
-          "release_downloads": 4145,
+          "releases_total": 35,
+          "release_downloads": 4163,
           "prs_merged": {
-            "internal": 6,
+            "internal": 5,
             "external": 2
           },
-          "commits": 20,
+          "commits": 17,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-ios": {
           "stars": 54,
           "forks": 7,
           "contributors": {
-            "internal": 6,
-            "external": 3
+            "internal": 5,
+            "external": 4
           },
           "releases_total": 14,
-          "release_downloads": 4234,
+          "release_downloads": 4094,
           "prs_merged": {
             "internal": 5,
-            "external": 2
+            "external": 3
           },
-          "commits": 32,
+          "commits": 33,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "mobile-sdk-android": {
-          "stars": 49,
+          "stars": 50,
           "forks": 7,
           "contributors": {
-            "internal": 9,
+            "internal": 10,
             "external": 1
           },
-          "releases_total": 14,
-          "release_downloads": 4314,
+          "releases_total": 15,
+          "release_downloads": 4469,
           "prs_merged": {
             "internal": 7,
             "external": 1
           },
           "commits": 22,
           "badges": [
-            "stars-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "api-guidelines": {
-          "stars": 78,
+          "stars": 76,
           "forks": 16,
           "contributors": {
             "internal": 8,
             "external": 5
           },
           "releases_total": 3,
-          "release_downloads": 4461,
+          "release_downloads": 4457,
           "prs_merged": {
             "internal": 7,
             "external": 3
           },
           "commits": 41,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "external_contributors-5",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "external_contributors-silver",
+            "releases-bronze"
           ]
         },
         "risk-model-toolkit": {
-          "stars": 134,
+          "stars": 137,
           "forks": 21,
           "contributors": {
-            "internal": 9,
-            "external": 3
+            "internal": 8,
+            "external": 2
           },
-          "releases_total": 11,
-          "release_downloads": 4615,
+          "releases_total": 12,
+          "release_downloads": 4964,
           "prs_merged": {
             "internal": 7,
             "external": 2
           },
           "commits": 37,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "stars-100",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1",
-            "releases-10"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "geo-hazard-maps": {
           "stars": 75,
           "forks": 10,
           "contributors": {
-            "internal": 4,
-            "external": 1
-          },
-          "releases_total": 9,
-          "release_downloads": 904,
-          "prs_merged": {
             "internal": 5,
+            "external": 2
+          },
+          "releases_total": 10,
+          "release_downloads": 965,
+          "prs_merged": {
+            "internal": 6,
             "external": 0
           },
-          "commits": 20,
+          "commits": 24,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "forks-10",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze",
+            "releases-silver"
           ]
         },
         "event-bus-connectors": {
-          "stars": 64,
-          "forks": 6,
+          "stars": 112,
+          "forks": 11,
           "contributors": {
-            "internal": 6,
+            "internal": 5,
             "external": 1
           },
           "releases_total": 4,
-          "release_downloads": 919,
+          "release_downloads": 957,
           "prs_merged": {
             "internal": 5,
             "external": 0
           },
           "commits": 20,
           "badges": [
-            "stars-10",
-            "stars-50",
-            "external_contributors-1",
-            "releases-1"
+            "stars-bronze",
+            "stars-silver",
+            "forks-bronze",
+            "external_contributors-bronze",
+            "releases-bronze"
           ]
         },
         "chatbot-starter": {
@@ -5542,7 +5423,7 @@
           "commits": 9,
           "badges": [
             "new",
-            "stars-10"
+            "stars-bronze"
           ]
         }
       },
