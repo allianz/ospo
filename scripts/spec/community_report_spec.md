@@ -6,8 +6,6 @@
 
 The report is **positive**: growth and milestones, no findings, no rankings, no badges. A number that went down is shown neutral (▼, grey), not red.
 
-A mock of the report is in [`community_mock/community-report.html`](community_mock/community-report.html), rendered from the made-up [`community_mock/community-data.json`](community_mock/community-data.json).
-
 ## Scope
 
 The script:
