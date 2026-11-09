@@ -7,20 +7,18 @@ SCRIPTS := scripts
 # Tool files (--json) of the integration tests, the dry runs and create_reports; gitignored
 JSON_DIR := results
 
-# create_reports: org, tool configs (tool files go to $(JSON_DIR), emptied first),
-# reports folder (committed by PR, one subfolder per month, never emptied) and --dry-run for the
-# tools that write to GitHub (also in the monthly workflow; DRY_RUN= runs them for real, manual use only)
+# create_reports: org, tool configs (tool files go to $(JSON_DIR), emptied first) and
+# reports folder (committed by PR, one subfolder per month, never emptied)
 ORG ?= allianz
 CONFIG_DIR ?= config
 REPORTS_DIR ?= reports
-DRY_RUN ?= --dry-run
 # One report per configuration (bsi: BSI TR-03185, allianz: Allianz Mandatory Repository
 # Configuration); a new config/report/compliance_report_*.yaml needs no change here
 REPORT_CONFIGS := $(wildcard config/report/compliance_report_*.yaml)
 
 .PHONY: check-token \
-        test_lint_repos test_archive_repos test_create_repos test_license_scan test_process_check test_scorecard_check test_community_metrics \
-        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan dry_run_process_check dry_run_scorecard_check dry_run_community_metrics \
+        test_lint_repos test_archive_repos test_create_repos test_license_scan \
+        dry_run_lint_repos dry_run_archive_repos dry_run_create_repos dry_run_license_scan \
         create_reports test coverage
 
 check-token:
@@ -40,16 +38,6 @@ test_create_repos: check-token
 test_license_scan: check-token
 	node $(SCRIPTS)/license_scan.js --org ospo-sandbox --config $(SCRIPTS)/test-config/license_scan.yaml --debug --json $(JSON_DIR)/license_scan.json
 
-test_process_check: check-token
-	node $(SCRIPTS)/process_check.js --org ospo-sandbox --config $(SCRIPTS)/test-config/report/process_check.yaml --debug --json $(JSON_DIR)/process_check.json
-
-# Needs the Scorecard CLI (version pinned in the config) on the PATH or in SCORECARD_BIN
-test_scorecard_check: check-token
-	node $(SCRIPTS)/scorecard_check.js --org ospo-sandbox --config $(SCRIPTS)/test-config/report/scorecard_check.yaml --debug --json $(JSON_DIR)/scorecard.json
-
-test_community_metrics: check-token
-	node $(SCRIPTS)/community_metrics.js --org ospo-sandbox --config $(SCRIPTS)/test-config/report/community_metrics.yaml --debug --json $(JSON_DIR)/community.json
-
 # ── Dry runs (allianz) ────────────────────────────────────────────────────────
 
 dry_run_lint_repos: check-token
@@ -64,15 +52,6 @@ dry_run_create_repos: check-token
 dry_run_license_scan: check-token
 	node $(SCRIPTS)/license_scan.js --org allianz --dry-run
 
-dry_run_process_check: check-token
-	node $(SCRIPTS)/process_check.js --org allianz --json $(JSON_DIR)/process_check.json
-
-dry_run_scorecard_check: check-token
-	node $(SCRIPTS)/scorecard_check.js --org allianz --json $(JSON_DIR)/scorecard.json
-
-dry_run_community_metrics: check-token
-	node $(SCRIPTS)/community_metrics.js --org allianz --json $(JSON_DIR)/community.json
-
 # ── Compliance reports ────────────────────────────────────────────────────────
 
 # Runs every tool with --json into a fresh $(JSON_DIR), then aggregates them once per report
@@ -82,14 +61,16 @@ dry_run_community_metrics: check-token
 # index $(REPORTS_DIR)/README.md (latest month, links via htmlpreview.github.io). A failing
 # tool (leading -) leaves no file: the report shows "no data" for its checks. process_check still
 # writes its file when single API reads fail; they are listed in its errors. The Scorecard CLI
-# must be installed (see test_scorecard_check).
-#   make create_reports                                              # allianz, dry-run
+# must be installed (version pinned in the scorecard_check config), on the PATH or in SCORECARD_BIN.
+# The tools that write to GitHub (lint_repos, license_scan, archive_repos) always run with --dry-run:
+# a report run never opens or closes issues and never archives.
+#   make create_reports                                              # allianz
 #   make create_reports ORG=ospo-sandbox CONFIG_DIR=scripts/test-config
 create_reports: check-token
 	rm -rf $(JSON_DIR) && mkdir -p $(JSON_DIR)
-	-node $(SCRIPTS)/lint_repos.js --org $(ORG) --config $(CONFIG_DIR)/lint_repos.yaml $(DRY_RUN) --json $(JSON_DIR)/lint_repos.json
-	-node $(SCRIPTS)/license_scan.js --org $(ORG) --config $(CONFIG_DIR)/license_scan.yaml $(DRY_RUN) --json $(JSON_DIR)/license_scan.json
-	-node $(SCRIPTS)/archive_repos.js --org $(ORG) --config $(CONFIG_DIR)/archive_repos.yaml $(DRY_RUN) --json $(JSON_DIR)/archive_repos.json
+	-node $(SCRIPTS)/lint_repos.js --org $(ORG) --config $(CONFIG_DIR)/lint_repos.yaml --dry-run --json $(JSON_DIR)/lint_repos.json
+	-node $(SCRIPTS)/license_scan.js --org $(ORG) --config $(CONFIG_DIR)/license_scan.yaml --dry-run --json $(JSON_DIR)/license_scan.json
+	-node $(SCRIPTS)/archive_repos.js --org $(ORG) --config $(CONFIG_DIR)/archive_repos.yaml --dry-run --json $(JSON_DIR)/archive_repos.json
 	-node $(SCRIPTS)/process_check.js --org $(ORG) --config $(CONFIG_DIR)/report/process_check.yaml --json $(JSON_DIR)/process_check.json
 	-node $(SCRIPTS)/scorecard_check.js --org $(ORG) --config $(CONFIG_DIR)/report/scorecard_check.yaml --json $(JSON_DIR)/scorecard.json
 	-node $(SCRIPTS)/community_metrics.js --org $(ORG) --config $(CONFIG_DIR)/report/community_metrics.yaml --json $(JSON_DIR)/community.json

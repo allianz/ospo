@@ -15,14 +15,11 @@ make test_create_repos    # Integration test against ospo-sandbox org
 make test_lint_repos      # Integration test against ospo-sandbox org
 make test_archive_repos   # Integration test against ospo-sandbox org
 make test_license_scan    # Integration test against ospo-sandbox org
-make test_process_check  # Integration test against ospo-sandbox org
-make test_scorecard_check # Integration test against ospo-sandbox org (needs the Scorecard CLI)
-make test_community_metrics # Integration test against ospo-sandbox org
 make create_reports       # All tools --json into results/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/report/compliance_report_*.yaml
                           # and scorecard-data.json + scorecard-report.html from results/scorecard.json
                           # and community-data.json + community-report.html from results/community.json
                           # and regenerates reports/README.md (index, links via htmlpreview.github.io)
-                          # (allianz, --dry-run, also in CI; ORG=ospo-sandbox CONFIG_DIR=scripts/test-config for the sandbox)
+                          # (allianz, tools always with --dry-run, also in CI; ORG=ospo-sandbox CONFIG_DIR=scripts/test-config for the sandbox)
 make test                 # Unit tests with coverage report (node --test)
 cd scripts && npm test                         # Unit tests without coverage
 cd scripts && npm run test:update-snapshots     # Regenerate output snapshots after an intended output change

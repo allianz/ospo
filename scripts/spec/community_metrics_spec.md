@@ -168,7 +168,7 @@ No logins anywhere in the file.
 
 ## Make target
 
-`make test_community_metrics` runs the script against `ospo-sandbox` with `scripts/test-config/report/community_metrics.yaml`; `make dry_run_community_metrics` against `allianz`. `make create_reports` runs it with the other tools (`--json $(JSON_DIR)/community.json`); a failing run leaves no file, and the community report shows "no data".
+There is no target of its own. `make create_reports` runs it with the other tools (`--json $(JSON_DIR)/community.json`); a failing run leaves no file, and the community report shows "no data". With `ORG=ospo-sandbox CONFIG_DIR=scripts/test-config` it runs against the sandbox with `scripts/test-config/report/community_metrics.yaml`.
 
 ## Open points
 

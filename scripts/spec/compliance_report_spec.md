@@ -281,6 +281,7 @@ Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 c
 | `CONFIG_DIR` | `config` | Tool configurations (`scripts/test-config` for the sandbox) |
 | `JSON_DIR` | `results` | Directory of the tool files, emptied first (gitignored). The same directory the `test_*` targets write to |
 | `REPORTS_DIR` | `reports` | Reports directory (`--reports`), never emptied |
-| `DRY_RUN` | `--dry-run` | Passed to `lint_repos`, `license_scan` and `archive_repos`, the tools that write to GitHub. The monthly workflow keeps the default; `DRY_RUN=` runs them for real, for manual use only |
+
+`lint_repos`, `license_scan` and `archive_repos`, the tools that write to GitHub, always run with `--dry-run`: a report run never opens or closes issues and never archives. There is no variable to switch this off; the tools act on GitHub through their own workflows.
 
 A failing tool does not stop the target: it leaves no file, and the report shows "no data" for its checks. Because the directory starts empty, no file of an earlier run is ever used. `scorecard_check` needs the Scorecard CLI.
