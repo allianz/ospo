@@ -5,7 +5,7 @@ exports[`run > --json writes every check of the active repos and lists skipped r
   "org": "test-org",
   "ospo_sha": "abc123",
   "config_file": "<config>",
-  "config_sha256": "7a8108a48547f320be4f19c59a6e0189d12487b26f328bbca4241d2f1c4da02f",
+  "config_sha256": "9b8ea58dfa0a46f225e6acdaf636eb830c52a8797eeb2e2c8c611c69afe02717",
   "run_url": "https://github.com/allianz/ospo/actions/runs/7",
   "issue_title": "Mandatory Repository Configuration",
   "results": [

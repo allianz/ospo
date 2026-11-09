@@ -58,6 +58,9 @@ function validateFileSpecs(fileSpecs, key, checkId, ids, configPath) {
     if (fileSpec.json_only !== undefined && typeof fileSpec.json_only !== 'boolean') {
       throw new Error(`${key} pattern '${patternText(fileSpec)}': json_only must be true or false (in ${configPath})`);
     }
+    if (typeof fileSpec.why !== 'string' || fileSpec.why.trim() === '') {
+      throw new Error(`${key} pattern '${patternText(fileSpec)}': why must be a non-empty text (in ${configPath})`);
+    }
   }
 }
 
@@ -81,16 +84,29 @@ export const forbiddenFileCheckId = fileSpec => `lint/no-${fileSlug(fileSpec)}`;
 
 // ── Check functions ───────────────────────────────────────────────────────────
 
+/** Why a metadata check matters, one text per failure case; shown in the issue below the finding. */
+export const WHY = {
+  descriptionMissing: 'GitHub shows the description, not the README, in the search results and in the GitHub CLI, so without it people cannot see what the project does.',
+  descriptionShort: 'A description of a few words does not tell people what the project does. Describe its purpose in one full sentence.',
+  descriptionLong: 'GitHub cuts long descriptions in the search results and in the CLI, so the end of the text is not shown.',
+  topicsMissing: 'Topics are used to filter the projects of the organisation and for statistics across it. A repository without topics shows up in neither.',
+  topicsTooMany: 'With too many topics a project shows up under filters that hardly apply to it. Choose the topics that describe it best.',
+  topicsInvalid: 'Filtering and statistics only work properly if all projects use topics from a common taxonomy. With a topic outside the approved list (e.g. "k8s" instead of "kubernetes"), the project does not show up in the result lists.',
+  licenseMissing: 'Without a license nobody may legally use, change or share the code, even though the repository is public.',
+  licenseUnidentified: 'GitHub cannot show the license, so users and tools cannot see the terms. This happens when the license text was changed or combined with other text.',
+  licenseNotApproved: 'Only the approved licenses may be used for Allianz open source projects.',
+};
+
 export function checkDescription(repo, descriptionLength) {
   const desc = repo.description?.trim() ?? '';
   if (desc.length === 0) {
-    return { passed: false, detail: 'No description set' };
+    return { passed: false, detail: 'No description set', why: WHY.descriptionMissing };
   }
   if (desc.length < descriptionLength.min) {
-    return { passed: false, detail: `Description too short (${desc.length} chars); minimum is ${descriptionLength.min}` };
+    return { passed: false, detail: `Description too short (${desc.length} chars); minimum is ${descriptionLength.min}`, why: WHY.descriptionShort };
   }
   if (desc.length > descriptionLength.max) {
-    return { passed: false, detail: `Description too long (${desc.length} chars); maximum is ${descriptionLength.max}` };
+    return { passed: false, detail: `Description too long (${desc.length} chars); maximum is ${descriptionLength.max}`, why: WHY.descriptionLong };
   }
   return { passed: true, detail: `Description has ${desc.length} chars` };
 }
@@ -98,15 +114,15 @@ export function checkDescription(repo, descriptionLength) {
 export function checkTopics(repo, allowedTopics) {
   const topics = repo.topics ?? [];
   if (topics.length === 0) {
-    return { passed: false, detail: 'No topics set' };
+    return { passed: false, detail: 'No topics set', why: WHY.topicsMissing };
   }
   if (topics.length > MAX_TOPICS) {
-    return { passed: false, detail: `Too many topics (${topics.length}); maximum is ${MAX_TOPICS}` };
+    return { passed: false, detail: `Too many topics (${topics.length}); maximum is ${MAX_TOPICS}`, why: WHY.topicsTooMany };
   }
   if (allowedTopics.length > 0) {
     const invalid = topics.filter(t => !allowedTopics.includes(t));
     if (invalid.length > 0) {
-      return { passed: false, detail: `Invalid topic(s): ${invalid.join(', ')}` };
+      return { passed: false, detail: `Invalid topic(s): ${invalid.join(', ')}`, why: WHY.topicsInvalid };
     }
   }
   return { passed: true, detail: `Topics: ${topics.join(', ')}` };
@@ -115,16 +131,17 @@ export function checkTopics(repo, allowedTopics) {
 export function checkLicense(repo, allowedLicenses) {
   const spdxId = repo.license?.spdx_id ?? null;
   if (spdxId === null) {
-    return { passed: false, detail: 'No license detected' };
+    return { passed: false, detail: 'No license detected', why: WHY.licenseMissing };
   }
   if (spdxId === 'NOASSERTION') {
     return {
       passed: false,
       detail: 'Custom license text detected — GitHub could not identify a standard SPDX license. Ensure the license is based on an approved one.',
+      why: WHY.licenseUnidentified,
     };
   }
   if (!allowedLicenses.includes(spdxId)) {
-    return { passed: false, detail: `'${spdxId}' is not in the approved list` };
+    return { passed: false, detail: `'${spdxId}' is not in the approved list`, why: WHY.licenseNotApproved };
   }
   return { passed: true, detail: `'${spdxId}' is in the approved list` };
 }
@@ -225,6 +242,7 @@ export async function runChecks(repo, config, cloneDir) {
       id: requiredFileCheckId(fileSpec),
       checkName: requiredFileName(fileSpec),
       jsonOnly: fileSpec.json_only === true,
+      why: fileSpec.why,
       ...(await checkRequiredFile(cloneDir, fileSpec)),
     });
   }
@@ -233,6 +251,7 @@ export async function runChecks(repo, config, cloneDir) {
       id: forbiddenFileCheckId(fileSpec),
       checkName: forbiddenFileName(fileSpec),
       jsonOnly: fileSpec.json_only === true,
+      why: fileSpec.why,
       ...(await checkForbiddenFile(cloneDir, fileSpec)),
     });
   }
@@ -309,12 +328,20 @@ export function buildJsonResults({ checked, archived, excluded, catalogue }) {
 
 // ── Issue body ────────────────────────────────────────────────────────────────
 
+/** Text for one table cell: on one line, `|` escaped so it cannot end the cell, `<` and `>` so GitHub does not take them for HTML. */
+const tableCell = text => text.replace(/\s+/g, ' ').trim().replaceAll('|', '\\|').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+/** The Details cell of a failed check: the finding, and below it why the check matters. */
+function failureCell({ detail, why }) {
+  const finding = tableCell(detail ?? '');
+  return why ? `${finding}<br>**Why:** ${tableCell(why)}` : finding;
+}
+
 export function buildIssueBody(allChecks, docsLink) {
-  const rows = allChecks.map(({ checkName, passed, detail }) => {
-    const icon = passed ? '✅' : '❌';
-    const status = passed ? 'Passed' : 'Failed';
-    const detailCell = passed ? '' : (detail ?? '');
-    return `| ${checkName} | ${icon} ${status} | ${detailCell} |`;
+  const rows = allChecks.map(check => {
+    const icon = check.passed ? '✅' : '❌';
+    const status = check.passed ? 'Passed' : 'Failed';
+    return `| ${check.checkName} | ${icon} ${status} | ${check.passed ? '' : failureCell(check)} |`;
   });
   return [
     '## Mandatory Repository Configuration',

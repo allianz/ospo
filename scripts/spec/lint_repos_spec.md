@@ -85,24 +85,28 @@ allowed_licenses:
 # (<actual> chars; minimum is <min_chars>)".
 # json_only (optional, default false): if true, the check is written to the --json
 # file only; it is never listed in the issue or the result line.
+# why (required): why the file matters, in plain words. Shown in the issue below
+# the finding of a failed check; not written to --json. Also required for json_only
+# entries, so the text is there if the entry is ever shown in the issue.
 required_files:
   - pattern: "README*"
     description: "Readme File"
     min_chars: 300
+    why: "The README is the entry point of the project: what it does, how to use it and where to get help."
   - pattern: "CONTRIBUTING*"
     search_paths: [".", ".github", "docs"]
     description: "Contributing File"
+    why: "It tells others how to propose changes and what is expected of a contribution."
   - pattern: "LICENSE*"
     description: "License File"
-  - pattern: "NOTICE*"
-    description: "Notice File"
-  - pattern: "AUTHORS*"
-    description: "Authors File"
+    why: "Without the license text nobody may legally use, change or share the code."
+  - ...
   - pattern: ["DEVELOPMENT*", "DEVELOPER*"]
     search_paths: [".", "docs", ".github"]
     description: "Development File"
     min_chars: 300
     json_only: true
+    why: "Documenting how to build and test the project is common best practice. It lets others reproduce the build and check their changes before they propose them."
 
 # Files no repository may contain, e.g. organisation defaults from the .github
 # repository that a file of the repository would override. Same fields as
@@ -111,7 +115,12 @@ required_files:
 forbidden_files:
   - pattern: "CODE_OF_CONDUCT*"
     search_paths: [".", ".github", "docs"]
-    description: "Organisation Code of Conduct"
+    description: "Code of Conduct"
+    why: "The [Allianz Code of Conduct](https://github.com/allianz/.github/blob/main/CODE_OF_CONDUCT.md) applies to all repositories, and GitHub shows it automatically. A file of your own would replace it."
+  - pattern: "MAINTAINERS*"
+    search_paths: [".", ".github", "docs"]
+    description: "Maintainers File"
+    why: "A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR."
 
 # Minimum and maximum character length for repository descriptions (inclusive).
 # Descriptions outside this range fail the check. Defaults: min: 30, max: 150.
@@ -169,6 +178,8 @@ Archived repos are checked for compliance (checks 1–3 only) and shown in a sep
 
 ### Issue body template
 
+Every failed check shows its finding in the Details column and, below it after `**Why:**`, why the check matters: the `why` text of a `required_files` or `forbidden_files` entry, or for the description, topics and license checks a built-in text per failure case (`WHY` in `lint_repos.js`, listed in the sections of these checks; not configurable). People who get the issue rarely read the standards guide, so the issue itself has to explain the rule. The finding and the `why` text are put on one line, `|` is escaped so it cannot break the table, and `<` and `>` are escaped so GitHub shows them as text (e.g. `<Project>`). Passed checks have an empty Details cell.
+
 ```markdown
 ## Mandatory Repository Configuration
 
@@ -176,13 +187,13 @@ The following compliance checks failed for this repository:
 
 | Check | Status | Details |
 |-------|--------|---------|
-| Repository Description | ❌ Failed | No description set |
+| Repository Description | ❌ Failed | No description set<br>**Why:** GitHub shows the description, not the README, in the search results and in the GitHub CLI, so without it people cannot see what the project does. |
 | Repository Topics     | ✅ Passed | |
 | README File           | ✅ Passed | |
-| CONTRIBUTING File     | ❌ Failed | File not found in ., .github, docs |
+| CONTRIBUTING File     | ❌ Failed | File not found in ., .github, docs<br>**Why:** It tells others how to propose changes and what is expected of a contribution. |
 | License File          | ✅ Passed | |
-| License Type          | ❌ Failed | 'WTFPL' is not in the approved list |
-| License Type          | ❌ Failed | Custom license text detected — GitHub could not identify a standard SPDX license. Ensure the license is based on an approved one. |
+| License Type          | ❌ Failed | 'WTFPL' is not in the approved list<br>**Why:** Only the approved licenses may be used for Allianz open source projects. |
+| Maintainers File      | ❌ Failed | MAINTAINERS.md must not exist; delete it<br>**Why:** A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR. |
 
 Please review the [Mandatory Repository Configuration](<docs_link>) guide and address the issues above.
 
@@ -279,17 +290,41 @@ The `short` and `fix` texts in the catalogue are built from the configuration (l
 
 The description is set and has `description_length.min` to `description_length.max` characters.
 
+Why, shown in the issue per failure case:
+
+| Finding | Why |
+|---|---|
+| No description set | GitHub shows the description, not the README, in the search results and in the GitHub CLI, so without it people cannot see what the project does. |
+| Description too short | A description of a few words does not tell people what the project does. Describe its purpose in one full sentence. |
+| Description too long | GitHub cuts long descriptions in the search results and in the CLI, so the end of the text is not shown. |
+
 How to fix: set a description of that length in the About section of the repository.
 
 ### Repository Topics
 
 The repository has 1 to 5 topics, all from `allowed_topics` (any topic if the list is empty).
 
+Why, shown in the issue per failure case:
+
+| Finding | Why |
+|---|---|
+| No topics set | Topics are used to filter the projects of the organisation and for statistics across it. A repository without topics shows up in neither. |
+| Too many topics | With too many topics a project shows up under filters that hardly apply to it. Choose the topics that describe it best. |
+| Invalid topic(s) | Filtering and statistics only work properly if all projects use topics from a common taxonomy. With a topic outside the approved list (e.g. "k8s" instead of "kubernetes"), the project does not show up in the result lists. |
+
 How to fix: add 1 to 5 topics from the approved list in the About section of the repository.
 
 ### License Type
 
 The license GitHub detects is in `allowed_licenses`. A missing or unidentified license (`NOASSERTION`) fails.
+
+Why, shown in the issue per failure case:
+
+| Finding | Why |
+|---|---|
+| No license detected | Without a license nobody may legally use, change or share the code, even though the repository is public. |
+| Custom license text detected (`NOASSERTION`) | GitHub cannot show the license, so users and tools cannot see the terms. This happens when the license text was changed or combined with other text. |
+| Not in the approved list | Only the approved licenses may be used for Allianz open source projects. |
 
 How to fix: use one of the approved licenses with its unmodified license text, so GitHub can detect it.
 
@@ -337,12 +372,18 @@ How to fix: add an AUTHORS file to the root.
 
 ### Development File
 
-A file `DEVELOPMENT*` or `DEVELOPER*` exists in `.`, `docs` or `.github`, with at least `min_chars` characters. JSON only (`json_only: true`): reported in the compliance report, not listed in the issue.
+A file `DEVELOPMENT*` or `DEVELOPER*` exists in `.`, `docs` or `.github`, with at least `min_chars` characters. JSON only (`json_only: true`): reported in the compliance report, not listed in the issue. Its `why`: "Documenting how to build and test the project is common best practice. It lets others reproduce the build and check their changes before they propose them."
 
 How to fix: add a DEVELOPMENT.md with at least that many characters to one of these directories, describing how to build and test the project.
 
-### Organisation Code of Conduct
+### Code of Conduct
 
 No file `CODE_OF_CONDUCT*` exists in `.`, `.github` or `docs` (`forbidden_files`). The Code of Conduct is defined once for the organisation in its `.github` repository, and GitHub shows it for every repository without a file of its own. A file in any of these directories would override it. A failure lists every file found, e.g. `.github/CODE_OF_CONDUCT.md must not exist; delete it`.
 
 How to fix: delete the file, so the Code of Conduct of the organisation applies.
+
+### Maintainers File
+
+No file `MAINTAINERS*` exists in `.`, `.github` or `docs` (`forbidden_files`). A MAINTAINERS file is easily confused with AUTHORS, which names the copyright holders the copyright statement in NOTICE refers to and is a legal requirement. It would also put the names of individuals into the repository, which is personal data under the GDPR.
+
+How to fix: delete the file.

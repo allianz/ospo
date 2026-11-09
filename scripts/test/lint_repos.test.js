@@ -9,6 +9,7 @@ import {
   checkDescription,
   checkTopics,
   checkLicense,
+  WHY,
   checkPublic,
   checkIssuesEnabled,
   checkRequiredFile,
@@ -141,6 +142,32 @@ describe('checkDescription', () => {
     assert.equal(r.passed, false);
     assert.match(r.detail, /too long/);
     assert.match(r.detail, /maximum is 150/);
+  });
+});
+
+// ── Why texts of the metadata checks ──────────────────────────────────────────
+
+describe('why texts of the metadata checks', () => {
+  const len = { min: 30, max: 150 };
+  const allowed = ['api', 'cli', 'docs', 'library', 'service', 'web'];
+
+  it('gives each failure case its own why and passed checks none', () => {
+    const cases = [
+      [checkDescription({ description: '' }, len), WHY.descriptionMissing],
+      [checkDescription({ description: 'A'.repeat(29) }, len), WHY.descriptionShort],
+      [checkDescription({ description: 'A'.repeat(151) }, len), WHY.descriptionLong],
+      [checkDescription({ description: 'A'.repeat(30) }, len), undefined],
+      [checkTopics({ topics: [] }, allowed), WHY.topicsMissing],
+      [checkTopics({ topics: allowed }, allowed), WHY.topicsTooMany],
+      [checkTopics({ topics: ['k8s'] }, allowed), WHY.topicsInvalid],
+      [checkTopics({ topics: ['api'] }, allowed), undefined],
+      [checkLicense({ license: null }, ['MIT']), WHY.licenseMissing],
+      [checkLicense({ license: { spdx_id: 'NOASSERTION' } }, ['MIT']), WHY.licenseUnidentified],
+      [checkLicense({ license: { spdx_id: 'GPL-3.0-only' } }, ['MIT']), WHY.licenseNotApproved],
+      [checkLicense({ license: { spdx_id: 'MIT' } }, ['MIT']), undefined],
+    ];
+    assert.deepEqual(cases.map(([r]) => r.why), cases.map(([, why]) => why));
+    assert.equal(new Set(Object.values(WHY)).size, Object.keys(WHY).length);
   });
 });
 
@@ -461,6 +488,30 @@ describe('buildIssueBody', () => {
     assert.ok(body.includes('❌'));
   });
 
+  it('shows why a failed check matters below the finding, and nothing for passed checks', () => {
+    const checks = [
+      { checkName: 'Maintainers File', passed: false, detail: 'MAINTAINERS.md must not exist; delete it', why: 'It is confused with AUTHORS.' },
+      { checkName: 'Readme File', passed: true, detail: 'README.md found', why: 'The entry point.' },
+      { checkName: 'Other', passed: false, detail: 'No why given' },
+    ];
+    const rows = buildIssueBody(checks, docsLink).split('\n').filter(l => l.startsWith('| ') && !l.startsWith('| Check'));
+    assert.deepEqual(rows, [
+      '| Maintainers File | ❌ Failed | MAINTAINERS.md must not exist; delete it<br>**Why:** It is confused with AUTHORS. |',
+      '| Readme File | ✅ Passed |  |',
+      '| Other | ❌ Failed | No why given |',
+    ]);
+  });
+
+  it('keeps a why text on one line and escapes | so the table stays intact', () => {
+    const checks = [{ checkName: 'X', passed: false, detail: 'Failed', why: 'One | two\n  three' }];
+    assert.match(buildIssueBody(checks, docsLink), /^\| X \| ❌ Failed \| Failed<br>\*\*Why:\*\* One \\\| two three \|$/m);
+  });
+
+  it('escapes < and > so GitHub shows them as text, not as HTML', () => {
+    const checks = [{ checkName: 'X', passed: false, detail: 'Failed', why: '"The <Project> Authors"' }];
+    assert.match(buildIssueBody(checks, docsLink), /\*\*Why:\*\* "The &lt;Project&gt; Authors" \|$/m);
+  });
+
   it('includes the bot attribution line', () => {
     const body = buildIssueBody([], docsLink);
     assert.ok(body.includes('OSPO linting bot'));
@@ -478,6 +529,7 @@ describe('metadataChecks', () => {
       ['Repository Topics', true],
       ['License Type', false],
     ]);
+    assert.deepEqual(checks.map(c => c.why), [undefined, undefined, WHY.licenseNotApproved]);
   });
 });
 
@@ -608,13 +660,16 @@ describe('run', () => {
       'required_files:',
       '  - pattern: "README*"',
       '    description: README File',
+      '    why: Readme matters.',
       '  - pattern: ["DEVELOPMENT*", "DEVELOPER*"]',
       '    description: Development File',
       '    json_only: true',
+      '    why: Development matters.',
       'forbidden_files:',
       '  - pattern: "CODE_OF_CONDUCT*"',
       '    search_paths: [".", ".github", "docs"]',
       '    description: Organisation Code of Conduct',
+      '    why: The organisation Code of Conduct applies.',
     ].join('\n'));
   });
   after(async () => { await rm(tmpDir, { recursive: true }); });
@@ -644,9 +699,12 @@ describe('run', () => {
     const { gh } = await runLint([]);
     const [opened] = gh.state.issues.bad;
     assert.equal(opened.title, 'Mandatory Repository Configuration');
-    assert.match(opened.body, /\| Repository Description \| ❌ Failed \| No description set \|/);
-    assert.match(opened.body, /\| README File \| ❌ Failed \| File not found in \. \|/);
-    assert.match(opened.body, /\| Organisation Code of Conduct \| ❌ Failed \| \.github\/CODE_OF_CONDUCT\.md must not exist; delete it \|/);
+    assert.match(opened.body, /\| README File \| ❌ Failed \| File not found in \.<br>\*\*Why:\*\* Readme matters\. \|/);
+    assert.match(opened.body, /\| Repository Description \| ❌ Failed \| No description set<br>\*\*Why:\*\* GitHub shows the description, not the README, in the search results/);
+    assert.match(
+      opened.body,
+      /\| Organisation Code of Conduct \| ❌ Failed \| \.github\/CODE_OF_CONDUCT\.md must not exist; delete it<br>\*\*Why:\*\* The organisation Code of Conduct applies\. \|/,
+    );
     assert.match(opened.body, /\(https:\/\/docs\.example\)/);
 
     const [closed] = gh.state.issues.fixed;
@@ -752,7 +810,7 @@ describe('JSON output', () => {
     const dir = await mkdtemp(path.join(tmpdir(), 'lint-ids-'));
     try {
       const dup = path.join(dir, 'dup.yaml');
-      await writeFile(dup, 'issue_title: T\nrequired_files:\n  - pattern: "README*"\n  - pattern: "readme*.md"\n');
+      await writeFile(dup, 'issue_title: T\nrequired_files:\n  - pattern: "README*"\n    why: W\n  - pattern: "readme*.md"\n');
       await assert.rejects(() => loadConfig(dup), /pattern 'readme\*\.md' gives no unique check ID/);
       const empty = path.join(dir, 'empty.yaml');
       await writeFile(empty, 'issue_title: T\nrequired_files:\n  - pattern: "*"\n');
@@ -766,10 +824,10 @@ describe('JSON output', () => {
         await assert.rejects(() => loadConfig(file), /required_files pattern must be a string or a non-empty list of strings/);
       }
       const dupList = path.join(dir, 'dup-list.yaml');
-      await writeFile(dupList, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOP*"\n  - pattern: ["DEVELOP*", "DEV*"]\n');
+      await writeFile(dupList, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOP*"\n    why: W\n  - pattern: ["DEVELOP*", "DEV*"]\n');
       await assert.rejects(() => loadConfig(dupList), /pattern 'DEVELOP\* or DEV\*' gives no unique check ID/);
       const forbiddenDup = path.join(dir, 'forbidden-dup.yaml');
-      await writeFile(forbiddenDup, 'issue_title: T\nforbidden_files:\n  - pattern: "SECURITY*"\n  - pattern: "security*.md"\n');
+      await writeFile(forbiddenDup, 'issue_title: T\nforbidden_files:\n  - pattern: "SECURITY*"\n    why: W\n  - pattern: "security*.md"\n');
       await assert.rejects(() => loadConfig(forbiddenDup), /forbidden_files pattern 'security\*\.md' gives no unique check ID/);
       const forbiddenSymbols = path.join(dir, 'forbidden-symbols.yaml');
       await writeFile(forbiddenSymbols, 'issue_title: T\nforbidden_files:\n  - pattern: "__*"\n');
@@ -781,10 +839,15 @@ describe('JSON output', () => {
       await writeFile(forbiddenFlag, 'issue_title: T\nforbidden_files:\n  - pattern: "SECURITY*"\n    json_only: 1\n');
       await assert.rejects(() => loadConfig(forbiddenFlag), /forbidden_files pattern 'SECURITY\*': json_only must be true or false/);
       const sameName = path.join(dir, 'same-name.yaml');
-      await writeFile(sameName, 'issue_title: T\nrequired_files:\n  - pattern: "SECURITY*"\nforbidden_files:\n  - pattern: "SECURITY*"\n');
-      assert.deepEqual((await loadConfig(sameName)).forbidden_files, [{ pattern: 'SECURITY*' }]);
+      await writeFile(sameName, 'issue_title: T\nrequired_files:\n  - pattern: "SECURITY*"\n    why: W\nforbidden_files:\n  - pattern: "SECURITY*"\n    why: W\n');
+      assert.deepEqual((await loadConfig(sameName)).forbidden_files, [{ pattern: 'SECURITY*', why: 'W' }]);
+      for (const [key, why] of [['required_files', ''], ['forbidden_files', ''], ['required_files', '\n    why: "  "'], ['forbidden_files', '\n    why: [W]'], ['required_files', '\n    json_only: true']]) {
+        const file = path.join(dir, 'no-why.yaml');
+        await writeFile(file, `issue_title: T\n${key}:\n  - pattern: "NOTICE*"${why}\n`);
+        await assert.rejects(() => loadConfig(file), new RegExp(`${key} pattern 'NOTICE\\*': why must be a non-empty text \\(in `));
+      }
       const ok = path.join(dir, 'ok.yaml');
-      await writeFile(ok, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOPMENT*"\n    json_only: true\n');
+      await writeFile(ok, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOPMENT*"\n    json_only: true\n    why: W\n');
       assert.equal((await loadConfig(ok)).required_files[0].json_only, true);
     } finally {
       await rm(dir, { recursive: true });

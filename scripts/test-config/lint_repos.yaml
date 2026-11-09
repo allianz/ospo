@@ -10,25 +10,36 @@ required_files:
   - pattern: "README*"
     description: "Readme File"
     min_chars: 100
+    why: "The README is the entry point of the project: what it does, how to use it and where to get help."
   - pattern: "CONTRIBUTING*"
     search_paths: [".", ".github", "docs"]
     description: "Contributing File"
+    why: "It tells others how to propose changes and what is expected of a contribution."
   - pattern: "LICENSE*"
     description: "License File"
+    why: "Without the license text nobody may legally use, change or share the code."
   - pattern: "NOTICE*"
     description: "Notice File"
+    why: "It holds the copyright statement and the attribution for third-party code copied into the project, which most open source licenses require."
   - pattern: "AUTHORS*"
     description: "Authors File"
+    why: 'It names the copyright holders that the copyright statement in the NOTICE file refers to ("The <Project> Authors"). This is a legal requirement.'
   - pattern: ["DEVELOPMENT*", "DEVELOPER*"]
     search_paths: [".", "docs", ".github"]
     description: "Development File"
     min_chars: 300
     json_only: true
+    why: "Documenting how to build and test the project is common best practice. It lets others reproduce the build and check their changes before they propose them."
 
 forbidden_files:
   - pattern: "CODE_OF_CONDUCT*"
     search_paths: [".", ".github", "docs"]
-    description: "Organisation Code of Conduct"
+    description: "Code of Conduct"
+    why: "The [organisation Code of Conduct](https://github.com/ospo-sandbox/.github/blob/main/CODE_OF_CONDUCT.md) applies to all repositories, and GitHub shows it automatically. A file of your own would replace it."
+  - pattern: "MAINTAINERS*"
+    search_paths: [".", ".github", "docs"]
+    description: "Maintainers File"
+    why: "A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR."
 
 allowed_licenses:
   - Apache-2.0
