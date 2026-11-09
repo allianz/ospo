@@ -20,6 +20,7 @@ export const INDEX_FILE = 'README.md';
 export const PREVIEW_URL = 'https://htmlpreview.github.io/?';
 const MONTH = /^\d{4}-\d{2}$/;
 const REPORT_FILE = /^(.+)-report\.html$/;
+export const SCORECARD_URL = 'https://github.com/ossf/scorecard/blob/main/docs/checks.md';
 
 const unescapeHtml = text => text.replace(/&(amp|lt|gt|quot|#39);/g, (_, e) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#39': "'" })[e]);
 const escapeMarkdown = text => text.replace(/([\\[\]*_`])/g, '\\$1');
@@ -37,9 +38,19 @@ export function titleOf(html) {
   return title || null;
 }
 
+/** The guideline URL (`framework.url`) of a `<key>-data.json`; null when the file is missing, unreadable or has none. */
+async function guidelineUrlOf(file) {
+  try {
+    const url = JSON.parse(await readFile(file, 'utf8')).framework?.url;
+    return typeof url === 'string' && url ? url : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * The month folders of the reports directory with their reports, latest month first:
- * `[{ month, reports: [{ key, title, html }] }]`. Folders without a `*-report.html` are left out.
+ * `[{ month, reports: [{ key, title, html, url? }] }]`, `url` being the guideline URL from the report's data file. Folders without a `*-report.html` are left out.
  */
 export async function scanReports(reportsDir) {
   let entries;
@@ -57,7 +68,8 @@ export async function scanReports(reportsDir) {
     for (const html of files.filter(f => REPORT_FILE.test(f)).sort()) {
       const key = REPORT_FILE.exec(html)[1];
       const title = titleOf(await readFile(path.join(reportsDir, month, html), 'utf8')) ?? key;
-      reports.push({ key, title, html });
+      const url = await guidelineUrlOf(path.join(reportsDir, month, `${key}-data.json`));
+      reports.push({ key, title, html, ...(url && { url }) });
     }
     if (reports.length > 0) result.push({ month, reports });
   }
@@ -72,6 +84,36 @@ export function previewUrl(month, file, env = {}) {
 }
 
 const reportLink = (month, report, env) => `[${escapeMarkdown(report.title)}](${previewUrl(month, report.html, env)})`;
+
+const COMPLIANCE_SUFFIX = ' Compliance Report';
+const REPORT_SUFFIX = ' Report';
+const COMMUNITY_KEY = 'community';
+
+/**
+ * Splits a report into the guideline it checks and the kind of report, so the table does not repeat
+ * words in both columns: "BSI TR-03185 Chapter 2 Compliance Report" → guideline "BSI TR-03185 Chapter 2",
+ * kind "Compliance Report". The scorecard report is shown as "Security Score Report".
+ */
+export function describeReport({ key, title }) {
+  if (title.endsWith(COMPLIANCE_SUFFIX)) return { guideline: title.slice(0, -COMPLIANCE_SUFFIX.length), kind: 'Compliance Report' };
+  const guideline = title.endsWith(REPORT_SUFFIX) ? title.slice(0, -REPORT_SUFFIX.length) : title;
+  return { guideline, kind: key === 'scorecard' ? 'Security Score Report' : 'Report' };
+}
+
+/** The latest month: `## Compliance Reports` with the table guideline → report, then `## Other Reports` with the community report. */
+function latestSection({ month, reports }, env) {
+  const community = reports.filter(r => r.key === COMMUNITY_KEY);
+  const rows = reports.filter(r => r.key !== COMMUNITY_KEY).map(r => {
+    const { guideline, kind } = describeReport(r);
+    const url = r.url ?? (r.key === 'scorecard' ? SCORECARD_URL : null);
+    const left = url ? `[${escapeMarkdown(guideline)}](${url})` : escapeMarkdown(guideline);
+    return `| ${left} | [${kind}](${previewUrl(month, r.html, env)}) |`;
+  });
+  const lines = [];
+  if (rows.length > 0) lines.push(`## Compliance Reports: ${month}`, '', '| Guideline | Report |', '| --- | --- |', ...rows, '');
+  if (community.length > 0) lines.push(`## Other Reports: ${month}`, '', ...community.map(r => reportLink(month, r, env)), '');
+  return lines;
+}
 
 /** reports/README.md for the scanned month folders (pure). */
 export function renderIndex(months, { org, env = {} }) {
@@ -88,7 +130,7 @@ export function renderIndex(months, { org, env = {} }) {
     return lines.join('\n');
   }
   const [latest, ...earlier] = months;
-  lines.push(`## Latest: ${latest.month}`, '', ...latest.reports.map(r => `- ${reportLink(latest.month, r, env)}`), '');
+  lines.push(...latestSection(latest, env));
   if (earlier.length > 0) {
     lines.push('## Earlier months', '');
     for (const { month, reports } of earlier) {

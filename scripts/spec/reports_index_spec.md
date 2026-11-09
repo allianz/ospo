@@ -50,7 +50,8 @@ Exit codes: `0` on success, also without reports. `1` on a missing flag or a fat
 
 1. An introduction naming the organisation, and a comment that the file is generated.
 2. Without reports: "No reports yet."
-3. `## Latest: <YYYY-MM>`: a list with one entry per report, the name linked to its htmlpreview URL.
+3. `## Compliance Reports: <YYYY-MM>` (latest month): a table with the guideline on the left, linked to the `framework.url` of the report's `<key>-data.json` (the scorecard report to https://github.com/ossf/scorecard/blob/main/docs/checks.md; no link when there is none), and the report on the right, the report linked to its htmlpreview URL. The report title is split so no words repeat: `BSI TR-03185 Chapter 2 Compliance Report` becomes guideline `BSI TR-03185 Chapter 2` and link `Compliance Report`; the scorecard report is linked as `Security Score Report`.
+   `## Other Reports: <YYYY-MM>`: the community report, which is not part of the table, as a link with its title. Each section is left out when it would be empty.
 4. `## Earlier months` (only when there are any): one line per month, the month linked to its folder, then the reports' names linked to their htmlpreview URLs.
 
 The htmlpreview URL is `https://htmlpreview.github.io/?` followed by the blob URL of the file on `main` (`<GITHUB_SERVER_URL>/<GITHUB_REPOSITORY>/blob/main/reports/<YYYY-MM>/<key>-report.html`, default `https://github.com/allianz/ospo`). The README is published by merging the report pull request, so it links `main`. The links of a new month therefore only open after the merge; for the review, the pull request body of the [compliance report workflow](../../.github/workflows/compliance_report.yaml) links the reports on the branch `compliance-report`. htmlpreview can only load files of public repositories.
