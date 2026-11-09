@@ -25,6 +25,11 @@ required_files:
     min_chars: 300
     json_only: true
 
+forbidden_files:
+  - pattern: "CODE_OF_CONDUCT*"
+    search_paths: [".", ".github", "docs"]
+    description: "Organisation Code of Conduct"
+
 allowed_licenses:
   - Apache-2.0
   - MIT

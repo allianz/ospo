@@ -30,28 +30,35 @@ export async function loadConfig(configPath) {
   config.allowed_topics = config.allowed_topics ?? [];
   config.allowed_licenses = config.allowed_licenses ?? [];
   config.required_files = config.required_files ?? [];
+  config.forbidden_files = config.forbidden_files ?? [];
   config.excluded_repos = config.excluded_repos ?? [];
   config.description_length = {
     min: config.description_length?.min ?? 30,
     max: config.description_length?.max ?? 150,
   };
   const ids = new Set();
-  for (const fileSpec of config.required_files) {
+  validateFileSpecs(config.required_files, 'required_files', requiredFileCheckId, ids, configPath);
+  validateFileSpecs(config.forbidden_files, 'forbidden_files', forbiddenFileCheckId, ids, configPath);
+  return config;
+}
+
+/** Validates the entries of `required_files` or `forbidden_files`; `ids` collects the check IDs across both lists. */
+function validateFileSpecs(fileSpecs, key, checkId, ids, configPath) {
+  for (const fileSpec of fileSpecs) {
     const { pattern } = fileSpec;
     const valid = typeof pattern === 'string' || (Array.isArray(pattern) && pattern.length > 0 && pattern.every(p => typeof p === 'string'));
     if (!valid) {
-      throw new Error(`required_files pattern must be a string or a non-empty list of strings (in ${configPath})`);
+      throw new Error(`${key} pattern must be a string or a non-empty list of strings (in ${configPath})`);
     }
-    const id = requiredFileCheckId(fileSpec);
-    if (id === 'lint/' || ids.has(id)) {
-      throw new Error(`required_files pattern '${patternText(fileSpec)}' gives no unique check ID (in ${configPath})`);
+    const id = checkId(fileSpec);
+    if (fileSlug(fileSpec) === '' || ids.has(id)) {
+      throw new Error(`${key} pattern '${patternText(fileSpec)}' gives no unique check ID (in ${configPath})`);
     }
     ids.add(id);
     if (fileSpec.json_only !== undefined && typeof fileSpec.json_only !== 'boolean') {
-      throw new Error(`required_files pattern '${patternText(fileSpec)}': json_only must be true or false (in ${configPath})`);
+      throw new Error(`${key} pattern '${patternText(fileSpec)}': json_only must be true or false (in ${configPath})`);
     }
   }
-  return config;
 }
 
 /** The patterns of a required file: `pattern` is one prefix glob or a list of them. */
@@ -63,11 +70,14 @@ const patternText = fileSpec => filePatterns(fileSpec).join(' or ');
 /** The part of a prefix glob before the first `*`: README* → README. */
 const globPrefix = pattern => pattern.replace(/\*.*$/, '');
 
+/** The pattern prefix of a file entry as a check ID part: CODE_OF_CONDUCT* → code-of-conduct. */
+const fileSlug = fileSpec => globPrefix(filePatterns(fileSpec)[0]).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
 /** Check ID of a required file, from the prefix of its (first) pattern: CONTRIBUTING* → lint/contributing. */
-export function requiredFileCheckId(fileSpec) {
-  const prefix = globPrefix(filePatterns(fileSpec)[0]).toLowerCase();
-  return `lint/${prefix.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
-}
+export const requiredFileCheckId = fileSpec => `lint/${fileSlug(fileSpec)}`;
+
+/** Check ID of a forbidden file: CODE_OF_CONDUCT* → lint/no-code-of-conduct. */
+export const forbiddenFileCheckId = fileSpec => `lint/no-${fileSlug(fileSpec)}`;
 
 // ── Check functions ───────────────────────────────────────────────────────────
 
@@ -133,32 +143,54 @@ export function checkIssuesEnabled(repo) {
   return { passed: false, detail: 'Issues are disabled' };
 }
 
-export async function checkRequiredFile(cloneDir, fileSpec) {
-  const { search_paths, min_chars } = fileSpec;
-  const searchPaths = search_paths ?? ['.'];
-  // Patterns are always prefix globs (README*, CONTRIBUTING*, LICENSE*) — match case-insensitively
+/**
+ * The files matching a file entry, in the order of its search paths: [{ searchPath, dir, name }].
+ * Patterns are always prefix globs (README*, CONTRIBUTING*, LICENSE*) — matched case-insensitively.
+ * A search path that does not exist is skipped.
+ */
+async function findFiles(cloneDir, fileSpec) {
   const prefixes = filePatterns(fileSpec).map(p => globPrefix(p).toUpperCase());
-  for (const searchPath of searchPaths) {
+  const found = [];
+  for (const searchPath of searchPathsOf(fileSpec)) {
     const dir = path.join(cloneDir, searchPath);
-    let entries;
-    try {
-      entries = await readdir(dir);
-    } catch {
-      continue; // Directory doesn't exist — try next path
+    const entries = await readdir(dir).catch(() => []);
+    for (const name of entries.filter(f => prefixes.some(prefix => f.toUpperCase().startsWith(prefix)))) {
+      found.push({ searchPath, dir, name });
     }
-    const match = entries.find(f => prefixes.some(prefix => f.toUpperCase().startsWith(prefix)));
-    if (!match) continue;
-    const found = searchPath === '.' ? `${match} found` : `${match} found in ${searchPath}`;
-    if (min_chars != null) {
-      const content = await readFile(path.join(dir, match), 'utf8');
-      if (content.length < min_chars) {
-        return { passed: false, detail: `File exists but is too short (${content.length} chars; minimum is ${min_chars})` };
-      }
-      return { passed: true, detail: `${found} (${content.length} chars)` };
-    }
-    return { passed: true, detail: found };
   }
-  return { passed: false, detail: `File not found in ${searchPaths.join(', ')}` };
+  return found;
+}
+
+const searchPathsOf = fileSpec => fileSpec.search_paths ?? ['.'];
+
+/** A found file for people: "NOTICE" in the root, "docs/DEVELOPMENT.md" elsewhere. */
+const foundPath = ({ searchPath, name }) => (searchPath === '.' ? name : `${searchPath}/${name}`);
+
+export async function checkRequiredFile(cloneDir, fileSpec) {
+  const { min_chars } = fileSpec;
+  const [match] = await findFiles(cloneDir, fileSpec);
+  if (!match) {
+    return { passed: false, detail: `File not found in ${searchPathsOf(fileSpec).join(', ')}` };
+  }
+  const found = match.searchPath === '.' ? `${match.name} found` : `${match.name} found in ${match.searchPath}`;
+  if (min_chars != null) {
+    const content = await readFile(path.join(match.dir, match.name), 'utf8');
+    if (content.length < min_chars) {
+      return { passed: false, detail: `File exists but is too short (${content.length} chars; minimum is ${min_chars})` };
+    }
+    return { passed: true, detail: `${found} (${content.length} chars)` };
+  }
+  return { passed: true, detail: found };
+}
+
+/** Passes when no file of the entry exists in any of its search paths; a failure lists every file found. */
+export async function checkForbiddenFile(cloneDir, fileSpec) {
+  const found = await findFiles(cloneDir, fileSpec);
+  if (found.length === 0) {
+    return { passed: true, detail: `No ${patternText(fileSpec)} file in ${searchPathsOf(fileSpec).join(', ')}` };
+  }
+  const them = found.length === 1 ? 'it' : 'them';
+  return { passed: false, detail: `${found.map(foundPath).join(', ')} must not exist; delete ${them}` };
 }
 
 /** Checks that only need the repository metadata from the API (also run for archived repos). */
@@ -183,8 +215,8 @@ export function jsonOnlyChecks(repo) {
 }
 
 /**
- * All checks for an active repository: metadata, the JSON-only checks and the required files in its clone.
- * A required file with `json_only: true` is JSON only as well.
+ * All checks for an active repository: metadata, the JSON-only checks and the required and forbidden files in its clone.
+ * A file entry with `json_only: true` is JSON only as well.
  */
 export async function runChecks(repo, config, cloneDir) {
   const checks = [...metadataChecks(repo, config), ...jsonOnlyChecks(repo)];
@@ -196,10 +228,19 @@ export async function runChecks(repo, config, cloneDir) {
       ...(await checkRequiredFile(cloneDir, fileSpec)),
     });
   }
+  for (const fileSpec of config.forbidden_files) {
+    checks.push({
+      id: forbiddenFileCheckId(fileSpec),
+      checkName: forbiddenFileName(fileSpec),
+      jsonOnly: fileSpec.json_only === true,
+      ...(await checkForbiddenFile(cloneDir, fileSpec)),
+    });
+  }
   return checks;
 }
 
 const requiredFileName = fileSpec => fileSpec.description ?? patternText(fileSpec);
+const forbiddenFileName = fileSpec => fileSpec.description ?? `No ${patternText(fileSpec)}`;
 
 // ── JSON output ───────────────────────────────────────────────────────────────
 
@@ -237,12 +278,20 @@ export function buildCatalogue(config, { sha = null, env = {} } = {}) {
     ),
   };
   for (const fileSpec of config.required_files) {
-    const paths = (fileSpec.search_paths ?? ['.']).join(', ');
+    const paths = searchPathsOf(fileSpec).join(', ');
     const size = fileSpec.min_chars != null ? `, with at least ${fileSpec.min_chars} characters` : '';
     catalogue[requiredFileCheckId(fileSpec)] = entry(
       requiredFileName(fileSpec),
       `A file ${patternText(fileSpec)} exists in ${paths}${size}.`,
       `Add a ${patternText(fileSpec)} file in ${paths}${size}.`,
+    );
+  }
+  for (const fileSpec of config.forbidden_files) {
+    const paths = searchPathsOf(fileSpec).join(', ');
+    catalogue[forbiddenFileCheckId(fileSpec)] = entry(
+      forbiddenFileName(fileSpec),
+      `No file ${patternText(fileSpec)} exists in ${paths}.`,
+      `Delete the ${patternText(fileSpec)} file from ${paths}.`,
     );
   }
   return catalogue;

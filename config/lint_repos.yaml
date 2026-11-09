@@ -24,6 +24,9 @@
 #                     - min_chars:    Minimum file size in characters (optional)
 #                     - json_only:    true = reported in the compliance report only,
 #                                     never listed in the issue (optional, default false)
+#   forbidden_files:  Files no repository may contain (e.g. organisation defaults that
+#                     must not be overridden). pattern, description, search_paths and
+#                     json_only as for required_files.
 #   description_length: Minimum and maximum character length for repository descriptions.
 #                     Descriptions outside this range fail the check.
 #   allowed_topics:   Approved topic vocabulary. Every repository must have 1–5 topics,
@@ -84,6 +87,19 @@ required_files:
     description: "Development File"
     min_chars: 300
     json_only: true   # BSI TR-03185 BR.01: compliance report only, no issue
+
+# Files a repository must not contain, because the organisation default from the
+# .github repository applies to every repository that has no file of its own.
+# GitHub uses a file of the repository in the root, .github or docs instead of the
+# default, so all three are searched. Same fields as required_files (no min_chars).
+forbidden_files:
+  - pattern: "CODE_OF_CONDUCT*"
+    search_paths: [".", ".github", "docs"]
+    description: "Code of Conduct"
+  # Candidate: the organisation security policy (allianz/.github has SECURITY.md)
+  # - pattern: "SECURITY*"
+  #   search_paths: [".", ".github", "docs"]
+  #   description: "Organisation Security Policy"
 
 # Allowed topics for repositories. New topics can be suggested.
 # Topics are used for filtering and organisation-wide statistics, so a controlled

@@ -12,6 +12,8 @@ import {
   checkPublic,
   checkIssuesEnabled,
   checkRequiredFile,
+  checkForbiddenFile,
+  forbiddenFileCheckId,
   buildIssueBody,
   cloneOrUpdate,
   formatResultLine,
@@ -72,6 +74,14 @@ describe('loadConfig', () => {
     await writeFile(file, 'issue_title: "T"\nexcluded_repos: [".github", "ng-aquila"]\n');
     const cfg = await loadConfig(file);
     assert.deepEqual(cfg.excluded_repos, ['.github', 'ng-aquila']);
+  });
+
+  it('defaults required_files and forbidden_files to [] when absent', async () => {
+    const file = path.join(tmpDir, 'no-files.yaml');
+    await writeFile(file, 'issue_title: "T"\n');
+    const cfg = await loadConfig(file);
+    assert.deepEqual(cfg.required_files, []);
+    assert.deepEqual(cfg.forbidden_files, []);
   });
 
   it('defaults description_length to { min: 30, max: 150 } when absent', async () => {
@@ -384,6 +394,37 @@ describe('checkRequiredFile', () => {
 
 // ── buildIssueBody ────────────────────────────────────────────────────────────
 
+describe('checkForbiddenFile', () => {
+  const spec = { pattern: 'CODE_OF_CONDUCT*', search_paths: ['.', '.github', 'docs'] };
+  let dir;
+  before(async () => { dir = await mkdtemp(path.join(tmpdir(), 'lint-forbidden-')); });
+  after(async () => { await rm(dir, { recursive: true }); });
+
+  it('passes when no matching file exists, also when search paths are missing', async () => {
+    await writeFile(path.join(dir, 'README.md'), '');
+    assert.deepEqual(await checkForbiddenFile(dir, spec), { passed: true, detail: 'No CODE_OF_CONDUCT* file in ., .github, docs' });
+  });
+
+  it('fails for a matching file in any search path, case-insensitively', async () => {
+    await mkdir(path.join(dir, '.github'));
+    await writeFile(path.join(dir, '.github', 'code_of_conduct.md'), '');
+    assert.deepEqual(await checkForbiddenFile(dir, spec), { passed: false, detail: '.github/code_of_conduct.md must not exist; delete it' });
+  });
+
+  it('lists every file found, in the order of the search paths', async () => {
+    await writeFile(path.join(dir, 'CODE_OF_CONDUCT.md'), '');
+    assert.deepEqual(await checkForbiddenFile(dir, spec), {
+      passed: false,
+      detail: 'CODE_OF_CONDUCT.md, .github/code_of_conduct.md must not exist; delete them',
+    });
+  });
+
+  it('searches only the root by default', async () => {
+    assert.deepEqual(await checkForbiddenFile(dir, { pattern: 'MISSING*' }), { passed: true, detail: 'No MISSING* file in .' });
+    assert.equal((await checkForbiddenFile(dir, { pattern: 'CODE_OF_CONDUCT*' })).detail, 'CODE_OF_CONDUCT.md must not exist; delete it');
+  });
+});
+
 describe('buildIssueBody', () => {
   const docsLink = 'https://example.com/standards';
 
@@ -556,7 +597,8 @@ describe('run', () => {
       await mkdir(path.join(cacheDir, name), { recursive: true });
       await writeFile(path.join(cacheDir, name, 'README.md'), 'hello');
     }
-    await mkdir(path.join(cacheDir, 'bad'), { recursive: true });
+    await mkdir(path.join(cacheDir, 'bad', '.github'), { recursive: true });
+    await writeFile(path.join(cacheDir, 'bad', '.github', 'CODE_OF_CONDUCT.md'), 'own code of conduct');
     configPath = path.join(tmpDir, 'lint.yaml');
     await writeFile(configPath, [
       'issue_title: Mandatory Repository Configuration',
@@ -569,6 +611,10 @@ describe('run', () => {
       '  - pattern: ["DEVELOPMENT*", "DEVELOPER*"]',
       '    description: Development File',
       '    json_only: true',
+      'forbidden_files:',
+      '  - pattern: "CODE_OF_CONDUCT*"',
+      '    search_paths: [".", ".github", "docs"]',
+      '    description: Organisation Code of Conduct',
     ].join('\n'));
   });
   after(async () => { await rm(tmpDir, { recursive: true }); });
@@ -600,6 +646,7 @@ describe('run', () => {
     assert.equal(opened.title, 'Mandatory Repository Configuration');
     assert.match(opened.body, /\| Repository Description \| ❌ Failed \| No description set \|/);
     assert.match(opened.body, /\| README File \| ❌ Failed \| File not found in \. \|/);
+    assert.match(opened.body, /\| Organisation Code of Conduct \| ❌ Failed \| \.github\/CODE_OF_CONDUCT\.md must not exist; delete it \|/);
     assert.match(opened.body, /\(https:\/\/docs\.example\)/);
 
     const [closed] = gh.state.issues.fixed;
@@ -688,12 +735,17 @@ describe('JSON output', () => {
       { pattern: ['DEVELOPMENT*', 'DEVELOPER*'], search_paths: ['.', 'docs'], description: 'Development File', min_chars: 10, json_only: true },
       { pattern: ['AUTHORS*', 'MAINTAINERS*'] },
     ],
+    forbidden_files: [
+      { pattern: 'CODE_OF_CONDUCT*', search_paths: ['.', '.github', 'docs'], description: 'Organisation Code of Conduct' },
+      { pattern: 'SECURITY*', json_only: true },
+    ],
   };
 
   it('derives required-file check IDs from the pattern prefix', () => {
     assert.equal(requiredFileCheckId({ pattern: 'CONTRIBUTING*' }), 'lint/contributing');
     assert.equal(requiredFileCheckId({ pattern: 'Code_Of_Conduct*.md' }), 'lint/code-of-conduct');
     assert.equal(requiredFileCheckId({ pattern: ['DEVELOPMENT*', 'DEVELOPER*'] }), 'lint/development');
+    assert.equal(forbiddenFileCheckId({ pattern: 'CODE_OF_CONDUCT*' }), 'lint/no-code-of-conduct');
   });
 
   it('loadConfig rejects required files without a unique check ID', async () => {
@@ -716,6 +768,21 @@ describe('JSON output', () => {
       const dupList = path.join(dir, 'dup-list.yaml');
       await writeFile(dupList, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOP*"\n  - pattern: ["DEVELOP*", "DEV*"]\n');
       await assert.rejects(() => loadConfig(dupList), /pattern 'DEVELOP\* or DEV\*' gives no unique check ID/);
+      const forbiddenDup = path.join(dir, 'forbidden-dup.yaml');
+      await writeFile(forbiddenDup, 'issue_title: T\nforbidden_files:\n  - pattern: "SECURITY*"\n  - pattern: "security*.md"\n');
+      await assert.rejects(() => loadConfig(forbiddenDup), /forbidden_files pattern 'security\*\.md' gives no unique check ID/);
+      const forbiddenSymbols = path.join(dir, 'forbidden-symbols.yaml');
+      await writeFile(forbiddenSymbols, 'issue_title: T\nforbidden_files:\n  - pattern: "__*"\n');
+      await assert.rejects(() => loadConfig(forbiddenSymbols), /forbidden_files pattern '__\*' gives no unique check ID/);
+      const forbiddenBad = path.join(dir, 'forbidden-bad.yaml');
+      await writeFile(forbiddenBad, 'issue_title: T\nforbidden_files:\n  - pattern: [1]\n');
+      await assert.rejects(() => loadConfig(forbiddenBad), /forbidden_files pattern must be a string or a non-empty list of strings/);
+      const forbiddenFlag = path.join(dir, 'forbidden-flag.yaml');
+      await writeFile(forbiddenFlag, 'issue_title: T\nforbidden_files:\n  - pattern: "SECURITY*"\n    json_only: 1\n');
+      await assert.rejects(() => loadConfig(forbiddenFlag), /forbidden_files pattern 'SECURITY\*': json_only must be true or false/);
+      const sameName = path.join(dir, 'same-name.yaml');
+      await writeFile(sameName, 'issue_title: T\nrequired_files:\n  - pattern: "SECURITY*"\nforbidden_files:\n  - pattern: "SECURITY*"\n');
+      assert.deepEqual((await loadConfig(sameName)).forbidden_files, [{ pattern: 'SECURITY*' }]);
       const ok = path.join(dir, 'ok.yaml');
       await writeFile(ok, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOPMENT*"\n    json_only: true\n');
       assert.equal((await loadConfig(ok)).required_files[0].json_only, true);
@@ -733,6 +800,7 @@ describe('JSON output', () => {
       await writeFile(path.join(dir, 'NOTICE'), 'n');
       await mkdir(path.join(dir, 'docs'));
       await writeFile(path.join(dir, 'docs', 'DEVELOPMENT.md'), 'npm install');
+      await writeFile(path.join(dir, 'docs', 'CODE_OF_CONDUCT.md'), 'own');
       const repo = {
         description: 'A repository description that is long enough',
         topics: ['api'],
@@ -752,6 +820,8 @@ describe('JSON output', () => {
         ['lint/notice', true, 'NOTICE found', false],
         ['lint/development', true, 'DEVELOPMENT.md found in docs (11 chars)', true],
         ['lint/authors', false, 'File not found in .', false],
+        ['lint/no-code-of-conduct', false, 'docs/CODE_OF_CONDUCT.md must not exist; delete it', false],
+        ['lint/no-security', true, 'No SECURITY* file in .', true],
       ]);
     } finally {
       await rm(dir, { recursive: true });
@@ -763,7 +833,16 @@ describe('JSON output', () => {
     assert.deepEqual(Object.keys(catalogue), [
       'lint/description', 'lint/topics', 'lint/license-type', 'lint/public', 'lint/issues-enabled',
       'lint/readme', 'lint/contributing', 'lint/notice', 'lint/development', 'lint/authors',
+      'lint/no-code-of-conduct', 'lint/no-security',
     ]);
+    assert.equal(catalogue['lint/no-code-of-conduct'].name, 'Organisation Code of Conduct');
+    assert.equal(catalogue['lint/no-code-of-conduct'].documentation.short, 'No file CODE_OF_CONDUCT* exists in ., .github, docs.');
+    assert.equal(catalogue['lint/no-code-of-conduct'].documentation.fix, 'Delete the CODE_OF_CONDUCT* file from ., .github, docs.');
+    assert.equal(
+      catalogue['lint/no-code-of-conduct'].documentation.url,
+      'https://github.com/allianz/ospo/blob/abc/scripts/spec/lint_repos_spec.md#organisation-code-of-conduct',
+    );
+    assert.equal(catalogue['lint/no-security'].name, 'No SECURITY*');
     assert.equal(catalogue['lint/authors'].name, 'AUTHORS* or MAINTAINERS*');
     assert.equal(catalogue['lint/authors'].documentation.fix, 'Add a AUTHORS* or MAINTAINERS* file in ..');
     assert.equal(catalogue['lint/development'].name, 'Development File');
