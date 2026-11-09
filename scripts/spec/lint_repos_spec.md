@@ -78,7 +78,7 @@ allowed_licenses:
 # File checks run against the local clone. Each entry must match at least one
 # file in the specified search_paths. pattern is a case-insensitive prefix glob
 # (e.g. README* matches README.md); a list of patterns matches a file that fits
-# any of them. description is used as the check name in
+# any of them. name is used as the check name in
 # issue body and output. search_paths defaults to ["."] if omitted.
 # min_chars (optional): if set, the matched file must also be at least this many
 # chars; a file that exists but is smaller fails with "File exists but is too short
@@ -90,20 +90,20 @@ allowed_licenses:
 # entries, so the text is there if the entry is ever shown in the issue.
 required_files:
   - pattern: "README*"
-    description: "Readme File"
+    name: "Readme File"
     min_chars: 300
     why: "The README is the entry point of the project: what it does, how to use it and where to get help."
   - pattern: "CONTRIBUTING*"
     search_paths: [".", ".github", "docs"]
-    description: "Contributing File"
+    name: "Contributing File"
     why: "It tells others how to propose changes and what is expected of a contribution."
   - pattern: "LICENSE*"
-    description: "License File"
+    name: "License File"
     why: "Without the license text nobody may legally use, change or share the code."
   - ...
   - pattern: ["DEVELOPMENT*", "DEVELOPER*"]
     search_paths: [".", "docs", ".github"]
-    description: "Development File"
+    name: "Development File"
     min_chars: 300
     json_only: true
     why: "Documenting how to build and test the project is common best practice. It lets others reproduce the build and check their changes before they propose them."
@@ -115,11 +115,11 @@ required_files:
 forbidden_files:
   - pattern: "CODE_OF_CONDUCT*"
     search_paths: [".", ".github", "docs"]
-    description: "Code of Conduct"
+    name: "Code of Conduct"
     why: "The [Allianz Code of Conduct](https://github.com/allianz/.github/blob/main/CODE_OF_CONDUCT.md) applies to all repositories, and GitHub shows it automatically. A file of your own would replace it."
   - pattern: "MAINTAINERS*"
     search_paths: [".", ".github", "docs"]
-    description: "Maintainers File"
+    name: "Maintainers File"
     why: "A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR."
 
 # Minimum and maximum character length for repository descriptions (inclusive).
@@ -281,8 +281,8 @@ Every check of an active repository is written. Archived repositories are listed
 | `lint/license-type` | License Type |
 | `lint/public` | Public Repository |
 | `lint/issues-enabled` | Issues Enabled |
-| `lint/<prefix>` | One per `required_files` entry, also for `json_only` entries. The ID is the pattern prefix in lower case, from the first pattern of a list (`CONTRIBUTING*` → `lint/contributing`, `["DEVELOPMENT*", "DEVELOPER*"]` → `lint/development`), the name is its `description` (default: the patterns, joined with "or"). Two entries with the same ID are a configuration error |
-| `lint/no-<prefix>` | One per `forbidden_files` entry, also for `json_only` entries. The ID is built like `lint/<prefix>` with `no-` in front (`CODE_OF_CONDUCT*` → `lint/no-code-of-conduct`), the name is its `description` (default: "No " and the patterns). Two entries with the same ID are a configuration error |
+| `lint/<prefix>` | One per `required_files` entry, also for `json_only` entries. The ID is the pattern prefix in lower case, from the first pattern of a list (`CONTRIBUTING*` → `lint/contributing`, `["DEVELOPMENT*", "DEVELOPER*"]` → `lint/development`), the name is its `name` (default: the patterns, joined with "or"). Two entries with the same ID are a configuration error |
+| `lint/no-<prefix>` | One per `forbidden_files` entry, also for `json_only` entries. The ID is built like `lint/<prefix>` with `no-` in front (`CODE_OF_CONDUCT*` → `lint/no-code-of-conduct`), the name is its `name` (default: "No " and the patterns). Two entries with the same ID are a configuration error |
 
 The `short` and `fix` texts in the catalogue are built from the configuration (lengths, licenses, patterns, search paths).
 

@@ -659,16 +659,16 @@ describe('run', () => {
       'excluded_repos: [.github]',
       'required_files:',
       '  - pattern: "README*"',
-      '    description: README File',
+      '    name: README File',
       '    why: Readme matters.',
       '  - pattern: ["DEVELOPMENT*", "DEVELOPER*"]',
-      '    description: Development File',
+      '    name: Development File',
       '    json_only: true',
       '    why: Development matters.',
       'forbidden_files:',
       '  - pattern: "CODE_OF_CONDUCT*"',
       '    search_paths: [".", ".github", "docs"]',
-      '    description: Organisation Code of Conduct',
+      '    name: Organisation Code of Conduct',
       '    why: The organisation Code of Conduct applies.',
     ].join('\n'));
   });
@@ -787,14 +787,14 @@ describe('JSON output', () => {
     allowed_topics: ['api'],
     allowed_licenses: ['MIT', 'Apache-2.0'],
     required_files: [
-      { pattern: 'README*', description: 'Readme File', min_chars: 300 },
-      { pattern: 'CONTRIBUTING*', search_paths: ['.', '.github'], description: 'Contributing File' },
+      { pattern: 'README*', name: 'Readme File', min_chars: 300 },
+      { pattern: 'CONTRIBUTING*', search_paths: ['.', '.github'], name: 'Contributing File' },
       { pattern: 'NOTICE*' },
-      { pattern: ['DEVELOPMENT*', 'DEVELOPER*'], search_paths: ['.', 'docs'], description: 'Development File', min_chars: 10, json_only: true },
+      { pattern: ['DEVELOPMENT*', 'DEVELOPER*'], search_paths: ['.', 'docs'], name: 'Development File', min_chars: 10, json_only: true },
       { pattern: ['AUTHORS*', 'MAINTAINERS*'] },
     ],
     forbidden_files: [
-      { pattern: 'CODE_OF_CONDUCT*', search_paths: ['.', '.github', 'docs'], description: 'Organisation Code of Conduct' },
+      { pattern: 'CODE_OF_CONDUCT*', search_paths: ['.', '.github', 'docs'], name: 'Organisation Code of Conduct' },
       { pattern: 'SECURITY*', json_only: true },
     ],
   };
@@ -820,7 +820,7 @@ describe('JSON output', () => {
       await assert.rejects(() => loadConfig(flag), /pattern 'DEVELOPMENT\*': json_only must be true or false/);
       for (const bad of ['', '\n    pattern: []', '\n    pattern: [1]']) {
         const file = path.join(dir, 'bad-pattern.yaml');
-        await writeFile(file, `issue_title: T\nrequired_files:\n  - description: X${bad}\n`);
+        await writeFile(file, `issue_title: T\nrequired_files:\n  - name: X${bad}\n`);
         await assert.rejects(() => loadConfig(file), /required_files pattern must be a string or a non-empty list of strings/);
       }
       const dupList = path.join(dir, 'dup-list.yaml');
@@ -846,6 +846,9 @@ describe('JSON output', () => {
         await writeFile(file, `issue_title: T\n${key}:\n  - pattern: "NOTICE*"${why}\n`);
         await assert.rejects(() => loadConfig(file), new RegExp(`${key} pattern 'NOTICE\\*': why must be a non-empty text \\(in `));
       }
+      const oldKey = path.join(dir, 'old-key.yaml');
+      await writeFile(oldKey, 'issue_title: T\nforbidden_files:\n  - pattern: "MAINTAINERS*"\n    description: Maintainers File\n    why: W\n');
+      await assert.rejects(() => loadConfig(oldKey), /forbidden_files pattern 'MAINTAINERS\*': description was renamed to name/);
       const ok = path.join(dir, 'ok.yaml');
       await writeFile(ok, 'issue_title: T\nrequired_files:\n  - pattern: "DEVELOPMENT*"\n    json_only: true\n    why: W\n');
       assert.equal((await loadConfig(ok)).required_files[0].json_only, true);

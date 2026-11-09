@@ -58,6 +58,9 @@ function validateFileSpecs(fileSpecs, key, checkId, ids, configPath) {
     if (fileSpec.json_only !== undefined && typeof fileSpec.json_only !== 'boolean') {
       throw new Error(`${key} pattern '${patternText(fileSpec)}': json_only must be true or false (in ${configPath})`);
     }
+    if (fileSpec.description !== undefined) {
+      throw new Error(`${key} pattern '${patternText(fileSpec)}': description was renamed to name (in ${configPath})`);
+    }
     if (typeof fileSpec.why !== 'string' || fileSpec.why.trim() === '') {
       throw new Error(`${key} pattern '${patternText(fileSpec)}': why must be a non-empty text (in ${configPath})`);
     }
@@ -258,8 +261,8 @@ export async function runChecks(repo, config, cloneDir) {
   return checks;
 }
 
-const requiredFileName = fileSpec => fileSpec.description ?? patternText(fileSpec);
-const forbiddenFileName = fileSpec => fileSpec.description ?? `No ${patternText(fileSpec)}`;
+const requiredFileName = fileSpec => fileSpec.name ?? patternText(fileSpec);
+const forbiddenFileName = fileSpec => fileSpec.name ?? `No ${patternText(fileSpec)}`;
 
 // ── JSON output ───────────────────────────────────────────────────────────────
 
