@@ -1,8 +1,8 @@
 {
   "report_id": "OSPO-CR-BSI-2026-11",
-  "run_at": "2026-11-08T21:04:57Z",
+  "run_at": "2026-11-10T21:42:37Z",
   "org": "allianz",
-  "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+  "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
   "run_url": null,
   "report_config": "config/report/compliance_report_bsi.yaml",
   "config_sha256": "abc6ed91898a24218489794933b28957c5daed9a03a2380b7c1f901211ca3158",
@@ -27,16 +27,16 @@
       "file": "lint_repos.json",
       "script": "scripts/lint_repos.js",
       "status": "ok",
-      "sha256": "04b07ee3a1388411df94c6ebd4e89851169c528e75ea984bd0d86d730d518698",
+      "sha256": "f83454de5cf517857f25bb4bd325c0415eb58375644c40fedfdae1f41a70296c",
       "tool": "lint_repos",
-      "run_at": "2026-11-08T21:03:49Z",
-      "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+      "run_at": "2026-11-10T21:41:35Z",
+      "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
       "config_file": "config/lint_repos.yaml",
-      "config_sha256": "3d5e8b3ff72d9a26f319eaaa8ce5d9cf8e5fb84f49a167f49b91b7188ae3de9d",
+      "config_sha256": "06467dba4891d1e70926913ce148b2210f487d1766218fc4f10883cebf46cd76",
       "run_url": null,
       "issue_title": "Mandatory Repository Configuration",
       "counts": {
-        "results": 33,
+        "results": 42,
         "skipped": 8,
         "errors": 0
       }
@@ -45,10 +45,10 @@
       "file": "license_scan.json",
       "script": "scripts/license_scan.js",
       "status": "ok",
-      "sha256": "1ca10d791d2fc679f19204fce2f6dca38c8c1ececa234b3b538540d61b89d90a",
+      "sha256": "aa1fb360bc44e275a155ce2645af72d3f547157fc999c818f93442998162fa2d",
       "tool": "license_scan",
-      "run_at": "2026-11-08T21:03:53Z",
-      "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+      "run_at": "2026-11-10T21:41:39Z",
+      "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
       "config_file": "config/license_scan.yaml",
       "config_sha256": "fbd5f7c0b2918bff15edbb2d34b73a739e1d694391beaea5daa33f5c240a39ab",
       "run_url": null,
@@ -63,10 +63,10 @@
       "file": "archive_repos.json",
       "script": "scripts/archive_repos.js",
       "status": "ok",
-      "sha256": "d0b4f89b3990d1e5b6351ba4a4f95b298f7784e4a9c4f32e6e325570a69cc24d",
+      "sha256": "5392abf362707cc5c59d90d109b7e0975315bb91f3927413b4f087efa2a6d461",
       "tool": "archive_repos",
-      "run_at": "2026-11-08T21:03:59Z",
-      "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+      "run_at": "2026-11-10T21:41:46Z",
+      "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
       "config_file": "config/archive_repos.yaml",
       "config_sha256": "268a51b2486b0c171a9682e96b97a3f34f93ce3004dd2e16025b9b987e069b15",
       "run_url": null,
@@ -81,10 +81,10 @@
       "file": "process_check.json",
       "script": "scripts/process_check.js",
       "status": "ok",
-      "sha256": "248abaa472d03a8193ba4d1dde931ca79651b26418eb3d1e8ecfd1279bd011c4",
+      "sha256": "1e3980cf091d10dd8e6936941b77a2125cbe4c20a12d285fc94d80feb1bb6ace",
       "tool": "process_check",
-      "run_at": "2026-11-08T21:04:01Z",
-      "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+      "run_at": "2026-11-10T21:41:49Z",
+      "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
       "config_file": "config/report/process_check.yaml",
       "config_sha256": "a7048f65ca0338552085e37d8bf54e0c23eab6a92bea5047a729d0b0063f3d06",
       "run_url": null,
@@ -99,10 +99,10 @@
       "file": "scorecard.json",
       "script": "scripts/scorecard_check.js",
       "status": "ok",
-      "sha256": "90423c607ffa1384455b5910b848245bdd09426d027c7cf7691cdb2420311a5c",
+      "sha256": "eb7dff90c62560b283f7c47116aadb8ebadb60b414dc37c5fc337957674060c5",
       "tool": "scorecard_check",
-      "run_at": "2026-11-08T21:04:03Z",
-      "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+      "run_at": "2026-11-10T21:41:51Z",
+      "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
       "config_file": "config/report/scorecard_check.yaml",
       "config_sha256": "2fca157fc18af460b9bc858300898f3c7f58fdcfb39c855fe7dd4558ccc0ec36",
       "run_url": null,
@@ -644,6 +644,7 @@
       "not-met": 0,
       "no-data": 0,
       "not-assessed": 2,
+      "not-implemented": 0,
       "optional": 0
     },
     "must_met": 15,
@@ -687,77 +688,77 @@
     "advisories/published-in-time": {
       "tool": "process_check",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/process_check_spec.md#advisories-published-in-time",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/process_check_spec.md#advisories-published-in-time",
         "short": "Every security advisory of the repository published in the last 12 months was published within 90 days of its creation. Only published advisories are counted; they are public."
       }
     },
     "archive/activity-checked": {
       "tool": "archive_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/archive_repos_spec.md#activity-checked",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/archive_repos_spec.md#activity-checked",
         "short": "archive_repos read the last push of the repository in this run."
       }
     },
     "by-construction/sbom-available": {
       "tool": "process_check",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/process_check_spec.md#sbom-available",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/process_check_spec.md#sbom-available",
         "short": "Not a test; always passes. The dependency graph, and with it the SBOM, is always enabled for public repositories and cannot be switched off."
       }
     },
     "by-construction/source-archives": {
       "tool": "process_check",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/process_check_spec.md#source-archives",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/process_check_spec.md#source-archives",
         "short": "Not a test; always passes. Source archives of a release are generated by GitHub from the tag, so they contain exactly the repository content. Built release assets are not covered."
       }
     },
     "lint/contributing": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/lint_repos_spec.md#contributing-file",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#contributing-file",
         "short": "A file CONTRIBUTING* exists in ., .github, docs."
       }
     },
     "lint/development": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/lint_repos_spec.md#development-file",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#development-file",
         "short": "A file DEVELOPMENT* or DEVELOPER* exists in ., docs, .github, with at least 300 characters."
       }
     },
     "lint/issues-enabled": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/lint_repos_spec.md#issues-enabled",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#issues-enabled",
         "short": "Issues are enabled for the repository."
       }
     },
     "lint/license-type": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/lint_repos_spec.md#license-type",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#license-type",
         "short": "The license GitHub detects is one of Apache-2.0, MIT, CC-BY-4.0, CC0-1.0. A missing or unidentified license (NOASSERTION) fails."
       }
     },
     "lint/public": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/lint_repos_spec.md#public-repository",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#public-repository",
         "short": "The repository is public."
       }
     },
     "releases/release-notes": {
       "tool": "process_check",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/process_check_spec.md#release-notes",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/process_check_spec.md#release-notes",
         "short": "Every release of the repository published in the last 12 months has a release body of at least 50 characters, or a CHANGELOG file in the repository root mentions its version. Not applicable without a release in that period."
       }
     },
     "releases/versioning": {
       "tool": "process_check",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/b0cc2983771f2bd46861ef6616fa61ff9901cfc1/scripts/spec/process_check_spec.md#versioning",
+        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/process_check_spec.md#versioning",
         "short": "Every release of the repository published in the last 12 months has a SemVer or CalVer tag (optional \"v\" prefix), and within each major version line the versions increase with the release date. Not applicable without a release in that period."
       }
     },

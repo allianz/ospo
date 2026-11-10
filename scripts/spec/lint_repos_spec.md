@@ -121,6 +121,11 @@ forbidden_files:
     search_paths: [".", ".github", "docs"]
     name: "Maintainers File"
     why: "A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR."
+  - pattern: "SECURITY*"
+    search_paths: [".", ".github", "docs"]
+    name: "Security Policy"
+    json_only: true
+    why: "The [Allianz security policy](https://github.com/allianz/.github/blob/main/SECURITY.md) applies to all repositories, and GitHub shows it automatically. A file of your own would replace it. Add one only if the project has its own vulnerability reporting requirements."
 
 # Minimum and maximum character length for repository descriptions (inclusive).
 # Descriptions outside this range fail the check. Defaults: min: 30, max: 150.
@@ -154,7 +159,7 @@ Checks 1, 2, 3, 5 and 6 use only API data (no clone needed). Checks 4 and 7 requ
 
 Checks 5 and 6 are **JSON only**: they are written to the `--json` file, but are not listed in the issue or the result line, and they never cause an issue to be opened. Project teams have no influence on them: the visibility and the Issues setting are controlled centrally by the OSPO, so an issue would ask the team for something it cannot do. The results are evidence for the compliance report and audits only. They are only run for active repositories.
 
-A `required_files` or `forbidden_files` entry with `json_only: true` is JSON only in the same way: the file is reported in the compliance report, but its absence never opens, updates or keeps open an issue. A repository that fails only JSON-only checks counts as compliant for the issue and shows `✅` in the result line. The production configuration uses this for `DEVELOPMENT*` and `DEVELOPER*` (BSI TR-03185 BR.01).
+A `required_files` or `forbidden_files` entry with `json_only: true` is JSON only in the same way: the file is reported in the compliance report, but its absence never opens, updates or keeps open an issue. A repository that fails only JSON-only checks counts as compliant for the issue and shows `✅` in the result line. The production configuration uses this for `DEVELOPMENT*` and `DEVELOPER*` (BSI TR-03185 BR.01) and for the forbidden `SECURITY*` (a SHOULD NOT of the Allianz standards, AZ.07: a project may have a documented reason for its own policy).
 
 Active repos are shallow-cloned into `lint_cache/` in parallel, at most 5 at a time. Existing clones are updated in place; a clone that fails to update is deleted and re-cloned. Archived repos are not cloned, so they only get checks 1–3.
 
@@ -387,3 +392,9 @@ How to fix: delete the file, so the Code of Conduct of the organisation applies.
 No file `MAINTAINERS*` exists in `.`, `.github` or `docs` (`forbidden_files`). A MAINTAINERS file is easily confused with AUTHORS, which names the copyright holders the copyright statement in NOTICE refers to and is a legal requirement. It would also put the names of individuals into the repository, which is personal data under the GDPR.
 
 How to fix: delete the file.
+
+### Security Policy
+
+No file `SECURITY*` exists in `.`, `.github` or `docs` (`forbidden_files`). The security policy is defined once for the organisation in its `.github` repository, and GitHub shows it for every repository without a file of its own. A file in any of these directories would override it. JSON only (`json_only: true`): reported in the compliance report, not listed in the issue, because a project may have its own vulnerability reporting requirements.
+
+How to fix: delete the file, so the security policy of the organisation applies, unless the project has its own vulnerability reporting requirements.

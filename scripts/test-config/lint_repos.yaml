@@ -40,6 +40,11 @@ forbidden_files:
     search_paths: [".", ".github", "docs"]
     name: "Maintainers File"
     why: "A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR."
+  - pattern: "SECURITY*"
+    search_paths: [".", ".github", "docs"]
+    name: "Security Policy"
+    json_only: true
+    why: "The organisation security policy applies to all repositories, and GitHub shows it automatically. A file of your own would replace it. Add one only if the project has its own vulnerability reporting requirements."
 
 allowed_licenses:
   - Apache-2.0

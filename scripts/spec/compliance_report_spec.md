@@ -82,12 +82,12 @@ requirements:
 | `inputs` | yes | Tool files in `--dir`: `file` and the `script` that writes it. The tool name of a file must be the basename of its script |
 | `notes` | no | Notes file, relative to the repo root. Without it, `notes` is `null` |
 | `out_of_scope` | no | Repositories this report does not cover, each with `repo` and `reason` (default `[]`). See [Scope](#scope) |
-| `requirements` | yes | One entry per requirement ID (`<chapter>.<nn>`), in report order: `title`, `level` (`MUST`, `SHOULD`, `MAY`), `text` (list of clauses with `level` and `text`, default `[]`), `implementation` (plain text, default empty), `checks` (list of check IDs, `[]` for none) |
+| `requirements` | yes | One entry per requirement ID (`<chapter>.<nn>`), in report order: `title`, `level` (`MUST`, `SHOULD`, `MAY`), `chapter` (optional, default the ID prefix; lets IDs like `AZ.01` be grouped by the sections of their guideline), `text` (list of clauses with `level` and `text`, default `[]`), `implementation` (plain text, default empty), `checks` (list of check IDs, `[]` for none), `implemented` (optional, default `true`; `false` marks a requirement that has no check yet and needs `checks: []`, see [Requirements](#requirements)) |
 
 ### Validation
 
 - A missing field: `Config missing required field: <field> (in <file>)`.
-- An invalid `key`, an input without `file` or `script`, `out_of_scope` that is not a list, an entry without `repo` or `reason`, a repository listed twice, a chapter that is not in `framework.chapters`, an invalid `level`, a missing `title`, or `checks` that is not a list: an error naming the requirement and the file.
+- An invalid `key`, an input without `file` or `script`, `out_of_scope` that is not a list, an entry without `repo` or `reason`, a repository listed twice, a chapter (from the ID or the `chapter` field) that is not in `framework.chapters`, an invalid `level`, a missing `title`, `checks` that is not a list, `implemented` that is not `true` or `false`, or `implemented: false` with checks: an error naming the requirement and the file.
 
 ---
 
@@ -141,6 +141,7 @@ The status ([draft 1.7](compliance_implementation_draft.md#17-status-logic-compu
 
 | Status | When |
 |---|---|
+| `not-implemented` | `implemented: false`: no check exists for the requirement yet. Not counted, also not in `must_total` |
 | `not-met` | a MUST requirement with `checks: []` |
 | `not-assessed` | a SHOULD or MAY requirement with `checks: []` |
 | `optional` | a MAY requirement with checks; reported for information, not counted |
@@ -148,7 +149,9 @@ The status ([draft 1.7](compliance_implementation_draft.md#17-status-logic-compu
 | `no-data` | no repository is `passing` or `not_applicable`: none of the checks has data |
 | `met` | otherwise, also when all repositories are `not_applicable` |
 
-Requirements without checks have `repositories: null` and `coverage: null`.
+Requirements without checks have `repositories: null` and `coverage: null`. `implemented` itself is not written to `data.json`; the status `not-implemented` records it.
+
+`not-met` and `not-implemented` differ in what they say: `not-met` states that no check can cover a MUST requirement, so the organisation does not meet it (BSI report). `not-implemented` states that a check is planned but not built yet (Allianz report, e.g. AZ.10 license headers).
 
 ### Summary
 
@@ -159,8 +162,8 @@ Counted over the checks of the requirements with status `met`, `met-findings` or
 | `checks_evaluated` | Results other than `na` |
 | `checks_passed` | Results `pass` |
 | `compliance_pct` | `checks_passed / checks_evaluated` in percent, one decimal; `null` without evaluated checks |
-| `requirements_by_status` | Number of requirements per status, all six statuses always present |
-| `must_met`, `must_total` | MUST requirements with status `met` or `met-findings`, and all MUST requirements |
+| `requirements_by_status` | Number of requirements per status, all seven statuses always present |
+| `must_met`, `must_total` | MUST requirements with status `met` or `met-findings`, and all MUST requirements except `not-implemented` |
 | `failing_repositories` | Active repositories that are `failing` in at least one counted requirement |
 
 ### History
@@ -192,7 +195,7 @@ Inputs:
   process_check.json     missing
   …
 Scope: 10 active, 2 archived, 1 out of scope repositories
-Requirements: 3 met, 15 met-findings, 0 not-met, 0 no-data, 2 not-assessed, 0 optional
+Requirements: 3 met, 15 met-findings, 0 not-met, 0 no-data, 2 not-assessed, 0 not-implemented, 0 optional
 Compliance: 80.5% (124 of 154 checks passed), 7 repositories with findings
 History: 5 months (previous report: OSPO-CR-BSI-2026-10)
 Warning: data health: process_check.json missing
@@ -224,7 +227,7 @@ HTML written to reports/2026-11/bsi-report.html
 | `history` | See [History](#history) |
 | `catalogue`, `results`, `skipped`, `errors` | Merged, see [Merge](#merge) |
 
-`data.json` stores no derived lists such as findings per repository. `summary` and the requirement counts can be recomputed from `results`, `scope` and `requirements[].checks` alone; a test does this.
+`data.json` stores no derived lists such as findings per repository. `summary` and the requirement counts can be recomputed from `results`, `scope` and `requirements[].checks` alone (`not-implemented` is taken from the status, as the configuration declares it); a test does this.
 
 ---
 

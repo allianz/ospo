@@ -110,10 +110,11 @@ forbidden_files:
     search_paths: [".", ".github", "docs"]
     name: "Maintainers File"
     why: "A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR."
-  # Candidate: the organisation security policy (allianz/.github has SECURITY.md)
-  # - pattern: "SECURITY*"
-  #   search_paths: [".", ".github", "docs"]
-  #   name: "Organisation Security Policy"
+  - pattern: "SECURITY*"
+    search_paths: [".", ".github", "docs"]
+    name: "Security Policy"
+    why: "The [Allianz security policy](https://github.com/allianz/.github/blob/main/SECURITY.md) applies to all repositories, and GitHub shows it automatically. A file of your own would replace it. Add one only if the project has its own vulnerability reporting requirements."
+    json_only: true   # SHOULD NOT (AZ.07): compliance report only, no issue
 
 # Allowed topics for repositories. New topics can be suggested.
 # Topics are used for filtering and organisation-wide statistics, so a controlled

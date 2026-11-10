@@ -154,6 +154,7 @@ Each requirement is assessed once, at its own level: a MUST requirement on its M
 - **Not met:** no check covers a MUST requirement.
 - **Not assessed:** no check can verify a SHOULD or MAY requirement (e.g. BR.06, DE.02). It is shown in the report, but not counted in the summary.
 - **Optional:** a MAY requirement with checks, reported for information. No requirement uses it in this version.
+- **Not implemented:** the configuration marks the requirement `implemented: false`: a check is planned but not built yet (e.g. AZ.10 license headers in the Allianz report). It is shown in the report, but not counted in the summary, also not in the MUST requirements met.
 
 - **Findings count repositories.** A repository has a finding for a requirement if it fails at least one applicable check of that requirement. Every number in the report counts repositories (per requirement, or active repositories with at least one finding), never failing checks: which checks implement a requirement is an implementation detail, and one missing file can fail several checks. Failing checks are shown only as the explanation next to a repository.
 
@@ -169,7 +170,7 @@ One configuration file per report. Every file and file name is set in the config
 | Configuration | Report | Notes file |
 |---|---|---|
 | `config/report/compliance_report_bsi.yaml` | BSI TR-03185 Chapter 2 | `config/report/compliance_report_bsi_notes.md` |
-| `config/report/compliance_report_allianz.yaml` | Allianz Mandatory Repository Configuration (the lint rules projects must follow; rules enforced by organisation settings are left out) | `config/report/compliance_report_allianz_notes.md` |
+| `config/report/compliance_report_allianz.yaml` | Allianz Mandatory Repository Configuration (requirements AZ.01–AZ.13 of the Allianz standards page, grouped by its sections; requirements without a check yet are `not-implemented`) | `config/report/compliance_report_allianz_notes.md` |
 
 ```yaml
 # config/report/compliance_report_bsi.yaml

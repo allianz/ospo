@@ -25,7 +25,7 @@ export { DEFAULT_REPORTS_PATH, REPORTS_DIR, dataPath, mergeHistory, readPrevious
 
 export const TOOL = 'compliance_report';
 const LEVELS = ['MUST', 'SHOULD', 'MAY'];
-export const STATUSES = ['met', 'met-findings', 'not-met', 'no-data', 'not-assessed', 'optional'];
+export const STATUSES = ['met', 'met-findings', 'not-met', 'no-data', 'not-assessed', 'not-implemented', 'optional'];
 /** Statuses whose checks count in the summary and the history. */
 const ASSESSED = new Set(['met', 'met-findings', 'no-data']);
 /** Optional header fields copied into inputs when present (scorecard_check). */
@@ -60,11 +60,14 @@ export async function loadReportConfig(configPath) {
     listed.add(entry.repo);
   }
   const requirements = Object.entries(config.requirements).map(([id, r]) => {
-    const chapter = id.split('.')[0];
+    const chapter = r?.chapter === undefined ? id.split('.')[0] : String(r.chapter);
     if (!(chapter in chapters)) fail(`requirement ${id}: chapter ${chapter} is not in framework.chapters`);
     if (!LEVELS.includes(r?.level)) fail(`requirement ${id}: level must be one of ${LEVELS.join(', ')}`);
     if (!r.title) fail(`requirement ${id}: title is missing`);
     if (!Array.isArray(r.checks)) fail(`requirement ${id}: checks must be a list (use [] for none)`);
+    const implemented = r.implemented ?? true;
+    if (typeof implemented !== 'boolean') fail(`requirement ${id}: implemented must be true or false`);
+    if (!implemented && r.checks.length > 0) fail(`requirement ${id}: implemented: false needs checks: []`);
     return {
       id,
       chapter,
@@ -73,6 +76,7 @@ export async function loadReportConfig(configPath) {
       text: r.text ?? [],
       implementation: r.implementation ?? '',
       checks: r.checks,
+      implemented,
     };
   });
   return { ...config, out_of_scope: outOfScope.map(({ repo, reason }) => ({ repo, reason })), requirements };
@@ -210,8 +214,9 @@ export function repositoryOutcome(repo, checks, index) {
 /** Status and repository counts of every requirement (draft 1.7). */
 export function assessRequirements(requirements, results, scope) {
   const index = indexResults(results);
-  return requirements.map(requirement => {
+  return requirements.map(({ implemented, ...requirement }) => {
     const { checks, level } = requirement;
+    if (implemented === false) return { ...requirement, status: 'not-implemented', repositories: null, coverage: null };
     if (checks.length === 0) {
       return { ...requirement, status: level === 'MUST' ? 'not-met' : 'not-assessed', repositories: null, coverage: null };
     }
@@ -238,7 +243,7 @@ export function computeSummary(assessed, results, scope) {
   const failing = scope.active.filter(repo =>
     assessed.some(r => ASSESSED.has(r.status) && repositoryOutcome(repo, r.checks, index) === 'failing'),
   );
-  const musts = assessed.filter(r => r.level === 'MUST');
+  const musts = assessed.filter(r => r.level === 'MUST' && r.status !== 'not-implemented');
   return {
     checks_evaluated: evaluated,
     checks_passed: passed,

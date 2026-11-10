@@ -258,6 +258,30 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
         "no_data": 0
       },
       "coverage": 100
+    },
+    {
+      "id": "BR.07",
+      "chapter": "BR",
+      "level": "MUST",
+      "title": "Signed",
+      "text": [],
+      "implementation": "",
+      "checks": [],
+      "status": "not-implemented",
+      "repositories": null,
+      "coverage": null
+    },
+    {
+      "id": "XX.01",
+      "chapter": "GV",
+      "level": "SHOULD",
+      "title": "Headers",
+      "text": [],
+      "implementation": "",
+      "checks": [],
+      "status": "not-implemented",
+      "repositories": null,
+      "coverage": null
     }
   ],
   "summary": {
@@ -270,6 +294,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "not-met": 1,
       "no-data": 2,
       "not-assessed": 1,
+      "not-implemented": 2,
       "optional": 1
     },
     "must_met": 2,
@@ -449,5 +474,5 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
 `;
 
 exports[`run > writes data.json with statuses, summary, notes and the merged history 2`] = `
-"Report: Test Framework (OSPO-CR-TEST-2026-11)\\nInputs:\\n  lint_repos.json     ok (6 results, 2 skipped, 0 errors)\\n  scorecard.json      ok (6 results, 1 skipped, 2 errors)\\n  archive_repos.json  ok (6 results, 2 skipped, 0 errors)\\n  license_scan.json   missing\\n  process_check.json  invalid: not valid JSON: Expected property name or '}' in JSON at position 2 (line 1 column 3)\\nScope: 3 active, 2 archived repositories\\nRequirements: 1 met, 2 met-findings, 1 not-met, 2 no-data, 1 not-assessed, 1 optional\\nCompliance: 70% (7 of 10 checks passed), 2 repositories with findings\\nHistory: 3 months (previous report: OSPO-CR-TEST-2026-10)\\nWarning: data health: license_scan.json missing, process_check.json invalid\\nWarning: data health: 1 error (no data)\\n\\nJSON written to <dir>-reports/2026-11/test-data.json\\nHTML written to <reports>/2026-11/test-report.html\\n"
+"Report: Test Framework (OSPO-CR-TEST-2026-11)\\nInputs:\\n  lint_repos.json     ok (6 results, 2 skipped, 0 errors)\\n  scorecard.json      ok (6 results, 1 skipped, 2 errors)\\n  archive_repos.json  ok (6 results, 2 skipped, 0 errors)\\n  license_scan.json   missing\\n  process_check.json  invalid: not valid JSON: Expected property name or '}' in JSON at position 2 (line 1 column 3)\\nScope: 3 active, 2 archived repositories\\nRequirements: 1 met, 2 met-findings, 1 not-met, 2 no-data, 1 not-assessed, 2 not-implemented, 1 optional\\nCompliance: 70% (7 of 10 checks passed), 2 repositories with findings\\nHistory: 3 months (previous report: OSPO-CR-TEST-2026-10)\\nWarning: data health: license_scan.json missing, process_check.json invalid\\nWarning: data health: 1 error (no data)\\n\\nJSON written to <dir>-reports/2026-11/test-data.json\\nHTML written to <reports>/2026-11/test-report.html\\n"
 `;

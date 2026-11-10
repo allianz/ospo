@@ -497,6 +497,7 @@ const STATUS = {
   'not-met':            { label: 'Not met',                    color: 'var(--critical)', glyph: '✕', ink: '#fff' },
   'no-data':            { label: 'No data',                    color: 'var(--neutral)',  glyph: '?', ink: '#fff' },
   'not-assessed':       { label: 'Not assessed',               color: 'var(--neutral)',  glyph: '–', ink: '#fff' },
+  'not-implemented':    { label: 'Not implemented',            color: 'transparent',     glyph: '…', ink: 'var(--muted)', ring: 'ring' },
   'optional':           { label: 'Optional',                   color: 'transparent',     glyph: '–', ink: 'var(--muted)', ring: 'ring' },
   'pass':               { label: 'Pass',                       color: 'var(--good)',     glyph: '✓', ink: '#fff' },
   'fail':               { label: 'Fail',                       color: 'var(--critical)', glyph: '✕', ink: '#fff' },
@@ -787,10 +788,13 @@ $('subtitle').textContent = `Open source projects published under github.com/${O
 
 /* ═══════════════════════════ 1 Summary ═══════════════════════════ */
 const notMet = DATA.requirements.filter(q => q.status === 'not-met');
+const niReqs = DATA.requirements.filter(q => q.status === 'not-implemented');
+const niMust = niReqs.filter(q => q.level === 'MUST');
 const errN = DATA.errors.length;
 {
   $('summary-lead').textContent =
-    `${S.must_met} of ${S.must_total} MUST requirements are met. ` +
+    `${S.must_met} of ${S.must_total} MUST requirements are met` +
+    (niMust.length ? ` (${niMust.length} more not implemented yet: ${niMust.map(q => q.id).join(', ')})` : '') + '. ' +
     (notMet.length ? `Not met: ${notMet.length > 3 ? notMet.map(q => q.id).join(', ') : notMet.map(q => `${q.id} (${q.title})`).join(', ')}. ` : '') +
     `${S.failing_repositories} of ${ACTIVE.length} active repositories have findings.`;
 
@@ -811,7 +815,10 @@ const errN = DATA.errors.length;
   const covWithF = x => Object.values(x.coverage ?? {}).filter(v => v != null && v < 100).length;   // previous runs: from history coverage
   const tile = (label, value, small, extra) => h('div', { class: 'card tile' }, h('div', { class: 'label', text: label }), h('div', { class: 'value' }, String(value), small ? h('small', { text: ' ' + small }) : null), extra);
   $('tiles').append(
-    tile('MUST requirements met', S.must_met, `of ${S.must_total}`, h('div', { class: 'sub', text: notMet.length ? `Not met: ${notMet.map(q => q.id).join(', ')}` : 'All MUST requirements met' })),
+    tile('MUST requirements met', S.must_met, `of ${S.must_total}`, h('div', { class: 'sub', text: [
+      notMet.length ? `Not met: ${notMet.map(q => q.id).join(', ')}` : niMust.length ? 'All implemented MUST requirements met' : 'All MUST requirements met',
+      niMust.length ? `not implemented: ${niMust.map(q => q.id).join(', ')}` : null,
+    ].filter(Boolean).join('; ') })),
     tile('Active repositories with findings', S.failing_repositories, `of ${ACTIVE.length}`,
       deltaNode(S.failing_repositories, PREV?.failing_repositories, { goodWhenUp: false }),
       h('div', { class: 'sub', text: `Without findings: ${capText(ACTIVE.filter(r => !withF.has(r)), 3) || 'none'}` })),
@@ -828,9 +835,10 @@ const errN = DATA.errors.length;
       return { label: STATUS[st].label, color: STATUS[st].color, ink: STATUS[st].ink, border: STATUS[st].ring === 'ring', value: qs.length, names: qs.map(q => q.id) };
     }), { title: `${lvl} requirements`, unit: 'requirements', table: false });
   }
-  const mayReqs = DATA.requirements.filter(q => q.level === 'MAY' && q.status !== 'not-assessed');
+  const mayReqs = DATA.requirements.filter(q => q.level === 'MAY' && q.status === 'optional');
   const naReqs = DATA.requirements.filter(q => q.status === 'not-assessed');
   const plusTxt = [
+    niReqs.length ? `${plural(niReqs.length, 'requirement')} not implemented yet (${niReqs.map(q => q.id).join(', ')}), because no check exists for ${niReqs.length === 1 ? 'it' : 'them'} yet` : null,
     naReqs.length ? `${plural(naReqs.length, 'requirement')} not assessed (${naReqs.map(q => q.id).join(', ')}), because no check can verify ${naReqs.length === 1 ? 'it' : 'them'}` : null,
     mayReqs.length ? `${plural(mayReqs.length, 'MAY requirement')} (${mayReqs.map(q => q.id).join(', ')}), reported for information` : null,
   ].filter(Boolean);
@@ -870,7 +878,7 @@ function coverageNode(q) {
       h('div', { class: 'meter', role: 'meter', 'aria-valuemin': 0, 'aria-valuemax': 100, 'aria-valuenow': pct.toFixed(1), 'aria-label': `${q.id} coverage` }, h('div', { style: `width:${pct}%` })),
       h('span', { class: 'txt' }, h('b', { text: fmtPct(pct) }), ` · ${ps}/${a} repositories`));
   }
-  return h('span', { class: 'cov-txt', text: 'Not assessed' });
+  return h('span', { class: 'cov-txt', text: q.status === 'not-implemented' ? 'Not implemented' : 'Not assessed' });
 }
 /* Mini trend: share of applicable repositories that pass, per monthly report (data.json → history[].coverage) */
 function trendNode(q) {
@@ -895,6 +903,7 @@ function renderCard(q) {
   // What the check table does not show: not assessed
   const notes = [];
   if (q.status === 'not-assessed') notes.push('No check can verify this requirement, so it is not counted in the summary.');
+  if (q.status === 'not-implemented') notes.push('No check is implemented for this requirement yet, so it is not counted in the summary.');
 
   const verified = allChecks.length ? h('table', {},
     h('thead', {}, h('tr', {}, ['Check', 'Rule', 'Source'].map(x => h('th', { text: x })))),
@@ -995,6 +1004,7 @@ function repoListTag(text, filter) { const a = repoListLink(text, filter); a.cla
     ['no-data', 'None of the checks has a result (tool file missing or invalid, or tool errors). Not passed.'],
     ['not-assessed', 'SHOULD or MAY requirement that no check can verify. Not counted.'],
     ['optional', 'MAY requirement. Reported for information only.'],
+    ...(niReqs.length ? [['not-implemented', 'Requirement without a check yet. Not counted, also not in the MUST requirements met.']] : []),
   ];
   const df = document.querySelector('#def-table tbody');
   for (const [k, d] of DEFS) df.append(h('tr', {}, h('td', {}, statusPill(k)), h('td', { text: d })));

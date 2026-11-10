@@ -130,6 +130,8 @@ const REQUIREMENTS = {
   'BR.06': { title: 'Reproducible', level: 'SHOULD', checks: [] },
   'DE.01': { title: 'Discontinuation', level: 'SHOULD', checks: ['archive/activity-checked'] },
   'DE.02': { title: 'Migration', level: 'MAY', checks: ['archive/activity-checked'] },
+  'BR.07': { title: 'Signed', level: 'MUST', implemented: false, checks: [] },
+  'XX.01': { title: 'Headers', level: 'SHOULD', chapter: 'GV', implemented: false, checks: [] },
 };
 
 const NOTES = [
@@ -202,7 +204,12 @@ describe('loadReportConfig', () => {
   it('turns the requirements into a list in file order, with chapter and defaults', async () => {
     const { requirements } = await config();
     assert.deepEqual(requirements.map(r => r.id), Object.keys(REQUIREMENTS));
-    assert.deepEqual(requirements[3], { id: 'QA.02', chapter: 'QA', level: 'MUST', title: 'Public', text: [], implementation: '', checks: [] });
+    assert.deepEqual(requirements[3], { id: 'QA.02', chapter: 'QA', level: 'MUST', title: 'Public', text: [], implementation: '', checks: [], implemented: true });
+  });
+
+  it('takes the chapter from the chapter field when given, and implemented: false', async () => {
+    const { requirements } = await config();
+    assert.deepEqual(requirements.at(-1), { id: 'XX.01', chapter: 'GV', level: 'SHOULD', title: 'Headers', text: [], implementation: '', checks: [], implemented: false });
   });
 
   it('defaults out_of_scope to an empty list and keeps only repo and reason', async () => {
@@ -216,6 +223,9 @@ describe('loadReportConfig', () => {
     ['an invalid key', { key: 'BSI' }, /key must consist of a-z, 0-9 and -: 'BSI'/],
     ['an input without script', { inputs: [{ file: 'x.json' }] }, /every input needs file and script/],
     ['an unknown chapter', { requirements: { 'XX.01': { title: 't', level: 'MUST', checks: [] } } }, /chapter XX is not in framework.chapters/],
+    ['an unknown chapter field', { requirements: { 'GV.01': { title: 't', level: 'MUST', chapter: 'YY', checks: [] } } }, /GV.01: chapter YY is not in framework.chapters/],
+    ['implemented that is no boolean', { requirements: { 'GV.01': { title: 't', level: 'MUST', implemented: 'no', checks: [] } } }, /GV.01: implemented must be true or false/],
+    ['implemented: false with checks', { requirements: { 'GV.01': { title: 't', level: 'MUST', implemented: false, checks: ['x'] } } }, /GV.01: implemented: false needs checks: \[\]/],
     ['an invalid level', { requirements: { 'GV.01': { title: 't', level: 'MUSTN', checks: [] } } }, /level must be one of MUST, SHOULD, MAY/],
     ['a missing title', { requirements: { 'GV.01': { level: 'MUST', checks: [] } } }, /GV.01: title is missing/],
     ['checks that are no list', { requirements: { 'GV.01': { title: 't', level: 'MUST' } } }, /checks must be a list/],
@@ -421,7 +431,14 @@ describe('assessRequirements and computeSummary', () => {
     assert.deepEqual(assessed.map(r => [r.id, r.status]), [
       ['GV.01', 'met-findings'], ['GV.02', 'met-findings'], ['QA.01', 'no-data'], ['QA.02', 'not-met'],
       ['BR.02', 'no-data'], ['BR.06', 'not-assessed'], ['DE.01', 'met'], ['DE.02', 'optional'],
+      ['BR.07', 'not-implemented'], ['XX.01', 'not-implemented'],
     ]);
+  });
+
+  it('keeps implemented out of the assessed requirement and gives not-implemented no counts', () => {
+    assert.ok(!('implemented' in byId('BR.07')));
+    assert.equal(byId('BR.07').repositories, null);
+    assert.equal(byId('BR.07').coverage, null);
   });
 
   it('counts repositories per requirement; a repository passes only if it passes every applicable check', () => {
@@ -444,9 +461,9 @@ describe('assessRequirements and computeSummary', () => {
       checks_evaluated: 10,
       checks_passed: 7,
       compliance_pct: 70,
-      requirements_by_status: { met: 1, 'met-findings': 2, 'not-met': 1, 'no-data': 2, 'not-assessed': 1, optional: 1 },
+      requirements_by_status: { met: 1, 'met-findings': 2, 'not-met': 1, 'no-data': 2, 'not-assessed': 1, 'not-implemented': 2, optional: 1 },
       must_met: 2,
-      must_total: 5,
+      must_total: 5, // without the not-implemented BR.07
       failing_repositories: 2,
     });
   });
@@ -644,7 +661,9 @@ describe('run', () => {
 
   it('is reproducible: summary and requirement counts follow from data.json alone', async () => {
     const { data } = await runReport('reproducible');
-    const requirements = data.requirements.map(({ id, chapter, level, title, text, implementation, checks }) => ({ id, chapter, level, title, text, implementation, checks }));
+    // not-implemented is declared by the configuration; every other status follows from the data
+    const requirements = data.requirements.map(({ id, chapter, level, title, text, implementation, checks, status }) =>
+      ({ id, chapter, level, title, text, implementation, checks, implemented: status !== 'not-implemented' }));
     const assessed = assessRequirements(requirements, data.results, data.scope);
     assert.deepEqual(assessed, data.requirements);
     assert.deepEqual(computeSummary(assessed, data.results, data.scope), data.summary);
@@ -662,6 +681,8 @@ describe('run', () => {
     assert.match(logger.output(), /\n {2}GV\.02 met-findings 50% \(1\/2, na 0, no data 1\)\n/);
     assert.match(logger.output(), /\n {2}QA\.01 no-data –% \(0\/0, na 0, no data 3\)\n/);
     assert.match(logger.output(), /\n {2}QA\.02 not-met\n/);
+    assert.match(logger.output(), /\n {2}BR\.07 not-implemented\n/);
+    assert.match(logger.output(), /Requirements: .*, 1 not-assessed, 2 not-implemented, 1 optional\n/);
   });
 
   it('reports an invalid notes file as an error and keeps notes null', async () => {
@@ -708,7 +729,7 @@ describe('buildData', () => {
     assert.equal(data.report_id, 'OSPO-CR-TEST-2026-12');
     assert.deepEqual(data.scope, { active: [], archived: [], out_of_scope: [] });
     assert.equal(data.summary.compliance_pct, null);
-    assert.deepEqual(STATUSES.map(s => data.summary.requirements_by_status[s]), [0, 0, 1, 5, 1, 1]);
+    assert.deepEqual(STATUSES.map(s => data.summary.requirements_by_status[s]), [0, 0, 1, 5, 1, 2, 1]);
   });
 
   it('leaves an out-of-scope repository out of results and counts, also when a tool excluded it', async () => {
@@ -735,7 +756,7 @@ describe('buildData', () => {
 
 const REPORT_CONFIGS = [
   { file: 'config/report/compliance_report_bsi.yaml', requirements: 20 },
-  { file: 'config/report/compliance_report_allianz.yaml', requirements: 7 },
+  { file: 'config/report/compliance_report_allianz.yaml', requirements: 13 },
 ];
 
 for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () => {
@@ -765,17 +786,28 @@ for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () =>
 });
 
 describe('config/report/compliance_report_allianz.yaml mapping', () => {
-  it('maps every rule of the guideline to its lint checks', async () => {
+  it('maps every requirement of the guideline to its lint checks, or marks it not implemented', async () => {
     const { requirements } = await loadReportConfig(path.join(repoRoot, 'config/report/compliance_report_allianz.yaml'));
-    assert.deepEqual(Object.fromEntries(requirements.map(q => [q.id, q.checks])), {
-      'RC.01': ['lint/description'],
-      'RC.02': ['lint/topics'],
-      'RC.03': ['lint/license', 'lint/license-type'],
-      'RC.04': ['lint/readme'],
-      'RC.05': ['lint/contributing'],
-      'RC.06': ['lint/notice'],
-      'RC.07': ['lint/authors'],
+    assert.deepEqual(Object.fromEntries(requirements.map(q => [q.id, [q.chapter, q.level, q.implemented ? q.checks : 'not implemented']])), {
+      'AZ.01': ['2.1', 'MUST', ['lint/description']],
+      'AZ.02': ['2.1', 'MUST', ['lint/topics']],
+      'AZ.03': ['2.2', 'MUST', ['lint/readme']],
+      'AZ.04': ['2.2', 'MUST', ['lint/contributing']],
+      'AZ.05': ['2.2', 'SHOULD', ['lint/development']],
+      'AZ.06': ['2.2', 'MUST', ['lint/no-code-of-conduct']],
+      'AZ.07': ['2.2', 'SHOULD', ['lint/no-security']],
+      'AZ.08': ['2.2', 'MUST', ['lint/no-maintainers']],
+      'AZ.09': ['2.3', 'MUST', ['lint/license', 'lint/license-type']],
+      'AZ.10': ['2.3', 'SHOULD', 'not implemented'],
+      'AZ.11': ['2.3', 'MUST', ['lint/notice']],
+      'AZ.12': ['2.3', 'MUST', ['lint/authors']],
+      'AZ.13': ['2.3', 'MUST', 'not implemented'],
     });
-    assert.ok(requirements.every(q => q.level === 'MUST'));
+  });
+
+  it('only reports the json_only lint checks, so they never open an issue', async () => {
+    const lint = await loadLintConfig(path.join(repoRoot, 'config/lint_repos.yaml'));
+    const jsonOnly = [...lint.required_files, ...lint.forbidden_files].filter(f => f.json_only).map(f => f.name);
+    assert.deepEqual(jsonOnly, ['Development File', 'Security Policy']);
   });
 });

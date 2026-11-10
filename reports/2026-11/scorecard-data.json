@@ -1,18 +1,18 @@
 {
   "report_id": "OSPO-SC-2026-11",
-  "run_at": "2026-11-08T21:04:57Z",
+  "run_at": "2026-11-10T21:42:37Z",
   "org": "allianz",
-  "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+  "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
   "run_url": null,
   "previous_report": null,
   "input": {
     "file": "scorecard.json",
     "script": "scripts/scorecard_check.js",
     "status": "ok",
-    "sha256": "90423c607ffa1384455b5910b848245bdd09426d027c7cf7691cdb2420311a5c",
+    "sha256": "eb7dff90c62560b283f7c47116aadb8ebadb60b414dc37c5fc337957674060c5",
     "tool": "scorecard_check",
-    "run_at": "2026-11-08T21:04:03Z",
-    "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+    "run_at": "2026-11-10T21:41:51Z",
+    "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
     "config_file": "config/report/scorecard_check.yaml",
     "config_sha256": "2fca157fc18af460b9bc858300898f3c7f58fdcfb39c855fe7dd4558ccc0ec36",
     "run_url": null,
@@ -71,31 +71,31 @@
     {
       "repo": ".github",
       "commit": "42baef0d845113d6b8905394e48cbbbb4de17184",
-      "date": "2026-11-08T21:04:04Z",
+      "date": "2026-11-10T21:41:53Z",
       "score": 4.1
     },
     {
       "repo": "geofeed",
       "commit": "8b4804494146bdd6b0ad1e31b1db4c0adef5a6a1",
-      "date": "2026-11-08T21:04:04Z",
+      "date": "2026-11-10T21:41:53Z",
       "score": 4.3
     },
     {
       "repo": "ng-aquila",
       "commit": "f995f66ab5b21fb9871929ea8e3ef2730347e88a",
-      "date": "2026-11-08T21:04:04Z",
+      "date": "2026-11-10T21:41:53Z",
       "score": 3.9
     },
     {
       "repo": "ospo",
       "commit": "30b7fe068f2274f6a42e62f2c6783e8da2371514",
-      "date": "2026-11-08T21:04:13Z",
+      "date": "2026-11-10T21:42:00Z",
       "score": 7.4
     },
     {
       "repo": "yukimi",
       "commit": "fac40d6d8ec407a1f09295782502ae6f0bc2ea80",
-      "date": "2026-11-08T21:04:21Z",
+      "date": "2026-11-10T21:42:07Z",
       "score": 9
     }
   ],
@@ -779,8 +779,8 @@
       "details": [
         "Info: jobLevel 'contents' permission set to 'read': .github/workflows/ci.yml:20",
         "Info: jobLevel 'actions' permission set to 'read': .github/workflows/ci.yml:21",
-        "Info: jobLevel 'actions' permission set to 'read': .github/workflows/claude-pr-review.yml:17",
         "Info: jobLevel 'contents' permission set to 'read': .github/workflows/claude-pr-review.yml:14",
+        "Info: jobLevel 'actions' permission set to 'read': .github/workflows/claude-pr-review.yml:17",
         "Info: jobLevel 'contents' permission set to 'read': .github/workflows/figma-code-connect.yml:20",
         "Warn: no topLevel permission defined: .github/workflows/ci.yml:1",
         "Warn: no topLevel permission defined: .github/workflows/claude-pr-review.yml:1",

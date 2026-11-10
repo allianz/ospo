@@ -1,18 +1,18 @@
 {
   "report_id": "OSPO-CM-2026-11",
-  "run_at": "2026-11-08T21:04:57Z",
+  "run_at": "2026-11-10T21:42:37Z",
   "org": "allianz",
-  "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+  "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
   "run_url": null,
   "previous_report": null,
   "input": {
     "file": "community.json",
     "script": "scripts/community_metrics.js",
     "status": "ok",
-    "sha256": "10bba499db8e382122ca2ccdca2f536f96d7c1ffd1e22f346f83433004748af2",
+    "sha256": "28a9f655dbc0075fb38576a49e963ea88068842f45043e21ce0781f03ffacb2b",
     "tool": "community_metrics",
-    "run_at": "2026-11-08T21:04:51Z",
-    "ospo_sha": "b0cc2983771f2bd46861ef6616fa61ff9901cfc1",
+    "run_at": "2026-11-10T21:42:31Z",
+    "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
     "config_file": "config/report/community_metrics.yaml",
     "config_sha256": "58328fc0a93b43097c2b87e0f4149df1a0b2ebe0b1ae277560ed64857309b3aa",
     "run_url": null,
@@ -65,7 +65,7 @@
     "public_projects": 4,
     "new_projects": 0,
     "active_projects": 3,
-    "stars": 256,
+    "stars": 257,
     "forks": 59,
     "contributors": {
       "internal": 6,
@@ -87,35 +87,35 @@
     "releases": 4,
     "release_downloads": 0,
     "traffic": {
-      "views": 1228,
-      "visitors": 285,
-      "clones": 1424,
-      "cloners": 401
+      "views": 1161,
+      "visitors": 292,
+      "clones": 1433,
+      "cloners": 431
     }
   },
   "growth": {
     "stars": {
-      "value": 256,
+      "value": 257,
       "previous": null,
       "six_months_ago": null
     },
     "visitors": {
-      "value": 285,
+      "value": 292,
       "previous": null,
       "six_months_ago": null
     },
     "cloners": {
-      "value": 401,
+      "value": 431,
       "previous": null,
       "six_months_ago": null
     },
     "views": {
-      "value": 1228,
+      "value": 1161,
       "previous": null,
       "six_months_ago": null
     },
     "clones": {
-      "value": 1424,
+      "value": 1433,
       "previous": null,
       "six_months_ago": null
     },
@@ -201,10 +201,10 @@
       "traffic": {
         "views": 16,
         "visitors": 8,
-        "clones": 17,
+        "clones": 15,
         "cloners": 11,
-        "from": "2026-10-25",
-        "to": "2026-11-07"
+        "from": "2026-10-27",
+        "to": "2026-11-09"
       }
     },
     {
@@ -264,19 +264,19 @@
       },
       "release_downloads": 0,
       "traffic": {
-        "views": 507,
-        "visitors": 205,
-        "clones": 863,
-        "cloners": 211,
-        "from": "2026-10-25",
-        "to": "2026-11-07"
+        "views": 503,
+        "visitors": 206,
+        "clones": 777,
+        "cloners": 227,
+        "from": "2026-10-27",
+        "to": "2026-11-09"
       }
     },
     {
       "repo": "ospo",
       "description": "Developer guides for the Allianz organization on GitHub",
       "created_at": "2023-07-27T09:38:10Z",
-      "pushed_at": "2026-11-08T20:55:00Z",
+      "pushed_at": "2026-11-09T10:35:33Z",
       "stars": 2,
       "forks": 3,
       "new_project": false,
@@ -325,20 +325,20 @@
       },
       "release_downloads": 0,
       "traffic": {
-        "views": 186,
-        "visitors": 31,
-        "clones": 147,
-        "cloners": 66,
-        "from": "2026-10-25",
-        "to": "2026-11-07"
+        "views": 200,
+        "visitors": 32,
+        "clones": 304,
+        "cloners": 90,
+        "from": "2026-10-27",
+        "to": "2026-11-09"
       }
     },
     {
       "repo": "yukimi",
       "description": "Self-service Snowflake provisioning with built-in security and policy enforcement.",
       "created_at": "2026-05-04T09:14:06Z",
-      "pushed_at": "2026-11-03T15:34:41Z",
-      "stars": 4,
+      "pushed_at": "2026-11-09T05:26:40Z",
+      "stars": 5,
       "forks": 3,
       "new_project": false,
       "active": true,
@@ -388,12 +388,12 @@
       },
       "release_downloads": 0,
       "traffic": {
-        "views": 519,
-        "visitors": 41,
-        "clones": 397,
-        "cloners": 113,
-        "from": "2026-10-25",
-        "to": "2026-11-07"
+        "views": 442,
+        "visitors": 46,
+        "clones": 337,
+        "cloners": 103,
+        "from": "2026-10-27",
+        "to": "2026-11-09"
       }
     }
   ],
@@ -438,7 +438,7 @@
         "public_projects": 4,
         "new_projects": 0,
         "active_projects": 3,
-        "stars": 256,
+        "stars": 257,
         "forks": 59,
         "contributors": {
           "internal": 6,
@@ -460,10 +460,10 @@
         "releases": 4,
         "release_downloads": 0,
         "traffic": {
-          "views": 1228,
-          "visitors": 285,
-          "clones": 1424,
-          "cloners": 401
+          "views": 1161,
+          "visitors": 292,
+          "clones": 1433,
+          "cloners": 431
         }
       },
       "repositories": {
@@ -471,7 +471,7 @@
           "traffic": {
             "views": 16,
             "visitors": 8,
-            "clones": 17,
+            "clones": 15,
             "cloners": 11
           },
           "stars": 0,
@@ -490,10 +490,10 @@
         },
         "ng-aquila": {
           "traffic": {
-            "views": 507,
-            "visitors": 205,
-            "clones": 863,
-            "cloners": 211
+            "views": 503,
+            "visitors": 206,
+            "clones": 777,
+            "cloners": 227
           },
           "stars": 250,
           "forks": 50,
@@ -511,10 +511,10 @@
         },
         "ospo": {
           "traffic": {
-            "views": 186,
-            "visitors": 31,
-            "clones": 147,
-            "cloners": 66
+            "views": 200,
+            "visitors": 32,
+            "clones": 304,
+            "cloners": 90
           },
           "stars": 2,
           "forks": 3,
@@ -532,12 +532,12 @@
         },
         "yukimi": {
           "traffic": {
-            "views": 519,
-            "visitors": 41,
-            "clones": 397,
-            "cloners": 113
+            "views": 442,
+            "visitors": 46,
+            "clones": 337,
+            "cloners": 103
           },
-          "stars": 4,
+          "stars": 5,
           "forks": 3,
           "contributors": {
             "internal": 4,
