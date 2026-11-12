@@ -13,8 +13,8 @@ ORG ?= allianz
 CONFIG_DIR ?= config
 REPORTS_DIR ?= reports
 # One report per configuration (allianz: Allianz Mandatory Repository Configuration);
-# a new config/report/compliance_report_*.yaml needs no change here
-REPORT_CONFIGS := $(wildcard config/report/compliance_report_*.yaml)
+# a new config/report/*_report.yaml needs no change here
+REPORT_CONFIGS := $(wildcard config/report/*_report.yaml)
 
 .PHONY: check-token \
         test_lint_repos test_archive_repos test_create_repos test_license_scan \

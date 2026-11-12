@@ -54,7 +54,7 @@ inputs:
   - { file: lint_repos.json, script: scripts/lint_repos.js }
   - { file: license_scan.json, script: scripts/license_scan.js }
 
-notes: config/report/compliance_report_allianz_notes.md
+notes: config/report/allianz_report_notes.md
 
 out_of_scope:
   - { repo: .github, reason: "Organisation configuration (profile, default community files), not a project" }

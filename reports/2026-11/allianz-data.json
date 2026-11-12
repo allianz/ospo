@@ -4,8 +4,8 @@
   "org": "allianz",
   "ospo_sha": "d5ffea1f6e950b8242b5f2431e32f840162570a6",
   "run_url": null,
-  "report_config": "config/report/compliance_report_allianz.yaml",
-  "config_sha256": "ae03b3903c58e679b2d7f2942ba197b40fd821c3e280d509c93fe287c331a3b4",
+  "report_config": "config/report/allianz_report.yaml",
+  "config_sha256": "2295de3c237859f81167015c718f51e8046cebafff8afe991f0ee59407f75b2b",
   "framework": {
     "id": "allianz-mandatory-repo-config",
     "title": "Allianz Repository Standards",
@@ -450,7 +450,7 @@
     "failing_repositories": 3
   },
   "notes": {
-    "file": "config/report/compliance_report_allianz_notes.md",
+    "file": "config/report/allianz_report_notes.md",
     "sha256": "b72c1a41c84dbd4a8459d3a7f5dad936885182a426a515f0bf53c9368cf7abf0",
     "key_messages": [],
     "needs_attention": []

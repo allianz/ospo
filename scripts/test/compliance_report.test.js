@@ -752,7 +752,7 @@ describe('buildData', () => {
 // ── The report configurations in config/ ─────────────────────────────────────
 
 const REPORT_CONFIGS = [
-  { file: 'config/report/compliance_report_allianz.yaml', requirements: 14 },
+  { file: 'config/report/allianz_report.yaml', requirements: 14 },
 ];
 
 for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () => {
@@ -778,9 +778,9 @@ for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () =>
   });
 });
 
-describe('config/report/compliance_report_allianz.yaml mapping', () => {
+describe('config/report/allianz_report.yaml mapping', () => {
   it('maps every requirement of the guideline to its lint and license checks, or marks it not implemented', async () => {
-    const { requirements } = await loadReportConfig(path.join(repoRoot, 'config/report/compliance_report_allianz.yaml'));
+    const { requirements } = await loadReportConfig(path.join(repoRoot, 'config/report/allianz_report.yaml'));
     assert.deepEqual(Object.fromEntries(requirements.map(q => [q.id, [q.chapter, q.level, q.implemented ? q.checks : 'not implemented']])), {
       'AZ.01': ['2.1', 'MUST', ['lint/description']],
       'AZ.02': ['2.1', 'MUST', ['lint/topics']],

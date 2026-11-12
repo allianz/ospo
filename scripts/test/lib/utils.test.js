@@ -27,7 +27,7 @@ describe('config', () => {
   });
 
   it('points the default config of a report tool at <repo>/config/report/<name>.yaml', () => {
-    assert.equal(defaultConfigPath('compliance_report_allianz', 'report'), path.join(repoRoot, 'config', 'report', 'compliance_report_allianz.yaml'));
+    assert.equal(defaultConfigPath('allianz_report', 'report'), path.join(repoRoot, 'config', 'report', 'allianz_report.yaml'));
   });
 
   it('loads YAML, and null for an empty file', async () => {

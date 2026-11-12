@@ -9,7 +9,7 @@ on:
   schedule:
     - cron: '0 3 1 * *'
   pull_request:
-    paths: ['config/report/compliance_report_*_notes.md']
+    paths: ['config/report/*_report_notes.md']
 
 permissions:
   contents: read
@@ -172,7 +172,7 @@ jobs:
               echo "  - [$(basename "$f")](https://htmlpreview.github.io/?$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/$BRANCH/$f)"
             done
             echo "  Or download the artifact \`compliance-report-$MONTH\` of the run and open the \`*-report.html\` files in a browser."
-            echo "- **Notes:** edit \`config/report/compliance_report_*_notes.md\` on this branch (Key messages, Needs attention). Each edit reruns the tools and updates the reports."
+            echo "- **Notes:** edit \`config/report/*_report_notes.md\` on this branch (Key messages, Needs attention). Each edit reruns the tools and updates the reports."
             echo "- **Publish:** merge. The merged \`reports/$MONTH/\` is the published report and the base of next month's trend."
             echo
             cat "$RUNNER_TEMP/summary.md"

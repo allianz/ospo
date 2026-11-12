@@ -15,7 +15,7 @@ make test_create_repos    # Integration test against ospo-sandbox org
 make test_lint_repos      # Integration test against ospo-sandbox org
 make test_archive_repos   # Integration test against ospo-sandbox org
 make test_license_scan    # Integration test against ospo-sandbox org
-make create_reports       # lint_repos and license_scan --json into results/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/report/compliance_report_*.yaml
+make create_reports       # lint_repos and license_scan --json into results/, then reports/<YYYY-MM>/<key>-data.json + <key>-report.html per config/report/*_report.yaml
                           # and regenerates reports/README.md (index, links via htmlpreview.github.io)
                           # (allianz, lint_repos and license_scan always with --dry-run, also in CI; ORG=ospo-sandbox CONFIG_DIR=scripts/test-config for the sandbox)
 make test                 # Unit tests with coverage report (node --test)
@@ -38,7 +38,7 @@ node scripts/compliance_report.js --org <org> --config <report.yaml> --dir <dir>
 node scripts/reports_index.js --org <org> [--reports <dir>] [--debug]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. Only `lint_repos.json` and `license_scan.json` are read by a report today (the Allianz report). `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). The only report configuration is `config/report/compliance_report_allianz.yaml`. `reports_index.js` writes `<reports>/README.md`, the index of all month folders: the reports of the latest month and one line per earlier month, each HTML report linked through `htmlpreview.github.io` on `main` (GitHub shows `.html` as source). A Markdown report is not implemented yet.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. Only `lint_repos.json` and `license_scan.json` are read by a report today (the Allianz report). `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). The only report configuration is `config/report/allianz_report.yaml`. `reports_index.js` writes `<reports>/README.md`, the index of all month folders: the reports of the latest month and one line per earlier month, each HTML report linked through `htmlpreview.github.io` on `main` (GitHub shows `.html` as source). A Markdown report is not implemented yet.
 
 ### Required Tools
 
@@ -64,7 +64,7 @@ Six JavaScript (ESM) scripts, each driven by a YAML config file (except `reports
 2. **`scripts/lint_repos.js`** — Enforces repo compliance (description, topics, license, README, CONTRIBUTING). Reads `config/lint_repos.yaml`.
 3. **`scripts/archive_repos.js`** — Archives stale repos after a grace period with warning issues. Reads `config/archive_repos.yaml`.
 4. **`scripts/license_scan.js`** — Scans dependency licenses via the GitHub SBOM API and opens issues for denied licenses. Reads `config/license_scan.yaml`.
-5. **`scripts/compliance_report.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/report/compliance_report_<key>.yaml`, which holds the requirement texts and the only check → requirement mapping; today only `allianz`, the Allianz Repository Standards, fed by `lint_repos.json` and `license_scan.json`): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest earlier month folder in the local `reports/`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
+5. **`scripts/compliance_report.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/report/<key>_report.yaml`, which holds the requirement texts and the only check → requirement mapping; today only `allianz`, the Allianz Repository Standards, fed by `lint_repos.json` and `license_scan.json`): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest earlier month folder in the local `reports/`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
 6. **`scripts/reports_index.js`** — Regenerates `reports/README.md`, the index of the reports folder: the reports of the latest month (name from the HTML `<title>`, link via `htmlpreview.github.io` to the file on `main`) and one line per earlier month. Run last by `make create_reports`, so the index is part of the report PR. No config, no GitHub calls.
 
 ### Shared libraries (`scripts/lib/`)
@@ -82,7 +82,7 @@ Six JavaScript (ESM) scripts, each driven by a YAML config file (except `reports
 
 ### Configuration
 
-- **Production configs**: `config/` directory: the tools that act on GitHub (`create_repos`, `lint_repos`, `archive_repos`, `license_scan`) directly in `config/`; the report configurations (`compliance_report_<key>.yaml` and its `_notes.md`) in `config/report/` (`defaultConfigPath(name, 'report')`)
+- **Production configs**: `config/` directory: the tools that act on GitHub (`create_repos`, `lint_repos`, `archive_repos`, `license_scan`) directly in `config/`; the report configurations (`<key>_report.yaml` and its `<key>_report_notes.md`) in `config/report/` (`defaultConfigPath(name, 'report')`)
 - **Test configs**: `scripts/test-config/` directory (targets `ospo-sandbox` org), so `CONFIG_DIR=scripts/test-config` works for `make create_reports`
 
 ### Output folders
@@ -95,7 +95,7 @@ Six JavaScript (ESM) scripts, each driven by a YAML config file (except `reports
 - `lint_repos.yaml` — Scheduled bi-weekly (Tue/Thu)
 - `archive_repos.yaml` — Scheduled weekly (Sun midnight)
 - `license_scan.yaml` — Scheduled weekly (Mon midnight)
-- `compliance_report.yaml` — Monthly (1st, 03:00 UTC) and on edits of `config/report/compliance_report_*_notes.md` in the report PR: `make create_reports` (`lint_repos` and `license_scan` with `--dry-run`, so it never writes issues), commits `reports/<YYYY-MM>/` and `reports/README.md` to the branch `compliance-report` (merging `main` into it) and opens the PR (its body links the reports on the branch via htmlpreview); tool files and reports are uploaded as artifact
+- `compliance_report.yaml` — Monthly (1st, 03:00 UTC) and on edits of `config/report/*_report_notes.md` in the report PR: `make create_reports` (`lint_repos` and `license_scan` with `--dry-run`, so it never writes issues), commits `reports/<YYYY-MM>/` and `reports/README.md` to the branch `compliance-report` (merging `main` into it) and opens the PR (its body links the reports on the branch via htmlpreview); tool files and reports are uploaded as artifact
 - `ci.yaml` — On pull requests that change `scripts/`, the `Makefile` or the workflow itself: `make test` (unit tests with the coverage thresholds)
 - All workflows support manual dispatch
 - Authentication via GitHub App tokens (`ALLIANZ_APP_ID`, `ALLIANZ_PRIVATE_KEY`)

@@ -89,7 +89,7 @@ node scripts/compliance_report.js --org <org> --config <file> --dir <dir> [--rep
 | Flag | Default | Description |
 |---|---|---|
 | `--org` | required | Organisation of the run. A tool file of another organisation is invalid |
-| `--config` | required | Report configuration, e.g. `config/report/compliance_report_allianz.yaml`. There is no default: one run per report |
+| `--config` | required | Report configuration, e.g. `config/report/allianz_report.yaml`. There is no default: one run per report |
 | `--dir` | required | Directory with the tool files (`results/` in `make create_reports`). Only read |
 | `--reports` | `reports/` of the repo | Reports directory. `data.json` and the HTML report are written to `<reports>/<YYYY-MM>/` |
 | `--dry-run` | false | Accepted like in every script. Has no effect: the script makes no changes on GitHub |
@@ -116,7 +116,7 @@ framework:
   chapters: { "2.1": Metadata, "2.2": Documentation, "2.3": Legal }
 inputs:
   - { file: lint_repos.json, script: scripts/lint_repos.js }
-notes: config/report/compliance_report_allianz_notes.md
+notes: config/report/allianz_report_notes.md
 out_of_scope:
   - { repo: .github, reason: "Organisation configuration, not a project" }
 requirements:
@@ -329,7 +329,7 @@ Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 c
 
 ## Make target
 
-`make create_reports` runs `lint_repos` and `license_scan` with `--json` into a fresh `results/` (the tool files the Allianz report reads), then this script once per `config/report/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`, and finally [`reports_index.js`](reports_index_spec.md), which regenerates `reports/README.md`:
+`make create_reports` runs `lint_repos` and `license_scan` with `--json` into a fresh `results/` (the tool files the Allianz report reads), then this script once per `config/report/*_report.yaml`, which writes into `reports/<YYYY-MM>/`, and finally [`reports_index.js`](reports_index_spec.md), which regenerates `reports/README.md`:
 
 | Variable | Default | Meaning |
 |---|---|---|
