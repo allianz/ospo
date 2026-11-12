@@ -17,8 +17,7 @@
 
 issue_title: "Dependency License Violation"
 docs_link: "https://cmp.allianz.net/spaces/ARGO/pages/2796594691/Third+Party+Dependencies"
-excluded_repos:
-  - ospo
+excluded_repos: []   # Keep this empty: the compliance report counts an excluded repository as failing
 
 deny-licenses:
   # Copyleft

@@ -2,7 +2,7 @@
 
 ## Motivation
 
-The checking tools each write their results to a tool file in the common JSON format ([draft, section 1.6](compliance_implementation_draft.md#16-common-json-format)). A report needs them combined: which requirement is met, how many repositories have findings, how the numbers develop month by month. This script aggregates the tool files of one run into one self-contained `<key>-data.json` per report configuration and renders the HTML report from it. Every number of the report can be traced to `data.json`.
+The checking tools each write their results to a tool file in the common JSON format (see [Tool file format](#tool-file-format)). A report needs them combined: which requirement is met, how many repositories have findings, how the numbers develop month by month. This script aggregates the tool files of one run into one self-contained `<key>-data.json` per report configuration and renders the HTML report from it. Every number of the report can be traced to `data.json`.
 
 ## Scope
 
@@ -23,6 +23,61 @@ Out of scope:
 - A Markdown report. Only the HTML report is rendered in this version.
 - Running the tools. `make create_reports` runs them first (see [Make target](#make-target)).
 
+## Tool file format
+
+Every checking tool (`lint_repos`, `license_scan`, `archive_repos`) writes its results with `--json <file>` in one common format, built with `lib/json_output.js`:
+
+```json
+{
+  "tool": "lint_repos",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "allianz",
+  "ospo_sha": "869f4bb",
+  "config_file": "config/lint_repos.yaml",
+  "config_sha256": "…",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/…",
+  "issue_title": "Mandatory Repository Configuration",
+  "results": [
+    { "repo": "foo", "check": "lint/contributing", "name": "Contributing File",
+      "result": "pass", "score": null,
+      "reason": ".github/CONTRIBUTING.md found", "details": [] }
+  ],
+  "catalogue": {
+    "lint/contributing": { "name": "Contributing File",
+      "documentation": { "url": "https://github.com/allianz/ospo/blob/869f4bb/scripts/spec/lint_repos_spec.md#contributing-file",
+                         "short": "A file CONTRIBUTING* exists in ., .github or docs.",
+                         "fix": "Add CONTRIBUTING.md to .github/ describing how to propose changes." } }
+  },
+  "skipped": [ { "repo": "old-repo", "reason": "archived" } ],
+  "errors": []
+}
+```
+
+| Field | Content |
+|---|---|
+| `tool`, `run_at`, `org`, `ospo_sha`, `config_file`, `config_sha256`, `run_url` | The run: script name, time (UTC, seconds), organisation, commit of this repository, path and SHA-256 of the configuration, workflow run URL (`null` locally) |
+| `issue_title` | Title of the tool's issue, copied from its configuration; `null` for a tool whose checks open no issue (`archive_repos`) |
+| `results` | One row per repository and check, see below |
+| `catalogue` | One entry per check the tool ran: `name`, `threshold` (only for scored checks) and `documentation` (`url`, `short`, optional `fix`) |
+| `skipped` | Repositories without results (`repo`, `reason`), e.g. `archived` or `excluded_repos` |
+| `errors` | Repository × check pairs the tool could not evaluate (`repo`, `check`, `reason`) |
+
+A result row:
+
+| Field | Content |
+|---|---|
+| `repo` | Repository name. Every check is per repository |
+| `check` | Stable ID `<tool>/<check>`, e.g. `lint/contributing`. Key for the requirement mapping and the history |
+| `name` | Readable name, e.g. "Contributing File". For tool output and issues only; the report uses the check ID |
+| `result` | `pass`, `fail` or `na` (nothing to judge). A tool error is never `na`: it goes to `errors`, which the report treats as "no data" |
+| `score` | 0–10 for a scored check (compared with the catalogue's `threshold`: `score >= threshold` passes), otherwise `null` |
+| `reason` | One sentence for people, always filled (also for `pass` and `na`) |
+| `details` | List of lines for people, `[]` if empty |
+
+- **Text for people.** Nothing parses `reason` or `details`; the report computes only with `result` and `score`.
+- **Catalogue.** Every check ID used in `results` is in the catalogue. `documentation.url` links the heading of the check in the tool's spec, pinned to `ospo_sha`, so an old report links the rule of its run. Each spec therefore has one heading per check, named like the check's `name`, with the rule (`short`) and a "How to fix" line (`fix`). `fix` is shown in the tool's issue.
+- **Same shape.** `results`, `skipped` and `errors` are always present, `[]` if empty.
+
 ---
 
 ## CLI Interface
@@ -34,7 +89,7 @@ node scripts/compliance_report.js --org <org> --config <file> --dir <dir> [--rep
 | Flag | Default | Description |
 |---|---|---|
 | `--org` | required | Organisation of the run. A tool file of another organisation is invalid |
-| `--config` | required | Report configuration, e.g. `config/report/compliance_report_bsi.yaml`. There is no default: one run per report |
+| `--config` | required | Report configuration, e.g. `config/report/compliance_report_allianz.yaml`. There is no default: one run per report |
 | `--dir` | required | Directory with the tool files (`results/` in `make create_reports`). Only read |
 | `--reports` | `reports/` of the repo | Reports directory. `data.json` and the HTML report are written to `<reports>/<YYYY-MM>/` |
 | `--dry-run` | false | Accepted like in every script. Has no effect: the script makes no changes on GitHub |
@@ -48,36 +103,37 @@ No token is needed.
 
 ## Configuration File
 
-One file per report ([draft 1.8](compliance_implementation_draft.md#18-report-configurations)).
+One file per report. Every file name is set in the configuration; nothing is derived from the requirement set.
 
 ```yaml
-key: bsi
+key: allianz
 framework:
-  id: bsi-tr-03185
-  title: BSI TR-03185 Chapter 2
-  version: 1.1.1
-  url: https://www.bsi.bund.de/dok/TR-03185-en
-  text_note: Short summary of each requirement, not a quotation.
-  chapters: { GV: Governance, LE: Legal, QA: Quality, BR: Build and release, VM: Vulnerability management, DE: Decommissioning }
+  id: allianz-mandatory-repo-config
+  title: Allianz Mandatory Repository Configuration
+  version: "2026-11-10"
+  url: https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repository+Configuration
+  text_note: Summary of each requirement of the guideline page.
+  chapters: { "2.1": Metadata, "2.2": Documentation, "2.3": Legal }
 inputs:
   - { file: lint_repos.json, script: scripts/lint_repos.js }
-notes: config/report/compliance_report_bsi_notes.md
+notes: config/report/compliance_report_allianz_notes.md
 out_of_scope:
   - { repo: .github, reason: "Organisation configuration, not a project" }
 requirements:
-  GV.01:
-    title: How to contribute is documented
+  AZ.04:
+    title: CONTRIBUTING present
     level: MUST
+    chapter: "2.2"
     text:
-      - { level: MUST, text: "Information on how to contribute to the project MUST be documented." }
+      - { level: MUST, text: "The repository MUST contain a CONTRIBUTING.md …" }
     implementation: >-
-      Every repository must contain a contribution guide …
+      The linting bot looks for a CONTRIBUTING file …
     checks: [lint/contributing]
 ```
 
 | Field | Required | Description |
 |---|---|---|
-| `key` | yes | `a-z`, `0-9` and `-`. Prefix of the output files (`bsi-data.json`, `bsi-report.html`) and of the report ID (`OSPO-CR-BSI-2026-11`). Unique across the configurations |
+| `key` | yes | `a-z`, `0-9` and `-`. Prefix of the output files (`allianz-data.json`, `allianz-report.html`) and of the report ID (`OSPO-CR-ALLIANZ-2026-11`). Unique across the configurations |
 | `framework` | yes | The requirement set, copied into `data.json` unchanged. `chapters` names every chapter prefix used by a requirement ID |
 | `inputs` | yes | Tool files in `--dir`: `file` and the `script` that writes it. The tool name of a file must be the basename of its script |
 | `notes` | no | Notes file, relative to the repo root. Without it, `notes` is `null` |
@@ -115,14 +171,14 @@ Results of archived and out-of-scope repositories are dropped, so they count now
 
 ### Merge
 
-- **Only mapped checks.** `catalogue`, `results` and `errors` keep the checks that a requirement of the configuration maps. Tools write more checks for their own issues (e.g. `lint/description`, `archive/recent-activity`, `license/denied-licenses`) and `scorecard_check` writes all 18 Scorecard checks; these stay out of `data.json`.
+- **Only mapped checks.** `catalogue`, `results` and `errors` keep the checks that a requirement of the configuration maps. Tools write more checks for their own issues (e.g. `lint/description`, `archive/recent-activity`, `license/denied-licenses`); these stay out of `data.json`.
 - **Catalogue:** each entry gets the defining `tool`, keeps `threshold` (scored checks) and `documentation` (`url`, `short`). `name` and `fix` are dropped. A check ID defined in two tool files stops the run.
 - **Results:** concatenated in input order, each row with `repo`, `check` and `result`, plus `score` for scored checks (the catalogue entry has a `threshold`).
 - **Skipped** and **errors:** concatenated, each row with `tool` first. Errors without a check are kept.
 
 ### Excluded repositories
 
-For every active repository that a tool lists under `skipped` with reason `excluded_repos`, the script adds a `fail` result for each mapped check of that tool's catalogue (`score: null` for scored checks). A skipped repository therefore counts as failing ([draft 1.2](compliance_implementation_draft.md#12-scope-and-applicability)). This is why the tool configurations say "Keep this empty".
+For every active repository that a tool lists under `skipped` with reason `excluded_repos`, the script adds a `fail` result for each mapped check of that tool's catalogue (`score: null` for scored checks). A skipped repository therefore counts as failing. This is why the tool configurations say "Keep this empty".
 
 ### Requirements
 
@@ -137,7 +193,7 @@ For each active repository and requirement, the outcome over the requirement's c
 
 `repositories` holds these counts plus `applicable` (= `passing` + `failing`). `coverage` is `passing / applicable` in percent with one decimal, `null` when nothing is applicable.
 
-The status ([draft 1.7](compliance_implementation_draft.md#17-status-logic-computed-by-the-report)), first matching row:
+The status, first matching row:
 
 | Status | When |
 |---|---|
@@ -151,7 +207,7 @@ The status ([draft 1.7](compliance_implementation_draft.md#17-status-logic-compu
 
 Requirements without checks have `repositories: null` and `coverage: null`. `implemented` itself is not written to `data.json`; the status `not-implemented` records it.
 
-`not-met` and `not-implemented` differ in what they say: `not-met` states that no check can cover a MUST requirement, so the organisation does not meet it (BSI report). `not-implemented` states that a check is planned but not built yet (Allianz report, e.g. AZ.10 license headers).
+`not-met` and `not-implemented` differ in what they say: `not-met` states that no check can cover a MUST requirement, so the organisation does not meet it. `not-implemented` states that a check is planned but not built yet (Allianz report, e.g. AZ.10 license headers).
 
 ### Summary
 
@@ -168,7 +224,7 @@ Counted over the checks of the requirements with status `met`, `met-findings` or
 
 ### History
 
-The previous report is the `data.json` of this report in the latest month folder of the reports directory (`--reports`) **before** the month of this run: `reports/2026-10/bsi-data.json` for a run in November. Folders that are not a month (`YYYY-MM`) and other reports are ignored; a month folder without this report's file is skipped. The current month is never read: a rerun builds on the same previous month, and its own file is overwritten. Without such a file (first report), `previous_report` is `null` and the history starts empty. A file that is not valid JSON stops the run.
+The previous report is the `data.json` of this report in the latest month folder of the reports directory (`--reports`) **before** the month of this run: `reports/2026-10/allianz-data.json` for a run in November. Folders that are not a month (`YYYY-MM`) and other reports are ignored; a month folder without this report's file is skipped. The current month is never read: a rerun builds on the same previous month, and its own file is overwritten. Without such a file (first report), `previous_report` is `null` and the history starts empty. A file that is not valid JSON stops the run.
 
 The script reads local files only, no git. In CI, the reports directory is the checkout of the report branch, which is created from `main`, so it holds the merged reports. Locally, the folder can be prepared by hand for testing.
 
@@ -176,7 +232,7 @@ This run's entry is added for its month (`run_at`, UTC) and replaces an existing
 
 ### Notes
 
-The notes file named by `notes:` ([draft 1.8](compliance_implementation_draft.md#18-report-configurations)):
+The notes file named by `notes:`:
 
 - exactly the headings `## Key messages` and `## Needs attention`, in this order;
 - under each heading, bullets `- <text>`, one per line, and blank lines; an empty section is valid;
@@ -189,19 +245,16 @@ Missing file: `notes: null`. Invalid file: `notes: null` and an `errors` row `{ 
 ## Run log
 
 ```
-Report: BSI TR-03185 Chapter 2 (OSPO-CR-BSI-2026-11)
+Report: Allianz Mandatory Repository Configuration (OSPO-CR-ALLIANZ-2026-11)
 Inputs:
-  lint_repos.json        ok (45 results, 5 skipped, 0 errors)
-  process_check.json     missing
-  …
+  lint_repos.json        ok (130 results, 3 skipped, 0 errors)
 Scope: 10 active, 2 archived, 1 out of scope repositories
-Requirements: 3 met, 15 met-findings, 0 not-met, 0 no-data, 2 not-assessed, 0 not-implemented, 0 optional
-Compliance: 80.5% (124 of 154 checks passed), 7 repositories with findings
-History: 5 months (previous report: OSPO-CR-BSI-2026-10)
-Warning: data health: process_check.json missing
+Requirements: 4 met, 7 met-findings, 0 not-met, 0 no-data, 0 not-assessed, 2 not-implemented, 0 optional
+Compliance: 80.5% (95 of 118 checks passed), 7 repositories with findings
+History: 5 months (previous report: OSPO-CR-ALLIANZ-2026-10)
 
-JSON written to reports/2026-11/bsi-data.json
-HTML written to reports/2026-11/bsi-report.html
+JSON written to reports/2026-11/allianz-data.json
+HTML written to reports/2026-11/allianz-report.html
 ```
 
 `Warning:` lines appear when an input is missing or invalid, when `errors` is not empty, and for a mapped check that no tool file defines although all inputs are `ok` (most likely a typo in the mapping). With `--debug`, one line per requirement follows the `Requirements:` line: `GV.01 met-findings 70% (7/10, na 0, no data 0)`.
@@ -210,7 +263,7 @@ HTML written to reports/2026-11/bsi-report.html
 
 ## JSON output
 
-`<reports>/<YYYY-MM>/<key>-data.json` ([draft 1.10](compliance_implementation_draft.md#110-aggregation-compliance_report)). Keys in this order:
+`<reports>/<YYYY-MM>/<key>-data.json`. Keys in this order:
 
 | Key | Content |
 |---|---|
@@ -219,7 +272,7 @@ HTML written to reports/2026-11/bsi-report.html
 | `report_config`, `config_sha256` | Path of the report configuration relative to the repo root, and its SHA-256 |
 | `framework` | Copied from the configuration |
 | `previous_report` | `report_id` and `data_url` (link to the `data.json` that was read, on `main`) of the previous report, or `null` |
-| `inputs` | One entry per configured file: `file`, `script`, `status`, `sha256` (of the file as read, `null` if missing); for `ok` the header fields `tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, `issue_title`, plus `source` and `scorecard_version` where present, and `counts` (`results`, `skipped`, `errors`); for `invalid` the `problems` |
+| `inputs` | One entry per configured file: `file`, `script`, `status`, `sha256` (of the file as read, `null` if missing); for `ok` the header fields `tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, `issue_title`, and `counts` (`results`, `skipped`, `errors`); for `invalid` the `problems` |
 | `scope` | `active` and `archived`, sorted; `out_of_scope` as `{ repo, reason }`, sorted by `repo` |
 | `requirements` | One entry per requirement in configuration order: `id`, `chapter`, `level`, `title`, `text`, `implementation`, `checks`, `status`, `repositories`, `coverage` |
 | `summary` | See [Summary](#summary) |
@@ -237,8 +290,8 @@ HTML written to reports/2026-11/bsi-report.html
 reports/                  committed by pull request, never emptied
   README.md               index of all months (reports_index_spec.md), regenerated by make create_reports
   2026-11/
-    bsi-data.json
-    bsi-report.html
+    allianz-data.json
+    allianz-report.html
   2026-12/
     …
 results/                  tool files of the run (gitignored), emptied by make create_reports
@@ -276,7 +329,7 @@ Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 c
 
 ## Make target
 
-`make create_reports` runs every tool with `--json` into a fresh `results/`, then this script once per `config/report/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`, then [`scorecard_report.js`](scorecard_report_spec.md) for the Scorecard report and [`community_report.js`](community_report_spec.md) for the community report, and finally [`reports_index.js`](reports_index_spec.md), which regenerates `reports/README.md`:
+`make create_reports` runs `lint_repos` and `license_scan` with `--json` into a fresh `results/` (the tool files the Allianz report reads), then this script once per `config/report/compliance_report_*.yaml`, which writes into `reports/<YYYY-MM>/`, and finally [`reports_index.js`](reports_index_spec.md), which regenerates `reports/README.md`:
 
 | Variable | Default | Meaning |
 |---|---|---|
@@ -285,6 +338,6 @@ Links to the source scripts are pinned to `ospo_sha`; commits are shown with 7 c
 | `JSON_DIR` | `results` | Directory of the tool files, emptied first (gitignored). The same directory the `test_*` targets write to |
 | `REPORTS_DIR` | `reports` | Reports directory (`--reports`), never emptied |
 
-`lint_repos`, `license_scan` and `archive_repos`, the tools that write to GitHub, always run with `--dry-run`: a report run never opens or closes issues and never archives. There is no variable to switch this off; the tools act on GitHub through their own workflows.
+Both always run with `--dry-run`: a report run never opens or closes issues. There is no variable to switch this off; the tools act on GitHub through their own workflows. A report configuration that reads other tool files needs their tools added to the target.
 
-A failing tool does not stop the target: it leaves no file, and the report shows "no data" for its checks. Because the directory starts empty, no file of an earlier run is ever used. `scorecard_check` needs the Scorecard CLI.
+A failing tool does not stop the target: it leaves no file, and the report shows "no data" for its checks. Because the directory starts empty, no file of an earlier run is ever used.

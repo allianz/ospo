@@ -460,9 +460,7 @@ function sourceNode(check) {
   const tool = DATA.catalogue[check]?.tool;
   const inp = tool === 'compliance_report' ? { script: 'scripts/compliance_report.js' } : INPUT_OF[tool];   // own checks of compliance_report
   if (!inp?.script) return h('span', { class: 'muted', text: '–' });
-  const sv = inp.scorecard_version;
-  return h('span', {}, h('a', { href: `https://github.com/${ORG}/ospo/blob/${OSPO_REF}/${inp.script}` }, h('code', { style: 'color:inherit', text: inp.script.split('/').pop() })),
-    sv ? h('div', { class: 'small muted', text: `Scorecard ${sv}` }) : null);
+  return h('span', {}, h('a', { href: `https://github.com/${ORG}/ospo/blob/${OSPO_REF}/${inp.script}` }, h('code', { style: 'color:inherit', text: inp.script.split('/').pop() })));
 }
 const FINDINGS = deriveFindings();
 const RESULT_KEY = new Map(REPO_RESULTS.map(r => [r.repo + '|' + r.check, r]));
@@ -1020,10 +1018,10 @@ function repoListTag(text, filter) { const a = repoListLink(text, filter); a.cla
     }
     const t = i, sk = DATA.skipped.filter(x => x.tool === i.tool);   // inputs[] carries each tool file's header
     rt.append(h('tr', {},
-      h('td', {}, h('b', { text: t.tool }), h('div', { class: 'small' }, h('code', { text: i.file })), t.source ? h('div', { class: 'small muted', text: t.source }) : null),
+      h('td', {}, h('b', { text: t.tool }), h('div', { class: 'small' }, h('code', { text: i.file }))),
       h('td', { class: 'nowrap', text: fmtDateTime(t.run_at) }),
       h('td', {}, h('code', { text: t.config_file ?? '–' }), t.config_sha256 ? h('div', { class: 'small muted', title: t.config_sha256, text: `SHA-256 ${shortSha(t.config_sha256)}` }) : null),
-      h('td', { class: 'nowrap' }, h('code', { title: t.ospo_sha ?? '', text: `ospo@${commitText(t.ospo_sha)}` }), t.scorecard_version ? h('div', { class: 'small muted', text: `Scorecard ${t.scorecard_version}` }) : null),
+      h('td', { class: 'nowrap' }, h('code', { title: t.ospo_sha ?? '', text: `ospo@${commitText(t.ospo_sha)}` })),
       h('td', { class: 'num', text: t.counts.results }),
       h('td', { class: 'num', title: sk.map(x => `${x.repo}: ${x.reason}`).join('\n'), text: t.counts.skipped }),
       h('td', { class: 'num', text: t.counts.errors }),

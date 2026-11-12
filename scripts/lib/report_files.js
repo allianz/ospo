@@ -1,6 +1,6 @@
-// Files shared by the report scripts (compliance_report, scorecard_report, community_report): reading and validating
-// the tool files of a run, and the reports folder with one subfolder per month that carries the
-// history from one report to the next. See spec/compliance_report_spec.md and spec/scorecard_report_spec.md.
+// Files of the compliance report: reading and validating the tool files of a run, and the reports
+// folder with one subfolder per month that carries the history from one report to the next.
+// See spec/compliance_report_spec.md.
 
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
@@ -9,7 +9,7 @@ import { ScriptError } from './cli.js';
 import { repoRoot } from './config.js';
 import { sha256 } from './json_output.js';
 
-/** Reports folder of the repository, one folder per month (reports/2026-11/bsi-data.json). */
+/** Reports folder of the repository, one folder per month (reports/2026-11/allianz-data.json). */
 export const REPORTS_DIR = 'reports';
 /** Default output directory: the reports folder of the repository, committed by pull request. */
 export const DEFAULT_REPORTS_PATH = path.join(repoRoot, REPORTS_DIR);
@@ -74,7 +74,7 @@ export async function readToolFile(dir, input, org, validate = () => []) {
 
 // ── Reports folder and history ───────────────────────────────────────────────
 
-/** Path of a report's data.json in the repository: reports/2026-11/bsi-data.json. */
+/** Path of a report's data.json in the repository: reports/2026-11/allianz-data.json. */
 export const dataPath = (month, reportKey) => `${REPORTS_DIR}/${month}/${reportKey}-data.json`;
 
 /**

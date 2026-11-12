@@ -34,8 +34,6 @@ import { repoRoot } from '../lib/config.js';
 import { buildCatalogue as archiveCatalogue } from '../archive_repos.js';
 import { buildCatalogue as licenseCatalogue } from '../license_scan.js';
 import { buildCatalogue as lintCatalogue, loadConfig as loadLintConfig } from '../lint_repos.js';
-import { buildCatalogue as processCatalogue } from '../process_check.js';
-import { checkId, loadConfig as loadScorecardConfig } from '../scorecard_check.js';
 import { DATA_PLACEHOLDER } from '../lib/report_html.js';
 import { createMemoryLogger } from './helpers/memory_logger.js';
 
@@ -185,7 +183,7 @@ async function writeReports(dir, files = {
   '2026-09/test-data.json': '{}',
   '2026-10/test-data.json': JSON.stringify(PREVIOUS),
   '2026-10/test-report.html': '<html></html>',
-  '2026-11/bsi-data.json': '{}',
+  '2026-11/other-data.json': '{}',
   '2026-11/test-data.json': '{ "report_id": "same month, ignored" }',
   'old/test-data.json': '{}',
 }) {
@@ -292,14 +290,13 @@ describe('readInputs', () => {
     assert.match(inputs[0].sha256, /^[0-9a-f]{64}$/);
   });
 
-  it('copies the shown header fields and counts, plus source and scorecard_version where present', async () => {
+  it('copies the shown header fields and counts, and no other header fields', async () => {
     const dir = await writeToolFiles(path.join(tmpDir, 'inputs-header'));
     const { inputs } = await readInputs(dir, INPUTS.slice(0, 2), org);
     assert.deepEqual(Object.keys(inputs[0]), ['file', 'script', 'status', 'sha256', 'tool', 'run_at', 'ospo_sha', 'config_file', 'config_sha256', 'run_url', 'issue_title', 'counts']);
     assert.deepEqual(inputs[0].counts, { results: 6, skipped: 2, errors: 0 });
-    assert.equal(inputs[1].scorecard_version, 'v5.6.0');
-    assert.equal(inputs[1].source, 'scorecard CLI');
-    assert.equal('scorecard_commit' in inputs[1], false);
+    assert.equal('scorecard_version' in inputs[1], false);
+    assert.equal('source' in inputs[1], false);
   });
 
   it('throws on read errors other than a missing file', async () => {
@@ -492,7 +489,7 @@ describe('readPreviousReport', () => {
   });
 
   it('skips month folders without data.json of the report', async () => {
-    const dir = await writeReports(path.join(tmpDir, 'prev-skip'), { '2026-09/test-data.json': '{}', '2026-10/bsi-data.json': '{}' });
+    const dir = await writeReports(path.join(tmpDir, 'prev-skip'), { '2026-09/test-data.json': '{}', '2026-10/other-data.json': '{}' });
     assert.equal((await readPreviousReport(dir, 'test', '2026-11')).month, '2026-09');
   });
 
@@ -651,7 +648,7 @@ describe('run', () => {
     assert.deepEqual(JSON.parse(embedded), data);
     assert.ok(!html.includes(DATA_PLACEHOLDER));
     assert.match(html, /<title>Test Framework Compliance Report · test-org · 2026-11<\/title>/);
-    assert.deepEqual(await readdir(path.join(reports, '2026-11')), ['bsi-data.json', 'test-data.json', 'test-report.html']);
+    assert.deepEqual(await readdir(path.join(reports, '2026-11')), ['other-data.json', 'test-data.json', 'test-report.html']);
     assert.equal(JSON.parse(await readFile(path.join(reports, '2026-10', 'test-data.json'), 'utf8')).report_id, PREVIOUS.report_id);
   });
 
@@ -755,8 +752,7 @@ describe('buildData', () => {
 // ── The report configurations in config/ ─────────────────────────────────────
 
 const REPORT_CONFIGS = [
-  { file: 'config/report/compliance_report_bsi.yaml', requirements: 20 },
-  { file: 'config/report/compliance_report_allianz.yaml', requirements: 13 },
+  { file: 'config/report/compliance_report_allianz.yaml', requirements: 14 },
 ];
 
 for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () => {
@@ -764,13 +760,10 @@ for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () =>
 
   it('maps only checks that the tools define', async () => {
     const lint = lintCatalogue(await loadLintConfig(path.join(repoRoot, 'config/lint_repos.yaml')));
-    const scorecard = await loadScorecardConfig(path.join(repoRoot, 'config/report/scorecard_check.yaml'));
     const known = new Set([
       ...Object.keys(lint),
       ...Object.keys(licenseCatalogue()),
       ...Object.keys(archiveCatalogue({ warnAfter: '1 years', gracePeriod: '60 days' })),
-      ...Object.keys(processCatalogue()),
-      ...Object.keys(scorecard.thresholds).map(checkId),
     ]);
     const { requirements } = await loadReportConfig(configFile);
     assert.deepEqual([...mappedChecks(requirements)].filter(check => !known.has(check)), []);
@@ -786,7 +779,7 @@ for (const { file, requirements: count } of REPORT_CONFIGS) describe(file, () =>
 });
 
 describe('config/report/compliance_report_allianz.yaml mapping', () => {
-  it('maps every requirement of the guideline to its lint checks, or marks it not implemented', async () => {
+  it('maps every requirement of the guideline to its lint and license checks, or marks it not implemented', async () => {
     const { requirements } = await loadReportConfig(path.join(repoRoot, 'config/report/compliance_report_allianz.yaml'));
     assert.deepEqual(Object.fromEntries(requirements.map(q => [q.id, [q.chapter, q.level, q.implemented ? q.checks : 'not implemented']])), {
       'AZ.01': ['2.1', 'MUST', ['lint/description']],
@@ -801,7 +794,8 @@ describe('config/report/compliance_report_allianz.yaml mapping', () => {
       'AZ.10': ['2.3', 'SHOULD', 'not implemented'],
       'AZ.11': ['2.3', 'MUST', ['lint/notice']],
       'AZ.12': ['2.3', 'MUST', ['lint/authors']],
-      'AZ.13': ['2.3', 'MUST', 'not implemented'],
+      'AZ.13': ['2.3', 'MUST', ['license/denied-licenses']],
+      'AZ.14': ['2.3', 'MUST', 'not implemented'],
     });
   });
 

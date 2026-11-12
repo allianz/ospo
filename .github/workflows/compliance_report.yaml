@@ -1,6 +1,6 @@
 ---
-# Monthly compliance report (scripts/spec/compliance_implementation_draft.md, section 1.4).
-# Runs `make create_reports` (all tools with --dry-run, so nothing is written to GitHub except the
+# Monthly compliance report (scripts/spec/compliance_report_spec.md, section "Make target").
+# Runs `make create_reports` (lint_repos and license_scan with --dry-run, so nothing is written to GitHub except the
 # report branch), commits reports/<YYYY-MM>/ to the branch compliance-report and opens a pull request.
 # The OSPO reviews it, edits the notes files on the branch (which reruns this workflow) and merges.
 name: Compliance report
@@ -20,8 +20,6 @@ concurrency:
 
 env:
   BRANCH: compliance-report
-  SCORECARD_VERSION: 5.6.0
-  SCORECARD_SHA256: 19bde07129450cb65a95c6e3b9f34e034341579e6f0e241546ec3ae6efb2dd9a
 
 jobs:
   report:
@@ -99,18 +97,6 @@ jobs:
           path: lint_cache/
           key: lint-cache-allianz
 
-      # Pinned version and checksum; scorecard_check also fails on any other version (scorecard_version in its config)
-      - name: Install Scorecard CLI
-        if: steps.trigger.outputs.run == 'true'
-        run: |
-          dir="$RUNNER_TEMP/scorecard"
-          archive="scorecard_${SCORECARD_VERSION}_linux_amd64.tar.gz"
-          mkdir -p "$dir"
-          curl -fsSL -o "$dir/$archive" "https://github.com/ossf/scorecard/releases/download/v${SCORECARD_VERSION}/${archive}"
-          echo "${SCORECARD_SHA256}  $dir/$archive" | sha256sum --check
-          tar -xzf "$dir/$archive" -C "$dir" scorecard
-          echo "$dir" >> "$GITHUB_PATH"
-
       # GITHUB_SHA is set to the checked-out commit: on pull_request the event SHA is the merge ref,
       # and after the merge above HEAD is a new commit. Both are pushed below.
       - name: Create reports
@@ -186,7 +172,7 @@ jobs:
               echo "  - [$(basename "$f")](https://htmlpreview.github.io/?$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/blob/$BRANCH/$f)"
             done
             echo "  Or download the artifact \`compliance-report-$MONTH\` of the run and open the \`*-report.html\` files in a browser."
-            echo "- **Notes:** edit \`config/report/compliance_report_*_notes.md\` on this branch (Key messages, Needs attention). Each edit reruns all tools and updates the reports."
+            echo "- **Notes:** edit \`config/report/compliance_report_*_notes.md\` on this branch (Key messages, Needs attention). Each edit reruns the tools and updates the reports."
             echo "- **Publish:** merge. The merged \`reports/$MONTH/\` is the published report and the base of next month's trend."
             echo
             cat "$RUNNER_TEMP/summary.md"

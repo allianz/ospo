@@ -95,7 +95,7 @@ required_files:
     name: "Development File"
     min_chars: 300
     why: "It shows how to build and test the project, so others can reproduce the build and check their changes before they propose them."
-    json_only: true   # BSI TR-03185 BR.01: compliance report only, no issue
+    json_only: true   # compliance report only, no issue
 
 # Files a repository must not contain, because the organisation default from the
 # .github repository applies to every repository that has no file of its own.

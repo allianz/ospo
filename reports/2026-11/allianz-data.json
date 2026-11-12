@@ -1,14 +1,14 @@
 {
   "report_id": "OSPO-CR-ALLIANZ-2026-11",
-  "run_at": "2026-11-12T10:13:53Z",
+  "run_at": "2026-11-12T20:55:49Z",
   "org": "allianz",
-  "ospo_sha": "98b1495f05b7ec0dc538fd23d15865d8e496358b",
+  "ospo_sha": "d5ffea1f6e950b8242b5f2431e32f840162570a6",
   "run_url": null,
   "report_config": "config/report/compliance_report_allianz.yaml",
-  "config_sha256": "95799426fc794848b34293517f28bf91dbbe7266ddbb5a952c648c74f3971b8e",
+  "config_sha256": "ae03b3903c58e679b2d7f2942ba197b40fd821c3e280d509c93fe287c331a3b4",
   "framework": {
     "id": "allianz-mandatory-repo-config",
-    "title": "Allianz Mandatory Repository Configuration",
+    "title": "Allianz Repository Standards",
     "version": "2026-11-10",
     "url": "https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repository+Configuration",
     "text_note": "Summary of each requirement of the guideline page.",
@@ -24,17 +24,35 @@
       "file": "lint_repos.json",
       "script": "scripts/lint_repos.js",
       "status": "ok",
-      "sha256": "917088b318b7c1dd52da0b49c1901533dcf4576e301b2e6bb9bc48278230cc35",
+      "sha256": "c2a804eb67d3c9387036dfed8ca0571b2d13a8c91df1520318a1957b8e5404c0",
       "tool": "lint_repos",
-      "run_at": "2026-11-12T10:12:49Z",
-      "ospo_sha": "98b1495f05b7ec0dc538fd23d15865d8e496358b",
+      "run_at": "2026-11-12T20:55:38Z",
+      "ospo_sha": "d5ffea1f6e950b8242b5f2431e32f840162570a6",
       "config_file": "config/lint_repos.yaml",
-      "config_sha256": "06467dba4891d1e70926913ce148b2210f487d1766218fc4f10883cebf46cd76",
+      "config_sha256": "db9b19f53f0ef2e52aca9126bc6f7a1fa939917b1a70179491722cd6ba6908f7",
       "run_url": null,
       "issue_title": "Mandatory Repository Configuration",
       "counts": {
         "results": 42,
         "skipped": 8,
+        "errors": 0
+      }
+    },
+    {
+      "file": "license_scan.json",
+      "script": "scripts/license_scan.js",
+      "status": "ok",
+      "sha256": "aa675d732716613b94e84d16909281132030a5166a5ca8fb3fdaf7358e5028f5",
+      "tool": "license_scan",
+      "run_at": "2026-11-12T20:55:42Z",
+      "ospo_sha": "d5ffea1f6e950b8242b5f2431e32f840162570a6",
+      "config_file": "config/license_scan.yaml",
+      "config_sha256": "9ca4daa054d3cae592d1a83d660f0842fc067803ea7e90d9537b6ba02b8ad609",
+      "run_url": null,
+      "issue_title": "Dependency License Violation",
+      "counts": {
+        "results": 5,
+        "skipped": 6,
         "errors": 0
       }
     }
@@ -375,12 +393,33 @@
       "id": "AZ.13",
       "chapter": "2.3",
       "level": "MUST",
-      "title": "Third-party dependencies under permissive licenses",
+      "title": "No copyleft dependencies",
       "text": [
         {
           "level": "MUST",
-          "text": "Third-party dependencies MUST be under a permissive license, e.g. MIT, Apache-2.0 or BSD; copyleft licenses (GPL, AGPL, LGPL) are not permitted."
-        },
+          "text": "Third-party dependencies MUST NOT be under a copyleft license (GPL, AGPL)."
+        }
+      ],
+      "implementation": "The license scan bot reads the SBOM of every repository (GitHub dependency graph) once a week and opens the issue \"Dependency License Violation\" in any repository with a dependency under a license of its deny list, until the dependency is replaced or removed. Dependencies without license information are ignored.",
+      "checks": [
+        "license/denied-licenses"
+      ],
+      "status": "met",
+      "repositories": {
+        "applicable": 4,
+        "passing": 4,
+        "failing": 0,
+        "not_applicable": 0,
+        "no_data": 0
+      },
+      "coverage": 100
+    },
+    {
+      "id": "AZ.14",
+      "chapter": "2.3",
+      "level": "MUST",
+      "title": "Third-party licenses in binary distributions",
+      "text": [
         {
           "level": "MUST",
           "text": "Binary distributions that bundle dependencies MUST include a THIRD_PARTY_LICENSES.md covering all bundled dependencies."
@@ -394,11 +433,11 @@
     }
   ],
   "summary": {
-    "checks_evaluated": 48,
-    "checks_passed": 33,
-    "compliance_pct": 68.8,
+    "checks_evaluated": 52,
+    "checks_passed": 37,
+    "compliance_pct": 71.2,
     "requirements_by_status": {
-      "met": 0,
+      "met": 1,
       "met-findings": 11,
       "not-met": 0,
       "no-data": 0,
@@ -406,8 +445,8 @@
       "not-implemented": 2,
       "optional": 0
     },
-    "must_met": 9,
-    "must_total": 9,
+    "must_met": 10,
+    "must_total": 10,
     "failing_repositories": 3
   },
   "notes": {
@@ -419,7 +458,7 @@
   "history": [
     {
       "month": "2026-11",
-      "compliance_pct": 68.8,
+      "compliance_pct": 71.2,
       "failing_repositories": 3,
       "coverage": {
         "AZ.01": 75,
@@ -432,92 +471,100 @@
         "AZ.08": 75,
         "AZ.09": 75,
         "AZ.11": 75,
-        "AZ.12": 75
+        "AZ.12": 75,
+        "AZ.13": 100
       }
     }
   ],
   "catalogue": {
+    "license/denied-licenses": {
+      "tool": "license_scan",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/license_scan_spec.md#dependency-licenses",
+        "short": "No dependency in the SBOM uses a license from deny-licenses. Dependencies without license information are ignored."
+      }
+    },
     "lint/authors": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#authors-file",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#authors-file",
         "short": "A file AUTHORS* exists in .."
       }
     },
     "lint/contributing": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#contributing-file",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#contributing-file",
         "short": "A file CONTRIBUTING* exists in ., .github, docs."
       }
     },
     "lint/description": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#repository-description",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#repository-description",
         "short": "The repository description is set and has 30 to 150 characters."
       }
     },
     "lint/development": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#development-file",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#development-file",
         "short": "A file DEVELOPMENT* or DEVELOPER* exists in ., docs, .github, with at least 300 characters."
       }
     },
     "lint/license": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#license-file",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#license-file",
         "short": "A file LICENSE* exists in .."
       }
     },
     "lint/license-type": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#license-type",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#license-type",
         "short": "The license GitHub detects is one of Apache-2.0, MIT, CC-BY-4.0, CC0-1.0. A missing or unidentified license (NOASSERTION) fails."
       }
     },
     "lint/no-code-of-conduct": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#code-of-conduct",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#code-of-conduct",
         "short": "No file CODE_OF_CONDUCT* exists in ., .github, docs."
       }
     },
     "lint/no-maintainers": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#maintainers-file",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#maintainers-file",
         "short": "No file MAINTAINERS* exists in ., .github, docs."
       }
     },
     "lint/no-security": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#security-policy",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#security-policy",
         "short": "No file SECURITY* exists in ., .github, docs."
       }
     },
     "lint/notice": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#notice-file",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#notice-file",
         "short": "A file NOTICE* exists in .."
       }
     },
     "lint/readme": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#readme-file",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#readme-file",
         "short": "A file README* exists in ., with at least 300 characters."
       }
     },
     "lint/topics": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#repository-topics",
+        "url": "https://github.com/allianz/ospo/blob/d5ffea1f6e950b8242b5f2431e32f840162570a6/scripts/spec/lint_repos_spec.md#repository-topics",
         "short": "The repository has 1 to 5 topics, all from the approved topic list."
       }
     }
@@ -704,6 +751,26 @@
       "result": "fail"
     },
     {
+      "repo": "geofeed",
+      "check": "license/denied-licenses",
+      "result": "pass"
+    },
+    {
+      "repo": "ng-aquila",
+      "check": "license/denied-licenses",
+      "result": "pass"
+    },
+    {
+      "repo": "ospo",
+      "check": "license/denied-licenses",
+      "result": "pass"
+    },
+    {
+      "repo": "yukimi",
+      "check": "license/denied-licenses",
+      "result": "pass"
+    },
+    {
       "repo": "ng-aquila",
       "check": "lint/description",
       "result": "fail"
@@ -804,6 +871,36 @@
       "tool": "lint_repos",
       "repo": ".github",
       "reason": "excluded_repos"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "license-scout",
+      "reason": "archived"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "merge-processor",
+      "reason": "archived"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "calculus-prime-pnc",
+      "reason": "archived"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "gem-config",
+      "reason": "archived"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "merge-bot-config",
+      "reason": "archived"
+    },
+    {
+      "tool": "license_scan",
+      "repo": "merge-bot",
+      "reason": "archived"
     }
   ],
   "errors": []

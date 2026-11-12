@@ -54,8 +54,6 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "config_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
       "run_url": null,
       "issue_title": null,
-      "source": "scorecard CLI",
-      "scorecard_version": "v5.6.0",
       "counts": {
         "results": 6,
         "skipped": 1,

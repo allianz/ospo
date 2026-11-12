@@ -1,6 +1,5 @@
 // The HTML reports: a template with data.json embedded. The page renders itself in the browser
-// from the embedded data.json only. See spec/compliance_report_spec.md, section "HTML report",
-// and spec/scorecard_report_spec.md.
+// from the embedded data.json only. See spec/compliance_report_spec.md, section "HTML report".
 
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -20,7 +19,7 @@ export function embedJson(data) {
   return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
-/** The page title, e.g. "BSI TR-03185 Chapter 2 Compliance Report · allianz · 2026-11". */
+/** The page title, e.g. "Allianz Mandatory Repository Configuration Compliance Report · allianz · 2026-11". */
 export function reportTitle(data) {
   return `${data.framework.title} Compliance Report · ${data.org} · ${data.run_at.slice(0, 7)}`;
 }

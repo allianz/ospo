@@ -171,7 +171,7 @@ When `--dry-run` is active and there are pending actions, a summary block is app
 
 ## JSON output
 
-With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([draft, section 1.6](compliance_implementation_draft.md#16-common-json-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([Tool file format](compliance_report_spec.md#tool-file-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
 
 The file has these keys:
 
@@ -188,8 +188,6 @@ The file has these keys:
 | `errors` | Always `[]`: errors abort the run, and then no file is written |
 
 Each active repository has one result, sorted by repository name. Archived repositories are listed in `skipped` with reason `archived`, excluded repositories with reason `excluded_repos`. A repository without an SBOM (404) is not skipped in the JSON: its `license/denied-licenses` result is `na`.
-
-The availability of the SBOM is not a check of this script. The dependency graph is always enabled for public repositories, so the script [`process_check`](process_check_spec.md#sbom-available) writes it as `by-construction/sbom-available` ([draft](compliance_implementation_draft.md), QA.01).
 
 | Check ID | Name |
 |---|---|

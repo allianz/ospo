@@ -159,7 +159,7 @@ Checks 1, 2, 3, 5 and 6 use only API data (no clone needed). Checks 4 and 7 requ
 
 Checks 5 and 6 are **JSON only**: they are written to the `--json` file, but are not listed in the issue or the result line, and they never cause an issue to be opened. Project teams have no influence on them: the visibility and the Issues setting are controlled centrally by the OSPO, so an issue would ask the team for something it cannot do. The results are evidence for the compliance report and audits only. They are only run for active repositories.
 
-A `required_files` or `forbidden_files` entry with `json_only: true` is JSON only in the same way: the file is reported in the compliance report, but its absence never opens, updates or keeps open an issue. A repository that fails only JSON-only checks counts as compliant for the issue and shows `✅` in the result line. The production configuration uses this for `DEVELOPMENT*` and `DEVELOPER*` (BSI TR-03185 BR.01) and for the forbidden `SECURITY*` (a SHOULD NOT of the Allianz standards, AZ.07: a project may have a documented reason for its own policy).
+A `required_files` or `forbidden_files` entry with `json_only: true` is JSON only in the same way: the file is reported in the compliance report, but its absence never opens, updates or keeps open an issue. A repository that fails only JSON-only checks counts as compliant for the issue and shows `✅` in the result line. The production configuration uses this for `DEVELOPMENT*` and `DEVELOPER*` (Allianz AZ.05, a SHOULD) and for the forbidden `SECURITY*` (a SHOULD NOT of the Allianz standards, AZ.07: a project may have a documented reason for its own policy).
 
 Active repos are shallow-cloned into `lint_cache/` in parallel, at most 5 at a time. Existing clones are updated in place; a clone that fails to update is deleted and re-cloned. Archived repos are not cloned, so they only get checks 1–3.
 
@@ -261,7 +261,7 @@ When `--dry-run` is active and there are pending actions, a summary block is app
 
 ## JSON output
 
-With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([draft, section 1.6](compliance_implementation_draft.md#16-common-json-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([Tool file format](compliance_report_spec.md#tool-file-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
 
 The file has these keys:
 

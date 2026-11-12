@@ -28,8 +28,6 @@ const LEVELS = ['MUST', 'SHOULD', 'MAY'];
 export const STATUSES = ['met', 'met-findings', 'not-met', 'no-data', 'not-assessed', 'not-implemented', 'optional'];
 /** Statuses whose checks count in the summary and the history. */
 const ASSESSED = new Set(['met', 'met-findings', 'no-data']);
-/** Optional header fields copied into inputs when present (scorecard_check). */
-const EXTRA_HEADER_FIELDS = ['source', 'scorecard_version'];
 /** Skip reasons that mean the repository is archived (out of scope). */
 export const ARCHIVED_REASONS = new Set(['archived', 'archived in this run']);
 export const EXCLUDED_REASON = 'excluded_repos';
@@ -93,7 +91,7 @@ export function mappedChecks(requirements) {
 function inputEntry(input, status, { hash = null, doc = null, problems = [] } = {}) {
   const entry = { file: input.file, script: input.script, status, sha256: hash };
   if (status !== 'ok') return problems.length > 0 ? { ...entry, problems } : entry;
-  for (const field of [...HEADER_FIELDS.filter(f => f !== 'org'), ...EXTRA_HEADER_FIELDS]) {
+  for (const field of HEADER_FIELDS.filter(f => f !== 'org')) {
     if (field in doc) entry[field] = doc[field];
   }
   entry.counts = { results: doc.results.length, skipped: doc.skipped.length, errors: doc.errors.length };

@@ -6,12 +6,4 @@ Monthly OSPO reports of the GitHub organisation `allianz`, one folder per month.
 
 ## Compliance Reports: 2026-11
 
-| Guideline | Report |
-| --- | --- |
-| [Allianz Mandatory Repository Configuration](https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repository+Configuration) | [Compliance Report](https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/allianz-report.html) |
-| [BSI TR-03185 Chapter 2](https://www.bsi.bund.de/dok/TR-03185-en) | [Compliance Report](https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/bsi-report.html) |
-| [OpenSSF Scorecard](https://github.com/ossf/scorecard/blob/main/docs/checks.md) | [Security Score Report](https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/scorecard-report.html) |
-
-## Other Reports: 2026-11
-
-[Open Source Community Report](https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/community-report.html)
+- [Allianz Repository Standards](https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/allianz-report.html)

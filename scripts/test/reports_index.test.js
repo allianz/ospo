@@ -4,7 +4,7 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import { INDEX_FILE, SCORECARD_URL, describeReport, previewUrl, renderIndex, run, scanReports, titleOf } from '../reports_index.js';
+import { INDEX_FILE, previewUrl, renderIndex, run, scanReports, titleOf } from '../reports_index.js';
 import { ScriptError } from '../lib/cli.js';
 import { createMemoryLogger } from './helpers/memory_logger.js';
 
@@ -26,12 +26,12 @@ async function reportsFolder(name, files) {
 }
 
 const FILES = {
-  '2026-10/bsi-report.html': html('BSI TR-03185 Chapter 2 Compliance Report · test-org · 2026-10'),
-  '2026-10/bsi-data.json': '{}',
-  '2026-11/bsi-report.html': html('BSI TR-03185 Chapter 2 Compliance Report · test-org · 2026-11'),
-  '2026-11/bsi-data.json': '{"framework":{"url":"https://example.org/bsi"}}',
-  '2026-11/scorecard-report.html': html('OpenSSF Scorecard Report · test-org · 2026-11'),
-  '2026-11/scorecard-data.json': '{}',
+  '2026-10/allianz-report.html': html('Allianz Repository Standards Compliance Report · test-org · 2026-10'),
+  '2026-10/allianz-data.json': '{}',
+  '2026-11/allianz-report.html': html('Allianz Repository Standards Compliance Report · test-org · 2026-11'),
+  '2026-11/allianz-data.json': '{"framework":{"url":"https://example.org/allianz"}}',
+  '2026-11/other-report.html': html('Other Guideline Compliance Report · test-org · 2026-11'),
+  '2026-11/other-data.json': '{}',
   '2026-11/notes.txt': 'not a report',
   '2026-09/only-data.json': '{}',
   'drafts/x-report.html': html('Not a month folder'),
@@ -41,6 +41,11 @@ const FILES = {
 describe('titleOf', () => {
   it('takes the name before organisation and month and unescapes it', () => {
     assert.equal(titleOf(html('Q&amp;A &lt;Report&gt; &quot;x&quot; &#39;y&#39; · org · 2026-11')), `Q&A <Report> "x" 'y'`);
+  });
+
+  it('drops the suffix Compliance Report', () => {
+    assert.equal(titleOf(html('Allianz Repository Standards Compliance Report · org · 2026-11')), 'Allianz Repository Standards');
+    assert.equal(titleOf(html('Community Report · org · 2026-11')), 'Community Report');
   });
 
   it('is null without a title', () => {
@@ -56,11 +61,11 @@ describe('scanReports', () => {
       {
         month: '2026-11',
         reports: [
-          { key: 'bsi', title: 'BSI TR-03185 Chapter 2 Compliance Report', html: 'bsi-report.html', url: 'https://example.org/bsi' },
-          { key: 'scorecard', title: 'OpenSSF Scorecard Report', html: 'scorecard-report.html' },
+          { key: 'allianz', title: 'Allianz Repository Standards', html: 'allianz-report.html' },
+          { key: 'other', title: 'Other Guideline', html: 'other-report.html' },
         ],
       },
-      { month: '2026-10', reports: [{ key: 'bsi', title: 'BSI TR-03185 Chapter 2 Compliance Report', html: 'bsi-report.html' }] },
+      { month: '2026-10', reports: [{ key: 'allianz', title: 'Allianz Repository Standards', html: 'allianz-report.html' }] },
     ]);
   });
 
@@ -81,13 +86,13 @@ describe('scanReports', () => {
 
 describe('previewUrl', () => {
   it('links the blob on main of the default repository through htmlpreview', () => {
-    assert.equal(previewUrl('2026-11', 'bsi-report.html'), 'https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/bsi-report.html');
+    assert.equal(previewUrl('2026-11', 'allianz-report.html'), 'https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/allianz-report.html');
   });
 
   it('uses the repository of the workflow run', () => {
     assert.equal(
-      previewUrl('2026-11', 'bsi-report.html', { GITHUB_REPOSITORY: 'acme/ospo', GITHUB_SERVER_URL: 'https://github.example' }),
-      'https://htmlpreview.github.io/?https://github.example/acme/ospo/blob/main/reports/2026-11/bsi-report.html',
+      previewUrl('2026-11', 'allianz-report.html', { GITHUB_REPOSITORY: 'acme/ospo', GITHUB_SERVER_URL: 'https://github.example' }),
+      'https://htmlpreview.github.io/?https://github.example/acme/ospo/blob/main/reports/2026-11/allianz-report.html',
     );
   });
 });
@@ -101,67 +106,9 @@ describe('renderIndex', () => {
 
   it('has no earlier months section for a single month and escapes titles', () => {
     const text = renderIndex([{ month: '2026-11', reports: [{ key: 'x', title: 'A [b] *c*', html: 'x-report.html' }] }], { org });
-    assert.ok(text.includes('| A \\[b\\] \\*c\\* | [Report](https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/x-report.html) |\n'));
+    assert.ok(text.includes('## Compliance Reports: 2026-11\n\n- [A \\[b\\] \\*c\\*](https://htmlpreview.github.io/?https://github.com/allianz/ospo/blob/main/reports/2026-11/x-report.html)\n'));
+    assert.doesNotMatch(text, /\| /);
     assert.doesNotMatch(text, /## Earlier months/);
-  });
-});
-
-describe('guideline links', () => {
-  it('ignores data files that are unreadable or have no framework url', async () => {
-    const dir = await reportsFolder('urls', {
-      '2026-11/a-report.html': html('A · o · 2026-11'), '2026-11/a-data.json': 'not json',
-      '2026-11/b-report.html': html('B · o · 2026-11'), '2026-11/b-data.json': '{"framework":{}}',
-      '2026-11/c-report.html': html('C · o · 2026-11'),
-    });
-    const [{ reports }] = await scanReports(dir);
-    assert.ok(reports.every(r => !('url' in r)));
-  });
-
-  it('links the guideline on the left, the scorecard to the OpenSSF project', () => {
-    const reports = [
-      { key: 'bsi', title: 'BSI Compliance Report', html: 'bsi-report.html', url: 'https://example.org/bsi' },
-      { key: 'scorecard', title: 'OpenSSF Scorecard Report', html: 'scorecard-report.html' },
-      { key: 'x', title: 'X Compliance Report', html: 'x-report.html' },
-    ];
-    const text = renderIndex([{ month: '2026-11', reports }], { org });
-    assert.match(text, /\| \[BSI\]\(https:\/\/example\.org\/bsi\) \| /);
-    assert.ok(text.includes(`| [OpenSSF Scorecard](${SCORECARD_URL}) | `));
-    assert.match(text, /\| X \| /);
-  });
-});
-
-describe('describeReport', () => {
-  it('splits compliance reports into guideline and kind', () => {
-    assert.deepEqual(describeReport({ key: 'bsi', title: 'BSI TR-03185 Chapter 2 Compliance Report' }), { guideline: 'BSI TR-03185 Chapter 2', kind: 'Compliance Report' });
-  });
-
-  it('calls the scorecard report a security score report', () => {
-    assert.deepEqual(describeReport({ key: 'scorecard', title: 'OpenSSF Scorecard Report' }), { guideline: 'OpenSSF Scorecard', kind: 'Security Score Report' });
-  });
-
-  it('keeps a title without report suffix', () => {
-    assert.deepEqual(describeReport({ key: 'x', title: 'Other' }), { guideline: 'Other', kind: 'Report' });
-  });
-});
-
-describe('renderIndex table', () => {
-  it('puts the community report outside the table', () => {
-    const reports = [
-      { key: 'bsi', title: 'BSI Compliance Report', html: 'bsi-report.html' },
-      { key: 'community', title: 'Open Source Community Report', html: 'community-report.html' },
-    ];
-    const text = renderIndex([{ month: '2026-11', reports }], { org });
-    assert.match(text, /\| BSI \| \[Compliance Report\]\(.*bsi-report\.html\) \|\n/);
-    assert.doesNotMatch(text, /\| .*community/);
-    assert.match(text, /## Compliance Reports: 2026-11\n/);
-    assert.match(text, /## Other Reports: 2026-11\n\n\[Open Source Community Report\]\(.*community-report\.html\)\n/);
-  });
-
-  it('shows only the community report without a table', () => {
-    const text = renderIndex([{ month: '2026-11', reports: [{ key: 'community', title: 'C', html: 'community-report.html' }] }], { org });
-    assert.doesNotMatch(text, /Guideline/);
-    assert.doesNotMatch(text, /## Compliance Reports/);
-    assert.match(text, /## Other Reports: 2026-11/);
   });
 });
 

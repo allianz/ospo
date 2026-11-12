@@ -3,7 +3,7 @@
 #
 # This file configures one report of the compliance_report script. It maps
 # the checks of the tool files (results/*.json) to the requirements AZ.01 to
-# AZ.13 of the Allianz guideline "Mandatory Repository Configuration" and
+# AZ.14 of the Allianz guideline "Mandatory Repository Configuration" and
 # holds the requirement texts shown in the report. The requirement mapping
 # exists only here: the checking scripts know nothing about requirement IDs.
 # See scripts/spec/compliance_report_spec.md.
@@ -41,7 +41,7 @@ key: allianz
 
 framework:
   id: allianz-mandatory-repo-config
-  title: Allianz Mandatory Repository Configuration
+  title: Allianz Repository Standards
   version: "2026-11-10"
   url: https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repository+Configuration
   text_note: Summary of each requirement of the guideline page.
@@ -52,6 +52,7 @@ framework:
 
 inputs:
   - { file: lint_repos.json, script: scripts/lint_repos.js }
+  - { file: license_scan.json, script: scripts/license_scan.js }
 
 notes: config/report/compliance_report_allianz_notes.md
 
@@ -202,12 +203,24 @@ requirements:
     checks: [lint/authors]
 
   AZ.13:
-    title: Third-party dependencies under permissive licenses
+    title: No copyleft dependencies
+    level: MUST
+    chapter: "2.3"
+    text:
+      - { level: MUST, text: "Third-party dependencies MUST NOT be under a copyleft license (GPL, AGPL)." }
+    implementation: >-
+      The license scan bot reads the SBOM of every repository (GitHub dependency graph) once a week and opens
+      the issue "Dependency License Violation" in any repository with a dependency under a license of its
+      deny list, until the dependency is replaced or removed. Dependencies without license information are
+      ignored.
+    checks: [license/denied-licenses]
+
+  AZ.14:
+    title: Third-party licenses in binary distributions
     level: MUST
     chapter: "2.3"
     implemented: false
     text:
-      - { level: MUST, text: "Third-party dependencies MUST be under a permissive license, e.g. MIT, Apache-2.0 or BSD; copyleft licenses (GPL, AGPL, LGPL) are not permitted." }
       - { level: MUST, text: "Binary distributions that bundle dependencies MUST include a THIRD_PARTY_LICENSES.md covering all bundled dependencies." }
     implementation: >-
       Not checked yet.
