@@ -1,18 +1,18 @@
 {
   "report_id": "OSPO-CM-2026-11",
-  "run_at": "2026-11-10T21:42:37Z",
+  "run_at": "2026-11-12T10:13:54Z",
   "org": "allianz",
-  "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
+  "ospo_sha": "98b1495f05b7ec0dc538fd23d15865d8e496358b",
   "run_url": null,
   "previous_report": null,
   "input": {
     "file": "community.json",
     "script": "scripts/community_metrics.js",
     "status": "ok",
-    "sha256": "28a9f655dbc0075fb38576a49e963ea88068842f45043e21ce0781f03ffacb2b",
+    "sha256": "d2d999e14bba90fa628036e002618fb3f8957e01caafd01cd06d0c74042a2931",
     "tool": "community_metrics",
-    "run_at": "2026-11-10T21:42:31Z",
-    "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
+    "run_at": "2026-11-12T10:13:48Z",
+    "ospo_sha": "98b1495f05b7ec0dc538fd23d15865d8e496358b",
     "config_file": "config/report/community_metrics.yaml",
     "config_sha256": "58328fc0a93b43097c2b87e0f4149df1a0b2ebe0b1ae277560ed64857309b3aa",
     "run_url": null,
@@ -87,10 +87,10 @@
     "releases": 4,
     "release_downloads": 0,
     "traffic": {
-      "views": 1161,
-      "visitors": 292,
-      "clones": 1433,
-      "cloners": 431
+      "views": 1141,
+      "visitors": 286,
+      "clones": 2288,
+      "cloners": 518
     }
   },
   "growth": {
@@ -100,22 +100,22 @@
       "six_months_ago": null
     },
     "visitors": {
-      "value": 292,
+      "value": 286,
       "previous": null,
       "six_months_ago": null
     },
     "cloners": {
-      "value": 431,
+      "value": 518,
       "previous": null,
       "six_months_ago": null
     },
     "views": {
-      "value": 1161,
+      "value": 1141,
       "previous": null,
       "six_months_ago": null
     },
     "clones": {
-      "value": 1433,
+      "value": 2288,
       "previous": null,
       "six_months_ago": null
     },
@@ -199,12 +199,12 @@
       },
       "release_downloads": 0,
       "traffic": {
-        "views": 16,
-        "visitors": 8,
-        "clones": 15,
-        "cloners": 11,
-        "from": "2026-10-27",
-        "to": "2026-11-09"
+        "views": 18,
+        "visitors": 6,
+        "clones": 17,
+        "cloners": 13,
+        "from": "2026-10-29",
+        "to": "2026-11-11"
       }
     },
     {
@@ -264,19 +264,19 @@
       },
       "release_downloads": 0,
       "traffic": {
-        "views": 503,
-        "visitors": 206,
-        "clones": 777,
-        "cloners": 227,
-        "from": "2026-10-27",
-        "to": "2026-11-09"
+        "views": 509,
+        "visitors": 212,
+        "clones": 1565,
+        "cloners": 294,
+        "from": "2026-10-29",
+        "to": "2026-11-11"
       }
     },
     {
       "repo": "ospo",
       "description": "Developer guides for the Allianz organization on GitHub",
       "created_at": "2023-07-27T09:38:10Z",
-      "pushed_at": "2026-11-09T10:35:33Z",
+      "pushed_at": "2026-11-12T10:11:21Z",
       "stars": 2,
       "forks": 3,
       "new_project": false,
@@ -325,12 +325,12 @@
       },
       "release_downloads": 0,
       "traffic": {
-        "views": 200,
-        "visitors": 32,
-        "clones": 304,
-        "cloners": 90,
-        "from": "2026-10-27",
-        "to": "2026-11-09"
+        "views": 217,
+        "visitors": 33,
+        "clones": 357,
+        "cloners": 100,
+        "from": "2026-10-29",
+        "to": "2026-11-11"
       }
     },
     {
@@ -388,12 +388,12 @@
       },
       "release_downloads": 0,
       "traffic": {
-        "views": 442,
-        "visitors": 46,
-        "clones": 337,
-        "cloners": 103,
-        "from": "2026-10-27",
-        "to": "2026-11-09"
+        "views": 397,
+        "visitors": 35,
+        "clones": 349,
+        "cloners": 111,
+        "from": "2026-10-29",
+        "to": "2026-11-11"
       }
     }
   ],
@@ -460,19 +460,19 @@
         "releases": 4,
         "release_downloads": 0,
         "traffic": {
-          "views": 1161,
-          "visitors": 292,
-          "clones": 1433,
-          "cloners": 431
+          "views": 1141,
+          "visitors": 286,
+          "clones": 2288,
+          "cloners": 518
         }
       },
       "repositories": {
         "geofeed": {
           "traffic": {
-            "views": 16,
-            "visitors": 8,
-            "clones": 15,
-            "cloners": 11
+            "views": 18,
+            "visitors": 6,
+            "clones": 17,
+            "cloners": 13
           },
           "stars": 0,
           "forks": 3,
@@ -490,10 +490,10 @@
         },
         "ng-aquila": {
           "traffic": {
-            "views": 503,
-            "visitors": 206,
-            "clones": 777,
-            "cloners": 227
+            "views": 509,
+            "visitors": 212,
+            "clones": 1565,
+            "cloners": 294
           },
           "stars": 250,
           "forks": 50,
@@ -511,10 +511,10 @@
         },
         "ospo": {
           "traffic": {
-            "views": 200,
-            "visitors": 32,
-            "clones": 304,
-            "cloners": 90
+            "views": 217,
+            "visitors": 33,
+            "clones": 357,
+            "cloners": 100
           },
           "stars": 2,
           "forks": 3,
@@ -532,10 +532,10 @@
         },
         "yukimi": {
           "traffic": {
-            "views": 442,
-            "visitors": 46,
-            "clones": 337,
-            "cloners": 103
+            "views": 397,
+            "visitors": 35,
+            "clones": 349,
+            "cloners": 111
           },
           "stars": 5,
           "forks": 3,

@@ -1,18 +1,18 @@
 {
   "report_id": "OSPO-SC-2026-11",
-  "run_at": "2026-11-10T21:42:37Z",
+  "run_at": "2026-11-12T10:13:54Z",
   "org": "allianz",
-  "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
+  "ospo_sha": "98b1495f05b7ec0dc538fd23d15865d8e496358b",
   "run_url": null,
   "previous_report": null,
   "input": {
     "file": "scorecard.json",
     "script": "scripts/scorecard_check.js",
     "status": "ok",
-    "sha256": "eb7dff90c62560b283f7c47116aadb8ebadb60b414dc37c5fc337957674060c5",
+    "sha256": "8a2e92b32f27cf12555a446501e2f2cf1ab779ea198a63a8820e75cce0338314",
     "tool": "scorecard_check",
-    "run_at": "2026-11-10T21:41:51Z",
-    "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
+    "run_at": "2026-11-12T10:13:06Z",
+    "ospo_sha": "98b1495f05b7ec0dc538fd23d15865d8e496358b",
     "config_file": "config/report/scorecard_check.yaml",
     "config_sha256": "2fca157fc18af460b9bc858300898f3c7f58fdcfb39c855fe7dd4558ccc0ec36",
     "run_url": null,
@@ -71,31 +71,31 @@
     {
       "repo": ".github",
       "commit": "42baef0d845113d6b8905394e48cbbbb4de17184",
-      "date": "2026-11-10T21:41:53Z",
+      "date": "2026-11-12T10:13:08Z",
       "score": 4.1
     },
     {
       "repo": "geofeed",
       "commit": "8b4804494146bdd6b0ad1e31b1db4c0adef5a6a1",
-      "date": "2026-11-10T21:41:53Z",
+      "date": "2026-11-12T10:13:08Z",
       "score": 4.3
     },
     {
       "repo": "ng-aquila",
       "commit": "f995f66ab5b21fb9871929ea8e3ef2730347e88a",
-      "date": "2026-11-10T21:41:53Z",
+      "date": "2026-11-12T10:13:08Z",
       "score": 3.9
     },
     {
       "repo": "ospo",
       "commit": "30b7fe068f2274f6a42e62f2c6783e8da2371514",
-      "date": "2026-11-10T21:42:00Z",
+      "date": "2026-11-12T10:13:16Z",
       "score": 7.4
     },
     {
       "repo": "yukimi",
       "commit": "fac40d6d8ec407a1f09295782502ae6f0bc2ea80",
-      "date": "2026-11-10T21:42:07Z",
+      "date": "2026-11-12T10:13:23Z",
       "score": 9
     }
   ],

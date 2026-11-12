@@ -1,8 +1,8 @@
 {
   "report_id": "OSPO-CR-ALLIANZ-2026-11",
-  "run_at": "2026-11-10T21:42:37Z",
+  "run_at": "2026-11-12T10:13:53Z",
   "org": "allianz",
-  "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
+  "ospo_sha": "98b1495f05b7ec0dc538fd23d15865d8e496358b",
   "run_url": null,
   "report_config": "config/report/compliance_report_allianz.yaml",
   "config_sha256": "95799426fc794848b34293517f28bf91dbbe7266ddbb5a952c648c74f3971b8e",
@@ -24,10 +24,10 @@
       "file": "lint_repos.json",
       "script": "scripts/lint_repos.js",
       "status": "ok",
-      "sha256": "f83454de5cf517857f25bb4bd325c0415eb58375644c40fedfdae1f41a70296c",
+      "sha256": "917088b318b7c1dd52da0b49c1901533dcf4576e301b2e6bb9bc48278230cc35",
       "tool": "lint_repos",
-      "run_at": "2026-11-10T21:41:35Z",
-      "ospo_sha": "c1f967e3b738e7fa51f740b66eaa5343b768ed38",
+      "run_at": "2026-11-12T10:12:49Z",
+      "ospo_sha": "98b1495f05b7ec0dc538fd23d15865d8e496358b",
       "config_file": "config/lint_repos.yaml",
       "config_sha256": "06467dba4891d1e70926913ce148b2210f487d1766218fc4f10883cebf46cd76",
       "run_url": null,
@@ -440,84 +440,84 @@
     "lint/authors": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#authors-file",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#authors-file",
         "short": "A file AUTHORS* exists in .."
       }
     },
     "lint/contributing": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#contributing-file",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#contributing-file",
         "short": "A file CONTRIBUTING* exists in ., .github, docs."
       }
     },
     "lint/description": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#repository-description",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#repository-description",
         "short": "The repository description is set and has 30 to 150 characters."
       }
     },
     "lint/development": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#development-file",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#development-file",
         "short": "A file DEVELOPMENT* or DEVELOPER* exists in ., docs, .github, with at least 300 characters."
       }
     },
     "lint/license": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#license-file",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#license-file",
         "short": "A file LICENSE* exists in .."
       }
     },
     "lint/license-type": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#license-type",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#license-type",
         "short": "The license GitHub detects is one of Apache-2.0, MIT, CC-BY-4.0, CC0-1.0. A missing or unidentified license (NOASSERTION) fails."
       }
     },
     "lint/no-code-of-conduct": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#code-of-conduct",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#code-of-conduct",
         "short": "No file CODE_OF_CONDUCT* exists in ., .github, docs."
       }
     },
     "lint/no-maintainers": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#maintainers-file",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#maintainers-file",
         "short": "No file MAINTAINERS* exists in ., .github, docs."
       }
     },
     "lint/no-security": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#security-policy",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#security-policy",
         "short": "No file SECURITY* exists in ., .github, docs."
       }
     },
     "lint/notice": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#notice-file",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#notice-file",
         "short": "A file NOTICE* exists in .."
       }
     },
     "lint/readme": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#readme-file",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#readme-file",
         "short": "A file README* exists in ., with at least 300 characters."
       }
     },
     "lint/topics": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/c1f967e3b738e7fa51f740b66eaa5343b768ed38/scripts/spec/lint_repos_spec.md#repository-topics",
+        "url": "https://github.com/allianz/ospo/blob/98b1495f05b7ec0dc538fd23d15865d8e496358b/scripts/spec/lint_repos_spec.md#repository-topics",
         "short": "The repository has 1 to 5 topics, all from the approved topic list."
       }
     }
