@@ -6,6 +6,7 @@ import path from 'node:path';
 import yaml from 'js-yaml';
 
 import {
+  NOT_MET_MAX_COVERAGE,
   NotesError,
   STATUSES,
   assessRequirements,
@@ -451,6 +452,54 @@ describe('assessRequirements and computeSummary', () => {
     const [r] = assessRequirements([{ id: 'X.1', level: 'SHOULD', checks: ['x'] }], [{ repo: 'a', check: 'x', result: 'na' }], { active: ['a'] });
     assert.equal(r.status, 'met');
     assert.equal(r.coverage, null);
+  });
+
+  it('is not met at 25% coverage or less, and met with findings above', () => {
+    const outcomes = (pass, fail) => [
+      ...Array.from({ length: pass }, (_, i) => ({ repo: `p${i}`, check: 'x', result: 'pass' })),
+      ...Array.from({ length: fail }, (_, i) => ({ repo: `f${i}`, check: 'x', result: 'fail' })),
+    ];
+    const statusOf = (pass, fail) => {
+      const results = outcomes(pass, fail);
+      const [r] = assessRequirements([{ id: 'X.1', level: 'MUST', checks: ['x'] }], results, { active: [...new Set(results.map(row => row.repo))] });
+      return [r.coverage, r.status];
+    };
+    assert.equal(NOT_MET_MAX_COVERAGE, 25);
+    assert.deepEqual(statusOf(1, 3), [25, 'not-met']);
+    assert.deepEqual(statusOf(1, 4), [20, 'not-met']);
+    assert.deepEqual(statusOf(2, 5), [28.6, 'met-findings']);
+    assert.deepEqual(statusOf(3, 1), [75, 'met-findings']);
+    assert.deepEqual(statusOf(4, 0), [100, 'met']);
+  });
+
+  it('names the not-met limit in the status legend of the template', async () => {
+    const template = await readFile(path.join(repoRoot, 'scripts/templates/compliance_report.html'), 'utf8');
+    assert.ok(template.includes(`['not-met', '${NOT_MET_MAX_COVERAGE}% or less of the applicable repositories pass`));
+    assert.ok(template.includes(`more than ${NOT_MET_MAX_COVERAGE}% pass.']`));
+  });
+
+  it('is not met when no applicable repository passes, also next to not applicable ones', () => {
+    const results = [
+      { repo: 'a', check: 'x', result: 'fail' }, { repo: 'b', check: 'x', result: 'fail' },
+      { repo: 'a', check: 'y', result: 'na' }, { repo: 'b', check: 'y', result: 'fail' },
+      { repo: 'a', check: 'z', result: 'pass' }, { repo: 'b', check: 'z', result: 'fail' },
+    ];
+    const reqs = [
+      { id: 'X.1', level: 'MUST', checks: ['x'] },
+      { id: 'X.2', level: 'SHOULD', checks: ['y'] },
+      { id: 'X.3', level: 'MUST', checks: ['z'] },
+      { id: 'X.4', level: 'MUST', checks: [] },
+    ];
+    const scope = { active: ['a', 'b'] };
+    const assessedX = assessRequirements(reqs, results, scope);
+    assert.deepEqual(assessedX.map(r => [r.id, r.status, r.coverage]), [
+      ['X.1', 'not-met', 0], ['X.2', 'not-met', 0], ['X.3', 'met-findings', 50], ['X.4', 'not-met', null],
+    ]);
+    const summaryX = computeSummary(assessedX, results, scope);
+    assert.equal(summaryX.checks_evaluated, 5);   // the checks of a not-met requirement count
+    assert.equal(summaryX.checks_passed, 1);
+    assert.equal(summaryX.must_met, 1);
+    assert.equal(summaryX.failing_repositories, 2);
   });
 
   it('summarises the checks of assessed requirements, counting each result once', () => {

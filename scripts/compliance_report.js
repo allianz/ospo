@@ -25,9 +25,12 @@ export { DEFAULT_REPORTS_PATH, REPORTS_DIR, dataPath, mergeHistory, readPrevious
 
 export const TOOL = 'compliance_report';
 const LEVELS = ['MUST', 'SHOULD', 'MAY'];
+/** A requirement with findings is not met when at most this share (percent) of its applicable repositories pass. */
+export const NOT_MET_MAX_COVERAGE = 25;
 export const STATUSES = ['met', 'met-findings', 'not-met', 'no-data', 'not-assessed', 'not-implemented', 'optional'];
-/** Statuses whose checks count in the summary and the history. */
-const ASSESSED = new Set(['met', 'met-findings', 'no-data']);
+/** Statuses whose checks count in the summary and the history (`not-met` only with checks). */
+const ASSESSED = new Set(['met', 'met-findings', 'not-met', 'no-data']);
+const isCounted = requirement => ASSESSED.has(requirement.status) && requirement.repositories !== null;
 /** Skip reasons that mean the repository is archived (out of scope). */
 export const ARCHIVED_REASONS = new Set(['archived', 'archived in this run']);
 export const EXCLUDED_REASON = 'excluded_repos';
@@ -223,7 +226,7 @@ export function assessRequirements(requirements, results, scope) {
     repositories.applicable = repositories.passing + repositories.failing;
     let status;
     if (level === 'MAY') status = 'optional';
-    else if (repositories.failing > 0) status = 'met-findings';
+    else if (repositories.failing > 0) status = repositories.passing * 100 <= NOT_MET_MAX_COVERAGE * repositories.applicable ? 'not-met' : 'met-findings';
     else if (repositories.passing + repositories.not_applicable === 0) status = 'no-data';
     else status = 'met';
     return { ...requirement, status, repositories, coverage: percent(repositories.passing, repositories.applicable) };
@@ -232,14 +235,14 @@ export function assessRequirements(requirements, results, scope) {
 
 /** Summary over the assessed requirements: checks, compliance %, statuses, repositories with findings. */
 export function computeSummary(assessed, results, scope) {
-  const counted = mappedChecks(assessed.filter(r => ASSESSED.has(r.status)));
+  const counted = mappedChecks(assessed.filter(isCounted));
   const rows = results.filter(row => counted.has(row.check));
   const evaluated = rows.filter(row => row.result !== 'na').length;
   const passed = rows.filter(row => row.result === 'pass').length;
 
   const index = indexResults(results);
   const failing = scope.active.filter(repo =>
-    assessed.some(r => ASSESSED.has(r.status) && repositoryOutcome(repo, r.checks, index) === 'failing'),
+    assessed.some(r => isCounted(r) && repositoryOutcome(repo, r.checks, index) === 'failing'),
   );
   const musts = assessed.filter(r => r.level === 'MUST' && r.status !== 'not-implemented');
   return {
@@ -261,7 +264,7 @@ export function historyEntry(month, summary, assessed) {
     month,
     compliance_pct: summary.compliance_pct,
     failing_repositories: summary.failing_repositories,
-    coverage: Object.fromEntries(assessed.filter(r => ASSESSED.has(r.status)).map(r => [r.id, r.coverage])),
+    coverage: Object.fromEntries(assessed.filter(isCounted).map(r => [r.id, r.coverage])),
   };
 }
 

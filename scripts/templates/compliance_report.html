@@ -997,8 +997,8 @@ function repoListTag(text, filter) { const a = repoListLink(text, filter); a.cla
 
   const DEFS = [ // fixed template text (status logic of compliance_report)
     ['met', 'All applicable repositories pass.'],
-    ['met-findings', 'Some applicable repositories fail.'],
-    ['not-met', 'No check covers a MUST requirement.'],
+    ['met-findings', 'Some applicable repositories fail, more than 25% pass.'],
+    ['not-met', '25% or less of the applicable repositories pass, or no check covers a MUST requirement.'],
     ['no-data', 'None of the checks has a result (tool file missing or invalid, or tool errors). Not passed.'],
     ['not-assessed', 'SHOULD or MAY requirement that no check can verify. Not counted.'],
     ['optional', 'MAY requirement. Reported for information only.'],

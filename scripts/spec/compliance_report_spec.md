@@ -201,17 +201,18 @@ The status, first matching row:
 | `not-met` | a MUST requirement with `checks: []` |
 | `not-assessed` | a SHOULD or MAY requirement with `checks: []` |
 | `optional` | a MAY requirement with checks; reported for information, not counted |
-| `met-findings` | at least one repository is `failing` |
+| `not-met` | at least one repository is `failing` and `coverage` is 25% or less (`NOT_MET_MAX_COVERAGE`, compared before rounding): too few applicable repositories meet the requirement |
+| `met-findings` | at least one repository is `failing` and `coverage` is above 25% |
 | `no-data` | no repository is `passing` or `not_applicable`: none of the checks has data |
 | `met` | otherwise, also when all repositories are `not_applicable` |
 
 Requirements without checks have `repositories: null` and `coverage: null`. `implemented` itself is not written to `data.json`; the status `not-implemented` records it.
 
-`not-met` and `not-implemented` differ in what they say: `not-met` states that no check can cover a MUST requirement, so the organisation does not meet it. `not-implemented` states that a check is planned but not built yet (Allianz report, e.g. AZ.10 license headers).
+`not-met` and `not-implemented` differ in what they say: `not-met` states that the organisation does not meet the requirement, either because 25% or less of the applicable repositories pass its checks or because no check can cover a MUST requirement. `not-implemented` states that a check is planned but not built yet (Allianz report, e.g. AZ.10 license headers).
 
 ### Summary
 
-Counted over the checks of the requirements with status `met`, `met-findings` or `no-data`, each repository × check result once (a check mapped to two requirements counts once):
+Counted over the checks of the requirements with status `met`, `met-findings`, `not-met` (with checks) or `no-data`, each repository × check result once (a check mapped to two requirements counts once):
 
 | Field | Content |
 |---|---|
