@@ -4,7 +4,7 @@
 // report configuration: merges results, maps checks to requirements, computes statuses, carries
 // the trend history forward. Reads JSON files only and never writes to GitHub.
 // Writes <reports>/<YYYY-MM>/<key>-data.json and the HTML report <key>-report.html rendered from it.
-// See spec/compliance_report_spec.md.
+// See spec/reports_compliance_spec.md.
 
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';

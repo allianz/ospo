@@ -425,7 +425,7 @@
   <div class="integrity" id="integrity"></div>
 </div>
 
-<!-- data.json of this report, embedded by scripts/compliance_report.js (lib/report_html.js) -->
+<!-- data.json of this report, embedded by scripts/reports_compliance.js (lib/report_html.js) -->
 <script type="application/json" id="data.json">__DATA_JSON__</script>
 <script>
 /* Render guard: an error while rendering is shown on the page instead of leaving it blank. */
@@ -458,7 +458,7 @@ const REPO_RESULTS = RESULTS.filter(r => r.repo);
 /* The tool that defines a check (data.json → catalogue[id].tool): its script in the ospo repository, pinned to the commit of this run */
 function sourceNode(check) {
   const tool = DATA.catalogue[check]?.tool;
-  const inp = tool === 'compliance_report' ? { script: 'scripts/compliance_report.js' } : INPUT_OF[tool];   // own checks of compliance_report
+  const inp = tool === 'compliance_report' ? { script: 'scripts/reports_compliance.js' } : INPUT_OF[tool];   // own checks of compliance_report
   if (!inp?.script) return h('span', { class: 'muted', text: '–' });
   return h('span', {}, h('a', { href: `https://github.com/${ORG}/ospo/blob/${OSPO_REF}/${inp.script}` }, h('code', { style: 'color:inherit', text: inp.script.split('/').pop() })));
 }

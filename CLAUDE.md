@@ -34,11 +34,11 @@ node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
-node scripts/compliance_report.js --org <org> --config <report.yaml> --dir <dir> [--reports <dir>] [--debug]
+node scripts/reports_compliance.js --org <org> --config <report.yaml> --dir <dir> [--reports <dir>] [--debug]
 node scripts/reports_index.js --org <org> [--reports <dir>] [--debug]
 ```
 
-All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. Only `lint_repos.json` and `license_scan.json` are read by a report today (the Allianz report). `compliance_report.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). The only report configuration is `config/report/allianz_report.yaml`. `reports_index.js` writes `<reports>/README.md`, the index of all month folders: the reports of the latest month and one line per earlier month, each HTML report linked through `htmlpreview.github.io` on `main` (GitHub shows `.html` as source). A Markdown report is not implemented yet.
+All scripts support `--dry-run` for safe validation and `--debug` for verbose output. The three checking scripts also write their results as JSON with `--json <file>` (common format of the compliance report, built with `lib/json_output.js`); see the JSON output section of each spec. Only `lint_repos.json` and `license_scan.json` are read by a report today (the Allianz report). `reports_compliance.js` reads only the tool files in `--dir` (and the latest earlier `<reports>/<YYYY-MM>/<key>-data.json` for the history; no git) and writes `<reports>/<YYYY-MM>/<key>-data.json` plus the self-contained HTML report `<key>-report.html` (default `reports/`, committed by PR; the tool files in `results/` are not). The only report configuration is `config/report/allianz_report.yaml`. `reports_index.js` writes `<reports>/README.md`, the index of all month folders: the reports of the latest month and one line per earlier month, each HTML report linked through `htmlpreview.github.io` on `main` (GitHub shows `.html` as source). A Markdown report is not implemented yet.
 
 ### Required Tools
 
@@ -53,7 +53,7 @@ Detailed specs for each script — behaviour, config schema, and output format:
 - [`scripts/spec/lint_repos_spec.md`](scripts/spec/lint_repos_spec.md)
 - [`scripts/spec/archive_repos_spec.md`](scripts/spec/archive_repos_spec.md)
 - [`scripts/spec/license_scan_spec.md`](scripts/spec/license_scan_spec.md)
-- [`scripts/spec/compliance_report_spec.md`](scripts/spec/compliance_report_spec.md)
+- [`scripts/spec/reports_compliance_spec.md`](scripts/spec/reports_compliance_spec.md)
 - [`scripts/spec/reports_index_spec.md`](scripts/spec/reports_index_spec.md)
 
 ## Architecture
@@ -64,7 +64,7 @@ Six JavaScript (ESM) scripts, each driven by a YAML config file (except `reports
 2. **`scripts/lint_repos.js`** — Enforces repo compliance (description, topics, license, README, CONTRIBUTING). Reads `config/lint_repos.yaml`.
 3. **`scripts/archive_repos.js`** — Archives stale repos after a grace period with warning issues. Reads `config/archive_repos.yaml`.
 4. **`scripts/license_scan.js`** — Scans dependency licenses via the GitHub SBOM API and opens issues for denied licenses. Reads `config/license_scan.yaml`.
-5. **`scripts/compliance_report.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/report/<key>_report.yaml`, which holds the requirement texts and the only check → requirement mapping; today only `allianz`, the Allianz Repository Standards, fed by `lint_repos.json` and `license_scan.json`): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest earlier month folder in the local `reports/`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
+5. **`scripts/reports_compliance.js`** — Aggregates the tool files of one run into `<key>-data.json` per report configuration (`config/report/<key>_report.yaml`, which holds the requirement texts and the only check → requirement mapping; today only `allianz`, the Allianz Repository Standards, fed by `lint_repos.json` and `license_scan.json`): validates and merges them, adds `fail` for repositories a tool excluded, computes statuses, coverage and summary, carries `history` forward from the latest earlier month folder in the local `reports/`, reads the notes file, and renders `<key>-report.html` (template `scripts/templates/compliance_report.html`, which renders itself in the browser from the embedded `data.json`). No GitHub calls.
 6. **`scripts/reports_index.js`** — Regenerates `reports/README.md`, the index of the reports folder: the reports of the latest month (name from the HTML `<title>`, link via `htmlpreview.github.io` to the file on `main`) and one line per earlier month. Run last by `make create_reports`, so the index is part of the report PR. No config, no GitHub calls.
 
 ### Shared libraries (`scripts/lib/`)
@@ -77,7 +77,7 @@ Six JavaScript (ESM) scripts, each driven by a YAML config file (except `reports
 - `logger.js`, `report.js` — output (`info`, `debug`, `step`; headings, skipped lists, dry-run issue summary)
 - `json_output.js` — the common JSON tool file of `--json`: header (`buildHeader`), catalogue entries linked to spec headings (`specCatalogue`), result rows (`checkResult`), `writeJsonReport`; helpers `sha256`, `blobUrl`, `repoRelative`, `isoSeconds`
 - `report_html.js` — `renderHtml(data, template, title?)`: embeds `data.json` (escaped) and the title into a template (`scripts/templates/compliance_report.html`)
-- `report_files.js` — used by `compliance_report.js`: `readToolFile`/`validateToolFile` (tool file status `ok`/`missing`/`invalid`), `readPreviousReport`, `mergeHistory`, `DEFAULT_REPORTS_PATH`
+- `report_files.js` — used by `reports_compliance.js`: `readToolFile`/`validateToolFile` (tool file status `ok`/`missing`/`invalid`), `readPreviousReport`, `mergeHistory`, `DEFAULT_REPORTS_PATH`
 - `repos.js`, `dates.js`, `concurrency.js` — `partitionRepos`, `parseRelativeDate`, `mapWithConcurrency`
 
 ### Configuration

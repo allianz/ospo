@@ -261,7 +261,7 @@ When `--dry-run` is active and there are pending actions, a summary block is app
 
 ## JSON output
 
-With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([Tool file format](compliance_report_spec.md#tool-file-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([Tool file format](reports_compliance_spec.md#tool-file-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
 
 The file has these keys:
 

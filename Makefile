@@ -66,8 +66,8 @@ create_reports: check-token
 	-node $(SCRIPTS)/lint_repos.js --org $(ORG) --config $(CONFIG_DIR)/lint_repos.yaml --dry-run --json $(JSON_DIR)/lint_repos.json
 	-node $(SCRIPTS)/license_scan.js --org $(ORG) --config $(CONFIG_DIR)/license_scan.yaml --dry-run --json $(JSON_DIR)/license_scan.json
 	@for c in $(REPORT_CONFIGS); do \
-	  echo "node $(SCRIPTS)/compliance_report.js --org $(ORG) --config $$c --dir $(JSON_DIR) --reports $(REPORTS_DIR)"; \
-	  node $(SCRIPTS)/compliance_report.js --org $(ORG) --config $$c --dir $(JSON_DIR) --reports $(REPORTS_DIR) || exit 1; \
+	  echo "node $(SCRIPTS)/reports_compliance.js --org $(ORG) --config $$c --dir $(JSON_DIR) --reports $(REPORTS_DIR)"; \
+	  node $(SCRIPTS)/reports_compliance.js --org $(ORG) --config $$c --dir $(JSON_DIR) --reports $(REPORTS_DIR) || exit 1; \
 	done
 	node $(SCRIPTS)/reports_index.js --org $(ORG) --reports $(REPORTS_DIR)
 

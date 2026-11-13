@@ -1,12 +1,12 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # Allianz OSPO — Compliance Report Configuration: Allianz Repository Standards
 #
-# This file configures one report of the compliance_report script. It maps
+# This file configures one report of the reports_compliance script. It maps
 # the checks of the tool files (results/*.json) to the requirements AZ.01 to
 # AZ.14 of the Allianz guideline "Mandatory Repository Configuration" and
 # holds the requirement texts shown in the report. The requirement mapping
 # exists only here: the checking scripts know nothing about requirement IDs.
-# See scripts/spec/compliance_report_spec.md.
+# See scripts/spec/reports_compliance_spec.md.
 #
 # Parameters:
 #   key:          Prefix of the output files (allianz-data.json, …) and of the

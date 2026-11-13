@@ -29,7 +29,7 @@ import {
   run,
   unknownChecks,
   validateToolFile,
-} from '../compliance_report.js';
+} from '../reports_compliance.js';
 import { ScriptError } from '../lib/cli.js';
 import { repoRoot } from '../lib/config.js';
 import { buildCatalogue as archiveCatalogue } from '../archive_repos.js';

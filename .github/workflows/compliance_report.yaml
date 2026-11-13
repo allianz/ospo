@@ -1,5 +1,5 @@
 ---
-# Monthly compliance report (scripts/spec/compliance_report_spec.md, section "Make target").
+# Monthly compliance report (scripts/spec/reports_compliance_spec.md, section "Make target").
 # Runs `make create_reports` (lint_repos and license_scan with --dry-run, so nothing is written to GitHub except the
 # report branch), commits reports/<YYYY-MM>/ to the branch compliance-report and opens a pull request.
 # The OSPO reviews it, edits the notes files on the branch (which reruns this workflow) and merges.

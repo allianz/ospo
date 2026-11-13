@@ -1,5 +1,5 @@
 // The common JSON result format written by the checking scripts with --json <file>.
-// See scripts/spec/compliance_report_spec.md, section "Tool file format".
+// See scripts/spec/reports_compliance_spec.md, section "Tool file format".
 
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';

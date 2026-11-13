@@ -1,5 +1,5 @@
 // The HTML reports: a template with data.json embedded. The page renders itself in the browser
-// from the embedded data.json only. See spec/compliance_report_spec.md, section "HTML report".
+// from the embedded data.json only. See spec/reports_compliance_spec.md, section "HTML report".
 
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';

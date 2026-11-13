@@ -1,6 +1,6 @@
 // Files of the compliance report: reading and validating the tool files of a run, and the reports
 // folder with one subfolder per month that carries the history from one report to the next.
-// See spec/compliance_report_spec.md.
+// See spec/reports_compliance_spec.md.
 
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';

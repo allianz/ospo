@@ -1,4 +1,4 @@
-# Spec: compliance_report implementation
+# Spec: reports_compliance implementation
 
 ## Motivation
 
@@ -83,7 +83,7 @@ A result row:
 ## CLI Interface
 
 ```
-node scripts/compliance_report.js --org <org> --config <file> --dir <dir> [--reports <dir>] [--debug]
+node scripts/reports_compliance.js --org <org> --config <file> --dir <dir> [--reports <dir>] [--debug]
 ```
 
 | Flag | Default | Description |
