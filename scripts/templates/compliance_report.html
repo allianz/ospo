@@ -580,8 +580,7 @@ function statusPill(key, label) {
   return h('span', { class: 'status' }, ico, label ?? st.label);
 }
 function checkLink(id) {
-  const c = DATA.catalogue[id];
-  return c?.documentation?.url ? h('a', { href: c.documentation.url }, h('code', { style: 'color:inherit', text: id })) : h('code', { text: id });
+  return h('code', { text: id });
 }
 /* Live GitHub search for a tool's open issue in one repository, by its title. The report does not read issues; this is only a link. */
 const issueUrl = (repo, tool) => `https://github.com/search?q=${encodeURIComponent(`repo:${ORG}/${repo} is:issue is:open in:title "${ISSUE_TITLE[tool]}"`)}&type=issues`;
