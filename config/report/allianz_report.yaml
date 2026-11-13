@@ -1,0 +1,244 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Allianz OSPO — Compliance Report Configuration: Allianz Repository Standards
+#
+# This file configures one report of the reports_compliance script. It maps
+# the checks of the tool files (results/*.json) to the requirements AZ.01 to
+# AZ.14 of the Allianz guideline "Mandatory Repository Configuration" and
+# holds the requirement texts shown in the report. The requirement mapping
+# exists only here: the checking scripts know nothing about requirement IDs.
+# See scripts/spec/reports_compliance_spec.md.
+#
+# Parameters:
+#   key:          Prefix of the output files (allianz-data.json, …) and of the
+#                 report ID (OSPO-CR-ALLIANZ-2026-11). Unique across all
+#                 report configurations.
+#   framework:    The requirement set (id, title, version, url, text_note,
+#                 chapters), copied into data.json → framework. The chapters
+#                 are the sections of the guideline page.
+#   inputs:       Tool files expected in the input directory, with the
+#                 script that writes them.
+#   notes:        Hand-written notes file (Key messages, Needs attention),
+#                 relative to the repo root. Optional.
+#   out_of_scope: Repositories this report does not cover at all, each with
+#                 repo and reason. They are dropped like archived ones and
+#                 listed with the reason in appendix A. Optional. Unlike a
+#                 tool's excluded_repos (counted as failing), this is a
+#                 decision of the report: give the reason.
+#   requirements: One entry per requirement: title, level (MUST, SHOULD,
+#                 MAY), chapter (optional, default the ID prefix), text (the
+#                 clauses), implementation (plain text) and checks (check
+#                 IDs). implemented: false marks a requirement that has no
+#                 check yet (checks: []): it is shown as "Not implemented"
+#                 and not counted. url (optional): the section of the guideline
+#                 page for this requirement, linked from the report; empty = no
+#                 link. This file and the reports are public, so list only URLs
+#                 that are meant to be public.
+#
+# The rule values (lengths, topics, licenses, search paths) must match
+# config/lint_repos.yaml, which is the source of truth for the guideline page.
+#
+# Every change goes through a pull request, which gives the audit trail.
+# ──────────────────────────────────────────────────────────────────────────────
+
+key: allianz
+
+framework:
+  id: allianz-mandatory-repo-config
+  title: Allianz Repository Standards
+  version: "2026-11-10"
+  url: https://cmp.allianz.net/spaces/ARGO/pages/2748785293/Mandatory+Repository+Configuration
+  text_note: Summary of each requirement of the guideline page.
+  chapters:
+    "2.1": Metadata
+    "2.2": Documentation
+    "2.3": Legal
+
+inputs:
+  - { file: lint_repos.json, script: scripts/lint_repos.js }
+  - { file: license_scan.json, script: scripts/license_scan.js }
+
+notes: config/report/allianz_report_notes.md
+
+out_of_scope:
+  - { repo: .github, reason: "Organisation configuration (profile, default community files), not a project" }
+
+requirements:
+  # ── 2.1 Metadata ──────────────────────────────────────────────────────────
+  AZ.01:
+    title: Description set
+    level: MUST
+    chapter: "2.1"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST have a description of 30 to 150 characters (the one-line metadata field shown in the organization list and in `gh repo view`, not a copy of the README)." }
+    implementation: >-
+      The OSPO linting bot checks the description of every repository twice a week and opens the issue
+      "Mandatory Repository Configuration" in any repository whose description is missing, too short or too
+      long, until it is fixed.
+    checks: [lint/description]
+
+  AZ.02:
+    title: Topics from the approved list
+    level: MUST
+    chapter: "2.1"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST have 1 to 5 topics, all from the approved list (project type, domain, ecosystem, e.g. api, cli, library, ai, data, devops, aws, kubernetes, terraform)." }
+    implementation: >-
+      The approved list is the allowed_topics list of the linting configuration. The linting bot checks the
+      topics twice a week and opens the issue "Mandatory Repository Configuration" until they comply.
+    checks: [lint/topics]
+
+  # ── 2.2 Documentation ─────────────────────────────────────────────────────
+  AZ.03:
+    title: README present
+    level: MUST
+    chapter: "2.2"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST contain a README.md in the root with at least 300 characters." }
+    implementation: >-
+      The linting bot checks for a README file in the root and its length twice a week and opens the issue
+      "Mandatory Repository Configuration" until it is fixed.
+    checks: [lint/readme]
+
+  AZ.04:
+    title: CONTRIBUTING present
+    level: MUST
+    chapter: "2.2"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST contain a CONTRIBUTING.md that explains how to propose changes and what quality is expected from contributions." }
+    implementation: >-
+      The linting bot looks for a CONTRIBUTING file in the root, .github or docs twice a week and opens the
+      issue "Mandatory Repository Configuration" until one exists.
+    checks: [lint/contributing]
+
+  AZ.05:
+    title: DEVELOPMENT present
+    level: SHOULD
+    chapter: "2.2"
+    url: ""
+    text:
+      - { level: SHOULD, text: "The repository SHOULD contain a DEVELOPMENT.md in the root or docs folder, describing how to build and test the project." }
+    implementation: >-
+      The linting bot looks for a DEVELOPMENT or DEVELOPER file with at least 300 characters in the root,
+      docs or .github. The result is reported here only; no issue is opened for it.
+    checks: [lint/development]
+
+  AZ.06:
+    title: No CODE_OF_CONDUCT file
+    level: MUST
+    chapter: "2.2"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST NOT contain a CODE_OF_CONDUCT file in the root, .github or docs: the Allianz Code of Conduct applies to all repositories, and GitHub shows it automatically." }
+    implementation: >-
+      The linting bot looks for a CODE_OF_CONDUCT file in the root, .github and docs twice a week and opens
+      the issue "Mandatory Repository Configuration" until it is deleted.
+    checks: [lint/no-code-of-conduct]
+
+  AZ.07:
+    title: No SECURITY file
+    level: SHOULD
+    chapter: "2.2"
+    url: ""
+    text:
+      - { level: SHOULD, text: "The repository SHOULD NOT contain a SECURITY.md in the root, .github or docs: the Allianz security policy applies to all repositories. A project with its own vulnerability reporting requirements may add one." }
+    implementation: >-
+      The linting bot looks for a SECURITY file in the root, .github and docs. The result is reported here
+      only; no issue is opened for it, because a project may have a documented reason for its own policy.
+    checks: [lint/no-security]
+
+  AZ.08:
+    title: No MAINTAINERS file
+    level: MUST
+    chapter: "2.2"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST NOT contain a MAINTAINERS file in the root, .github or docs." }
+    implementation: >-
+      The linting bot looks for a MAINTAINERS file in the root, .github and docs twice a week and opens the
+      issue "Mandatory Repository Configuration" until it is deleted.
+    checks: [lint/no-maintainers]
+
+  # ── 2.3 Legal ─────────────────────────────────────────────────────────────
+  AZ.09:
+    title: Approved license
+    level: MUST
+    chapter: "2.3"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST contain a LICENSE file in the root." }
+      - { level: MUST, text: "The license MUST be one of Apache-2.0, MIT, CC-BY-4.0 or CC0-1.0." }
+    implementation: >-
+      The linting bot checks that a LICENSE file exists in the root and that the license GitHub detects is
+      one of the approved licenses. It opens the issue "Mandatory Repository Configuration" until both
+      checks pass.
+    checks: [lint/license, lint/license-type]
+
+  AZ.10:
+    title: License headers in source files
+    level: SHOULD
+    chapter: "2.3"
+    url: ""
+    implemented: false
+    text:
+      - { level: SHOULD, text: "Source files SHOULD begin with a license header matching the project's license, following the Allianz header format." }
+      - { level: MUST, text: "Existing copyright and license headers MUST NOT be removed or altered." }
+    implementation: >-
+      Not checked yet.
+    checks: []
+
+  AZ.11:
+    title: NOTICE present
+    level: MUST
+    chapter: "2.3"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST contain a NOTICE file in the root, following the Allianz NOTICE format." }
+      - { level: MUST, text: "It MUST state the project's name, copyright and license, and list every third-party component copied or forked into the repository." }
+    implementation: >-
+      The linting bot checks for a NOTICE file in the root twice a week and opens the issue "Mandatory
+      Repository Configuration" until one exists. Its format and content (name, copyright, license,
+      third-party components) are not checked yet.
+    checks: [lint/notice]
+
+  AZ.12:
+    title: AUTHORS present
+    level: MUST
+    chapter: "2.3"
+    url: ""
+    text:
+      - { level: MUST, text: "The repository MUST contain an AUTHORS file in the root, following the Allianz AUTHORS format." }
+      - { level: MUST, text: "It MUST list the project's copyright holders." }
+    implementation: >-
+      The linting bot checks for an AUTHORS file in the root twice a week and opens the issue "Mandatory
+      Repository Configuration" until one exists. Its format and content are not checked yet.
+    checks: [lint/authors]
+
+  AZ.13:
+    title: No copyleft dependencies
+    level: MUST
+    chapter: "2.3"
+    url: ""
+    text:
+      - { level: MUST, text: "Third-party dependencies MUST NOT be under a copyleft license (GPL, AGPL)." }
+    implementation: >-
+      The license scan bot reads the SBOM of every repository (GitHub dependency graph) once a week and opens
+      the issue "Dependency License Violation" in any repository with a dependency under a license of its
+      deny list, until the dependency is replaced or removed. Dependencies without license information are
+      ignored.
+    checks: [license/denied-licenses]
+
+  AZ.14:
+    title: Third-party licenses in binary distributions
+    level: MUST
+    chapter: "2.3"
+    url: ""
+    implemented: false
+    text:
+      - { level: MUST, text: "Binary distributions that bundle dependencies MUST include a THIRD_PARTY_LICENSES.md covering all bundled dependencies." }
+    implementation: >-
+      Not checked yet.
+    checks: []

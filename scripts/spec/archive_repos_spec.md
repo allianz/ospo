@@ -21,20 +21,7 @@ Out of scope:
 
 ---
 
-## Implementation Approach
-
-A single JavaScript file `scripts/archive_repos.js`, run with `node`. Dependencies managed via `scripts/package.json` (shared across all JS scripts in this repo).
-
-### npm packages
-
-| Package | Purpose |
-|---|---|
-| `@octokit/rest` | GitHub REST API (repos, issues, archiving). Auth via `GITHUB_TOKEN` or `GH_TOKEN` environment variable. |
-| `js-yaml` | Parse YAML config files |
-
-No additional packages required beyond what is already in `scripts/package.json`. The `simple-git` dependency (used by `lint_repos.js`) is not needed here — the script works entirely through the GitHub API.
-
-### Project structure
+## Project Structure
 
 ```
 scripts/
@@ -47,23 +34,12 @@ scripts/
     archive_repos_spec.md
 ```
 
-### Local usage
-
-```bash
-export GITHUB_TOKEN=$(gh auth token)   # or set a PAT directly
-cd scripts
-npm install
-node archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
-```
-
-The script requires `GITHUB_TOKEN` (or `GH_TOKEN`) to be set in the environment. The default config path is resolved relative to the script file's location (repo root), not the working directory.
-
 ---
 
 ## CLI Interface
 
 ```
-node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 ```
 
 | Flag | Default | Description |
@@ -72,8 +48,11 @@ node scripts/archive_repos.js --org <org> [--config <file>] [--dry-run] [--debug
 | `--config` | `config/archive_repos.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Simulate execution without creating issues, closing issues, or archiving repos |
 | `--debug` | false | Print verbose output (computed dates, per-repo decisions) |
+| `--json` | – | Also write the results to this file as JSON, see [JSON output](#json-output) |
 
 Exit codes: `0` on success, `1` on missing `--org`, missing token, or fatal error.
+
+Requires `GITHUB_TOKEN` (or `GH_TOKEN`) in the environment. The default config path is resolved relative to the repo root, not the working directory.
 
 ---
 
@@ -113,54 +92,6 @@ grace_period: "40 days"
 
 ---
 
-## Date Parsing
-
-Duration strings like `"2 years"` or `"40 days"` are parsed by `parseRelativeDate(str)`:
-
-1. Validate against regex: `/^(\d+)\s+(days?|months?|years?)(\s+ago)?$/`
-2. Throw descriptive error if the string does not match.
-3. Start from `new Date()` (current time).
-4. Subtract using UTC methods:
-   - `day`/`days` → `date.setUTCDate(date.getUTCDate() - n)`
-   - `month`/`months` → `date.setUTCMonth(date.getUTCMonth() - n)`
-   - `year`/`years` → `date.setUTCFullYear(date.getUTCFullYear() - n)`
-5. Return the `Date` object.
-
-This function is exported for unit testing.
-
----
-
-## Execution Flow
-
-```
-1. Read GITHUB_TOKEN (or GH_TOKEN) from environment — exit with clear error if missing
-2. Parse CLI arguments (--org, --config, --dry-run, --debug)
-3. Load and validate YAML config with js-yaml
-4. Convert warn_after and grace_period to Date objects via parseRelativeDate()
-5. Instantiate Octokit with the token
-6. Fetch all repos in org (paginated):
-     octokit.paginate(octokit.rest.repos.listForOrg, { org, per_page: 100 })
-   Filter client-side: remove archived, separate excluded from candidates, sort by name
-7. For each candidate repo (sequentially):
-   a. Compare repo.pushed_at against staleCutoff
-   b. If stale:
-      - Find open issue titled "Inactive Repository Reminder"
-      - If no issue: create it (or record planned action in dry-run)
-        Set effectiveIssueDate = now (issue was just created / would be created)
-      - If issue exists: set effectiveIssueDate = issue.created_at
-      - If effectiveIssueDate < graceCutoff: archive the repo (or record)
-      - Else: log grace period remaining
-   c. If NOT stale:
-      - If open warning issue exists: close it (or record planned close)
-8. Print dry-run summary if applicable
-```
-
-### effectiveIssueDate in dry-run mode
-
-When `--dry-run` is active and no warning issue exists, the issue is not actually created. To keep grace-period logic correct, the code uses `new Date()` (current time) as the effective issue creation date. Since "just now" is always more recent than `graceCutoff`, the repo is correctly **not** scheduled for archival in the same dry-run pass. This prevents the dry-run output from reporting both "would create issue" and "would archive" for the same repo in a single run.
-
----
-
 ## Issue Lifecycle
 
 | Repo state | Existing issue? | Action |
@@ -171,16 +102,17 @@ When `--dry-run` is active and no warning issue exists, the issue is not actuall
 | Not stale | Open issue exists | Close the issue (repo became active again) |
 | Not stale | No open issue | No action |
 | Excluded | — | Skip entirely |
+| Never pushed to | — | Skip |
 
 The script only considers **open** issues. If a user manually closes the warning issue but the repo remains stale, a new issue will be created on the next run.
 
-Issue lookup uses `octokit.rest.issues.listForRepo` filtered by `state: "open"` and matching the constant issue title.
+In dry-run mode, a repo that would get a new warning issue is treated as if the issue was created now, so the same run never also reports it for archival.
 
 ### Warning issue template
 
-**Title:** `Inactive Repository Reminder` (hardcoded constant, also used as the lookup key)
+**Title:** `Inactive Repository Reminder`. Existing warning issues are found by this exact title.
 
-**Body:** generated by `buildIssueBody(gracePeriod)`, which interpolates the `grace_period` config value into the template:
+**Body** (`${grace_period}` is replaced with the configured value):
 
 ```markdown
 Dear Maintainers,
@@ -204,77 +136,24 @@ OSPO Team
 
 ### Closing issues
 
-When a repo becomes active again, the warning issue is closed silently via `octokit.rest.issues.update({ state: 'closed' })` — no closing comment is added.
+When a repo becomes active again, the warning issue is closed without a comment.
 
 ### Archiving repositories
 
-Archiving uses `octokit.rest.repos.update({ archived: true })`. Once archived, only org admins can unarchive.
+Once archived, only org admins can unarchive.
 
----
+### OSPO summary issue
 
-## Module Structure
+After processing all repos, the script maintains a single `Stale Repository Summary` issue in the `<org>/ospo` repository, listing every repo with a warning issue that is still in its grace period and the days left until archival:
 
-```
-scripts/archive_repos.js
+| Repos in grace period? | Open summary issue? | Action |
+|---|---|---|
+| Yes | No | Create the summary issue |
+| Yes | Yes | Update the issue body with the current list |
+| No | Yes | Close the summary issue |
+| No | No | No action |
 
-  #!/usr/bin/env node
-
-  // ── Imports ──────────────────────────────────────────────────────────────────
-  import { Octokit } from '@octokit/rest';
-  import yaml from 'js-yaml';
-  import { readFile } from 'node:fs/promises';
-  import path from 'node:path';
-  import { fileURLToPath } from 'node:url';
-
-  // ── Constants ────────────────────────────────────────────────────────────────
-  const __dirname, repoRoot, defaultConfigPath
-  const ISSUE_TITLE, ISSUE_BODY
-
-  // ── Date parsing ─────────────────────────────────────────────────────────────
-  export function parseRelativeDate(str) { ... }
-
-  // ── Config ───────────────────────────────────────────────────────────────────
-  export async function loadConfig(configPath) { ... }
-
-  // ── Issue helpers (internal) ─────────────────────────────────────────────────
-  async function findOpenIssue(octokit, org, repo, issueTitle) { ... }
-  async function createIssue(octokit, org, repo, title, body) { ... }
-  async function closeIssue(octokit, org, repo, issueNumber) { ... }
-
-  // ── Core logic ───────────────────────────────────────────────────────────────
-  export async function processRepos(octokit, org, repos, config, opts) { ... }
-
-  // ── Main ─────────────────────────────────────────────────────────────────────
-  async function main() { ... }
-
-  // ── Entry point guard ────────────────────────────────────────────────────────
-  if (process.argv[1] === fileURLToPath(import.meta.url)) {
-    main().catch(err => { ... process.exit(1) });
-  }
-```
-
-### Exports (for testability)
-
-| Export | Purpose |
-|---|---|
-| `parseRelativeDate` | Pure function, core to correctness, easy to unit test |
-| `loadConfig` | Validates config structure, unit tested with temp YAML files |
-| `processRepos` | Main processing loop, tested with mock Octokit and deterministic dates |
-
-Issue helpers (`findOpenIssue`, `createIssue`, `closeIssue`) remain internal — they are exercised implicitly through `processRepos` tests.
-
-### Key design decisions
-
-**`findOpenIssue` returns the full issue object** (not just the number like in `lint_repos.js`), because the caller needs both `issue.number` (for closing) and `issue.created_at` (for grace period calculation). Returns `null` if no match found.
-
-**`processRepos` takes pre-computed Date cutoffs** rather than raw config strings:
-```js
-export async function processRepos(octokit, org, repos, config, opts = {})
-// config: { staleCutoff: Date, graceCutoff: Date }
-// opts:   { dryRun: boolean, debug: boolean }
-// Returns: { planned: string[] }
-```
-This makes testing with deterministic dates straightforward — callers pass fixed Date objects instead of relative strings.
+If the `ospo` repository does not exist, the script exits with an error.
 
 ---
 
@@ -349,48 +228,46 @@ Planned changes:
 
 ---
 
-## Dependencies
+## JSON output
 
-| Tool | Purpose |
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([Tool file format](reports_compliance_spec.md#tool-file-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
+
+The file has these keys:
+
+| Key | Content |
 |---|---|
-| `node` + `npm` | Run the script, install packages |
-| `@octokit/rest` | GitHub API (repos, issues, archiving) |
-| `js-yaml` | Parse YAML config |
+| `tool`, `run_at`, `org` | Script name, start of the run (UTC), organisation |
+| `ospo_sha` | Commit of the scripts: `GITHUB_SHA`, otherwise `HEAD` of the local checkout, otherwise `null` |
+| `config_file`, `config_sha256` | Config path relative to the repo root, and the SHA-256 of the config file |
+| `run_url` | Link to the GitHub Actions run (`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, `GITHUB_RUN_ID`), otherwise `null` |
+| `issue_title` | `Inactive Repository Reminder` |
+| `results` | One row per repository and check: `repo`, `check`, `name`, `result` (`pass`, `fail` or `na`), `score` (always `null`), `reason` (always filled), `details` (list of lines) |
+| `catalogue` | One entry per check ID: `name` and `documentation` (`url` to the heading below, pinned to `ospo_sha`; `short` rule; `fix`) |
+| `skipped` | Repositories without results: `repo` and `reason` |
+| `errors` | Always `[]`: errors abort the run, and then no file is written |
 
-No `git`, `gh`, `yq`, `jq`, or system `date` command required.
+Each repository whose last push was evaluated has two results. `skipped` lists, in this order:
 
----
+| Reason | Repositories |
+|---|---|
+| `archived in this run` | Archived because the grace period expired. With `--dry-run` such a repository is not archived and stays active: it gets its two results (`recent-activity` = `fail`, `activity-checked` = `pass`), each reason ending in `would be archived in this run (dry-run)` |
+| `no push activity yet` | No `pushed_at` |
+| `archived` | Already archived |
+| `excluded_repos` | In `excluded_repos` |
 
-## Unit Tests
+| Check ID | Name |
+|---|---|
+| `archive/recent-activity` | Recent Activity |
+| `archive/activity-checked` | Activity Checked |
 
-Unit tests live in `scripts/archive_repos.test.js` and run with Node's built-in test runner (`node --test`). No additional test framework required.
+### Recent Activity
 
-Each function is tested in isolation using a `makeOctokit(overrides)` helper for mock API methods and `makeRepo(name, pushedAt)` for repo fixtures. Key scenarios:
+The repository had a push within `warn_after`. A stale repository fails; the reason gives the last push, the warning issue (existing or created in this run) and the days until archival.
 
-- **`parseRelativeDate`:** years, months, days (singular and plural); `"ago"` suffix accepted; invalid formats throw
-- **`loadConfig`:** valid config; `excluded_repos` defaults to `[]`; missing or invalid `warn_after`/`grace_period` throw
-- **`processRepos`:** stale with no issue (create, no archive); stale with issue in grace period (no action); stale with expired issue (archive); active with open issue (close); dry-run produces no mutations; dry-run newly created issue does not trigger archival
+How to fix: push to the repository (an empty commit is enough) if the project is still maintained.
 
-### Integration test (against `ospo-sandbox`)
+### Activity Checked
 
-Requires `GITHUB_TOKEN`. Run via Makefile, not part of the unit test suite:
+`archive_repos` read the last push of the repository in this run. It passes for every repository with a result; a repository that is excluded or never evaluated has no result.
 
-```makefile
-test_archive_repos: check-token
-    node archive_repos.js --org ospo-sandbox --config test-config/archive_repos.yaml --debug
-```
-
----
-
-## CI/CD
-
-`.github/workflows/archive_repos.yaml` setup:
-
-- **Schedule:** Weekly on Sunday at midnight UTC (`0 0 * * 0`)
-- **Manual trigger:** `workflow_dispatch`
-- Node.js 22 setup step
-- `npm ci` run from the `scripts/` directory
-- GitHub App token generated via `actions/create-github-app-token`
-- Run step: `node scripts/archive_repos.js --org allianz`
-- Pass the GitHub App token as `GITHUB_TOKEN` env var to the run step
-
+How to fix: OSPO: remove the repository from `excluded_repos` in the archive_repos configuration, or fix the error that stopped the check.

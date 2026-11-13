@@ -1,0 +1,295 @@
+exports[`run > --json writes every check of the active repos and lists skipped repos 1`] = `
+{
+  "tool": "lint_repos",
+  "run_at": "2026-11-03T02:00:00Z",
+  "org": "test-org",
+  "ospo_sha": "abc123",
+  "config_file": "<config>",
+  "config_sha256": "46f12d7245197b73cfb8b44e73891f7b2512a5c061b70c60e53506750992f34d",
+  "run_url": "https://github.com/allianz/ospo/actions/runs/7",
+  "issue_title": "Mandatory Repository Configuration",
+  "results": [
+    {
+      "repo": "good",
+      "check": "lint/description",
+      "name": "Repository Description",
+      "result": "pass",
+      "score": null,
+      "reason": "Description has 44 chars",
+      "details": []
+    },
+    {
+      "repo": "good",
+      "check": "lint/topics",
+      "name": "Repository Topics",
+      "result": "pass",
+      "score": null,
+      "reason": "Topics: api",
+      "details": []
+    },
+    {
+      "repo": "good",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "'MIT' is in the approved list",
+      "details": []
+    },
+    {
+      "repo": "good",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "pass",
+      "score": null,
+      "reason": "README.md found",
+      "details": []
+    },
+    {
+      "repo": "good",
+      "check": "lint/development",
+      "name": "Development File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
+      "details": []
+    },
+    {
+      "repo": "good",
+      "check": "lint/no-code-of-conduct",
+      "name": "Organisation Code of Conduct",
+      "result": "pass",
+      "score": null,
+      "reason": "No CODE_OF_CONDUCT* file in ., .github, docs",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/description",
+      "name": "Repository Description",
+      "result": "fail",
+      "score": null,
+      "reason": "No description set",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/topics",
+      "name": "Repository Topics",
+      "result": "fail",
+      "score": null,
+      "reason": "No topics set",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "'MIT' is in the approved list",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/development",
+      "name": "Development File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
+      "details": []
+    },
+    {
+      "repo": "bad",
+      "check": "lint/no-code-of-conduct",
+      "name": "Organisation Code of Conduct",
+      "result": "fail",
+      "score": null,
+      "reason": ".github/CODE_OF_CONDUCT.md must not exist; delete it",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/description",
+      "name": "Repository Description",
+      "result": "fail",
+      "score": null,
+      "reason": "No description set",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/topics",
+      "name": "Repository Topics",
+      "result": "pass",
+      "score": null,
+      "reason": "Topics: api",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "'MIT' is in the approved list",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "pass",
+      "score": null,
+      "reason": "README.md found",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/development",
+      "name": "Development File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
+      "details": []
+    },
+    {
+      "repo": "hidden",
+      "check": "lint/no-code-of-conduct",
+      "name": "Organisation Code of Conduct",
+      "result": "pass",
+      "score": null,
+      "reason": "No CODE_OF_CONDUCT* file in ., .github, docs",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/description",
+      "name": "Repository Description",
+      "result": "pass",
+      "score": null,
+      "reason": "Description has 44 chars",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/topics",
+      "name": "Repository Topics",
+      "result": "pass",
+      "score": null,
+      "reason": "Topics: api",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/license-type",
+      "name": "License Type",
+      "result": "pass",
+      "score": null,
+      "reason": "'MIT' is in the approved list",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/readme",
+      "name": "README File",
+      "result": "pass",
+      "score": null,
+      "reason": "README.md found",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/development",
+      "name": "Development File",
+      "result": "fail",
+      "score": null,
+      "reason": "File not found in .",
+      "details": []
+    },
+    {
+      "repo": "fixed",
+      "check": "lint/no-code-of-conduct",
+      "name": "Organisation Code of Conduct",
+      "result": "pass",
+      "score": null,
+      "reason": "No CODE_OF_CONDUCT* file in ., .github, docs",
+      "details": []
+    }
+  ],
+  "catalogue": {
+    "lint/description": {
+      "name": "Repository Description",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
+        "short": "The repository description is set and has 30 to 150 characters.",
+        "fix": "Set a description of 30 to 150 characters in the About section of the repository."
+      }
+    },
+    "lint/topics": {
+      "name": "Repository Topics",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
+        "short": "The repository has 1 to 5 topics.",
+        "fix": "Add 1 to 5 topics in the About section of the repository."
+      }
+    },
+    "lint/license-type": {
+      "name": "License Type",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
+        "short": "The license GitHub detects is one of MIT. A missing or unidentified license (NOASSERTION) fails.",
+        "fix": "Use one of the approved licenses (MIT) with its unmodified license text, so GitHub can detect it."
+      }
+    },
+    "lint/readme": {
+      "name": "README File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
+        "short": "A file README* exists in ..",
+        "fix": "Add a README* file in .."
+      }
+    },
+    "lint/development": {
+      "name": "Development File",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
+        "short": "A file DEVELOPMENT* or DEVELOPER* exists in ..",
+        "fix": "Add a DEVELOPMENT* or DEVELOPER* file in .."
+      }
+    },
+    "lint/no-code-of-conduct": {
+      "name": "Organisation Code of Conduct",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
+        "short": "No file CODE_OF_CONDUCT* exists in ., .github, docs.",
+        "fix": "Delete the CODE_OF_CONDUCT* file from ., .github, docs."
+      }
+    }
+  },
+  "skipped": [
+    {
+      "repo": "old",
+      "reason": "archived"
+    },
+    {
+      "repo": ".github",
+      "reason": "excluded_repos"
+    }
+  ],
+  "errors": []
+}
+`;
+
+exports[`run > dry-run prints results, skipped repos and the planned issue changes 1`] = `
+"Results\\n───────\\n✅ good\\n❌ bad  [Repository Description, Repository Topics, README File, Organisation Code of Conduct]\\n❌ hidden  [Repository Description]\\n⚠️  hidden: issues are disabled, no issue opened\\n✅ fixed\\n\\nSkipped (archived)\\n──────────────────\\n✖️ old  [License Type]\\n\\nSkipped (configuration)\\n───────────────────────\\n– .github\\n\\n──── Dry-run: 1 would be created, 0 would be updated, 1 would be closed ────\\n  ✉️   create  bad\\n  ✔️   close   #4  fixed\\n"
+`;

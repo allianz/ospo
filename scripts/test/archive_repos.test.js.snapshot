@@ -1,0 +1,91 @@
+exports[`run > --json writes both checks per evaluated repo and lists skipped repos 1`] = `
+{
+  "tool": "archive_repos",
+  "run_at": "2026-06-01T00:00:00Z",
+  "org": "test-org",
+  "ospo_sha": "abc123",
+  "config_file": "<config>",
+  "config_sha256": "929579653a9c800395d1d70a5711d2bcc29cf81e6f6e2315d8b19d942ce0281b",
+  "run_url": null,
+  "issue_title": "Inactive Repository Reminder",
+  "results": [
+    {
+      "repo": "beta-active",
+      "check": "archive/recent-activity",
+      "name": "Recent Activity",
+      "result": "pass",
+      "score": null,
+      "reason": "Last push 2026-01-01, within the last 2 years",
+      "details": []
+    },
+    {
+      "repo": "beta-active",
+      "check": "archive/activity-checked",
+      "name": "Activity Checked",
+      "result": "pass",
+      "score": null,
+      "reason": "Last push 2026-01-01",
+      "details": []
+    },
+    {
+      "repo": "zeta-stale",
+      "check": "archive/recent-activity",
+      "name": "Recent Activity",
+      "result": "fail",
+      "score": null,
+      "reason": "Last push 2023-01-01, more than 2 years ago; notice issue created in this run, archival in 40 days",
+      "details": []
+    },
+    {
+      "repo": "zeta-stale",
+      "check": "archive/activity-checked",
+      "name": "Activity Checked",
+      "result": "pass",
+      "score": null,
+      "reason": "Last push 2023-01-01; notice issue created in this run, archival in 40 days",
+      "details": []
+    }
+  ],
+  "catalogue": {
+    "archive/recent-activity": {
+      "name": "Recent Activity",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/archive_repos_spec.md#recent-activity",
+        "short": "The repository had a push in the last 2 years. Otherwise it gets a notice issue and is archived 40 days later.",
+        "fix": "Push to the repository (an empty commit is enough) if the project is still maintained."
+      }
+    },
+    "archive/activity-checked": {
+      "name": "Activity Checked",
+      "documentation": {
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/archive_repos_spec.md#activity-checked",
+        "short": "archive_repos read the last push of the repository in this run.",
+        "fix": "OSPO: remove the repository from excluded_repos in the archive_repos configuration, or fix the error that stopped the check."
+      }
+    }
+  },
+  "skipped": [
+    {
+      "repo": "alpha-expired",
+      "reason": "archived in this run"
+    },
+    {
+      "repo": "empty",
+      "reason": "no push activity yet"
+    },
+    {
+      "repo": "old-archived",
+      "reason": "archived"
+    },
+    {
+      "repo": "ospo",
+      "reason": "excluded_repos"
+    }
+  ],
+  "errors": []
+}
+`;
+
+exports[`run > dry-run prints the plan, upcoming archival and next warnings 1`] = `
+"READING REPOSITORIES...\\ntest-org/alpha-expired is stale.\\ntest-org/zeta-stale is stale.\\n\\nPlanned changes:\\n  Would archive repository 'test-org/alpha-expired'.\\n  Would create an issue for 'test-org/zeta-stale'.\\n  Would create OSPO summary issue in 'test-org/ospo'.\\n\\nUpcoming archival:\\n  zeta-stale  40 days left\\n\\nNext warning issues (top 3):\\n  beta-active  in 579 days\\n"
+`;

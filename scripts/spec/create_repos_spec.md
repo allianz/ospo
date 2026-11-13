@@ -32,20 +32,7 @@ Out of scope:
 
 ---
 
-## Implementation Approach
-
-A single JavaScript file `scripts/create_repos.js`, run with `node`. Dependencies are managed via the shared `scripts/package.json`.
-
-### npm packages
-
-| Package | Purpose |
-|---|---|
-| `@octokit/rest` | GitHub REST API (repos, teams, permissions, security settings, branch protection). Auth via `GITHUB_TOKEN` environment variable. |
-| `js-yaml` | Parse YAML config files |
-
-No additional packages required beyond what is already in `scripts/package.json`. The `simple-git` dependency (used by `lint_repos.js`) is not needed here.
-
-### Project structure
+## Project Structure
 
 ```
 scripts/
@@ -56,17 +43,6 @@ scripts/
   spec/
     create_repos_spec.md
 ```
-
-### Local usage
-
-```bash
-export GITHUB_TOKEN=$(gh auth token)   # or set a PAT directly
-cd scripts
-npm install
-node create_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--skip-team-sync] [--skip-custom-role]
-```
-
-The script requires `GITHUB_TOKEN` to be set in the environment. The default config path is resolved relative to the script file's location (repo root), not the working directory.
 
 ---
 
@@ -84,6 +60,10 @@ node scripts/create_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 | `--debug` | false | Print verbose output |
 | `--skip-team-sync` | false | Skip Entra ID team synchronization (Enterprise-only feature) |
 | `--skip-custom-role` | false | Use `maintain` permission instead of custom `Own` role (non-Enterprise fallback) |
+
+Exit codes: `0` on success, `1` on any error.
+
+Requires `GITHUB_TOKEN` (or `GH_TOKEN`) in the environment. The default config path is resolved relative to the repo root, not the working directory.
 
 ---
 
@@ -140,68 +120,21 @@ repositories:
 
 ---
 
-## Execution Flow
-
-```
-1. Read GITHUB_TOKEN from environment — exit with clear error if missing
-2. Parse CLI arguments
-3. Load and validate YAML config with js-yaml:
-     - All repo names match ^[a-z0-9.-]+$ (max 64 chars)
-     - All team names match ^[a-zA-Z0-9\s._-]+$ (max 64 chars)
-     - security field, if present, is "managed" or "custom"
-     - branch-protection field, if present, is "managed" or "custom"
-4. Instantiate Octokit with the token
-5. Process repositories:
-     a. Fetch existing repos from org (paginated, up to 1000)
-     b. Extract desired repos from config
-     c. Calculate delta: repos_to_create = desired − existing
-     d. Create missing repositories (public)
-6. Process teams:
-     a. Fetch all teams from org (cache result)
-     b. Calculate three sets: teams_to_add, teams_to_update, teams_to_delete
-     c. For each team to add:
-          - Validate Entra ID group exists (exact name match)
-          - Create team with closed privacy
-          - Set up Entra ID sync (unless --skip-team-sync)
-          - Grant each assigned repo with the configured role
-     d. For each team to update:
-          - Load current repo assignments and their role_name
-          - Calculate: repos_to_grant (new), repos_to_revoke (removed), repos_to_update (role changed)
-          - Grant new, revoke removed, update changed roles
-     e. For each team to delete:
-          - Delete team
-7. Enforce security configuration assignments:
-     a. Look up the "ospo-managed" and "custom" org security configurations by name
-     b. For each repo in config:
-          - security = "managed" (or omitted) → assign to "ospo-managed" configuration
-          - security = "custom" → assign to "custom" configuration
-     c. Compare current assignments with desired — update only what changed
-8. Enforce branch protection (org-level ruleset target list only):
-     a. Collect all repo names from config where branch-protection ≠ "custom"
-     b. Look up the existing "ospo-managed" org ruleset
-     c. Compare current target list with desired list — update if changed
-     d. Repos with branch-protection = "custom" are simply not included in the target list
-9. Print results and dry-run summary (if applicable)
-10. Exit 0 on success, exit 1 on any error
-```
-
----
-
 ## Team & Permission Model
 
 ### Permission levels
 
-| Config value | GitHub API value | GitHub role | Notes |
-|---|---|---|---|
-| `own` | `Own` | Custom organization role (Enterprise) | Default. Falls back to `maintain` when `--skip-custom-role` is set. |
-| `write` | `push` | Built-in write role | Push access. |
-| `triage` | `triage` | Built-in triage role | Read + triage issues and PRs, no push access. |
+| Config value | GitHub role | Notes |
+|---|---|---|
+| `own` | Custom organization role (Enterprise) | Default. Falls back to `maintain` when `--skip-custom-role` is set. |
+| `write` | Built-in write role | Push access. |
+| `triage` | Built-in triage role | Read + triage issues and PRs, no push access. |
 
 ### Team lifecycle
 
 | Event | Action |
 |---|---|
-| Team in config, not in GitHub | Create team → sync with Entra ID → grant repo permissions |
+| Team in config, not in GitHub | Create team (closed privacy) → sync with Entra ID → grant repo permissions |
 | Team in both config and GitHub | Compare repo assignments → grant/revoke as needed |
 | Team in GitHub, not in config | Delete team |
 
@@ -216,63 +149,29 @@ repositories:
 
 ## Security (GitHub Advanced Security)
 
-Every repository defaults to `security: managed`. Two **GitHub Advanced Security organization configurations** are **manually created** by org admins:
+Org admins maintain two GitHub Advanced Security configurations, `ospo-managed` (enforced) and `custom` (not enforced). Both enable the same GHAS features. The `security` field selects which one a repo is assigned to:
 
-| Configuration | Enforce configuration | Purpose |
+| `security` value | Script action | Effect |
 |---|---|---|
-| `ospo-managed` | Yes | Repos cannot override GHAS settings. The org admin controls the security posture. |
-| `custom` | No | Same GHAS features enabled as defaults, but repo teams can disable or adjust individual settings (e.g. disable Dependabot). |
+| `managed` (default) | Assign repo to `ospo-managed` | Repo teams cannot change GHAS settings |
+| `custom` | Assign repo to `custom` | Repo teams can adjust individual settings, e.g. disable Dependabot |
 
-Both configurations are identical in which GHAS features they enable — the only difference is whether the configuration is enforced or not.
-
-### What the script controls
-
-The script assigns each repository to the appropriate organization configuration based on the `security` field in the config. On each run:
-
-1. Look up the `ospo-managed` and `custom` org security configurations by name.
-2. For each repo in config:
-   - `security: managed` (or omitted) → assign to the `ospo-managed` configuration.
-   - `security: custom` → assign to the `custom` configuration.
-3. Compare current assignments with desired assignments — update only what changed.
-
-The script **never** creates, deletes, or modifies the configurations themselves — only the repo-to-configuration assignments.
-
-### What org admins control
-
-The security configurations (which GHAS features are enabled, enforcement toggle) are managed manually in the org settings UI. This allows admins to adjust the security baseline without code changes.
-
-### Idempotency
-
-If a repo is already assigned to the correct configuration, no API call is made. Only changes in the config file (new repos, or switching between managed/custom) trigger updates.
+The script only manages the repo assignments, never the configurations themselves, so admins can adjust the baseline without code changes. If a configuration is missing, the script fails.
 
 ---
 
 ## Branch Protection
 
-Every repository defaults to `branch-protection: managed`. An organization-level repository ruleset named `ospo-managed` is **manually created and configured** by org admins — the script does not manage its rules. The script's only responsibility is maintaining the **target list** of repositories that the ruleset applies to.
+Org admins maintain one org-level repository ruleset, `ospo-managed` (rules, enforcement, bypass actors). The `branch-protection` field selects whether a repo is targeted by it:
 
-Repos that set `branch-protection: custom` are excluded from the target list so they can define their own rules without conflict.
+| `branch-protection` value | Script action | Effect |
+|---|---|---|
+| `managed` (default) | Add repo to the `ospo-managed` target list | Repo teams cannot change the branch rules |
+| `custom` | Keep repo out of the target list (removed if present) | Repo teams define their own rules |
 
-### What the script controls
+The script only manages the target list, never the ruleset's rules, so admins can adjust the baseline without code changes. If the ruleset is missing, the script fails.
 
-The script updates the `repository_id.repository_ids` list on the existing `ospo-managed` ruleset via the [Organization Rulesets API](https://docs.github.com/en/rest/orgs/rules) (`PUT /orgs/{org}/rulesets/{id}`). On each run:
-
-1. Collect all repo names from config where `branch-protection` is `managed` (or omitted).
-2. Resolve those names to numeric repository IDs by fetching the org's repo list.
-3. Look up the existing `ospo-managed` ruleset by name.
-4. Compare the current `repository_id.repository_ids` list with the desired list. Update if anything changed.
-
-The script targets repositories by ID (not by name pattern) to match the GitHub UI's "select repositories" behaviour and avoid accidental wildcard matches.
-
-The script **never** creates, deletes, or modifies the ruleset's rules — only the target list.
-
-### What org admins control
-
-The ruleset itself (rules, enforcement level, bypass actors) is configured manually in the org settings UI. This allows admins to adjust branch protection standards without code changes.
-
-### Idempotency
-
-If the target list already matches, no API call is made. Only changes to the repo list (repos added/removed from config, or switching between managed/custom) trigger an update.
+Repos are targeted by ID rather than by name pattern, matching the GitHub UI's "select repositories" behaviour and avoiding accidental wildcard matches.
 
 ---
 
@@ -411,207 +310,3 @@ BRANCH PROTECTION
   + Assign to 'ospo-managed': 'my-new-repo'... ✓
   + Assign to 'custom': 'repo2'... ✓
 ```
-
----
-
-## Dependencies
-
-| Tool | Purpose | Change vs. today |
-|---|---|---|
-| `node` + `npm` | Run the script, install packages | Node was already needed for `lint_repos.js` |
-| `@octokit/rest` | GitHub API | Replaces `gh api` calls |
-| `js-yaml` | Parse YAML config | Replaces `yq` |
-
-
----
-
-## Unit Tests
-
-Unit tests live in `scripts/create_repos.test.js` and run with Node's built-in test runner (`node --test`).
-
-Each function is tested in isolation with mocked Octokit responses. Key scenarios:
-
-- **Config loading:** valid config; missing repository name; invalid repo name pattern; unknown repo-level field; invalid team name; unknown access entry field; invalid role value; unknown `security` value; unknown `branch-protection` value; fields default when omitted (`role` defaults to `own`, `access` defaults to `[]`)
-- **Repository processing:** repos to create (desired − existing); no new repos needed; duplicate detection
-- **Team processing:** teams to add / update / delete; per-entry role used in grant; role change detected and updated; no API call when role unchanged; `--skip-custom-role` substitutes `own→maintain` only (not `write` or `triage`); `write` config role sends `push` to API; `push` API value normalised back to `write` for comparison; Entra ID group validation failure
-- **Security assignments:** repo assigned to ospo-managed config; repo assigned to custom config; assignment already correct (no-op); configuration not found (error)
-- **Branch protection:** target list updated when repo added; target list updated when repo switches to custom; target list already correct (no-op); ruleset not found (error)
-- **Dry-run:** no API mutations are called; planned changes are collected and returned
-
-### Integration test (against `ospo-sandbox`)
-
-Requires `GITHUB_TOKEN`. Run via Makefile, not part of the unit test suite.
-
-```makefile
-test_create_repos:
-    cd .. && node scripts/create_repos.js --org ospo-sandbox \
-        --config scripts/test-config/create_repos.yaml \
-        --skip-team-sync --skip-custom-role --debug
-```
-
----
-
-## CI/CD Changes
-
-`.github/workflows/create_repos.yaml` updated:
-
-```yaml
-name: Create repos
-on:
-  workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ['config/create_repos.yaml']
-
-jobs:
-  dry-run:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v6
-
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 22
-
-    - name: Install dependencies
-      run: npm ci
-      working-directory: scripts
-
-    - uses: actions/create-github-app-token@v3
-      id: app-token
-      with:
-        app-id: ${{ secrets.ALLIANZ_APP_ID }}
-        private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
-        owner: allianz
-
-    - name: Dry-run
-      env:
-        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-      run: node scripts/create_repos.js --org allianz --dry-run
-
-  apply:
-    needs: dry-run
-    environment: github.com
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v6
-
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 22
-
-    - name: Install dependencies
-      run: npm ci
-      working-directory: scripts
-
-    - uses: actions/create-github-app-token@v3
-      id: app-token
-      with:
-        app-id: ${{ secrets.ALLIANZ_APP_ID }}
-        private-key: ${{ secrets.ALLIANZ_APP_PRIVATE_KEY }}
-        owner: allianz
-
-    - name: Apply
-      env:
-        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-      run: node scripts/create_repos.js --org allianz
-```
-
----
-
-## Implementation Details
-
-This section documents API behaviour that is not obvious from the GitHub documentation and must be implemented correctly to avoid runtime errors.
-
-### Permission name mapping
-
-The GitHub REST API uses different permission names than the config's user-facing role names. Two helper functions handle the translation:
-
-- **`toApiRole(role)`** — used before every `addOrUpdateRepoPermissionsInOrg` call:
-
-| Config value | API value | Reason |
-|---|---|---|
-| `own` | `Own` | Custom org role; API name is case-sensitive |
-| `write` | `push` | GitHub's legacy API name for write access |
-| `triage` | `triage` | Same in both |
-
-- **`fromApiRole(roleName)`** — used when reading `role_name` from `listReposInOrg`, to normalize API values back to config names before comparison:
-
-| API `role_name` | Config value |
-|---|---|
-| `Own` | `own` |
-| `push` | `write` |
-| `triage` | `triage` |
-
-Without this roundtrip mapping, every repo with `write` access would appear as changed on every run (`'push' !== 'write'`), and API calls for `write` would fail with `422 Validation Failed`.
-
----
-
-### Octokit instantiation
-
-Instantiate Octokit with a silent logger to suppress the library's default `console.warn` / `console.info` output, which would pollute the script's structured output:
-
-```js
-const noop = () => {};
-const octokit = new Octokit({ auth: token, log: { debug: noop, info: noop, warn: noop, error: noop } });
-```
-
-### Security configuration API
-
-**Attaching repositories** (`POST /orgs/{org}/code-security/configurations/{configuration_id}/attach`):
-
-- The `scope` field is **required**. Always pass `scope: 'selected'` alongside `selected_repository_ids`. Omitting it causes a `422 Invalid input: object is missing required key: scope` error.
-
-```js
-await octokit.request('POST /orgs/{org}/code-security/configurations/{configuration_id}/attach', {
-  org,
-  configuration_id: cfg.id,
-  scope: 'selected',
-  selected_repository_ids: repoIds,
-  headers: { 'X-GitHub-Api-Version': '2022-11-28' },
-});
-```
-
-**Reading current assignments** (`GET /orgs/{org}/code-security/configurations/{configuration_id}/repositories`):
-
-- Each item in the response array has the repo object nested under a `.repository` key, not directly as a flat repo object. Extract the name with `r.repository?.name ?? r.name` to handle both shapes defensively.
-
-```js
-const assigned = new Set(repos.map(r => r.repository?.name ?? r.name));
-```
-
-### Branch protection ruleset API
-
-**Targeting repositories by ID** (`PUT /orgs/{org}/rulesets/{ruleset_id}`):
-
-- Use the `repository_id` condition (not `repository_name`) to match what the GitHub UI does when repositories are selected directly. Name-pattern conditions use glob matching and are a different mechanism.
-
-```js
-conditions: {
-  ref_name: fullRuleset.conditions?.ref_name,
-  repository_id: {
-    repository_ids: desiredIds,   // numeric IDs, sorted
-  },
-},
-```
-
-- Resolve repo names to numeric IDs by paginating `GET /orgs/{org}/repos` before building the target list. Repos not yet created (not present in the org) are silently skipped.
-
-**Sending only writable fields on PUT**:
-
-- The `GET /orgs/{org}/rulesets/{id}` response includes read-only fields (`id`, `node_id`, `created_at`, `updated_at`, `_links`, etc.) that the PUT endpoint rejects with a schema error if echoed back. Do **not** spread the full ruleset object. Send only the fields the API accepts:
-
-```js
-await octokit.request('PUT /orgs/{org}/rulesets/{ruleset_id}', {
-  org,
-  ruleset_id: fullRuleset.id,
-  name: fullRuleset.name,
-  target: fullRuleset.target,
-  enforcement: fullRuleset.enforcement,
-  bypass_actors: fullRuleset.bypass_actors,
-  conditions: { /* ... */ },
-  rules: fullRuleset.rules,
-  headers: { 'X-GitHub-Api-Version': '2022-11-28' },
-});
-```
-

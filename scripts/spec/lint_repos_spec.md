@@ -17,19 +17,7 @@ All rules are configurable via a YAML configuration file — see [Configuration 
 
 ---
 
-## Implementation Approach
-
-A single JavaScript file `scripts/lint_repos.js`, run with `node`. Dependencies managed via `scripts/package.json` (shared across all JS scripts added to this repo in the future).
-
-### npm packages
-
-| Package | Purpose |
-|---|---|
-| `@octokit/rest` | GitHub REST API (repos, issues, license detection via `spdx_id`). Auth via `GITHUB_TOKEN` environment variable. Eliminates the `licensee` Ruby gem dependency. |
-| `simple-git` | Async wrapper around the `git` CLI. Repos are cloned in parallel batches of 5, then file checks run on the completed clones. |
-| `js-yaml` | Parse YAML config files |
-
-### Project structure
+## Project Structure
 
 ```
 scripts/
@@ -39,25 +27,12 @@ scripts/
   lint_repos.js
 ```
 
-### Local usage
-
-```bash
-export GITHUB_TOKEN=$(gh auth token)   # or set a PAT directly
-cd scripts
-npm install
-node lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
-```
-
-The script requires `GITHUB_TOKEN` to be set in the environment. No other external tool dependencies beyond `git`.
-
-`lint_cache/` and the default config path are resolved relative to the script file's location (repo root), not the working directory — so the script behaves correctly regardless of where it is invoked from.
-
 ---
 
 ## CLI Interface
 
 ```
-node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 ```
 
 | Flag | Default | Description |
@@ -66,6 +41,11 @@ node scripts/lint_repos.js --org <org> [--config <file>] [--dry-run] [--debug]
 | `--config` | `config/lint_repos.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Run checks but do not create/close issues |
 | `--debug` | false | Print verbose output |
+| `--json` | – | Also write the results to this file as JSON, see [JSON output](#json-output) |
+
+Exit codes: `0` whenever the run completes (lint failures are expected, not errors), `1` on missing `--org`, missing token, or fatal error.
+
+Requires `GITHUB_TOKEN` (or `GH_TOKEN`) in the environment and `git` on the `PATH`. The default config path and `lint_cache/` are resolved relative to the repo root, not the working directory.
 
 ---
 
@@ -87,8 +67,8 @@ docs_link: "https://..."
 excluded_repos: []
 
 # SPDX identifiers accepted by the license check. Compared against
-# repo.license.spdx_id from the GitHub API. null and NOASSERTION are
-# always rejected regardless of this list.
+# the license GitHub detects for the repo. A missing or unidentified
+# license (NOASSERTION) is always rejected regardless of this list.
 allowed_licenses:
   - Apache-2.0
   - MIT
@@ -97,24 +77,55 @@ allowed_licenses:
 
 # File checks run against the local clone. Each entry must match at least one
 # file in the specified search_paths. pattern is a case-insensitive prefix glob
-# (e.g. README* matches README.md). description is used as the check name in
+# (e.g. README* matches README.md); a list of patterns matches a file that fits
+# any of them. name is used as the check name in
 # issue body and output. search_paths defaults to ["."] if omitted.
 # min_chars (optional): if set, the matched file must also be at least this many
 # chars; a file that exists but is smaller fails with "File exists but is too short
 # (<actual> chars; minimum is <min_chars>)".
+# json_only (optional, default false): if true, the check is written to the --json
+# file only; it is never listed in the issue or the result line.
+# why (required): why the file matters, in plain words. Shown in the issue below
+# the finding of a failed check; not written to --json. Also required for json_only
+# entries, so the text is there if the entry is ever shown in the issue.
 required_files:
   - pattern: "README*"
-    description: "Readme File"
+    name: "Readme File"
     min_chars: 300
+    why: "The README is the entry point of the project: what it does, how to use it and where to get help."
   - pattern: "CONTRIBUTING*"
     search_paths: [".", ".github", "docs"]
-    description: "Contributing File"
+    name: "Contributing File"
+    why: "It tells others how to propose changes and what is expected of a contribution."
   - pattern: "LICENSE*"
-    description: "License File"
-  - pattern: "NOTICE*"
-    description: "Notice File"
-  - pattern: "AUTHORS*"
-    description: "Authors File"
+    name: "License File"
+    why: "Without the license text nobody may legally use, change or share the code."
+  - ...
+  - pattern: ["DEVELOPMENT*", "DEVELOPER*"]
+    search_paths: [".", "docs", ".github"]
+    name: "Development File"
+    min_chars: 300
+    json_only: true
+    why: "Documenting how to build and test the project is common best practice. It lets others reproduce the build and check their changes before they propose them."
+
+# Files no repository may contain, e.g. organisation defaults from the .github
+# repository that a file of the repository would override. Same fields as
+# required_files (no min_chars); the check fails when any search path contains a
+# matching file, and the failure lists every file found.
+forbidden_files:
+  - pattern: "CODE_OF_CONDUCT*"
+    search_paths: [".", ".github", "docs"]
+    name: "Code of Conduct"
+    why: "The [Allianz Code of Conduct](https://github.com/allianz/.github/blob/main/CODE_OF_CONDUCT.md) applies to all repositories, and GitHub shows it automatically. A file of your own would replace it."
+  - pattern: "MAINTAINERS*"
+    search_paths: [".", ".github", "docs"]
+    name: "Maintainers File"
+    why: "A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR."
+  - pattern: "SECURITY*"
+    search_paths: [".", ".github", "docs"]
+    name: "Security Policy"
+    json_only: true
+    why: "The [Allianz security policy](https://github.com/allianz/.github/blob/main/SECURITY.md) applies to all repositories, and GitHub shows it automatically. A file of your own would replace it. Add one only if the project has its own vulnerability reporting requirements."
 
 # Minimum and maximum character length for repository descriptions (inclusive).
 # Descriptions outside this range fail the check. Defaults: min: 30, max: 150.
@@ -138,44 +149,15 @@ allowed_topics:
 |---|---|---|---|
 | 1 | **Description** | GitHub API | `description` is non-null, non-empty, and between `description_length.min` and `description_length.max` chars (inclusive) |
 | 2 | **Topics** | GitHub API | Between 1 and 5 topics assigned; all topics must be in `allowed_topics` |
-| 3 | **License type** | GitHub API | `license.spdx_id` is in `allowed_licenses`; fails with a clear message if API returns null (no license detected) or `NOASSERTION` (custom license text GitHub could not identify) |
-| 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths`; if `min_chars` is set the matched file must also meet that size threshold |
+| 3 | **License type** | GitHub API | The license GitHub detects is in `allowed_licenses`; fails with a clear message if no license is detected or GitHub cannot identify it (`NOASSERTION`, e.g. custom license text) |
+| 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths`; if `min_chars` is set the matched file must also meet that size threshold. Entries with `json_only: true` are JSON only |
+| 5 | **Forbidden files** | Local clone | No `forbidden_files` entry matches a file in its `search_paths`. Entries with `json_only: true` are JSON only |
 
-Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the local clone.
+Checks 1, 2 and 3 use only API data (no clone needed). Checks 4 and 5 require the local clone.
 
----
+A `required_files` or `forbidden_files` entry with `json_only: true` is **JSON only**: the file is reported in the `--json` file and the compliance report, but is not listed in the issue or the result line, and its absence never opens, updates or keeps open an issue. A repository that fails only JSON-only checks counts as compliant for the issue and shows `✅` in the result line. The production configuration uses this for `DEVELOPMENT*` and `DEVELOPER*` (Allianz AZ.05, a SHOULD) and for the forbidden `SECURITY*` (a SHOULD NOT of the Allianz standards, AZ.07: a project may have a documented reason for its own policy).
 
-## Execution Flow
-
-```
-1. Read GITHUB_TOKEN from environment — exit with clear error if missing
-2. Parse CLI arguments
-3. Load config with js-yaml
-4. Instantiate Octokit with the token
-5. Fetch all repos in org (paginated):
-     octokit.paginate(octokit.rest.repos.listForOrg, { org, type: "all" })
-   Each repo object includes: name, description, license, topics, archived
-   Split into active (archived: false, not excluded), archived (archived: true, not excluded), and excluded (name in `excluded_repos`) lists
-6. Run metadata checks (description, topics, license type) for all repos from API data
-7. Clone/update active repos in batches of 5 using simple-git:
-     - Directory exists: git.fetch(['origin', '--depth', '1']) + git.reset(['--hard', 'FETCH_HEAD'])
-       (shallow fetches only write to FETCH_HEAD, not to a tracking ref, so FETCH_HEAD is the correct reset target)
-     - Directory missing: git.clone(url, lint_cache/<repo>)
-   Batches run sequentially; the 5 clones within each batch run in parallel via Promise.all
-   Archived repos are not cloned.
-8. For each active repo (sequentially after cloning):
-   a. Run file-existence checks on local clone
-   b. Aggregate metadata + file check results into a failures list
-   c. Failures present:
-        - If no open issue with matching title exists: create issue (unless --dry-run)
-        - If an open issue with matching title exists: update its body with the current check results (unless --dry-run)
-   d. All checks pass:
-        - If an open issue with matching title exists: close it with a resolved comment (unless --dry-run)
-   e. Print summary line to stdout
-9. For each archived repo: run all checks (metadata only, no clone) and print summary line — no issue action taken
-10. For each excluded repo: print name only under "Skipped (configuration)" — no checks, no issue action
-11. Always exit 0 — lint failures are expected, not errors. Only fatal errors (missing token, unreadable config, API failure) exit non-zero.
-```
+Active repos are shallow-cloned into `lint_cache/` in parallel, at most 5 at a time. Existing clones are updated in place; a clone that fails to update is deleted and re-cloned. Archived repos are not cloned, so they only get checks 1–3.
 
 ---
 
@@ -187,16 +169,17 @@ Checks 1, 2, and 3 use only API data (no clone needed). Check 4 requires the loc
 | Non-compliant | Open issue exists | Update issue body with current check results |
 | Compliant | Open issue exists | Close issue with resolved comment |
 | Compliant | No open issue | No action |
+| Issues disabled (any) | — | No issue action; if a check fails, the warning `⚠️  <repo>: issues are disabled, no issue opened` is printed after its result line |
 | Archived (any) | — | No issue action |
 | Excluded (any) | — | No checks run, no issue action |
 
 The script only considers **open** issues. If a user manually closes the issue but the repo remains non-compliant, a new issue will be created on the next run.
 
-Archived repos are checked for compliance and shown in a separate output section, but no issues are ever created or closed for them.
-
-Issue lookup uses `octokit.rest.issues.listForRepo` filtered by `state: "open"` and matching `issue_title` from config.
+Archived repos are checked for compliance (checks 1–3 only) and shown in a separate output section, but no issues are ever created or closed for them.
 
 ### Issue body template
+
+Every failed check shows its finding in the Details column and, below it after `**Why:**`, why the check matters: the `why` text of a `required_files` or `forbidden_files` entry, or for the description, topics and license checks a built-in text per failure case (`WHY` in `lint_repos.js`, listed in the sections of these checks; not configurable). People who get the issue rarely read the standards guide, so the issue itself has to explain the rule. The finding and the `why` text are put on one line, `|` is escaped so it cannot break the table, and `<` and `>` are escaped so GitHub shows them as text (e.g. `<Project>`). Passed checks have an empty Details cell.
 
 ```markdown
 ## Mandatory Repository Configuration
@@ -205,13 +188,13 @@ The following compliance checks failed for this repository:
 
 | Check | Status | Details |
 |-------|--------|---------|
-| Repository Description | ❌ Failed | No description set |
+| Repository Description | ❌ Failed | No description set<br>**Why:** GitHub shows the description, not the README, in the search results and in the GitHub CLI, so without it people cannot see what the project does. |
 | Repository Topics     | ✅ Passed | |
 | README File           | ✅ Passed | |
-| CONTRIBUTING File     | ❌ Failed | File not found in ., .github, docs |
+| CONTRIBUTING File     | ❌ Failed | File not found in ., .github, docs<br>**Why:** It tells others how to propose changes and what is expected of a contribution. |
 | License File          | ✅ Passed | |
-| License Type          | ❌ Failed | 'WTFPL' is not in the approved list |
-| License Type          | ❌ Failed | Custom license text detected — GitHub could not identify a standard SPDX license. Ensure the license is based on an approved one. |
+| License Type          | ❌ Failed | 'WTFPL' is not in the approved list<br>**Why:** Only the approved licenses may be used for Allianz open source projects. |
+| Maintainers File      | ❌ Failed | MAINTAINERS.md must not exist; delete it<br>**Why:** A MAINTAINERS file is easily confused with AUTHORS, the legally required list of copyright holders. It also puts the names of individuals into the repository, which is personal data under the GDPR. |
 
 Please review the [Mandatory Repository Configuration](<docs_link>) guide and address the issues above.
 
@@ -225,10 +208,9 @@ _This issue was automatically generated by the OSPO linting bot._
 With `--debug`, cloning progress is printed first, followed by a `Results` header and one line per repo. Failing repos additionally show the reason for each failure indented below:
 
 ```
-Cloning batch 1/2...
+Cloning 3 repositories (5 at a time)...
   Cloning my-repo...
   Cloning another-repo...
-Cloning batch 2/2...
   Updating third-repo...
 
 Results
@@ -240,7 +222,7 @@ Results
 ✅ third-repo
 ```
 
-Without `--debug`, only the `Results` header and repo lines are printed. The failing check names are listed in brackets for non-compliant repos. Archived repos appear in a separate section after active repos. No files are written to disk.
+Without `--debug`, only the `Results` header and repo lines are printed. The failing check names are listed in brackets for non-compliant repos. The JSON-only checks (5 and 6) never appear in the brackets. A failing repo with issues disabled gets the line `⚠️  <repo>: issues are disabled, no issue opened` below its result line. Archived repos appear in a separate section after active repos. No files are written to disk, except with `--json`.
 
 Icons: `✅` pass, `❌` fail (active repos); `✔️` pass, `✖️` fail (archived repos — informational only). 
 
@@ -273,52 +255,32 @@ When `--dry-run` is active and there are pending actions, a summary block is app
 
 ---
 
-## Dependencies
+## JSON output
 
-| Tool | Purpose | Change vs. today |
-|---|---|---|
-| `node` + `npm` | Run the script, install packages | Node was already needed; npm replaces `npm install -g repolinter` |
-| `@octokit/rest` | GitHub API + issue management | Replaces `gh api` calls |
-| `js-yaml` | Parse YAML config | Replaces `yq` for config parsing |
-| `simple-git` | Async clone and update repos | Replaces `child_process.execSync` git calls |
-| `git` | Required by simple-git at runtime | Was already implicitly required |
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([Tool file format](reports_compliance_spec.md#tool-file-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
 
-**Removed dependencies:**
-- `gh` CLI (no longer required by this script)
-- `repolinter` (archived npm global)
-- `licensee` Ruby gem + Ruby runtime
+The file has these keys:
 
----
+| Key | Content |
+|---|---|
+| `tool`, `run_at`, `org` | Script name, start of the run (UTC), organisation |
+| `ospo_sha` | Commit of the scripts: `GITHUB_SHA`, otherwise `HEAD` of the local checkout, otherwise `null` |
+| `config_file`, `config_sha256` | Config path relative to the repo root, and the SHA-256 of the config file |
+| `run_url` | Link to the GitHub Actions run (`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, `GITHUB_RUN_ID`), otherwise `null` |
+| `issue_title` | Title of the per-repository issue |
+| `results` | One row per repository and check: `repo`, `check`, `name`, `result` (`pass`, `fail` or `na`), `score` (always `null`), `reason` (always filled), `details` (list of lines) |
+| `catalogue` | One entry per check ID: `name` and `documentation` (`url` to the [Checks](#checks) section, pinned to `ospo_sha`; `short` rule; `fix`) |
+| `skipped` | Repositories without results: `repo` and `reason` |
+| `errors` | Always `[]`: errors abort the run, and then no file is written |
 
-## Unit Tests
+Every check of an active repository is written. Archived repositories are listed in `skipped` with reason `archived` (their metadata checks only appear in the text output), excluded repositories with reason `excluded_repos`.
 
-Unit tests live in `scripts/lint_repos.test.js` (next to the source file) and run with Node's built-in test runner (`node --test`). No additional test framework required.
+| Check ID | Name |
+|---|---|
+| `lint/description` | Repository Description |
+| `lint/topics` | Repository Topics |
+| `lint/license-type` | License Type |
+| `lint/<prefix>` | One per `required_files` entry, also for `json_only` entries. The ID is the pattern prefix in lower case, from the first pattern of a list (`CONTRIBUTING*` → `lint/contributing`, `["DEVELOPMENT*", "DEVELOPER*"]` → `lint/development`), the name is its `name` (default: the patterns, joined with "or"). Two entries with the same ID are a configuration error |
+| `lint/no-<prefix>` | One per `forbidden_files` entry, also for `json_only` entries. The ID is built like `lint/<prefix>` with `no-` in front (`CODE_OF_CONDUCT*` → `lint/no-code-of-conduct`), the name is its `name` (default: "No " and the patterns). Two entries with the same ID are a configuration error |
 
-Each check function is tested in isolation with fake API responses and a temporary directory for file-system checks. Key scenarios per check:
-
-- **Description:** set, empty string, null
-- **Topics:** none assigned; topic not in `allowed_topics`; `allowed_topics` empty (any accepted)
-- **License type:** allowed, disallowed, API returns null, API returns `NOASSERTION` (custom license text)
-- **Required files:** all present; each file missing individually; match in `search_paths` subdirectory; case-insensitive match; file exists but is below `min_chars` threshold; file meets `min_chars` threshold exactly; `min_chars` absent (size not checked)
-- **Config loading:** valid config; missing required field `issue_title`; `allowed_topics` absent (defaults to empty); `excluded_repos` absent (defaults to empty); `excluded_repos` list preserved
-
-### Integration test (against `ospo-sandbox`)
-
-Requires `GITHUB_TOKEN`. Run via Makefile, not part of the unit test suite.
-
-```makefile
-test_lint_repos:
-    cd .. && node scripts/lint_repos.js --org ospo-sandbox --config scripts/test-config/lint_repos.yaml --debug
-```
-
----
-
-## CI/CD Changes
-
-`.github/workflows/lint_repos.yaml` setup:
-
-- Node.js setup step
-- `npm ci` run from the `scripts/` directory
-- `actions/cache` restores/saves `lint_cache/` under key `lint-cache-allianz` — repos are cloned once and updated in place on subsequent runs
-- Run step: `node scripts/lint_repos.js --org allianz`
-- Pass the GitHub App token as `GITHUB_TOKEN` env var to the run step
+The `short` and `fix` texts in the catalogue are built from the configuration (lengths, licenses, patterns, search paths). The detailed documentation of the requirements behind the checks is the guideline page, linked per requirement from the report configuration (`url` in `config/report/<key>_report.yaml`).

@@ -1,118 +1,317 @@
 #!/usr/bin/env node
 
-import { Octokit } from '@octokit/rest';
-import simpleGit from 'simple-git';
-import yaml from 'js-yaml';
+import { simpleGit } from 'simple-git';
 import { readFile, readdir, access, rm } from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const repoRoot = path.join(__dirname, '..');
-const lintCacheDir = path.join(repoRoot, 'lint_cache');
-const defaultConfigPath = path.join(repoRoot, 'config', 'lint_repos.yaml');
+import { parseCli, resolveToken, runIfMain } from './lib/cli.js';
+import { mapWithConcurrency } from './lib/concurrency.js';
+import { defaultConfigPath, loadYaml, repoRoot, requireFields } from './lib/config.js';
+import { createGitHub, createOctokit } from './lib/github.js';
+import { syncIssue } from './lib/issues.js';
+import { buildHeader, buildJsonDocument, checkResult, skippedRepos, specCatalogue, specUrl, writeJsonReport } from './lib/json_output.js';
+import { createLogger } from './lib/logger.js';
+import { createPlan } from './lib/plan.js';
+import { printHeading, printIssueDryRunSummary, printNameList, printSection } from './lib/report.js';
+import { partitionRepos } from './lib/repos.js';
+
+export const LINT_CACHE_DIR = path.join(repoRoot, 'lint_cache');
+const CLONE_CONCURRENCY = 5;
+const CLOSE_COMMENT = '_All compliance checks now pass. Closing this issue automatically._';
+export const TOOL = 'lint_repos';
+const SPEC_FILE = 'lint_repos_spec.md';
+const MAX_TOPICS = 5;
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
 export async function loadConfig(configPath) {
-  const raw = await readFile(configPath, 'utf8');
-  const config = yaml.load(raw);
-  if (!config.issue_title) {
-    throw new Error(`Config missing required field: issue_title (in ${configPath})`);
-  }
+  const config = await loadYaml(configPath);
+  requireFields(config, ['issue_title'], configPath);
   config.allowed_topics = config.allowed_topics ?? [];
+  config.allowed_licenses = config.allowed_licenses ?? [];
+  config.required_files = config.required_files ?? [];
+  config.forbidden_files = config.forbidden_files ?? [];
   config.excluded_repos = config.excluded_repos ?? [];
   config.description_length = {
     min: config.description_length?.min ?? 30,
     max: config.description_length?.max ?? 150,
   };
+  const ids = new Set();
+  validateFileSpecs(config.required_files, 'required_files', requiredFileCheckId, ids, configPath);
+  validateFileSpecs(config.forbidden_files, 'forbidden_files', forbiddenFileCheckId, ids, configPath);
   return config;
 }
 
+/** Validates the entries of `required_files` or `forbidden_files`; `ids` collects the check IDs across both lists. */
+function validateFileSpecs(fileSpecs, key, checkId, ids, configPath) {
+  for (const fileSpec of fileSpecs) {
+    const { pattern } = fileSpec;
+    const valid = typeof pattern === 'string' || (Array.isArray(pattern) && pattern.length > 0 && pattern.every(p => typeof p === 'string'));
+    if (!valid) {
+      throw new Error(`${key} pattern must be a string or a non-empty list of strings (in ${configPath})`);
+    }
+    const id = checkId(fileSpec);
+    if (fileSlug(fileSpec) === '' || ids.has(id)) {
+      throw new Error(`${key} pattern '${patternText(fileSpec)}' gives no unique check ID (in ${configPath})`);
+    }
+    ids.add(id);
+    if (fileSpec.json_only !== undefined && typeof fileSpec.json_only !== 'boolean') {
+      throw new Error(`${key} pattern '${patternText(fileSpec)}': json_only must be true or false (in ${configPath})`);
+    }
+    if (fileSpec.description !== undefined) {
+      throw new Error(`${key} pattern '${patternText(fileSpec)}': description was renamed to name (in ${configPath})`);
+    }
+    if (typeof fileSpec.why !== 'string' || fileSpec.why.trim() === '') {
+      throw new Error(`${key} pattern '${patternText(fileSpec)}': why must be a non-empty text (in ${configPath})`);
+    }
+  }
+}
+
+/** The patterns of a required file: `pattern` is one prefix glob or a list of them. */
+export const filePatterns = fileSpec => [fileSpec.pattern].flat();
+
+/** The patterns for people: "DEVELOPMENT* or DEVELOPER*". */
+const patternText = fileSpec => filePatterns(fileSpec).join(' or ');
+
+/** The part of a prefix glob before the first `*`: README* → README. */
+const globPrefix = pattern => pattern.replace(/\*.*$/, '');
+
+/** The pattern prefix of a file entry as a check ID part: CODE_OF_CONDUCT* → code-of-conduct. */
+const fileSlug = fileSpec => globPrefix(filePatterns(fileSpec)[0]).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+/** Check ID of a required file, from the prefix of its (first) pattern: CONTRIBUTING* → lint/contributing. */
+export const requiredFileCheckId = fileSpec => `lint/${fileSlug(fileSpec)}`;
+
+/** Check ID of a forbidden file: CODE_OF_CONDUCT* → lint/no-code-of-conduct. */
+export const forbiddenFileCheckId = fileSpec => `lint/no-${fileSlug(fileSpec)}`;
+
 // ── Check functions ───────────────────────────────────────────────────────────
+
+/** Why a metadata check matters, one text per failure case; shown in the issue below the finding. */
+export const WHY = {
+  descriptionMissing: 'GitHub shows the description, not the README, in the search results and in the GitHub CLI, so without it people cannot see what the project does.',
+  descriptionShort: 'A description of a few words does not tell people what the project does. Describe its purpose in one full sentence.',
+  descriptionLong: 'GitHub cuts long descriptions in the search results and in the CLI, so the end of the text is not shown.',
+  topicsMissing: 'Topics are used to filter the projects of the organisation and for statistics across it. A repository without topics shows up in neither.',
+  topicsTooMany: 'With too many topics a project shows up under filters that hardly apply to it. Choose the topics that describe it best.',
+  topicsInvalid: 'Filtering and statistics only work properly if all projects use topics from a common taxonomy. With a topic outside the approved list (e.g. "k8s" instead of "kubernetes"), the project does not show up in the result lists.',
+  licenseMissing: 'Without a license nobody may legally use, change or share the code, even though the repository is public.',
+  licenseUnidentified: 'GitHub cannot show the license, so users and tools cannot see the terms. This happens when the license text was changed or combined with other text.',
+  licenseNotApproved: 'Only the approved licenses may be used for Allianz open source projects.',
+};
 
 export function checkDescription(repo, descriptionLength) {
   const desc = repo.description?.trim() ?? '';
   if (desc.length === 0) {
-    return { passed: false, detail: 'No description set' };
+    return { passed: false, detail: 'No description set', why: WHY.descriptionMissing };
   }
   if (desc.length < descriptionLength.min) {
-    return { passed: false, detail: `Description too short (${desc.length} chars); minimum is ${descriptionLength.min}` };
+    return { passed: false, detail: `Description too short (${desc.length} chars); minimum is ${descriptionLength.min}`, why: WHY.descriptionShort };
   }
   if (desc.length > descriptionLength.max) {
-    return { passed: false, detail: `Description too long (${desc.length} chars); maximum is ${descriptionLength.max}` };
+    return { passed: false, detail: `Description too long (${desc.length} chars); maximum is ${descriptionLength.max}`, why: WHY.descriptionLong };
   }
-  return { passed: true };
+  return { passed: true, detail: `Description has ${desc.length} chars` };
 }
 
 export function checkTopics(repo, allowedTopics) {
   const topics = repo.topics ?? [];
   if (topics.length === 0) {
-    return { passed: false, detail: 'No topics set' };
+    return { passed: false, detail: 'No topics set', why: WHY.topicsMissing };
   }
-  if (topics.length > 5) {
-    return { passed: false, detail: `Too many topics (${topics.length}); maximum is 5` };
+  if (topics.length > MAX_TOPICS) {
+    return { passed: false, detail: `Too many topics (${topics.length}); maximum is ${MAX_TOPICS}`, why: WHY.topicsTooMany };
   }
   if (allowedTopics.length > 0) {
     const invalid = topics.filter(t => !allowedTopics.includes(t));
     if (invalid.length > 0) {
-      return { passed: false, detail: `Invalid topic(s): ${invalid.join(', ')}` };
+      return { passed: false, detail: `Invalid topic(s): ${invalid.join(', ')}`, why: WHY.topicsInvalid };
     }
   }
-  return { passed: true };
+  return { passed: true, detail: `Topics: ${topics.join(', ')}` };
 }
 
 export function checkLicense(repo, allowedLicenses) {
   const spdxId = repo.license?.spdx_id ?? null;
   if (spdxId === null) {
-    return { passed: false, detail: 'No license detected' };
+    return { passed: false, detail: 'No license detected', why: WHY.licenseMissing };
   }
   if (spdxId === 'NOASSERTION') {
     return {
       passed: false,
       detail: 'Custom license text detected — GitHub could not identify a standard SPDX license. Ensure the license is based on an approved one.',
+      why: WHY.licenseUnidentified,
     };
   }
   if (!allowedLicenses.includes(spdxId)) {
-    return { passed: false, detail: `'${spdxId}' is not in the approved list` };
+    return { passed: false, detail: `'${spdxId}' is not in the approved list`, why: WHY.licenseNotApproved };
   }
-  return { passed: true };
+  return { passed: true, detail: `'${spdxId}' is in the approved list` };
 }
 
-export async function checkRequiredFile(cloneDir, fileSpec) {
-  const { pattern, search_paths, min_chars } = fileSpec;
-  const searchPaths = search_paths ?? ['.'];
-  // Patterns are always prefix globs (README*, CONTRIBUTING*, LICENSE*) — match case-insensitively
-  const prefix = pattern.replace(/\*.*$/, '').toUpperCase();
-  for (const searchPath of searchPaths) {
+/**
+ * The files matching a file entry, in the order of its search paths: [{ searchPath, dir, name }].
+ * Patterns are always prefix globs (README*, CONTRIBUTING*, LICENSE*) — matched case-insensitively.
+ * A search path that does not exist is skipped.
+ */
+async function findFiles(cloneDir, fileSpec) {
+  const prefixes = filePatterns(fileSpec).map(p => globPrefix(p).toUpperCase());
+  const found = [];
+  for (const searchPath of searchPathsOf(fileSpec)) {
     const dir = path.join(cloneDir, searchPath);
-    try {
-      const entries = await readdir(dir);
-      const match = entries.find(f => f.toUpperCase().startsWith(prefix));
-      if (match) {
-        if (min_chars != null) {
-          const content = await readFile(path.join(dir, match), 'utf8');
-          if (content.length < min_chars) {
-            return { passed: false, detail: `File exists but is too short (${content.length} chars; minimum is ${min_chars})` };
-          }
-        }
-        return { passed: true };
-      }
-    } catch {
-      // Directory doesn't exist — try next path
+    const entries = await readdir(dir).catch(() => []);
+    for (const name of entries.filter(f => prefixes.some(prefix => f.toUpperCase().startsWith(prefix)))) {
+      found.push({ searchPath, dir, name });
     }
   }
-  return { passed: false, detail: `File not found in ${searchPaths.join(', ')}` };
+  return found;
+}
+
+const searchPathsOf = fileSpec => fileSpec.search_paths ?? ['.'];
+
+/** A found file for people: "NOTICE" in the root, "docs/DEVELOPMENT.md" elsewhere. */
+const foundPath = ({ searchPath, name }) => (searchPath === '.' ? name : `${searchPath}/${name}`);
+
+export async function checkRequiredFile(cloneDir, fileSpec) {
+  const { min_chars } = fileSpec;
+  const [match] = await findFiles(cloneDir, fileSpec);
+  if (!match) {
+    return { passed: false, detail: `File not found in ${searchPathsOf(fileSpec).join(', ')}` };
+  }
+  const found = match.searchPath === '.' ? `${match.name} found` : `${match.name} found in ${match.searchPath}`;
+  if (min_chars != null) {
+    const content = await readFile(path.join(match.dir, match.name), 'utf8');
+    if (content.length < min_chars) {
+      return { passed: false, detail: `File exists but is too short (${content.length} chars; minimum is ${min_chars})` };
+    }
+    return { passed: true, detail: `${found} (${content.length} chars)` };
+  }
+  return { passed: true, detail: found };
+}
+
+/** Passes when no file of the entry exists in any of its search paths; a failure lists every file found. */
+export async function checkForbiddenFile(cloneDir, fileSpec) {
+  const found = await findFiles(cloneDir, fileSpec);
+  if (found.length === 0) {
+    return { passed: true, detail: `No ${patternText(fileSpec)} file in ${searchPathsOf(fileSpec).join(', ')}` };
+  }
+  const them = found.length === 1 ? 'it' : 'them';
+  return { passed: false, detail: `${found.map(foundPath).join(', ')} must not exist; delete ${them}` };
+}
+
+/** Checks that only need the repository metadata from the API (also run for archived repos). */
+export function metadataChecks(repo, config) {
+  return [
+    { id: 'lint/description', checkName: 'Repository Description', ...checkDescription(repo, config.description_length) },
+    { id: 'lint/topics', checkName: 'Repository Topics', ...checkTopics(repo, config.allowed_topics) },
+    { id: 'lint/license-type', checkName: 'License Type', ...checkLicense(repo, config.allowed_licenses) },
+  ];
+}
+
+/**
+ * All checks for an active repository: metadata and the required and forbidden files in its clone.
+ * A file entry with `json_only: true` is JSON only: it is not listed in the issue or the result line.
+ */
+export async function runChecks(repo, config, cloneDir) {
+  const checks = metadataChecks(repo, config);
+  for (const fileSpec of config.required_files) {
+    checks.push({
+      id: requiredFileCheckId(fileSpec),
+      checkName: requiredFileName(fileSpec),
+      jsonOnly: fileSpec.json_only === true,
+      why: fileSpec.why,
+      ...(await checkRequiredFile(cloneDir, fileSpec)),
+    });
+  }
+  for (const fileSpec of config.forbidden_files) {
+    checks.push({
+      id: forbiddenFileCheckId(fileSpec),
+      checkName: forbiddenFileName(fileSpec),
+      jsonOnly: fileSpec.json_only === true,
+      why: fileSpec.why,
+      ...(await checkForbiddenFile(cloneDir, fileSpec)),
+    });
+  }
+  return checks;
+}
+
+const requiredFileName = fileSpec => fileSpec.name ?? patternText(fileSpec);
+const forbiddenFileName = fileSpec => fileSpec.name ?? `No ${patternText(fileSpec)}`;
+
+// ── JSON output ───────────────────────────────────────────────────────────────
+
+/** Catalogue of every check this run performs, with the rule texts built from the configuration. */
+export function buildCatalogue(config, { sha = null, env = {} } = {}) {
+  const entry = specCatalogue(SPEC_FILE, { sha, env });
+  const { min, max } = config.description_length;
+  const approved = config.allowed_topics.length > 0;
+  const licenses = config.allowed_licenses.join(', ');
+  const catalogue = {
+    'lint/description': entry(
+      'Repository Description',
+      `The repository description is set and has ${min} to ${max} characters.`,
+      `Set a description of ${min} to ${max} characters in the About section of the repository.`,
+    ),
+    'lint/topics': entry(
+      'Repository Topics',
+      `The repository has 1 to ${MAX_TOPICS} topics${approved ? ', all from the approved topic list' : ''}.`,
+      `Add 1 to ${MAX_TOPICS} topics${approved ? ' from the approved topic list' : ''} in the About section of the repository.`,
+    ),
+    'lint/license-type': entry(
+      'License Type',
+      `The license GitHub detects is one of ${licenses}. A missing or unidentified license (NOASSERTION) fails.`,
+      `Use one of the approved licenses (${licenses}) with its unmodified license text, so GitHub can detect it.`,
+    ),
+  };
+  for (const fileSpec of config.required_files) {
+    const paths = searchPathsOf(fileSpec).join(', ');
+    const size = fileSpec.min_chars != null ? `, with at least ${fileSpec.min_chars} characters` : '';
+    catalogue[requiredFileCheckId(fileSpec)] = entry(
+      requiredFileName(fileSpec),
+      `A file ${patternText(fileSpec)} exists in ${paths}${size}.`,
+      `Add a ${patternText(fileSpec)} file in ${paths}${size}.`,
+    );
+  }
+  for (const fileSpec of config.forbidden_files) {
+    const paths = searchPathsOf(fileSpec).join(', ');
+    catalogue[forbiddenFileCheckId(fileSpec)] = entry(
+      forbiddenFileName(fileSpec),
+      `No file ${patternText(fileSpec)} exists in ${paths}.`,
+      `Delete the ${patternText(fileSpec)} file from ${paths}.`,
+    );
+  }
+  // The spec has no section per check: every check links to its Checks section.
+  const checksUrl = specUrl(SPEC_FILE, 'Checks', { sha, env });
+  for (const { documentation } of Object.values(catalogue)) documentation.url = checksUrl;
+  return catalogue;
+}
+
+/** Results of the active repositories and the skipped list (archived and excluded repositories have no results). */
+export function buildJsonResults({ checked, archived, excluded, catalogue }) {
+  return {
+    results: checked.flatMap(({ repo, checks }) =>
+      checks.map(c => checkResult(repo, c.id, catalogue, { passed: c.passed, reason: c.detail })),
+    ),
+    skipped: [...skippedRepos(archived, 'archived'), ...skippedRepos(excluded, 'excluded_repos')],
+  };
 }
 
 // ── Issue body ────────────────────────────────────────────────────────────────
 
+/** Text for one table cell: on one line, `|` escaped so it cannot end the cell, `<` and `>` so GitHub does not take them for HTML. */
+const tableCell = text => text.replace(/\s+/g, ' ').trim().replaceAll('|', '\\|').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
+/** The Details cell of a failed check: the finding, and below it why the check matters. */
+function failureCell({ detail, why }) {
+  const finding = tableCell(detail ?? '');
+  return why ? `${finding}<br>**Why:** ${tableCell(why)}` : finding;
+}
+
 export function buildIssueBody(allChecks, docsLink) {
-  const rows = allChecks.map(({ checkName, passed, detail }) => {
-    const icon = passed ? '✅' : '❌';
-    const status = passed ? 'Passed' : 'Failed';
-    const detailCell = passed ? '' : (detail ?? '');
-    return `| ${checkName} | ${icon} ${status} | ${detailCell} |`;
+  const rows = allChecks.map(check => {
+    const icon = check.passed ? '✅' : '❌';
+    const status = check.passed ? 'Passed' : 'Failed';
+    return `| ${check.checkName} | ${icon} ${status} | ${check.passed ? '' : failureCell(check)} |`;
   });
   return [
     '## Mandatory Repository Configuration',
@@ -129,84 +328,38 @@ export function buildIssueBody(allChecks, docsLink) {
   ].join('\n');
 }
 
-// ── Issue helpers ─────────────────────────────────────────────────────────────
-
-async function findOpenIssue(octokit, org, repo, issueTitle) {
-  const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
-    owner: org,
-    repo,
-    state: 'open',
-  });
-  const found = issues.find(i => i.title === issueTitle && !i.pull_request);
-  return found ? found.number : null;
-}
-
-async function createIssue(octokit, org, repo, title, body) {
-  await octokit.rest.issues.create({ owner: org, repo, title, body });
-}
-
-async function updateIssue(octokit, org, repo, issueNumber, body) {
-  await octokit.rest.issues.update({ owner: org, repo, issue_number: issueNumber, body });
-}
-
-async function closeIssue(octokit, org, repo, issueNumber) {
-  await octokit.rest.issues.createComment({
-    owner: org,
-    repo,
-    issue_number: issueNumber,
-    body: '_All compliance checks now pass. Closing this issue automatically._',
-  });
-  await octokit.rest.issues.update({
-    owner: org,
-    repo,
-    issue_number: issueNumber,
-    state: 'closed',
-  });
-}
-
 // ── Cloning ───────────────────────────────────────────────────────────────────
 
-async function cloneOrUpdate(repoName, cloneDir, org, debug) {
-  const url = `https://github.com/${org}/${repoName}.git`;
-  let exists = false;
-  try {
-    await access(cloneDir);
-    exists = true;
-  } catch {
-    /* doesn't exist */
-  }
-  if (debug) {
-    console.log(`  ${exists ? 'Updating' : 'Cloning'} ${repoName}...`);
-  }
-  if (exists) {
-    try {
-      const git = simpleGit(cloneDir);
-      await git.fetch(['origin', '--depth', '1']);
-      try {
-        await git.reset(['--hard', 'FETCH_HEAD']);
-      } catch {
-        // FETCH_HEAD not set — repo is empty on remote, nothing to reset to
-      }
-    } catch {
-      // Stale or corrupt clone — delete and re-clone from scratch
-      if (debug) console.log(`  Re-cloning ${repoName} (update failed)...`);
-      await rm(cloneDir, { recursive: true, force: true });
-      await simpleGit().clone(url, cloneDir, ['--depth', '1']);
-    }
-  } else {
-    await simpleGit().clone(url, cloneDir, ['--depth', '1']);
-  }
-}
+const exists = async dir => access(dir).then(() => true, () => false);
 
-async function cloneBatch(batch, cacheDir, org, debug) {
-  await Promise.all(
-    batch.map(repo => cloneOrUpdate(repo.name, path.join(cacheDir, repo.name), org, debug))
-  );
+/** Shallow-clones the repository into cloneDir, or updates an existing clone (re-cloning if that fails). */
+export async function cloneOrUpdate(repoName, cloneDir, org, { git = simpleGit, logger } = {}) {
+  const url = `https://github.com/${org}/${repoName}.git`;
+  const alreadyCloned = await exists(cloneDir);
+  logger?.debug(`  ${alreadyCloned ? 'Updating' : 'Cloning'} ${repoName}...`);
+  if (!alreadyCloned) {
+    await git().clone(url, cloneDir, ['--depth', '1']);
+    return;
+  }
+  try {
+    const repo = git(cloneDir);
+    await repo.fetch(['origin', '--depth', '1']);
+    try {
+      await repo.reset(['--hard', 'FETCH_HEAD']);
+    } catch {
+      // FETCH_HEAD not set — repo is empty on remote, nothing to reset to
+    }
+  } catch {
+    // Stale or corrupt clone — delete and re-clone from scratch
+    logger?.debug(`  Re-cloning ${repoName} (update failed)...`);
+    await rm(cloneDir, { recursive: true, force: true });
+    await git().clone(url, cloneDir, ['--depth', '1']);
+  }
 }
 
 // ── Output helpers ────────────────────────────────────────────────────────────
 
-function formatResultLine(repoName, failures, isArchived) {
+export function formatResultLine(repoName, failures, isArchived) {
   const passIcon = isArchived ? '✔️' : '✅';
   const failIcon = isArchived ? '✖️' : '❌';
   if (failures.length === 0) {
@@ -218,180 +371,63 @@ function formatResultLine(repoName, failures, isArchived) {
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-async function main() {
-  const args = process.argv.slice(2);
-  let org = null;
-  let configPath = defaultConfigPath;
-  let dryRun = false;
-  let debug = false;
-
-  for (let i = 0; i < args.length; i++) {
-    switch (args[i]) {
-      case '--org':
-        org = args[++i];
-        break;
-      case '--config':
-        configPath = path.resolve(args[++i]);
-        break;
-      case '--dry-run':
-        dryRun = true;
-        break;
-      case '--debug':
-        debug = true;
-        break;
-    }
-  }
-
-  if (!org) {
-    console.error('Error: --org is required');
-    process.exit(1);
-  }
-
-  const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-  if (!token) {
-    console.error('Error: GITHUB_TOKEN (or GH_TOKEN) environment variable is not set');
-    process.exit(1);
-  }
-
+export async function run({ argv = [], env = {}, logger, github, git, cacheDir = LINT_CACHE_DIR, now = new Date() } = {}) {
+  const { org, configPath, dryRun, debug, json } = parseCli(argv, { defaultConfigPath: defaultConfigPath(TOOL), stringFlags: ['json'] });
+  const gh = github ?? createGitHub(createOctokit(resolveToken(env)));
+  const log = logger ?? createLogger({ debug });
   const config = await loadConfig(configPath);
-  const octokit = new Octokit({ auth: token });
-  octokit.hook.before('request', options => {
-    options.headers['X-GitHub-Api-Version'] = '2026-03-10';
-  });
+  const plan = createPlan({ dryRun, logger: log });
 
-  const allRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
-    org,
-    type: 'all',
-    per_page: 100,
-  });
+  const { active, archived, excluded } = partitionRepos(await gh.listOrgRepos(org, { type: 'all' }), config.excluded_repos);
 
-  const excluded = [];
-  const archived = [];
-  const active = [];
-
-  for (const repo of allRepos) {
-    if (config.excluded_repos.includes(repo.name)) {
-      excluded.push(repo);
-    } else if (repo.archived) {
-      archived.push(repo);
-    } else {
-      active.push(repo);
-    }
+  if (active.length > 0) {
+    log.debug(`Cloning ${active.length} repositories (${CLONE_CONCURRENCY} at a time)...`);
+    await mapWithConcurrency(active, CLONE_CONCURRENCY, repo =>
+      cloneOrUpdate(repo.name, path.join(cacheDir, repo.name), org, { git, logger: log }),
+    );
+    log.debug('');
   }
 
-  // Clone active repos in batches of 5
-  const batchCount = Math.ceil(active.length / 5);
-  for (let i = 0; i < active.length; i += 5) {
-    const batch = active.slice(i, i + 5);
-    const batchNum = Math.floor(i / 5) + 1;
-    if (debug) console.log(`Cloning batch ${batchNum}/${batchCount}...`);
-    await cloneBatch(batch, lintCacheDir, org, debug);
-  }
-  if (debug && active.length > 0) console.log('');
+  printHeading(log, 'Results');
 
-  console.log('Results');
-  console.log('───────');
-
-  let anyFailed = false;
-  const pendingCreates = [];
-  const pendingUpdates = [];
-  const pendingCloses = [];
-
+  const checked = [];
   for (const repo of active) {
-    const cloneDir = path.join(lintCacheDir, repo.name);
-    const allChecks = [];
+    const checks = await runChecks(repo, config, path.join(cacheDir, repo.name));
+    checked.push({ repo: repo.name, checks });
+    const issueChecks = checks.filter(c => !c.jsonOnly);
+    const failures = issueChecks.filter(c => !c.passed);
 
-    allChecks.push({ checkName: 'Repository Description', ...checkDescription(repo, config.description_length) });
-    allChecks.push({ checkName: 'Repository Topics', ...checkTopics(repo, config.allowed_topics) });
-    allChecks.push({ checkName: 'License Type', ...checkLicense(repo, config.allowed_licenses ?? []) });
+    log.info(formatResultLine(repo.name, failures, false));
+    for (const f of failures) log.debug(`     ${f.checkName}: ${f.detail}`);
 
-    for (const fileSpec of config.required_files ?? []) {
-      const result = await checkRequiredFile(cloneDir, fileSpec);
-      allChecks.push({ checkName: fileSpec.description ?? fileSpec.pattern, ...result });
+    if (repo.has_issues !== true) {
+      if (failures.length > 0) log.info(`⚠️  ${repo.name}: issues are disabled, no issue opened`);
+      continue;
     }
-
-    const failures = allChecks.filter(c => !c.passed);
-
-    if (failures.length > 0) {
-      anyFailed = true;
-      console.log(formatResultLine(repo.name, failures, false));
-      if (debug) {
-        for (const f of failures) {
-          console.log(`     ${f.checkName}: ${f.detail}`);
-        }
-      }
-      const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
-      const body = buildIssueBody(allChecks, config.docs_link);
-      if (!existingIssue) {
-        if (dryRun) {
-          pendingCreates.push(repo.name);
-        } else {
-          await createIssue(octokit, org, repo.name, config.issue_title, body);
-        }
-      } else {
-        if (dryRun) {
-          pendingUpdates.push({ number: existingIssue, name: repo.name });
-        } else {
-          await updateIssue(octokit, org, repo.name, existingIssue, body);
-        }
-      }
-    } else {
-      console.log(formatResultLine(repo.name, [], false));
-      const existingIssue = await findOpenIssue(octokit, org, repo.name, config.issue_title);
-      if (existingIssue) {
-        if (dryRun) {
-          pendingCloses.push({ number: existingIssue, name: repo.name });
-        } else {
-          await closeIssue(octokit, org, repo.name, existingIssue);
-        }
-      }
-    }
+    await syncIssue(gh, plan, {
+      org,
+      repo: repo.name,
+      title: config.issue_title,
+      body: buildIssueBody(issueChecks, config.docs_link),
+      wanted: failures.length > 0,
+      closeComment: CLOSE_COMMENT,
+    });
   }
 
-  if (archived.length > 0) {
-    console.log('');
-    console.log('Skipped (archived)');
-    console.log('──────────────────');
-    for (const repo of archived) {
-      const allChecks = [];
-      allChecks.push({ checkName: 'Repository Description', ...checkDescription(repo, config.description_length) });
-      allChecks.push({ checkName: 'Repository Topics', ...checkTopics(repo, config.allowed_topics) });
-      allChecks.push({ checkName: 'License Type', ...checkLicense(repo, config.allowed_licenses ?? []) });
-      const failures = allChecks.filter(c => !c.passed);
-      console.log(formatResultLine(repo.name, failures, true));
-    }
-  }
+  printSection(log, 'Skipped (archived)', archived.map(repo =>
+    formatResultLine(repo.name, metadataChecks(repo, config).filter(c => !c.passed), true),
+  ));
+  printNameList(log, 'Skipped (configuration)', excluded.map(r => r.name));
+  printIssueDryRunSummary(log, plan);
 
-  if (excluded.length > 0) {
-    console.log('');
-    console.log('Skipped (configuration)');
-    console.log('───────────────────────');
-    for (const repo of excluded) {
-      console.log(`– ${repo.name}`);
-    }
+  if (json) {
+    const header = await buildHeader({ tool: TOOL, org, configPath, issueTitle: config.issue_title, env, now, git });
+    const catalogue = buildCatalogue(config, { sha: header.ospo_sha, env });
+    const doc = buildJsonDocument(header, { catalogue, ...buildJsonResults({ checked, archived, excluded, catalogue }) });
+    await writeJsonReport(path.resolve(json), doc);
+    log.info(`\nJSON written to ${json}`);
   }
-
-  if (dryRun && (pendingCreates.length > 0 || pendingUpdates.length > 0 || pendingCloses.length > 0)) {
-    console.log('');
-    console.log(`──── Dry-run: ${pendingCreates.length} would be created, ${pendingUpdates.length} would be updated, ${pendingCloses.length} would be closed ────`);
-    for (const name of pendingCreates) {
-      console.log(`  ✉️   create  ${name}`);
-    }
-    for (const { number, name } of pendingUpdates) {
-      console.log(`  ✏️   update  #${number}  ${name}`);
-    }
-    for (const { number, name } of pendingCloses) {
-      console.log(`  ✔️   close   #${number}  ${name}`);
-    }
-  }
-
-  process.exit(0);
+  return 0;
 }
 
-// Only run main() when this file is the entry point (not when imported by tests)
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  main().catch(err => {
-    console.error('Fatal error:', err.message);
-    process.exit(1);
-  });
-}
+runIfMain(import.meta.url, run);

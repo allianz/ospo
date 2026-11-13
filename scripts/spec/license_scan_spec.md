@@ -17,20 +17,7 @@ All rules are configurable via a YAML configuration file — see [Configuration 
 
 ---
 
-## Implementation Approach
-
-A single JavaScript file `scripts/license_scan.js`, run with `node`. Shares `scripts/package.json` with the other scripts.
-
-### npm packages
-
-| Package | Purpose |
-|---|---|
-| `@octokit/rest` | GitHub REST API (dependency graph SBOM, issue management). Auth via `GITHUB_TOKEN` environment variable. |
-| `js-yaml` | Parse YAML config files |
-
-No `simple-git` dependency — the dependency graph is fetched entirely via the API; no local cloning is needed.
-
-### Project structure
+## Project Structure
 
 ```
 scripts/
@@ -41,23 +28,12 @@ scripts/
   license_scan.test.js
 ```
 
-### Local usage
-
-```bash
-export GITHUB_TOKEN=$(gh auth token)   # or set a PAT directly
-cd scripts
-npm install
-node license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
-```
-
-The script requires `GITHUB_TOKEN` (or `GH_TOKEN`) to be set in the environment. Default config path is resolved relative to the script file's location (repo root), not the working directory.
-
 ---
 
 ## CLI Interface
 
 ```
-node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
+node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug] [--json <file>]
 ```
 
 | Flag | Default | Description |
@@ -66,12 +42,17 @@ node scripts/license_scan.js --org <org> [--config <file>] [--dry-run] [--debug]
 | `--config` | `config/license_scan.yaml` | Path to config file (relative to repo root) |
 | `--dry-run` | false | Run checks but do not create/close issues |
 | `--debug` | false | Print extra per-repo stats (e.g. count of packages with no license info) |
+| `--json` | – | Also write the results to this file as JSON, see [JSON output](#json-output) |
+
+Exit codes: `0` whenever the run completes (violations are expected, not errors), `1` on missing `--org`, missing token, or fatal error.
+
+Requires `GITHUB_TOKEN` (or `GH_TOKEN`) in the environment. The default config path is resolved relative to the repo root, not the working directory.
 
 ---
 
 ## Configuration File
 
-Configuration lives at `config/license_scan.yaml`. The existing `deny-licenses` list is extended with additional fields:
+Configuration lives at `config/license_scan.yaml`:
 
 ```yaml
 # Title of the GitHub issue created in non-compliant repos.
@@ -100,48 +81,7 @@ Optional with defaults: `excluded_repos: []`, `docs_link: ""`.
 
 ## Checks
 
-| # | Check | Data source | Pass condition |
-|---|---|---|---|
-| 1 | **Dependency Licenses** | GitHub Dependency Graph API (`/dependency-graph/sbom/generate-report`, async polling) | No dependency has an `spdxId` (`licenseConcluded ?? licenseDeclared`) matching an entry in `deny-licenses`. Packages with `spdxId` of `NOASSERTION`, `NONE`, or `null` are silently skipped. |
-
----
-
-## Execution Flow
-
-```
-1. Read GITHUB_TOKEN from environment — exit with clear error if missing
-2. Parse CLI arguments
-3. Load config with js-yaml
-4. Instantiate Octokit with the token
-5. Fetch all repos in org (paginated):
-     octokit.paginate(octokit.rest.repos.listForOrg, { org, type: "all" })
-   Split into active (archived: false, not excluded), archived (archived: true, not excluded),
-   and excluded (name in excluded_repos) lists
-6. Process active repos in parallel batches of `CONCURRENCY` (internal constant, default 5).
-   Per-repo work runs as a unit:
-   a. GET /repos/{org}/{repo}/dependency-graph/sbom/generate-report → get `sbom_url`
-      Poll `sbom_url` with auth headers until ready (202 → wait 5s; 302 → follow redirect and parse JSON):
-      - Times out after 12 attempts (60s) — throws
-      - 5xx responses: retry up to 3 times (2s delay between), then throw
-      - Any other non-success status: throw
-      - Empty or missing packages list: treated as passing (no violations)
-      The dependency graph cannot be disabled, so any SBOM fetch failure is treated
-      as a fatal error rather than a skip.
-   b. Filter packages where spdxId is in deny-licenses
-      (skip packages where spdxId is NOASSERTION / NONE / null)
-   c. Violations present:
-        - No open issue with matching title: create issue (unless --dry-run)
-        - Open issue with matching title: update its body with current results (unless --dry-run)
-   d. No violations:
-        - Open issue with matching title: close it with a resolved comment (unless --dry-run)
-   e. Print the repo's summary line, any non-compliant lines, and any debug lines as a
-      single contiguous block. Repos may complete in any order; output order is not
-      guaranteed, but lines belonging to one repo must not be interleaved with another's.
-7. For each archived repo: print name under "Skipped (archived)" — no checks, no issue action
-8. For each excluded repo: print name under "Skipped (configuration)" — no checks, no issue action
-9. Always exit 0 — violations are expected, not errors. Only fatal errors (missing token,
-   unreadable config, API failure) exit non-zero.
-```
+A dependency violates the policy if its SPDX license (`licenseConcluded`, falling back to `licenseDeclared`) is in `deny-licenses`. Packages without license information (`NOASSERTION`, `NONE`, or missing) are ignored. Repos without an SBOM are skipped and listed under "Skipped (no SBOM available)". Any other SBOM failure is fatal: the dependency graph cannot be disabled, so a failure indicates a real error.
 
 ---
 
@@ -155,10 +95,9 @@ Optional with defaults: `excluded_repos: []`, `docs_link: ""`.
 | No violations | No open issue | No action |
 | Archived (any) | — | No checks, no issue action |
 | Excluded (any) | — | No checks run, no issue action |
+| No SBOM available (404) | — | No issue action |
 
 The script only considers **open** issues. If a user manually closes the issue but the repo still has violations, a new issue will be created on the next run.
-
-Issue lookup uses `octokit.rest.issues.listForRepo` filtered by `state: "open"` and matching `issue_title` from config.
 
 ### Issue body template
 
@@ -176,6 +115,19 @@ Please review the [License Policy](<docs_link>) and replace or remove the depend
 
 _This issue was automatically generated by the OSPO license scanner._
 ```
+
+### OSPO summary issue
+
+After scanning all repos, the script maintains a single `License Violation Summary` issue in the `<org>/ospo` repository, with one table row per violating package (repository, package, version, license):
+
+| Violations in any repo? | Open summary issue? | Action |
+|---|---|---|
+| Yes | No | Create the summary issue |
+| Yes | Yes | Update the issue body with the current list |
+| No | Yes | Close the summary issue |
+| No | No | No action |
+
+If the `ospo` repository does not exist, the script exits with an error.
 
 ---
 
@@ -200,7 +152,7 @@ Skipped (configuration)
 – excluded-repo
 ```
 
-Each active repo prints one line with icon, repo name (padded/truncated to 20 chars), package count, and unique license count. Violations follow as indented `Non-compliant: package@version (SPDX-ID)` lines.
+Each active repo prints one line with icon, repo name (padded/truncated to 20 chars), package count, and unique license count. Violations follow as indented `Non-compliant: package@version (SPDX-ID)` lines. Because repos are scanned in parallel, their order is not guaranteed, but each repo's lines are printed as one contiguous block.
 
 Icons: `✅` pass, `❌` fail (active repos). Archived and excluded repos are listed with `–` (no scan performed).
 
@@ -217,49 +169,32 @@ When `--dry-run` is active and there are pending actions, a summary block is app
 
 ---
 
-## Dependencies
+## JSON output
 
-| Tool | Purpose |
+With `--json <file>` the script also writes its results to `<file>` in the common JSON format of the compliance report ([Tool file format](reports_compliance_spec.md#tool-file-format)). The directory is created if needed. The text output, the issues and the exit code are the same as without `--json`; the last line of the output is `JSON written to <file>`. With `--dry-run`, the file is still written.
+
+The file has these keys:
+
+| Key | Content |
 |---|---|
-| `node` + `npm` | Run the script, install packages |
-| `@octokit/rest` | GitHub API + issue management |
-| `js-yaml` | Parse YAML config |
+| `tool`, `run_at`, `org` | Script name, start of the run (UTC), organisation |
+| `ospo_sha` | Commit of the scripts: `GITHUB_SHA`, otherwise `HEAD` of the local checkout, otherwise `null` |
+| `config_file`, `config_sha256` | Config path relative to the repo root, and the SHA-256 of the config file |
+| `run_url` | Link to the GitHub Actions run (`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, `GITHUB_RUN_ID`), otherwise `null` |
+| `issue_title` | Title of the per-repository issue |
+| `results` | One row per repository and check: `repo`, `check`, `name`, `result` (`pass`, `fail` or `na`), `score` (always `null`), `reason` (always filled), `details` (list of lines) |
+| `catalogue` | One entry per check ID: `name` and `documentation` (`url` to the heading below, pinned to `ospo_sha`; `short` rule; `fix`) |
+| `skipped` | Repositories without results: `repo` and `reason` |
+| `errors` | Always `[]`: errors abort the run, and then no file is written |
 
-No additional tools required beyond what is already used by the other scripts.
+Each active repository has one result, sorted by repository name. Archived repositories are listed in `skipped` with reason `archived`, excluded repositories with reason `excluded_repos`. A repository without an SBOM (404) is not skipped in the JSON: its `license/denied-licenses` result is `na`.
 
----
+| Check ID | Name |
+|---|---|
+| `license/denied-licenses` | Dependency Licenses |
 
-## Unit Tests
+### Dependency Licenses
 
-Unit tests live in `scripts/license_scan.test.js` and run with Node's built-in test runner (`node --test`). No additional test framework required.
+No dependency in the SBOM uses a license from `deny-licenses`. Dependencies without license information are ignored. `details` has one `Warn: package@version (SPDX-ID)` line per violation.
 
-Each function is tested in isolation with fake API responses. Key scenarios:
-
-- **Config loading:** valid config; missing `issue_title`; missing `deny-licenses`; `excluded_repos` absent (defaults to `[]`); `docs_link` absent (defaults to `""`)
-- **SBOM parsing:** all packages clean; one denied license; multiple denied licenses; mixed denied/allowed; package with `NOASSERTION` spdxId (ignored); package with `NONE` spdxId (ignored); package with `null` spdxId (ignored); empty packages list (passes)
-- **Issue body:** correct table rows generated; `docs_link` inserted correctly; empty docs_link omits link
-- **SBOM fetch failures:** non-success status codes (404, 403, 5xx after retries, timeout) cause `fetchSbomPackages` to throw
-
-### Integration test (against `ospo-sandbox`)
-
-Requires `GITHUB_TOKEN`. Run via Makefile, not part of the unit test suite.
-
-```makefile
-test_license_scan:
-    cd .. && node scripts/license_scan.js --org ospo-sandbox --config scripts/test-config/license_scan.yaml --debug
-```
-
-Test config lives at `scripts/test-config/license_scan.yaml` and targets the `ospo-sandbox` org.
-
----
-
-## CI/CD Changes
-
-`.github/workflows/license_scan.yml` setup:
-
-- Node.js 22 setup step
-- `npm ci` run from the `scripts/` directory
-- Run step: `node scripts/license_scan.js --org allianz`
-- Schedule: weekly (`0 0 * * 1` — every Monday at midnight UTC)
-- `workflow_dispatch` for manual runs
-- Pass the GitHub App token as `GITHUB_TOKEN` env var to the run step (secrets: `ALLIANZ_APP_ID`, `ALLIANZ_APP_PRIVATE_KEY`)
+How to fix: replace or remove the dependencies that use a denied license.
