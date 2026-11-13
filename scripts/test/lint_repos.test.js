@@ -863,7 +863,7 @@ describe('JSON output', () => {
     assert.equal(catalogue['lint/no-code-of-conduct'].documentation.fix, 'Delete the CODE_OF_CONDUCT* file from ., .github, docs.');
     assert.equal(
       catalogue['lint/no-code-of-conduct'].documentation.url,
-      'https://github.com/allianz/ospo/blob/abc/scripts/spec/lint_repos_spec.md#organisation-code-of-conduct',
+      'https://github.com/allianz/ospo/blob/abc/scripts/spec/lint_repos_spec.md#checks',
     );
     assert.equal(catalogue['lint/no-security'].name, 'No SECURITY*');
     assert.equal(catalogue['lint/authors'].name, 'AUTHORS* or MAINTAINERS*');
@@ -879,7 +879,7 @@ describe('JSON output', () => {
     assert.equal(catalogue['lint/notice'].name, 'NOTICE*');
     assert.equal(
       catalogue['lint/readme'].documentation.url,
-      'https://github.com/allianz/ospo/blob/abc/scripts/spec/lint_repos_spec.md#readme-file',
+      'https://github.com/allianz/ospo/blob/abc/scripts/spec/lint_repos_spec.md#checks',
     );
     const anyTopic = buildCatalogue({ ...config, allowed_topics: [] });
     assert.equal(anyTopic['lint/topics'].documentation.short, 'The repository has 1 to 5 topics.');

@@ -124,6 +124,7 @@ requirements:
     title: CONTRIBUTING present
     level: MUST
     chapter: "2.2"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST contain a CONTRIBUTING.md …" }
     implementation: >-
@@ -138,12 +139,12 @@ requirements:
 | `inputs` | yes | Tool files in `--dir`: `file` and the `script` that writes it. The tool name of a file must be the basename of its script |
 | `notes` | no | Notes file, relative to the repo root. Without it, `notes` is `null` |
 | `out_of_scope` | no | Repositories this report does not cover, each with `repo` and `reason` (default `[]`). See [Scope](#scope) |
-| `requirements` | yes | One entry per requirement ID (`<chapter>.<nn>`), in report order: `title`, `level` (`MUST`, `SHOULD`, `MAY`), `chapter` (optional, default the ID prefix; lets IDs like `AZ.01` be grouped by the sections of their guideline), `text` (list of clauses with `level` and `text`, default `[]`), `implementation` (plain text, default empty), `checks` (list of check IDs, `[]` for none), `implemented` (optional, default `true`; `false` marks a requirement that has no check yet and needs `checks: []`, see [Requirements](#requirements)) |
+| `requirements` | yes | One entry per requirement ID (`<chapter>.<nn>`), in report order: `title`, `level` (`MUST`, `SHOULD`, `MAY`), `chapter` (optional, default the ID prefix; lets IDs like `AZ.01` be grouped by the sections of their guideline), `url` (optional: the section of the guideline page for this requirement; empty or missing = no link; the file and the reports are public, so only URLs meant to be public), `text` (list of clauses with `level` and `text`, default `[]`), `implementation` (plain text, default empty), `checks` (list of check IDs, `[]` for none), `implemented` (optional, default `true`; `false` marks a requirement that has no check yet and needs `checks: []`, see [Requirements](#requirements)) |
 
 ### Validation
 
 - A missing field: `Config missing required field: <field> (in <file>)`.
-- An invalid `key`, an input without `file` or `script`, `out_of_scope` that is not a list, an entry without `repo` or `reason`, a repository listed twice, a chapter (from the ID or the `chapter` field) that is not in `framework.chapters`, an invalid `level`, a missing `title`, `checks` that is not a list, `implemented` that is not `true` or `false`, or `implemented: false` with checks: an error naming the requirement and the file.
+- An invalid `key`, an input without `file` or `script`, `out_of_scope` that is not a list, an entry without `repo` or `reason`, a repository listed twice, a chapter (from the ID or the `chapter` field) that is not in `framework.chapters`, an invalid `level`, a missing `title`, `checks` that is not a list, `implemented` that is not `true` or `false`, a `url` that is not a text, or `implemented: false` with checks: an error naming the requirement and the file.
 
 ---
 
@@ -275,7 +276,7 @@ HTML written to reports/2026-11/allianz-report.html
 | `previous_report` | `report_id` and `data_url` (link to the `data.json` that was read, on `main`) of the previous report, or `null` |
 | `inputs` | One entry per configured file: `file`, `script`, `status`, `sha256` (of the file as read, `null` if missing); for `ok` the header fields `tool`, `run_at`, `ospo_sha`, `config_file`, `config_sha256`, `run_url`, `issue_title`, and `counts` (`results`, `skipped`, `errors`); for `invalid` the `problems` |
 | `scope` | `active` and `archived`, sorted; `out_of_scope` as `{ repo, reason }`, sorted by `repo` |
-| `requirements` | One entry per requirement in configuration order: `id`, `chapter`, `level`, `title`, `text`, `implementation`, `checks`, `status`, `repositories`, `coverage` |
+| `requirements` | One entry per requirement in configuration order: `id`, `chapter`, `level`, `title`, `url` (trimmed, `null` when empty), `text`, `implementation`, `checks`, `status`, `repositories`, `coverage` |
 | `summary` | See [Summary](#summary) |
 | `notes` | `file`, `sha256`, `key_messages`, `needs_attention`, or `null` |
 | `history` | See [History](#history) |
@@ -318,7 +319,7 @@ Sections, all computed from `data.json`:
 |---|---|
 | Header | Report ID, status date, trend period, previous report (or "none (first report)"), scope, workflow run (or "local run") |
 | 1 Management summary | Data-health box (missing or invalid inputs, `errors`), overall compliance with change against the previous history entry, MUST requirements met, active repositories with findings, requirements with findings, status bars per level, Key messages and Needs attention from `notes` |
-| 2 Requirement status | One row per requirement by chapter: level, status, coverage ("No data" or "Not applicable" when nothing is applicable), 6-month sparkline. Expanding a row shows the clauses, implementation, the checks with rule, threshold and source script, and the number of repositories without data |
+| 2 Requirement status | One row per requirement by chapter: level, status, coverage ("No data" or "Not applicable" when nothing is applicable), 6-month sparkline. Expanding a row shows the clauses (with a link to the guideline section when `url` is set), implementation, the checks with rule, threshold and source script, and the number of repositories without data |
 | 3 Trends | Overall compliance and active repositories with findings over the last 6 months, one slot per month; a month without a report is a gap |
 | 4 Findings | Failing repositories per requirement, active repositories by number of failed requirements |
 | 5 Repositories | Every repository with its failed requirements, failing checks (score and threshold for scored checks), checks passed, and links to the open issue of each tool that has one. Sortable and filterable; printing shows every repository |

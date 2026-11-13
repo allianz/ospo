@@ -269,7 +269,7 @@ The file has these keys:
 | `run_url` | Link to the GitHub Actions run (`GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, `GITHUB_RUN_ID`), otherwise `null` |
 | `issue_title` | Title of the per-repository issue |
 | `results` | One row per repository and check: `repo`, `check`, `name`, `result` (`pass`, `fail` or `na`), `score` (always `null`), `reason` (always filled), `details` (list of lines) |
-| `catalogue` | One entry per check ID: `name` and `documentation` (`url` to the heading below, pinned to `ospo_sha`; `short` rule; `fix`) |
+| `catalogue` | One entry per check ID: `name` and `documentation` (`url` to the [Checks](#checks) section, pinned to `ospo_sha`; `short` rule; `fix`) |
 | `skipped` | Repositories without results: `repo` and `reason` |
 | `errors` | Always `[]`: errors abort the run, and then no file is written |
 
@@ -283,100 +283,4 @@ Every check of an active repository is written. Archived repositories are listed
 | `lint/<prefix>` | One per `required_files` entry, also for `json_only` entries. The ID is the pattern prefix in lower case, from the first pattern of a list (`CONTRIBUTING*` → `lint/contributing`, `["DEVELOPMENT*", "DEVELOPER*"]` → `lint/development`), the name is its `name` (default: the patterns, joined with "or"). Two entries with the same ID are a configuration error |
 | `lint/no-<prefix>` | One per `forbidden_files` entry, also for `json_only` entries. The ID is built like `lint/<prefix>` with `no-` in front (`CODE_OF_CONDUCT*` → `lint/no-code-of-conduct`), the name is its `name` (default: "No " and the patterns). Two entries with the same ID are a configuration error |
 
-The `short` and `fix` texts in the catalogue are built from the configuration (lengths, licenses, patterns, search paths).
-
-### Repository Description
-
-The description is set and has `description_length.min` to `description_length.max` characters.
-
-Why, shown in the issue per failure case:
-
-| Finding | Why |
-|---|---|
-| No description set | GitHub shows the description, not the README, in the search results and in the GitHub CLI, so without it people cannot see what the project does. |
-| Description too short | A description of a few words does not tell people what the project does. Describe its purpose in one full sentence. |
-| Description too long | GitHub cuts long descriptions in the search results and in the CLI, so the end of the text is not shown. |
-
-How to fix: set a description of that length in the About section of the repository.
-
-### Repository Topics
-
-The repository has 1 to 5 topics, all from `allowed_topics` (any topic if the list is empty).
-
-Why, shown in the issue per failure case:
-
-| Finding | Why |
-|---|---|
-| No topics set | Topics are used to filter the projects of the organisation and for statistics across it. A repository without topics shows up in neither. |
-| Too many topics | With too many topics a project shows up under filters that hardly apply to it. Choose the topics that describe it best. |
-| Invalid topic(s) | Filtering and statistics only work properly if all projects use topics from a common taxonomy. With a topic outside the approved list (e.g. "k8s" instead of "kubernetes"), the project does not show up in the result lists. |
-
-How to fix: add 1 to 5 topics from the approved list in the About section of the repository.
-
-### License Type
-
-The license GitHub detects is in `allowed_licenses`. A missing or unidentified license (`NOASSERTION`) fails.
-
-Why, shown in the issue per failure case:
-
-| Finding | Why |
-|---|---|
-| No license detected | Without a license nobody may legally use, change or share the code, even though the repository is public. |
-| Custom license text detected (`NOASSERTION`) | GitHub cannot show the license, so users and tools cannot see the terms. This happens when the license text was changed or combined with other text. |
-| Not in the approved list | Only the approved licenses may be used for Allianz open source projects. |
-
-How to fix: use one of the approved licenses with its unmodified license text, so GitHub can detect it.
-
-### Readme File
-
-A file `README*` exists in the root, with at least `min_chars` characters.
-
-How to fix: add a README file with at least that many characters to the root.
-
-### Contributing File
-
-A file `CONTRIBUTING*` exists in `.`, `.github` or `docs`.
-
-How to fix: add a CONTRIBUTING file to one of these directories.
-
-### License File
-
-A file `LICENSE*` exists in the root.
-
-How to fix: add a LICENSE file to the root.
-
-### Notice File
-
-A file `NOTICE*` exists in the root.
-
-How to fix: add a NOTICE file to the root.
-
-### Authors File
-
-A file `AUTHORS*` exists in the root.
-
-How to fix: add an AUTHORS file to the root.
-
-### Development File
-
-A file `DEVELOPMENT*` or `DEVELOPER*` exists in `.`, `docs` or `.github`, with at least `min_chars` characters. JSON only (`json_only: true`): reported in the compliance report, not listed in the issue. Its `why`: "Documenting how to build and test the project is common best practice. It lets others reproduce the build and check their changes before they propose them."
-
-How to fix: add a DEVELOPMENT.md with at least that many characters to one of these directories, describing how to build and test the project.
-
-### Code of Conduct
-
-No file `CODE_OF_CONDUCT*` exists in `.`, `.github` or `docs` (`forbidden_files`). The Code of Conduct is defined once for the organisation in its `.github` repository, and GitHub shows it for every repository without a file of its own. A file in any of these directories would override it. A failure lists every file found, e.g. `.github/CODE_OF_CONDUCT.md must not exist; delete it`.
-
-How to fix: delete the file, so the Code of Conduct of the organisation applies.
-
-### Maintainers File
-
-No file `MAINTAINERS*` exists in `.`, `.github` or `docs` (`forbidden_files`). A MAINTAINERS file is easily confused with AUTHORS, which names the copyright holders the copyright statement in NOTICE refers to and is a legal requirement. It would also put the names of individuals into the repository, which is personal data under the GDPR.
-
-How to fix: delete the file.
-
-### Security Policy
-
-No file `SECURITY*` exists in `.`, `.github` or `docs` (`forbidden_files`). The security policy is defined once for the organisation in its `.github` repository, and GitHub shows it for every repository without a file of its own. A file in any of these directories would override it. JSON only (`json_only: true`): reported in the compliance report, not listed in the issue, because a project may have its own vulnerability reporting requirements.
-
-How to fix: delete the file, so the security policy of the organisation applies, unless the project has its own vulnerability reporting requirements.
+The `short` and `fix` texts in the catalogue are built from the configuration (lengths, licenses, patterns, search paths). The detailed documentation of the requirements behind the checks is the guideline page, linked per requirement from the report configuration (`url` in `config/report/<key>_report.yaml`).

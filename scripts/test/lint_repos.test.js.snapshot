@@ -230,7 +230,7 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     "lint/description": {
       "name": "Repository Description",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#repository-description",
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
         "short": "The repository description is set and has 30 to 150 characters.",
         "fix": "Set a description of 30 to 150 characters in the About section of the repository."
       }
@@ -238,7 +238,7 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     "lint/topics": {
       "name": "Repository Topics",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#repository-topics",
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
         "short": "The repository has 1 to 5 topics.",
         "fix": "Add 1 to 5 topics in the About section of the repository."
       }
@@ -246,7 +246,7 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     "lint/license-type": {
       "name": "License Type",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#license-type",
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
         "short": "The license GitHub detects is one of MIT. A missing or unidentified license (NOASSERTION) fails.",
         "fix": "Use one of the approved licenses (MIT) with its unmodified license text, so GitHub can detect it."
       }
@@ -254,7 +254,7 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     "lint/readme": {
       "name": "README File",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#readme-file",
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
         "short": "A file README* exists in ..",
         "fix": "Add a README* file in .."
       }
@@ -262,7 +262,7 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     "lint/development": {
       "name": "Development File",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#development-file",
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
         "short": "A file DEVELOPMENT* or DEVELOPER* exists in ..",
         "fix": "Add a DEVELOPMENT* or DEVELOPER* file in .."
       }
@@ -270,7 +270,7 @@ exports[`run > --json writes every check of the active repos and lists skipped r
     "lint/no-code-of-conduct": {
       "name": "Organisation Code of Conduct",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#organisation-code-of-conduct",
+        "url": "https://github.com/allianz/ospo/blob/abc123/scripts/spec/lint_repos_spec.md#checks",
         "short": "No file CODE_OF_CONDUCT* exists in ., .github, docs.",
         "fix": "Delete the CODE_OF_CONDUCT* file from ., .github, docs."
       }

@@ -203,12 +203,20 @@ describe('loadReportConfig', () => {
   it('turns the requirements into a list in file order, with chapter and defaults', async () => {
     const { requirements } = await config();
     assert.deepEqual(requirements.map(r => r.id), Object.keys(REQUIREMENTS));
-    assert.deepEqual(requirements[3], { id: 'QA.02', chapter: 'QA', level: 'MUST', title: 'Public', text: [], implementation: '', checks: [], implemented: true });
+    assert.deepEqual(requirements[3], { id: 'QA.02', chapter: 'QA', level: 'MUST', title: 'Public', url: null, text: [], implementation: '', checks: [], implemented: true });
   });
 
   it('takes the chapter from the chapter field when given, and implemented: false', async () => {
     const { requirements } = await config();
-    assert.deepEqual(requirements.at(-1), { id: 'XX.01', chapter: 'GV', level: 'SHOULD', title: 'Headers', text: [], implementation: '', checks: [], implemented: false });
+    assert.deepEqual(requirements.at(-1), { id: 'XX.01', chapter: 'GV', level: 'SHOULD', title: 'Headers', url: null, text: [], implementation: '', checks: [], implemented: false });
+  });
+
+  it('keeps a requirement url trimmed and turns an empty one into null', async () => {
+    const cfg = await loadReportConfig(await writeReportConfig('url.yaml', { requirements: {
+      'GV.01': { title: 't', level: 'MUST', url: ' https://guide.example/gv-01 ', checks: [] },
+      'GV.02': { title: 'u', level: 'MUST', url: '', checks: [] },
+    } }));
+    assert.deepEqual(cfg.requirements.map(r => r.url), ['https://guide.example/gv-01', null]);
   });
 
   it('defaults out_of_scope to an empty list and keeps only repo and reason', async () => {
@@ -224,6 +232,7 @@ describe('loadReportConfig', () => {
     ['an unknown chapter', { requirements: { 'XX.01': { title: 't', level: 'MUST', checks: [] } } }, /chapter XX is not in framework.chapters/],
     ['an unknown chapter field', { requirements: { 'GV.01': { title: 't', level: 'MUST', chapter: 'YY', checks: [] } } }, /GV.01: chapter YY is not in framework.chapters/],
     ['implemented that is no boolean', { requirements: { 'GV.01': { title: 't', level: 'MUST', implemented: 'no', checks: [] } } }, /GV.01: implemented must be true or false/],
+    ['a url that is no text', { requirements: { 'GV.01': { title: 't', level: 'MUST', url: 5, checks: [] } } }, /GV.01: url must be a text/],
     ['implemented: false with checks', { requirements: { 'GV.01': { title: 't', level: 'MUST', implemented: false, checks: ['x'] } } }, /GV.01: implemented: false needs checks: \[\]/],
     ['an invalid level', { requirements: { 'GV.01': { title: 't', level: 'MUSTN', checks: [] } } }, /level must be one of MUST, SHOULD, MAY/],
     ['a missing title', { requirements: { 'GV.01': { level: 'MUST', checks: [] } } }, /GV.01: title is missing/],
@@ -708,8 +717,8 @@ describe('run', () => {
   it('is reproducible: summary and requirement counts follow from data.json alone', async () => {
     const { data } = await runReport('reproducible');
     // not-implemented is declared by the configuration; every other status follows from the data
-    const requirements = data.requirements.map(({ id, chapter, level, title, text, implementation, checks, status }) =>
-      ({ id, chapter, level, title, text, implementation, checks, implemented: status !== 'not-implemented' }));
+    const requirements = data.requirements.map(({ id, chapter, level, title, url, text, implementation, checks, status }) =>
+      ({ id, chapter, level, title, url, text, implementation, checks, implemented: status !== 'not-implemented' }));
     const assessed = assessRequirements(requirements, data.results, data.scope);
     assert.deepEqual(assessed, data.requirements);
     assert.deepEqual(computeSummary(assessed, data.results, data.scope), data.summary);

@@ -9,7 +9,7 @@ import { mapWithConcurrency } from './lib/concurrency.js';
 import { defaultConfigPath, loadYaml, repoRoot, requireFields } from './lib/config.js';
 import { createGitHub, createOctokit } from './lib/github.js';
 import { syncIssue } from './lib/issues.js';
-import { buildHeader, buildJsonDocument, checkResult, skippedRepos, specCatalogue, writeJsonReport } from './lib/json_output.js';
+import { buildHeader, buildJsonDocument, checkResult, skippedRepos, specCatalogue, specUrl, writeJsonReport } from './lib/json_output.js';
 import { createLogger } from './lib/logger.js';
 import { createPlan } from './lib/plan.js';
 import { printHeading, printIssueDryRunSummary, printNameList, printSection } from './lib/report.js';
@@ -280,6 +280,9 @@ export function buildCatalogue(config, { sha = null, env = {} } = {}) {
       `Delete the ${patternText(fileSpec)} file from ${paths}.`,
     );
   }
+  // The spec has no section per check: every check links to its Checks section.
+  const checksUrl = specUrl(SPEC_FILE, 'Checks', { sha, env });
+  for (const { documentation } of Object.values(catalogue)) documentation.url = checksUrl;
   return catalogue;
 }
 

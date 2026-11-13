@@ -112,6 +112,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "GV",
       "level": "MUST",
       "title": "Contribute",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -137,6 +138,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "GV",
       "level": "MUST",
       "title": "Protected",
+      "url": null,
       "text": [],
       "implementation": "Ruleset.",
       "checks": [
@@ -158,6 +160,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "QA",
       "level": "MUST",
       "title": "SBOM",
+      "url": null,
       "text": [],
       "implementation": "Dependency graph.",
       "checks": [
@@ -178,6 +181,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "QA",
       "level": "MUST",
       "title": "Public",
+      "url": null,
       "text": [],
       "implementation": "",
       "checks": [],
@@ -190,6 +194,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "BR",
       "level": "MUST",
       "title": "Versions",
+      "url": null,
       "text": [],
       "implementation": "",
       "checks": [
@@ -210,6 +215,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "BR",
       "level": "SHOULD",
       "title": "Reproducible",
+      "url": null,
       "text": [],
       "implementation": "",
       "checks": [],
@@ -222,6 +228,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "DE",
       "level": "SHOULD",
       "title": "Discontinuation",
+      "url": null,
       "text": [],
       "implementation": "",
       "checks": [
@@ -242,6 +249,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "DE",
       "level": "MAY",
       "title": "Migration",
+      "url": null,
       "text": [],
       "implementation": "",
       "checks": [
@@ -262,6 +270,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "BR",
       "level": "MUST",
       "title": "Signed",
+      "url": null,
       "text": [],
       "implementation": "",
       "checks": [],
@@ -274,6 +283,7 @@ exports[`run > writes data.json with statuses, summary, notes and the merged his
       "chapter": "GV",
       "level": "SHOULD",
       "title": "Headers",
+      "url": null,
       "text": [],
       "implementation": "",
       "checks": [],

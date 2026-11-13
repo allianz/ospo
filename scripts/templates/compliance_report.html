@@ -919,7 +919,9 @@ function renderCard(q) {
     q.repositories ? repoListLink(`Repositories failing ${q.id} (${q.repositories.failing})`, { req: q.id }) : null,
   ]), q.repositories?.no_data ? h('p', { class: 'small muted', style: 'margin-top:6px', text: `No data for ${plural(q.repositories.no_data, 'active repository', 'active repositories')}: a check has no result (tool file missing or invalid, tool error, or skipped for a reason other than excluded_repos). They are not counted as passing or failing.` }) : null) : null;
 
-  const reqSec = sec(`Requirement · ${FW.title} ${q.id}`, textNode, FW.text_note ? h('p', { class: 'small muted', style: 'margin-top:6px', text: FW.text_note }) : null);
+  const reqSec = sec(`Requirement · ${FW.title} ${q.id}`, textNode,
+    FW.text_note ? h('p', { class: 'small muted', style: 'margin-top:6px', text: FW.text_note }) : null,
+    linksRow([q.url ? h('a', { href: q.url, text: `${q.id} in the guideline` }) : null]));
   const implSec = q.implementation ? sec('Implementation', h('p', { text: q.implementation })) : null;
   return h('div', { class: 'rcard' }, reqSec, implSec, verifiedSec, infoSec);
 }

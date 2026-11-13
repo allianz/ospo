@@ -69,11 +69,13 @@ export async function loadReportConfig(configPath) {
     const implemented = r.implemented ?? true;
     if (typeof implemented !== 'boolean') fail(`requirement ${id}: implemented must be true or false`);
     if (!implemented && r.checks.length > 0) fail(`requirement ${id}: implemented: false needs checks: []`);
+    if (r.url != null && typeof r.url !== 'string') fail(`requirement ${id}: url must be a text`);
     return {
       id,
       chapter,
       level: r.level,
       title: r.title,
+      url: r.url?.trim() || null,
       text: r.text ?? [],
       implementation: r.implementation ?? '',
       checks: r.checks,

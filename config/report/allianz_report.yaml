@@ -29,7 +29,10 @@
 #                 clauses), implementation (plain text) and checks (check
 #                 IDs). implemented: false marks a requirement that has no
 #                 check yet (checks: []): it is shown as "Not implemented"
-#                 and not counted.
+#                 and not counted. url (optional): the section of the guideline
+#                 page for this requirement, linked from the report; empty = no
+#                 link. This file and the reports are public, so list only URLs
+#                 that are meant to be public.
 #
 # The rule values (lengths, topics, licenses, search paths) must match
 # config/lint_repos.yaml, which is the source of truth for the guideline page.
@@ -65,6 +68,7 @@ requirements:
     title: Description set
     level: MUST
     chapter: "2.1"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST have a description of 30 to 150 characters (the one-line metadata field shown in the organization list and in `gh repo view`, not a copy of the README)." }
     implementation: >-
@@ -77,6 +81,7 @@ requirements:
     title: Topics from the approved list
     level: MUST
     chapter: "2.1"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST have 1 to 5 topics, all from the approved list (project type, domain, ecosystem, e.g. api, cli, library, ai, data, devops, aws, kubernetes, terraform)." }
     implementation: >-
@@ -89,6 +94,7 @@ requirements:
     title: README present
     level: MUST
     chapter: "2.2"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST contain a README.md in the root with at least 300 characters." }
     implementation: >-
@@ -100,6 +106,7 @@ requirements:
     title: CONTRIBUTING present
     level: MUST
     chapter: "2.2"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST contain a CONTRIBUTING.md that explains how to propose changes and what quality is expected from contributions." }
     implementation: >-
@@ -111,6 +118,7 @@ requirements:
     title: DEVELOPMENT present
     level: SHOULD
     chapter: "2.2"
+    url: ""
     text:
       - { level: SHOULD, text: "The repository SHOULD contain a DEVELOPMENT.md in the root or docs folder, describing how to build and test the project." }
     implementation: >-
@@ -122,6 +130,7 @@ requirements:
     title: No CODE_OF_CONDUCT file
     level: MUST
     chapter: "2.2"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST NOT contain a CODE_OF_CONDUCT file in the root, .github or docs: the Allianz Code of Conduct applies to all repositories, and GitHub shows it automatically." }
     implementation: >-
@@ -133,6 +142,7 @@ requirements:
     title: No SECURITY file
     level: SHOULD
     chapter: "2.2"
+    url: ""
     text:
       - { level: SHOULD, text: "The repository SHOULD NOT contain a SECURITY.md in the root, .github or docs: the Allianz security policy applies to all repositories. A project with its own vulnerability reporting requirements may add one." }
     implementation: >-
@@ -144,6 +154,7 @@ requirements:
     title: No MAINTAINERS file
     level: MUST
     chapter: "2.2"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST NOT contain a MAINTAINERS file in the root, .github or docs." }
     implementation: >-
@@ -156,6 +167,7 @@ requirements:
     title: Approved license
     level: MUST
     chapter: "2.3"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST contain a LICENSE file in the root." }
       - { level: MUST, text: "The license MUST be one of Apache-2.0, MIT, CC-BY-4.0 or CC0-1.0." }
@@ -169,6 +181,7 @@ requirements:
     title: License headers in source files
     level: SHOULD
     chapter: "2.3"
+    url: ""
     implemented: false
     text:
       - { level: SHOULD, text: "Source files SHOULD begin with a license header matching the project's license, following the Allianz header format." }
@@ -181,6 +194,7 @@ requirements:
     title: NOTICE present
     level: MUST
     chapter: "2.3"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST contain a NOTICE file in the root, following the Allianz NOTICE format." }
       - { level: MUST, text: "It MUST state the project's name, copyright and license, and list every third-party component copied or forked into the repository." }
@@ -194,6 +208,7 @@ requirements:
     title: AUTHORS present
     level: MUST
     chapter: "2.3"
+    url: ""
     text:
       - { level: MUST, text: "The repository MUST contain an AUTHORS file in the root, following the Allianz AUTHORS format." }
       - { level: MUST, text: "It MUST list the project's copyright holders." }
@@ -206,6 +221,7 @@ requirements:
     title: No copyleft dependencies
     level: MUST
     chapter: "2.3"
+    url: ""
     text:
       - { level: MUST, text: "Third-party dependencies MUST NOT be under a copyleft license (GPL, AGPL)." }
     implementation: >-
@@ -219,6 +235,7 @@ requirements:
     title: Third-party licenses in binary distributions
     level: MUST
     chapter: "2.3"
+    url: ""
     implemented: false
     text:
       - { level: MUST, text: "Binary distributions that bundle dependencies MUST include a THIRD_PARTY_LICENSES.md covering all bundled dependencies." }
