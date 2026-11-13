@@ -439,8 +439,8 @@ addEventListener('error', e => {
 
 <script>
 /* ═══════════════════════════ Load data ═══════════════════════════ */
-const $ = id => document.getElementById(id);
-const readJson = id => JSON.parse($(id).textContent);
+const byId = id => document.getElementById(id);
+const readJson = id => JSON.parse(byId(id).textContent);
 const DATA = readJson('data.json');   // the only input: compliance_report aggregates all tool files into it
 const INPUT_OF = Object.fromEntries(DATA.inputs.map(i => [i.tool, i]));
 const ORG = DATA.org;
@@ -561,7 +561,7 @@ function inlineMd(src) {
   return out.filter(x => x !== '');
 }
 
-const tip = $('tip');
+const tip = byId('tip');
 function showTip(evt, value, label) {
   tip.replaceChildren(h('strong', { text: value }), h('span', { text: label }));
   tip.hidden = false;
@@ -594,7 +594,7 @@ document.addEventListener('click', e => {
   if (!a) return;
   e.preventDefault();
   applyRepoFilter(JSON.parse(a.dataset.filter));
-  $('repositories').scrollIntoView({ behavior: 'smooth' });
+  byId('repositories').scrollIntoView({ behavior: 'smooth' });
 });
 
 function dataTable(headers, rows, numericCols = []) {
@@ -771,10 +771,10 @@ function niceTicks(lo, hi, count = 4) {
 }
 
 /* ═══════════════════════════ Header ═══════════════════════════ */
-$('title').append(FW.title, h('br'), 'Compliance Report');
-$('subtitle').textContent = `Open source projects published under github.com/${ORG}` + (FW.version ? ` · requirements version ${FW.version}` : '');
+byId('title').replaceChildren(document.createTextNode(String(FW.title ?? '')), h('br'), document.createTextNode('Compliance Report'));
+byId('subtitle').textContent = `Open source projects published under github.com/${ORG}` + (FW.version ? ` · requirements version ${FW.version}` : '');
 {
-  const meta = $('meta');
+  const meta = byId('meta');
   const metaRow = (k, v) => meta.append(h('dt', { text: k }), h('dd', {}, v));
   metaRow('Report ID', DATA.report_id);
   metaRow('Status as of', fmtDateTime(DATA.run_at));
@@ -790,7 +790,7 @@ const niReqs = DATA.requirements.filter(q => q.status === 'not-implemented');
 const niMust = niReqs.filter(q => q.level === 'MUST');
 const errN = DATA.errors.length;
 {
-  $('summary-lead').textContent =
+  byId('summary-lead').textContent =
     `${S.must_met} of ${S.must_total} MUST requirements are met` +
     (niMust.length ? ` (${niMust.length} more not implemented yet: ${niMust.map(q => q.id).join(', ')})` : '') + '. ' +
     (notMet.length ? `Not met: ${notMet.length > 3 ? notMet.map(q => q.id).join(', ') : notMet.map(q => `${q.id} (${q.title})`).join(', ')}. ` : '') +
@@ -802,17 +802,17 @@ const errN = DATA.errors.length;
     const cls = d === 0 ? 'flat' : (d > 0) === goodWhenUp ? 'good' : 'bad';
     return h('div', { class: `delta ${cls}` }, `${d > 0 ? '▲' : d < 0 ? '▼' : '■'} ${Math.abs(d)}${unit} `, h('span', { text: `vs ${fmtMonth(PREV.month)}` }));
   };
-  $('hero-value').append(...(S.compliance_pct == null ? ['–'] : [String(S.compliance_pct), h('small', { text: '%' })]));
-  $('hero-delta').append((S.compliance_pct != null && deltaNode(S.compliance_pct, PREV?.compliance_pct, { unit: ' pts' })) || '');
-  $('hero-spark').append(sparkline(trendValues(x => x.compliance_pct), { w: 220, hgt: 36 }));
-  $('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results are not counted; an active repository that a tool skipped fails that tool's checks.`;
+  byId('hero-value').append(...(S.compliance_pct == null ? ['–'] : [String(S.compliance_pct), h('small', { text: '%' })]));
+  byId('hero-delta').append((S.compliance_pct != null && deltaNode(S.compliance_pct, PREV?.compliance_pct, { unit: ' pts' })) || '');
+  byId('hero-spark').append(sparkline(trendValues(x => x.compliance_pct), { w: 220, hgt: 36 }));
+  byId('hero-note').textContent = `${S.checks_passed} of ${S.checks_evaluated} evaluated checks passed. Not applicable results are not counted; an active repository that a tool skipped fails that tool's checks.`;
 
   const withF = new Set(FINDINGS.map(f => f.repo));
   const reqsWithF = reqs => reqs.filter(q => q.repositories?.failing).map(q => q.id);
   const assessed = DATA.requirements.filter(q => q.repositories);
   const covWithF = x => Object.values(x.coverage ?? {}).filter(v => v != null && v < 100).length;   // previous runs: from history coverage
   const tile = (label, value, small, extra) => h('div', { class: 'card tile' }, h('div', { class: 'label', text: label }), h('div', { class: 'value' }, String(value), small ? h('small', { text: ' ' + small }) : null), extra);
-  $('tiles').append(
+  byId('tiles').append(
     tile('MUST requirements met', S.must_met, `of ${S.must_total}`, h('div', { class: 'sub', text: [
       notMet.length ? `Not met: ${notMet.map(q => q.id).join(', ')}` : niMust.length ? 'All implemented MUST requirements met' : 'All MUST requirements met',
       niMust.length ? `not implemented: ${niMust.map(q => q.id).join(', ')}` : null,
@@ -825,7 +825,7 @@ const errN = DATA.errors.length;
       h('div', { class: 'sub', text: capText(reqsWithF(assessed), 6) || 'none' })),
   );
 
-  const sb = $('status-bars');
+  const sb = byId('status-bars');
   for (const lvl of ['MUST', 'SHOULD']) {
     const reqs = DATA.requirements.filter(q => q.level === lvl);
     segBar(sb, ['met', 'met-findings', 'not-met', 'no-data'].map(st => {
@@ -846,11 +846,11 @@ const errN = DATA.errors.length;
   const N = DATA.notes;
   if (N) {
     for (const [id, items] of [['key-messages', N.key_messages], ['attention', N.needs_attention]]) {
-      const card = $(id).closest('.card');
+      const card = byId(id).closest('.card');
       if (!items?.length) { card.hidden = true; continue; }
-      $(id).append(...items.map(t => h('li', {}, inlineMd(t))));
+      byId(id).append(...items.map(t => h('li', {}, inlineMd(t))));
     }
-  } else $('notes-grid').hidden = true;
+  } else byId('notes-grid').hidden = true;
 
   // Data health: shown only when something is missing, so a reader cannot overlook it
   const badInputs = DATA.inputs.filter(i => i.status !== 'ok');
@@ -859,8 +859,8 @@ const errN = DATA.errors.length;
     errN ? `${plural(errN, 'check')} could not be evaluated (tool errors, treated as no data).` : null,
   ].filter(Boolean);
   if (health.length) {
-    $('data-alert').append(h('b', { text: 'Incomplete data. ' }), health.join(' '));
-    $('data-alert').hidden = false;
+    byId('data-alert').append(h('b', { text: 'Incomplete data. ' }), document.createTextNode(health.join(' ')));
+    byId('data-alert').hidden = false;
   }
 }
 
@@ -928,7 +928,7 @@ function renderCard(q) {
 
 {
   const tbody = document.querySelector('#req-table tbody');
-  $('req-trend-h').textContent = `${TREND_MONTHS}-month trend`;
+  byId('req-trend-h').textContent = `${TREND_MONTHS}-month trend`;
   let lastCh = null;
   for (const q of DATA.requirements) {
     const ch = q.chapter;
@@ -952,22 +952,22 @@ function renderCard(q) {
 /* ═══════════════════════════ 3 Trends ═══════════════════════════ */
 {
   const measured = SLOTS.filter(m => BY_MONTH[m]).length;
-  $('trends-lead').textContent = `Last ${TREND_MONTHS} months (${fmtMonth(SLOTS[0])} – ${fmtMonth(SLOTS.at(-1))}), one value per monthly report: ${plural(measured, 'report')}. A month without a report has no point and no bar. Carried forward in data.json → history.`;
+  byId('trends-lead').textContent = `Last ${TREND_MONTHS} months (${fmtMonth(SLOTS[0])} – ${fmtMonth(SLOTS.at(-1))}), one value per monthly report: ${plural(measured, 'report')}. A month without a report has no point and no bar. Carried forward in data.json → history.`;
   const labels = SLOTS.map(fmtMon), full = SLOTS.map(fmtMonth);
   const cv = trendValues(x => x.compliance_pct), cvm = cv.filter(v => v != null);
   if (cvm.length) {
     const ct = niceTicks(Math.floor(Math.min(...cvm)) - 1, Math.min(100, Math.ceil(Math.max(...cvm)) + 1));
-    lineChart($('chart-compliance'), { labels, full, values: cv, yMin: ct[0], yMax: ct.at(-1), yTicks: ct, fmt: v => fmtPct(v), name: 'Overall compliance' });
-  } else $('chart-compliance').append(h('p', { class: 'muted', text: 'No data' }));
+    lineChart(byId('chart-compliance'), { labels, full, values: cv, yMin: ct[0], yMax: ct.at(-1), yTicks: ct, fmt: v => fmtPct(v), name: 'Overall compliance' });
+  } else byId('chart-compliance').append(h('p', { class: 'muted', text: 'No data' }));
   const fv = trendValues(x => x.failing_repositories);
   const ft = niceTicks(0, Math.max(...fv.filter(v => v != null)) * 1.15, 3);
-  columnChart($('chart-findings'), { labels, full, values: fv, yMax: ft.at(-1), yTicks: ft, name: 'Active repositories with findings' });
+  columnChart(byId('chart-findings'), { labels, full, values: fv, yMax: ft.at(-1), yTicks: ft, name: 'Active repositories with findings' });
 }
 
 /* ═══════════════════════════ 4 Findings ═══════════════════════════ */
 {
-  $('byreq-sub').textContent = 'Repositories that fail at least one applicable check of the requirement. A repository that fails several requirements is counted in each. Select a bar to list them in section 5.';
-  hbarChart($('chart-byreq'),
+  byId('byreq-sub').textContent = 'Repositories that fail at least one applicable check of the requirement. A repository that fails several requirements is counted in each. Select a bar to list them in section 5.';
+  hbarChart(byId('chart-byreq'),
     DATA.requirements.map(q => ({ id: q.id, label: q.title, value: q.repositories?.failing ?? 0 })).filter(d => d.value).sort((a, b) => b.value - a.value),
     'Failing repositories by requirement', { filter: d => ({ req: d.id, failed: 'any' }) });
 
@@ -975,8 +975,8 @@ function renderCard(q) {
   for (const f of FINDINGS) for (const q of f.requirements) (reqsBy[f.repo] ??= new Set()).add(q);
   const nBy = new Map(Object.entries(reqsBy).map(([repo, s]) => [repo, s.size]));
   const bucket = (lo, hi) => ACTIVE.filter(r => (nBy.get(r) ?? 0) >= lo && (nBy.get(r) ?? 0) <= hi);
-  $('repos-sub').textContent = `${ACTIVE.length} active repositories in scope. Select a segment to list them in section 5.`;
-  segBar($('seg-repos'), FAILED_RANGES.map(b => {
+  byId('repos-sub').textContent = `${ACTIVE.length} active repositories in scope. Select a segment to list them in section 5.`;
+  segBar(byId('seg-repos'), FAILED_RANGES.map(b => {
     const names = bucket(b.lo, b.hi);
     return { label: b.label, names, value: names.length, color: b.color, ink: b.ink, filter: { failed: b.key } };
   }), { unit: 'repositories' });
@@ -1049,12 +1049,12 @@ const RL_SORT = {
   repo: (a, b) => a.repo.localeCompare(b.repo),
 };
 function readRepoControls() {
-  RL.sort = $('r-sort').value; RL.repo = $('r-repo').value.trim().toLowerCase(); RL.req = $('r-req').value; RL.failed = $('r-failed').value;
-  RL.size = +$('r-size').value; RL.page = 1;
+  RL.sort = byId('r-sort').value; RL.repo = byId('r-repo').value.trim().toLowerCase(); RL.req = byId('r-req').value; RL.failed = byId('r-failed').value;
+  RL.size = +byId('r-size').value; RL.page = 1;
   renderRepos();
 }
 function applyRepoFilter(f) {
-  $('r-sort').value = f.sort ?? 'findings'; $('r-repo').value = f.repo ?? ''; $('r-req').value = f.req ?? ''; $('r-failed').value = f.failed ?? '';
+  byId('r-sort').value = f.sort ?? 'findings'; byId('r-repo').value = f.repo ?? ''; byId('r-req').value = f.req ?? ''; byId('r-failed').value = f.failed ?? '';
   readRepoControls();
 }
 function renderRepos() {
@@ -1071,9 +1071,9 @@ function renderRepos() {
     h('td', { class: 'num nowrap', text: r.total ? `${r.passed}/${r.total}` : '–' }),
     h('td', { class: 'nowrap' }, issueLinks(r.checks, r.repo)))));
   const active = RL.repo || RL.req || RL.failed;
-  $('r-count').textContent = (active ? `${rows.length} of ${REPO_ROWS.length} repositories match the filter` : `${REPO_ROWS.length} repositories`) +
+  byId('r-count').textContent = (active ? `${rows.length} of ${REPO_ROWS.length} repositories match the filter` : `${REPO_ROWS.length} repositories`) +
     (rows.length > shown.length ? `; showing ${from + 1}–${from + shown.length}` : '') + '. Checks passed counts the mapped checks that apply to the repository.';
-  renderPager($('r-pager'), RL.page, pages, p => { RL.page = p; renderRepos(); });
+  renderPager(byId('r-pager'), RL.page, pages, p => { RL.page = p; renderRepos(); });
 }
 /* Page buttons: previous, first, a window around the current page, last, next */
 function renderPager(el, page, pages, go) {
@@ -1095,19 +1095,19 @@ function renderPager(el, page, pages, go) {
   el.append(h('span', { style: 'margin-left:8px', text: `Page ${page} of ${pages}` }));
 }
 {
-  $('r-req').append(h('option', { value: '', text: 'All requirements' }),
+  byId('r-req').append(h('option', { value: '', text: 'All requirements' }),
     ...DATA.requirements.filter(q => q.repositories).map(q => h('option', { value: q.id, text: `${q.id} ${q.title}` })));
-  $('r-failed').append(h('option', { value: '', text: 'All repositories' }), h('option', { value: 'any', text: 'At least 1' }),
+  byId('r-failed').append(h('option', { value: '', text: 'All repositories' }), h('option', { value: 'any', text: 'At least 1' }),
     h('optgroup', { label: 'Active repositories' }, ...FAILED_RANGES.map(b => h('option', { value: b.key, text: b.label }))));
-  for (const id of ['r-sort', 'r-req', 'r-failed', 'r-size']) $(id).addEventListener('change', readRepoControls);
-  $('r-repo').addEventListener('input', readRepoControls);
-  $('r-reset').addEventListener('click', () => applyRepoFilter({}));
+  for (const id of ['r-sort', 'r-req', 'r-failed', 'r-size']) byId(id).addEventListener('change', readRepoControls);
+  byId('r-repo').addEventListener('input', readRepoControls);
+  byId('r-reset').addEventListener('click', () => applyRepoFilter({}));
   renderRepos();
 }
 
 /* ═══════════════════════════ Footer ═══════════════════════════ */
 {
-  $('integrity').append('Generated from ', h('code', { title: DATA.ospo_sha ?? '', text: `ospo@${commitText(DATA.ospo_sha)}` }), ' · ', runLink(DATA.run_url, 'workflow run '),
+  byId('integrity').append('Generated from ', h('code', { title: DATA.ospo_sha ?? '', text: `ospo@${commitText(DATA.ospo_sha)}` }), ' · ', runLink(DATA.run_url, 'workflow run '),
     ' · report configuration ', h('code', { text: DATA.report_config }), ' · inputs: ',
     h('span', {}, joinNodes(DATA.inputs.map(i => h('span', {}, h('code', { text: i.file }), ' ', h('code', { title: i.sha256, text: shortSha(i.sha256) }))), ', ')),
     ' · report template ', h('code', { text: 'scripts/templates/compliance_report.html' }));

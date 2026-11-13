@@ -1,11 +1,11 @@
 {
   "report_id": "OSPO-CR-ALLIANZ-2026-11",
-  "run_at": "2026-11-12T21:34:43Z",
+  "run_at": "2026-11-13T07:56:52Z",
   "org": "allianz",
-  "ospo_sha": "71d527191413b0e7271988ee140099ef759593f7",
+  "ospo_sha": "4e64e67e7d2cadc29214d24442770f87d43159dc",
   "run_url": null,
   "report_config": "config/report/allianz_report.yaml",
-  "config_sha256": "2295de3c237859f81167015c718f51e8046cebafff8afe991f0ee59407f75b2b",
+  "config_sha256": "6f55465512c9770986f0f6ec2a32f2f0021803701128ae0f172b5d097772589a",
   "framework": {
     "id": "allianz-mandatory-repo-config",
     "title": "Allianz Repository Standards",
@@ -24,16 +24,16 @@
       "file": "lint_repos.json",
       "script": "scripts/lint_repos.js",
       "status": "ok",
-      "sha256": "5f675823085d584bd4bd3b61740b4241d71b52e5ab34014a284df8ccdb07f920",
+      "sha256": "62d01725b59dfae7f2bf57ba37005abca6b1b6c2351a17e52968b1bed86eb580",
       "tool": "lint_repos",
-      "run_at": "2026-11-12T21:34:32Z",
-      "ospo_sha": "71d527191413b0e7271988ee140099ef759593f7",
+      "run_at": "2026-11-13T07:56:40Z",
+      "ospo_sha": "4e64e67e7d2cadc29214d24442770f87d43159dc",
       "config_file": "config/lint_repos.yaml",
       "config_sha256": "db9b19f53f0ef2e52aca9126bc6f7a1fa939917b1a70179491722cd6ba6908f7",
       "run_url": null,
       "issue_title": "Mandatory Repository Configuration",
       "counts": {
-        "results": 42,
+        "results": 36,
         "skipped": 8,
         "errors": 0
       }
@@ -42,10 +42,10 @@
       "file": "license_scan.json",
       "script": "scripts/license_scan.js",
       "status": "ok",
-      "sha256": "015ba0c2166f45bf5a2acbb324a082d5254ab630100baf3b7c21b5b2bee6093e",
+      "sha256": "1a654ad433eed3b7647a7693d7ee50058ec77222dafb527628258748a047f8d4",
       "tool": "license_scan",
-      "run_at": "2026-11-12T21:34:36Z",
-      "ospo_sha": "71d527191413b0e7271988ee140099ef759593f7",
+      "run_at": "2026-11-13T07:56:43Z",
+      "ospo_sha": "4e64e67e7d2cadc29214d24442770f87d43159dc",
       "config_file": "config/license_scan.yaml",
       "config_sha256": "9ca4daa054d3cae592d1a83d660f0842fc067803ea7e90d9537b6ba02b8ad609",
       "run_url": null,
@@ -85,6 +85,7 @@
       "chapter": "2.1",
       "level": "MUST",
       "title": "Description set",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -110,6 +111,7 @@
       "chapter": "2.1",
       "level": "MUST",
       "title": "Topics from the approved list",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -135,6 +137,7 @@
       "chapter": "2.2",
       "level": "MUST",
       "title": "README present",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -160,6 +163,7 @@
       "chapter": "2.2",
       "level": "MUST",
       "title": "CONTRIBUTING present",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -185,6 +189,7 @@
       "chapter": "2.2",
       "level": "SHOULD",
       "title": "DEVELOPMENT present",
+      "url": null,
       "text": [
         {
           "level": "SHOULD",
@@ -210,6 +215,7 @@
       "chapter": "2.2",
       "level": "MUST",
       "title": "No CODE_OF_CONDUCT file",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -235,6 +241,7 @@
       "chapter": "2.2",
       "level": "SHOULD",
       "title": "No SECURITY file",
+      "url": null,
       "text": [
         {
           "level": "SHOULD",
@@ -260,6 +267,7 @@
       "chapter": "2.2",
       "level": "MUST",
       "title": "No MAINTAINERS file",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -285,6 +293,7 @@
       "chapter": "2.3",
       "level": "MUST",
       "title": "Approved license",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -315,6 +324,7 @@
       "chapter": "2.3",
       "level": "SHOULD",
       "title": "License headers in source files",
+      "url": null,
       "text": [
         {
           "level": "SHOULD",
@@ -336,6 +346,7 @@
       "chapter": "2.3",
       "level": "MUST",
       "title": "NOTICE present",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -365,6 +376,7 @@
       "chapter": "2.3",
       "level": "MUST",
       "title": "AUTHORS present",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -394,6 +406,7 @@
       "chapter": "2.3",
       "level": "MUST",
       "title": "No copyleft dependencies",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -419,6 +432,7 @@
       "chapter": "2.3",
       "level": "MUST",
       "title": "Third-party licenses in binary distributions",
+      "url": null,
       "text": [
         {
           "level": "MUST",
@@ -480,91 +494,91 @@
     "license/denied-licenses": {
       "tool": "license_scan",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/license_scan_spec.md#dependency-licenses",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/license_scan_spec.md#dependency-licenses",
         "short": "No dependency in the SBOM uses a license from deny-licenses. Dependencies without license information are ignored."
       }
     },
     "lint/authors": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#authors-file",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "A file AUTHORS* exists in .."
       }
     },
     "lint/contributing": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#contributing-file",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "A file CONTRIBUTING* exists in ., .github, docs."
       }
     },
     "lint/description": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#repository-description",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "The repository description is set and has 30 to 150 characters."
       }
     },
     "lint/development": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#development-file",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "A file DEVELOPMENT* or DEVELOPER* exists in ., docs, .github, with at least 300 characters."
       }
     },
     "lint/license": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#license-file",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "A file LICENSE* exists in .."
       }
     },
     "lint/license-type": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#license-type",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "The license GitHub detects is one of Apache-2.0, MIT, CC-BY-4.0, CC0-1.0. A missing or unidentified license (NOASSERTION) fails."
       }
     },
     "lint/no-code-of-conduct": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#code-of-conduct",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "No file CODE_OF_CONDUCT* exists in ., .github, docs."
       }
     },
     "lint/no-maintainers": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#maintainers-file",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "No file MAINTAINERS* exists in ., .github, docs."
       }
     },
     "lint/no-security": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#security-policy",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "No file SECURITY* exists in ., .github, docs."
       }
     },
     "lint/notice": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#notice-file",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "A file NOTICE* exists in .."
       }
     },
     "lint/readme": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#readme-file",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "A file README* exists in ., with at least 300 characters."
       }
     },
     "lint/topics": {
       "tool": "lint_repos",
       "documentation": {
-        "url": "https://github.com/allianz/ospo/blob/71d527191413b0e7271988ee140099ef759593f7/scripts/spec/lint_repos_spec.md#repository-topics",
+        "url": "https://github.com/allianz/ospo/blob/4e64e67e7d2cadc29214d24442770f87d43159dc/scripts/spec/lint_repos_spec.md#checks",
         "short": "The repository has 1 to 5 topics, all from the approved topic list."
       }
     }
