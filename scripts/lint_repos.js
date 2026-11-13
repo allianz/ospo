@@ -149,20 +149,6 @@ export function checkLicense(repo, allowedLicenses) {
   return { passed: true, detail: `'${spdxId}' is in the approved list` };
 }
 
-export function checkPublic(repo) {
-  if (repo.visibility === 'public') {
-    return { passed: true, detail: 'Repository is public' };
-  }
-  return { passed: false, detail: `Repository visibility is ${repo.visibility ?? 'unknown'}` };
-}
-
-export function checkIssuesEnabled(repo) {
-  if (repo.has_issues === true) {
-    return { passed: true, detail: 'Issues are enabled' };
-  }
-  return { passed: false, detail: 'Issues are disabled' };
-}
-
 /**
  * The files matching a file entry, in the order of its search paths: [{ searchPath, dir, name }].
  * Patterns are always prefix globs (README*, CONTRIBUTING*, LICENSE*) — matched case-insensitively.
@@ -223,23 +209,11 @@ export function metadataChecks(repo, config) {
 }
 
 /**
- * Checks that are written to the JSON file only (`jsonOnly`): they are not listed in the issue or the result line.
- * Project teams have no influence on them (visibility and issues are controlled centrally),
- * so an issue would be no use to them; the results are evidence for the compliance report and audits.
- */
-export function jsonOnlyChecks(repo) {
-  return [
-    { id: 'lint/public', checkName: 'Public Repository', jsonOnly: true, ...checkPublic(repo) },
-    { id: 'lint/issues-enabled', checkName: 'Issues Enabled', jsonOnly: true, ...checkIssuesEnabled(repo) },
-  ];
-}
-
-/**
- * All checks for an active repository: metadata, the JSON-only checks and the required and forbidden files in its clone.
- * A file entry with `json_only: true` is JSON only as well.
+ * All checks for an active repository: metadata and the required and forbidden files in its clone.
+ * A file entry with `json_only: true` is JSON only: it is not listed in the issue or the result line.
  */
 export async function runChecks(repo, config, cloneDir) {
-  const checks = [...metadataChecks(repo, config), ...jsonOnlyChecks(repo)];
+  const checks = metadataChecks(repo, config);
   for (const fileSpec of config.required_files) {
     checks.push({
       id: requiredFileCheckId(fileSpec),
@@ -287,16 +261,6 @@ export function buildCatalogue(config, { sha = null, env = {} } = {}) {
       'License Type',
       `The license GitHub detects is one of ${licenses}. A missing or unidentified license (NOASSERTION) fails.`,
       `Use one of the approved licenses (${licenses}) with its unmodified license text, so GitHub can detect it.`,
-    ),
-    'lint/public': entry(
-      'Public Repository',
-      'The repository is public.',
-      'Not fixable by the project team: the OSPO makes the repository public or archives it.',
-    ),
-    'lint/issues-enabled': entry(
-      'Issues Enabled',
-      'Issues are enabled for the repository.',
-      'Not fixable by the project team: the OSPO enables Issues for the repository.',
     ),
   };
   for (const fileSpec of config.required_files) {

@@ -151,15 +151,11 @@ allowed_topics:
 | 2 | **Topics** | GitHub API | Between 1 and 5 topics assigned; all topics must be in `allowed_topics` |
 | 3 | **License type** | GitHub API | The license GitHub detects is in `allowed_licenses`; fails with a clear message if no license is detected or GitHub cannot identify it (`NOASSERTION`, e.g. custom license text) |
 | 4 | **Required files** | Local clone | Each `required_files` entry matches at least one file in the specified `search_paths`; if `min_chars` is set the matched file must also meet that size threshold. Entries with `json_only: true` are JSON only |
-| 5 | **Public repository** (JSON only) | GitHub API | `visibility` is `public` |
-| 6 | **Issues enabled** (JSON only) | GitHub API | `has_issues` is `true` |
-| 7 | **Forbidden files** | Local clone | No `forbidden_files` entry matches a file in its `search_paths`. Entries with `json_only: true` are JSON only |
+| 5 | **Forbidden files** | Local clone | No `forbidden_files` entry matches a file in its `search_paths`. Entries with `json_only: true` are JSON only |
 
-Checks 1, 2, 3, 5 and 6 use only API data (no clone needed). Checks 4 and 7 require the local clone.
+Checks 1, 2 and 3 use only API data (no clone needed). Checks 4 and 5 require the local clone.
 
-Checks 5 and 6 are **JSON only**: they are written to the `--json` file, but are not listed in the issue or the result line, and they never cause an issue to be opened. Project teams have no influence on them: the visibility and the Issues setting are controlled centrally by the OSPO, so an issue would ask the team for something it cannot do. The results are evidence for the compliance report and audits only. They are only run for active repositories.
-
-A `required_files` or `forbidden_files` entry with `json_only: true` is JSON only in the same way: the file is reported in the compliance report, but its absence never opens, updates or keeps open an issue. A repository that fails only JSON-only checks counts as compliant for the issue and shows `✅` in the result line. The production configuration uses this for `DEVELOPMENT*` and `DEVELOPER*` (Allianz AZ.05, a SHOULD) and for the forbidden `SECURITY*` (a SHOULD NOT of the Allianz standards, AZ.07: a project may have a documented reason for its own policy).
+A `required_files` or `forbidden_files` entry with `json_only: true` is **JSON only**: the file is reported in the `--json` file and the compliance report, but is not listed in the issue or the result line, and its absence never opens, updates or keeps open an issue. A repository that fails only JSON-only checks counts as compliant for the issue and shows `✅` in the result line. The production configuration uses this for `DEVELOPMENT*` and `DEVELOPER*` (Allianz AZ.05, a SHOULD) and for the forbidden `SECURITY*` (a SHOULD NOT of the Allianz standards, AZ.07: a project may have a documented reason for its own policy).
 
 Active repos are shallow-cloned into `lint_cache/` in parallel, at most 5 at a time. Existing clones are updated in place; a clone that fails to update is deleted and re-cloned. Archived repos are not cloned, so they only get checks 1–3.
 
@@ -284,8 +280,6 @@ Every check of an active repository is written. Archived repositories are listed
 | `lint/description` | Repository Description |
 | `lint/topics` | Repository Topics |
 | `lint/license-type` | License Type |
-| `lint/public` | Public Repository |
-| `lint/issues-enabled` | Issues Enabled |
 | `lint/<prefix>` | One per `required_files` entry, also for `json_only` entries. The ID is the pattern prefix in lower case, from the first pattern of a list (`CONTRIBUTING*` → `lint/contributing`, `["DEVELOPMENT*", "DEVELOPER*"]` → `lint/development`), the name is its `name` (default: the patterns, joined with "or"). Two entries with the same ID are a configuration error |
 | `lint/no-<prefix>` | One per `forbidden_files` entry, also for `json_only` entries. The ID is built like `lint/<prefix>` with `no-` in front (`CODE_OF_CONDUCT*` → `lint/no-code-of-conduct`), the name is its `name` (default: "No " and the patterns). Two entries with the same ID are a configuration error |
 
@@ -332,18 +326,6 @@ Why, shown in the issue per failure case:
 | Not in the approved list | Only the approved licenses may be used for Allianz open source projects. |
 
 How to fix: use one of the approved licenses with its unmodified license text, so GitHub can detect it.
-
-### Public Repository
-
-The repository's visibility is `public`. Private and internal repositories fail. JSON only, not listed in the issue: the project team cannot change the visibility.
-
-How to fix: not fixable by the project team: the OSPO makes the repository public or archives it.
-
-### Issues Enabled
-
-Issues are enabled for the repository (`has_issues`). JSON only, not listed in the issue: the project team cannot change the Issues setting.
-
-How to fix: not fixable by the project team: the OSPO enables Issues for the repository.
 
 ### Readme File
 
